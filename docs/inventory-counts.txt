@@ -1,0 +1,39 @@
+405	74244	Octal buffer
+287	7427	Triple 3-input NOR
+191	74245	Octal bus transceiver
+170	7402	Quad 2-input NOR
+113	74373	Octal transparent latch
+
+99	7405	Hex inverter
+87	74641	Octal bus transceiver
+78	7474	Dual D flip-flop
+74	7432	Quad 2-input OR
+67	7404	Hex inverter
+66	74138	3-to-8 line decoder
+59	74125	Quad tri-state buffer
+50	74157	Quad 2-to-1 line multiplexer
+
+46	7400	Quad 2-input NAND
+40	14011	Quad 2-input NAND
+36	7485	4-bit comparator
+33	74139	Dual 2-to-4 line decoder
+31	7430	8-input NAND
+30	74374	Octal register
+
+27	74153	Dual 4-to-1 multiplexer
+26	7410	Triple 3-input NAND
+25	7486	Quad 2-input XOR
+22	74240	Octal buffer
+
+17	7420	Dual 4-input NAND
+16	7408	Quad 2-input AND
+16	744075	Triple 3-input OR
+16	4030	Quad 2-input XOR
+
+13	74170	4x4 bit register file
+12	7411	Triple 3-input AND
+12	74174	Hex D flip-flop
+10	74563	8-bit D transparent latch
+10	74645	Octal bus transceiver
+10	14069	Hex inverter
+10	14511	BCD-to-7-segment latch/decoder/driver

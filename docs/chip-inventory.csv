@@ -1,0 +1,112 @@
+ ,Part #,Description,Signalling
+46,7400,Quad 2-input NAND,
+170,7402,Quad 2-input NOR,
+1,7403,Quad 2-input NAND,open collecctor
+67,7404,Hex inverter,
+99,7405,Hex inverter,open collector
+5,7407,Hex buffer,open collector
+16,7408,Quad 2-input AND,
+26,7410,Triple 3-input NAND,
+12,7411,Triple 3-input AND,
+7,7414,Hex inverter,schmitt trigger
+6,7417,Hex buffer,open collector
+17,7420,Dual 4-input NAND,
+1,7421,Dual 4-input AND,
+2,7426,Quad 2-input NAND,open collector
+287,7427,Triple 3-input NOR,
+31,7430,8-input NAND,
+74,7432,Quad 2-input OR,
+2,7451,Dual 2x 2-input AND-NOR,
+1,7454,Dual 3-2-2-2-input AND-NOR,
+78,7474,Dual D flip flop,
+36,7485,4-bit comparator,
+25,7486,Quad 2-input XOR,
+8,74123,Dual retriggerable monostable multivibrator with clear,
+59,74125,Quad tri-state buffer,
+2,74132,Quad 2-input NAND,schmitt trigger
+1,SN54135,Quad XOR/XNOR gate,two inputs to select logic type
+66,74138,3 to 8 line decoder,inverting outputs
+33,74139,Dual 2 to 4 line decoder,
+1,74148,8-line to 3-line priority encoder,
+1,74151,8-line to 1-line data selector/multiplexer,
+27,74153,Dual 4 to 1 multiplexer,
+8,74155,Dual 2-line to 4-line decoder/demultiplexer,inverting outputs
+50,74157,Quad 2-line to 1-line data selector/multiplexer,non-inverting outputs
+1,74158,Quad 2-line to 1-line data selector/multiplexer,inverting outputs
+2,74160,Synchronous presettable 4-bit decade counter,asynchronous clear
+13,74170,16-bit register file (4x4),
+5,74173,Quad D flip-flop,asynchronous with clear
+12,74174,Hex D flip-flop,common asynchronous with clear
+22,74240,Octal buffer,inverting outputs
+405,74244,Octal buffer,non-inverting outputs
+191,74245,Octal bus transceiver,non-inverting outputs
+2,74251,8-line to 1-line data selector/multiplexer,tri-state outputs
+8,74257,Quad 2-line to 1-line data selector/multiplexer,non-inverting outputs
+3,74368,Hex bus drivers,tri-state outputs
+113,74373,Octal transparent latch,tri-state outputs
+30,74374,Octal register,tri-state outputs
+5,MC14514,4-Bit Transparent Latch/4-to-16 Line Decoder,
+10,74563,8-bit D-type transparent latch,inverting outputs
+3,74623,Octal bus transceiver,non-inverting
+87,74641,Octal bus transceiver,open-collector non-inverting outputs
+10,74645,Octal bus transceiver,tri-state non-inverting outputs
+3,74906,Hex open drain N-channel buffers,
+1,74907,Hex open drain P-channel buffers,
+16,744075,Triple 3-input OR,
+4,CD4013,CMOS Dual D-Type Flip-Flop,
+16,CD4030,Quad 2-input XOR,
+1,CD4052,CMOS Single 8-Channel Analog Multiplexer/Demultiplexer with Logic-Level Conversion,
+1,MC14001,Quad 2-input NOR,
+1,MC14002,Dual 4-input NOR,
+40,MC14011,Quad 2-input NAND,20V inputs
+2,MC14044,Quad R-S latches,
+1,MC14049,Hex buffer,
+10,MC14069,Hex inverter,
+1,MC14071,Quad 2-input OR,
+10,MC14511,BCD-to-seven segment latch/decoder/driver,
+,MC14553,3-digit BCD counter,
+1,MC14555,Dual binary 1-of-4 decoder/demultiplexer,
+1,MC14558,BCD-to-seven segment decoder,
+2,MC75491,Quad LED segment driver for common-cathode displays MOS compatible inputs,
+21,TIBPAL16L8-10CN,High-performance Impact-X PAL,
+4,uA 1488PC,Quad RS-232 driver,
+3,uA 1489PC,Quad RS-232 receiver,
+7,MAX 232,Dual RS-232 transceiver,
+25,Am2732,4Kx8 EPROM,
+10,27C256,32Kx8 EPROM,
+1,27C010,128Kx8 EPROM,
+23,HM6116,2Kx8 SRAM,
+29,HM6264,8Kx8 SRAM,
+1,HM62256,32Kx8 SRAM,
+3,HN623256,32Kx8 Mask Programmable ROM,
+7,6850,Asynchronous Communication Interface,
+24,M58321,Real-time Clock,
+2,8250,UART,
+3,8255,PPI Programmable Peripheral Interface,
+8,8049,MCS-48 microcontroller,
+10,68HC11,8-bit microcontroller,
+1,DS88L12N,Hex TTL·MOS Inverter/Interface Gate,
+1,MK50399N,Six-decade counter/display decoder,
+1,CD4515BE,CMOS 4-bit latch/4-to-16 line decoder,
+,,,
+,HEF4538,dual monostable multivibrator,
+,NEC C358C,Low power dual op amp,
+,ICL8211,Programmable voltage detector,
+,MC145440,300 baud modem band-pass filter,
+,HCF4066B,Quad bilateral switch for transmission or multiplexing of analog or digital signals,
+,T106Y1,SCR transistor,
+,ULN2003,High-voltage high-current darlington array,
+2,uA311TC,Voltage comparator,
+3,LM311N,Voltage comparator,
+3,LM316,Op amp,
+196,LM324,Quad op amp,
+3,LM339,Quad differential comparators,
+2,LM348,Quad op amp,
+1,LM566,Voltage controlled oscillator,
+,LM2941,LDO voltage regulator,
+1,UDN2982,8-channel source drivers,
+2,CA3046,General Purpose NPN Transistor Array,
+1,MK5009,Counter time-base circuit,
+16,MC1413P,High voltage high current darlington transistor arrays,
+1,MC14051,Analog multiplexer/demultiplexer,
+4,MC14066,Quad analog switch/quad multiplexer,
