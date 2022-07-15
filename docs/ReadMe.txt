@@ -13,6 +13,7 @@ Am2732          4Kx8 UV Erasable PROM
 MC6850          Asynchronous Communications Interface Adapter (ACIA)
 MC146805E2      6805 CPU with external bus
 MSM58321        Real-time clock
+sn74ls138.pdf   3 Line to 8 line decoder/demuxer
 
 memory-map.txt
     Proposed memory map for the SBC
