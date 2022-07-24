@@ -286,7 +286,7 @@
       <elementAttributes>
         <entry>
           <string>Label</string>
-          <string>RTC ~CS</string>
+          <string>RTCCS</string>
         </entry>
       </elementAttributes>
       <pos x="1740" y="-40"/>
@@ -572,37 +572,70 @@
         <entry>
           <string>Testdata</string>
           <testData>
-            <dataString>AS A12 A11 A10 ~ROMCS
-0 X X X 1
-1 0 X X 1
-1 1 X X 0
+            <dataString>AS A12 A11 A10 A9 A8 A7 A6 A5 A4 A3 A2 A1 A0 ~ROMCS
+0 X X X X X X X X X X X X X 1
+1 0 X X X X X X X X X X X X 1
+1 1 X X X X X X X X X X X X 0
 </dataString>
           </testData>
         </entry>
       </elementAttributes>
-      <pos x="-760" y="-820"/>
+      <pos x="-780" y="-780"/>
     </visualElement>
     <visualElement>
       <elementName>Testcase</elementName>
       <elementAttributes>
         <entry>
           <string>Label</string>
-          <string>RAM2 ~CS</string>
+          <string>RAM 2 ~CS</string>
         </entry>
         <entry>
           <string>Testdata</string>
           <testData>
-            <dataString>AS A12 A11 A10 ~RAM2CS
-0 X X X 1
-1 1 X X 1
-1 0 0 0 1
-1 0 0 1 1
-1 0 1 0 0
-1 0 1 1 0</dataString>
+            <dataString>AS A12 A11 A10 A9 A8 A7 A6 A5 A4 A3 A2 A1 A0 ~RAM2CS
+0 X X X X X X X X X X X X X 1
+1 1 X X X X X X X X X X X X 1
+1 0 1 X X X X X X X X X X X 0
+1 0 0 X X X X X X X X X X X 1</dataString>
           </testData>
         </entry>
       </elementAttributes>
       <pos x="-780" y="-660"/>
+    </visualElement>
+    <visualElement>
+      <elementName>Not</elementName>
+      <elementAttributes/>
+      <pos x="1620" y="-40"/>
+    </visualElement>
+    <visualElement>
+      <elementName>Testcase</elementName>
+      <elementAttributes>
+        <entry>
+          <string>Label</string>
+          <string>RTC CS</string>
+        </entry>
+        <entry>
+          <string>Testdata</string>
+          <testData>
+            <dataString>AS A12 A11 A10 A9 A8 A7 A6 A5 A4 A3 A2 A1 A0 RTCCS
+0 X X X X X X X X X X X X X 0
+1 0 0 0 0 1 0 0 0 0 X X X X 1
+1 X X X X 0 X X X X X X X X 0
+</dataString>
+          </testData>
+        </entry>
+      </elementAttributes>
+      <pos x="-780" y="-520"/>
+    </visualElement>
+    <visualElement>
+      <elementName>Testcase</elementName>
+      <elementAttributes>
+        <entry>
+          <string>Label</string>
+          <string>RAM 1 ~CS</string>
+        </entry>
+      </elementAttributes>
+      <pos x="-780" y="-400"/>
     </visualElement>
   </visualElements>
   <wires>
@@ -775,8 +808,12 @@
       <p2 x="1240" y="-40"/>
     </wire>
     <wire>
-      <p1 x="1460" y="-40"/>
+      <p1 x="1660" y="-40"/>
       <p2 x="1740" y="-40"/>
+    </wire>
+    <wire>
+      <p1 x="1460" y="-40"/>
+      <p2 x="1620" y="-40"/>
     </wire>
     <wire>
       <p1 x="1020" y="40"/>
