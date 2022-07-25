@@ -1,0 +1,2480 @@
+
+***************************************************************** 
+*     RAFOS FORTH V1.0      26 March  1986                      * 
+*                                                               *
+*   --- ROM #2 of 2                                             *
+*                                                               *
+*  (C) Copyright 1986, Everett Carter. All rights reserved.     *
+*                                                               *
+*  This FORTH is a subset of the FORTH-79 standard.             * 
+*  Some changes have been made in order to save on              * 
+*  space in the limited memory of the float.                    * 
+*                                                               * 
+***************************************************************** 
+* 
+ROM      EQU    $1000        ROM #2 start address
+ROM1     EQU    $1800        ROM #1 start address
+*
+         ORG    ROM
+*
+CR       EQU    $0D          CARRIAGE RETURN
+LF       EQU    $0A          LINE FEED
+BL       EQU    $20          BLANK
+BS       EQU    $08          Back Space
+DEL      EQU    $7F          Delete
+* 
+DDR      EQU    4            DATA DIRECTION REGISTER OFFSET 
+* 
+PORTA    EQU    0            I/O PORT 0 
+PORTB    EQU    1            I/O PORT 1 
+PUT      EQU    PORTB        SERIAL I/O PORT
+*
+INITSP   EQU    $7F          INITIAL STACK POINTER VALUE
+STACK    EQU    INITSP-5     TOP OF STACK 
+MEMSIZ   EQU    $2000        MEMORY ADDRESS SPACE SIZE
+* 
+SP0      EQU    $0F00 
+RP0      EQU    $0E00 
+TIB      EQU    $0D80 
+* 
+* 
+* 
+*     RAM VARIABLES 
+* 
+* 
+ATEMP    EQU    $10          TEMP USED IN PUTDEC
+XTEMP    EQU    $11          INDEX TEMPORARY
+GETR     EQU    $12          PICK & DROP TEMPORARY
+COUNT    EQU    $16          NUMBER OF BITS LEFT TO get/send
+CHAR     EQU    $17          Current input/output character 
+* 
+BYTCNT   EQU    $1E          bytcnt.
+WTIME    EQU    $20          TIMER INTERRUPT FROM WAIT STATE
+*
+*
+PH       EQU $21          MISC SCRATCH AREAS 
+PL       EQU $22 
+TEMPA    EQU $23 
+TEMPB    EQU $24
+QH       EQU $25
+QL       EQU $26
+TEMP     EQU $27
+TERM     EQU $28
+*
+*
+IN       EQU $29              Where FORTH will look for input
+OUT      EQU $2A
+COUNTR   EQU $2B
+DP       EQU $2C          The initial Dictionary pointer
+START    EQU $2E          The start up vector
+*
+*
+IP       EQU $30             THE FORTH INSTRUCTION POINTER
+RP       EQU $32             THE RETURN POINTER OFFSET
+SP       EQU $33             THE STACK POINTER OFFSET
+BASE     EQU $34
+*
+USER     EQU $35             The space for USER variables
+FENCE    EQU 0               USER + 0
+STATE    EQU 2               USER + 2
+FORTH    EQU 4               USER + 4
+CONTEXT  EQU 6               USER + 6
+CURRENT  EQU 8               USER + 8
+HLD      EQU $0A             USER + $0A
+*
+*
+*  List of previous FORTH words (ROM 1)
+*
+DOCOL  EQU $80            DOCOL
+DOCOL1 EQU DOCOL
+NEXT   EQU $009E          NEXT
+NEXT1  EQU $00CE
+LOAD   EQU $00D1
+GET    EQU $00D5
+TYPE   EQU $00DF          TYPE
+FIN6   EQU $0116          <FIND>
+BRAN   EQU $01A9          BRAN
+ZBRAN  EQU $19D2          ZBRANCH
+ZBREX  EQU ZBRAN+$12
+EXIT   EQU $19F8          EXIT
+EXE7   EQU $1A10          EXECUTE
+INLINE EQU $1A22
+EMIT   EQU $1A79          EMIT
+BL2    EQU $1A8D          BL
+WORD   EQU $1AA4          WORD
+MPY16  EQU $1AFD
+NUM8   EQU $1B27          <NUMBER>
+DROP   EQU $1BBE          DROP
+CFCH   EQU $1BCC          C@
+FTCH   EQU $1BF2          @
+DP2    EQU $1C1D          DP
+HERE   EQU $1C34          HERE
+NOT3   EQU $1C42          NOT
+ONEP   EQU $1C5B          1+
+HLD3   EQU $1C78          HLD
+DOUSE  EQU $1C7A          DOUSE
+STA5   EQU $1C91          STATE  
+CON7   EQU $1C9B          CONTEXT
+CUR7   EQU $1CA5          CURRENT
+FOR5   EQU $1CAF          FORTH
+STO    EQU $1CB9          !
+CSTO   EQU $1CE4          C!
+COMA   EQU $1D04          ,
+CCOMA  EQU $1D37          C,
+DUP3   EQU $1D55          DUP
+PLSTO  EQU $1D75          +!
+LAT6   EQU $1DAE          LATEST
+ALL5   EQU $1DBE          ALLOT
+LIT3   EQU $1DCC          LIT
+SWAP   EQU $1F07          SWAP
+CRE6   EQU $1FDE          CREATE
+*
+*
+*
+LOK   EQU $1E53
+OK    EQU LOK+1
+*
+*
+OUTER EQU $1E57
+* 
+COLD  EQU $1EA5
+WARM  EQU $1EE6
+GETC  EQU $1F43
+GETCHAR  EQU GETC
+PUTC   EQU $1F7A
+OUTCHAR  EQU PUTC
+WAIT   EQU $1FA8
+DELAY  EQU WAIT
+CRLF   EQU $1FC3
+* 
+RESET  EQU COLD
+*
+**************************************************************************
+*
+QUES   LDA DP          checks for errors at end of OUTER
+       STA GET+1
+       LDA DP+1
+       STA GET+2
+       LDX #1
+       JSR GET
+       CMP #$80        = buffer end ?
+       BNE QERR
+QEXIT  LDX SP
+*
+H1     EQU LOK/$100*$100
+L      EQU LOK-H1
+H      EQU LOK/$100
+*
+       LDA #L
+       DECX
+       STA SP0,X
+       LDA #H
+       DECX
+       STA SP0,X
+       STX SP
+       LDA START
+       STA IP
+       LDA START+1
+       STA IP+1
+       JMP NEXT
+QERR   LDA DP
+       STA LOAD+1
+       LDA DP+1
+       STA LOAD+2
+       CLRX
+       JSR GET
+       INCA
+       INCA
+       JSR LOAD
+       TAX
+       LDA #$3F        A='?'
+       JSR LOAD
+       LDX SP
+       LDA DP+1
+       DECX
+       STA SP0,X
+       LDA DP
+       DECX
+       STA SP0,X
+       STX SP
+       JMP WARM
+*
+       FCB 4           QUIT
+       FCC 'QUI'
+       FDB CRE6-6      link to CREATE
+QUIT   BRA QEXIT
+*
+       FCB 6           TOGGLE
+       FCC 'TOG'
+       FDB QUIT-6      link to QUIT
+TOG6   LDX SP
+       INCX            drop high byte
+       LDA SP0,X
+       INCX
+       STA ATEMP
+       LDA SP0,X       get addr
+       INCX
+       STA LOAD+1
+       STA GET+1
+       LDA SP0,X
+       INCX
+       STX SP
+       STA LOAD+2
+       STA GET+2
+       CLRX
+       JSR GET
+       EOR ATEMP
+       JSR LOAD
+       JMP NEXT
+*
+       FCB 9           IMMEDIATE
+       FCC 'IMM'
+       FDB TOG6-6      link to TOGGLE
+IMM9   JMP DOCOL
+       FDB LAT6
+       FDB LIT3
+       FDB $80
+       FDB TOG6
+       FDB EXIT
+*
+       FCB 5           -FIND
+       FCC '-FI'
+       FDB IMM9-6      link to IMMEDIATE
+DFND   JMP DOCOL
+       FDB BL2
+       FDB WORD
+       FDB CON7
+       FDB FTCH
+       FDB FTCH
+       FDB FIN6
+       FDB EXIT
+*
+       FCB 5           COUNT
+       FCC 'COU'
+       FDB DFND-6      link to -FIND
+COU5   JMP DOCOL
+       FDB DUP3
+       FDB ONEP
+       FDB SWAP
+       FDB CFCH
+       FDB EXIT
+*
+       FCB 1           0
+       FCC '0  '
+       FDB COU5-6      link to COUNT
+ZERO   LDX SP
+       CLRA
+       DECX
+       STA SP0,X
+       DECX
+       STA SP0,X
+       STX SP
+       JMP NEXT
+*
+       FCB 1           1
+       FCC '1  '
+       FDB ZERO-6      link to 0
+ONE    LDX SP
+       LDA #1
+       DECX
+       STA SP0,X
+       DECX
+       CLRA
+       STA SP0,X
+       STX SP
+       JMP NEXT
+*
+       FCB 1           2
+       FCC '2  '
+       FDB ONE-6       link to 1
+TWO    LDX SP
+       LDA #2
+       DECX
+       STA SP0,X
+       CLRA
+       DECX
+       STA SP0,X
+       STX SP
+       JMP NEXT
+*
+       FCB 2           2+
+       FCC '2+ '
+       FDB TWO-6      link to 2
+TWOP   LDX SP
+       INCX            point to low
+       LDA #2
+       ADD SP0,X
+       STA SP0,X
+       DECX            point to high
+       CLRA            A=0 note carry
+       ADC SP0,X       is not affected
+       STA SP0,X
+       JMP NEXT
+*
+       FCB $81         [  (IMMEDIATE)
+       FCC '[  '
+       FDB TWOP-6      link to 2+
+LBRAK  JMP DOCOL
+       FDB ZERO
+       FDB STA5
+       FDB STO
+       FDB EXIT
+*
+       FCB 1           ]
+       FCC ']  '
+       FDB LBRAK-6     link to [
+RBRAK  JMP DOCOL
+       FDB LIT3
+       FDB $C0
+       FDB STA5
+       FDB STO
+       FDB EXIT
+*
+       FCB 11          DEFINITIONS
+       FCC 'DEF'
+       FDB RBRAK-6     link to ]
+DEFS   JMP DOCOL
+       FDB CON7
+       FDB FTCH
+       FDB CUR7
+       FDB STO
+       FDB EXIT
+*
+       FCB 1           +
+       FCC '+  '
+       FDB DEFS-6      link to DEFINITIONS
+PLUS   LDX SP
+       LDA SP0,X
+       INCX
+       STA PH
+       LDA SP0,X
+       INCX
+       STX SP
+       INCX            point to low on stack
+       ADD SP0,X
+       STA SP0,X
+       LDX SP
+       LDA PH
+       ADC SP0,X
+       STA SP0,X
+       JMP NEXT
+*
+       FCB 1           -
+       FCC '-  '
+       FDB PLUS-6      link to +
+MINUS  LDX SP
+       LDA SP0,X
+       INCX
+       STA PH
+       LDA SP0,X
+       INCX
+       STA PL
+       STX SP
+       INCX            point to low on stack
+       LDA SP0,X
+       SUB PL
+       STA SP0,X
+       LDX SP
+       LDA SP0,X
+       SBC PH
+       STA SP0,X
+       JMP NEXT
+*
+       FCB 2           U*
+       FCC 'U* '
+       FDB MINUS-6     link to -
+UMULT  LDX SP
+       LDA SP0,X
+       INCX
+       STA PH
+       LDA SP0,X
+       INCX
+       STA PL
+       LDA SP0,X
+       INCX
+       STA QH
+       LDA SP0,X
+       STA QL
+       STX XTEMP
+       JSR MPY16
+       LDX XTEMP
+       LDA QL              push low word
+       STA SP0,X
+       LDA QH
+       DECX
+       STA SP0,X
+       LDA TEMPB           push high word
+       DECX
+       STA SP0,X
+       LDA TEMPA
+       DECX
+       STA SP0,X
+       STX SP
+       JMP NEXT
+*
+SEC    EQU PH
+*
+DIV16  LDA SEC+2          Dividend: (H to L)
+       LDX SEC            PL,PH,TEMPB,TEMPA
+       STX SEC+2          (SEC +1,+0,+3,+2)
+       LSLA
+       STA SEC
+       LDA SEC+3          Divisor is QH,QL
+       LDX SEC+1
+       STX SEC+3
+       ROLA
+       STA SEC+1
+       LDA #$10
+       STA TEMP
+DBEG   ROL SEC+2
+       ROL SEC+3
+       LDA SEC+2
+       SUB QL
+       TAX
+       LDA SEC+3
+       SBC QH
+       BCS DSKIP
+       STX SEC+2
+       STA SEC+3
+       SEC
+       BRA DSKIP+1
+DSKIP  CLC
+       ROL SEC        Quotient (H,L) is
+       ROL SEC+1         SEC+1,SEC
+       DEC TEMP       Remainder (H,L) is
+       BNE DBEG          SEC+3,SEC+2
+       RTS
+*
+       FCB 5           U/MOD
+       FCC 'U/M'
+       FDB UMULT-6     link to U*
+UDMD   LDX SP
+       LDA SP0,X
+       INCX
+       STA QH          divisor to Q
+       LDA SP0,X
+       INCX
+       STA QL
+       LDA SP0,X
+       INCX
+       STA SEC+1          high word to P
+       LDA SP0,X          (SEC +1, +0)
+       INCX
+       STA SEC
+       LDA SP0,X
+       INCX
+       STA SEC+3        low word to TEMPA/B
+       LDA SP0,X        (SEC +3, +2)
+       STA SEC+2
+       STX SP
+       BSR DIV16
+       LDX SP
+       LDA SEC+2        push remainder
+       STA SP0,X        (HL: SEC+3, +2)
+       LDA SEC+3
+       DECX
+       STA SP0,X
+       LDA SEC           push quotient
+       DECX              (HL: SEC+1, +0)
+       STA SP0,X
+       LDA SEC+1
+       DECX
+       STA SP0,X
+       STX SP
+       JMP NEXT
+*
+       FCB 4           S->D
+       FCC 'S->'
+       FDB UDMD-6      link to U/MOD
+STOD   LDX SP
+       LDA SP0,X
+       TSTA
+       BPL SPOS
+       LDA #$FF
+       BRA SEXIT
+SPOS   CLRA
+SEXIT  DECX
+       STA SP0,X
+       DECX
+       STA SP0,X
+       STX SP
+       JMP NEXT
+*
+       FCB 3           PAD
+       FCC 'PAD'
+       FDB STOD-6      link to S->D
+PAD    JMP DOCOL
+       FDB HERE
+       FDB LIT3
+       FDB $0044
+       FDB PLUS
+       FDB EXIT
+*
+       FCB 2           <#
+       FCC '<# '
+       FDB PAD-6       link to PAD
+LSHP   JMP DOCOL
+       FDB PAD
+       FDB HLD3
+       FDB STO
+       FDB EXIT
+*
+       FCB 4           OVER
+       FCC 'OVE'
+       FDB LSHP-6      link to <#
+OVER   LDX SP
+       INCX
+       INCX
+       LDA SP0,X
+       INCX
+       STA ATEMP
+       LDA SP0,X
+       LDX SP
+       DECX
+       STA SP0,X
+       LDA ATEMP
+       DECX
+       STA SP0,X
+       STX SP
+       JMP NEXT
+*
+       FCB 2           #>
+       FCC '#> '
+       FDB OVER-6      link to OVER
+SPGR   JMP DOCOL
+       FDB DROP
+       FDB DROP
+       FDB HLD3
+       FDB FTCH
+       FDB PAD
+       FDB OVER
+       FDB MINUS
+       FDB EXIT
+*
+       FCB 2           >R
+       FCC '>R '
+       FDB SPGR-6      link to #>
+TOR    LDX SP
+       LDA SP0,X
+       INCX
+       STA ATEMP
+       LDA SP0,X
+       INCX
+       STX SP
+       LDX RP
+       DECX
+       STA RP0,X
+       LDA ATEMP
+       DECX
+       STA RP0,X
+       STX RP
+       JMP NEXT
+*
+       FCB 2           R>
+       FCC 'R> '
+       FDB TOR-6       link to >R
+RTO    LDX RP
+       LDA RP0,X
+       INCX
+       STA ATEMP
+       LDA RP0,X
+       INCX
+       STX RP
+       LDX SP
+       DECX
+       STA SP0,X
+       LDA ATEMP
+       DECX
+       STA SP0,X
+       STX SP
+       JMP NEXT
+*
+       FCB 2           R@
+       FCC 'R@ '
+       FDB RTO-6       link to R>
+RFTCH  LDX RP
+       LDA RP0,X       pop high
+       INCX
+       STA ATEMP
+       LDA RP0,X       pop low
+       LDX SP
+       DECX
+       STA SP0,X       push low
+       LDA ATEMP
+       DECX
+       STA SP0,X       push high
+       STX SP
+       JMP NEXT
+*
+       FCB 3           ROT
+       FCC 'ROT'
+       FDB RFTCH-6     link to R@
+ROT    JMP DOCOL
+       FDB TOR
+       FDB SWAP
+       FDB RTO
+       FDB SWAP
+       FDB EXIT
+*
+       FCB 4           HOLD
+       FCC 'HOL'
+       FDB ROT-6       link to ROT
+HOLD   JMP DOCOL
+       FDB LIT3
+       FDB $FFFF        ( -1 )
+       FDB HLD3
+       FDB PLSTO
+       FDB HLD3
+       FDB FTCH
+       FDB CSTO
+       FDB EXIT
+*
+       FCB 5           M/MOD
+       FCC 'M/M'
+       FDB HOLD-6      link to HOLD
+MDM5   JMP DOCOL
+       FDB TOR
+       FDB ZERO
+       FDB RFTCH
+       FDB UDMD
+       FDB RTO
+       FDB SWAP
+       FDB TOR
+       FDB UDMD
+       FDB RTO
+       FDB EXIT
+*
+       FCB 4           BASE
+       FCC 'BAS'
+       FDB MDM5-6      link to M/MOD
+BAS4   JMP DOCOL
+       FDB LIT3
+       FDB BASE
+       FDB EXIT
+*
+       FCB 6           SMUDGE
+       FCC 'SMU'
+       FDB BAS4-6      link to BASE
+SMUDG  JMP DOCOL
+       FDB LAT6
+       FDB LIT3
+       FDB $0020
+       FDB TOG6
+       FDB EXIT
+*
+       FCB 3           ABS
+       FCC 'ABS'
+       FDB SMUDG-6     link to SMUDGE
+ABS    LDX SP
+       LDA SP0,X
+       TSTA
+       BPL ABXIT
+       COMA
+       STA SP0,X
+       INCX
+       LDA SP0,X
+       NEGA
+       STA SP0,X
+ABXIT  JMP NEXT
+*
+       FCB 2           0<
+       FCC '0< '
+       FDB ABS-6       link to ABS
+ZLESS  LDX SP
+       LDA SP0,X
+       TSTA
+       BPL ZLPOS
+       LDA #$FF
+       BRA ZLXIT
+ZLPOS  CLRA
+ZLXIT  STA SP0,X
+       INCX
+       STA SP0,X
+       JMP NEXT
+*
+       FCB 2           0=
+       FCC '0= '
+       FDB ZLESS-6     link to 0<
+ZEQ    LDX SP
+       LDA SP0,X
+       INCX
+       ORA SP0,X
+       BNE ZEN
+       LDA #$FF
+       BRA ZEXIT
+ZEN    CLRA
+ZEXIT  STA SP0,X
+       DECX
+       STA SP0,X
+       JMP NEXT
+*
+       FCB 1           <
+       FCC '<  '
+       FDB ZEQ-6       link to 0=
+LESS   JMP DOCOL
+       FDB MINUS
+       FDB ZLESS
+       FDB EXIT
+*
+       FCB 1           >
+       FCC '>  '
+       FDB LESS-6      link to <
+GREAT  JMP DOCOL
+       FDB SWAP
+       FDB LESS
+       FDB EXIT
+*
+       FCB 1           =
+       FCC '=  '
+       FDB GREAT-6     link to >
+EQUAL  JMP DOCOL
+       FDB MINUS
+       FDB ZEQ
+       FDB EXIT
+*
+       FCB 4           SIGN
+       FCC 'SIG'
+       FDB EQUAL-6     link to =
+SIGN   JMP DOCOL
+       FDB ZLESS
+       FDB ZBRAN
+       FDB $0008
+       FDB LIT3
+       FDB $002D
+       FDB HOLD
+       FDB EXIT
+*
+       FCB 6           NEGATE
+       FCC 'NEG'
+       FDB SIGN-6      link to SIGN
+NEG6   LDX SP
+       LDA SP0,X
+       COMA
+       STA SP0,X
+       INCX
+       LDA SP0,X
+       NEGA
+       STA SP0,X
+       JMP NEXT
+*
+       FCB 2           +-
+       FCC '+- '
+       FDB NEG6-6      link to NEGATE
+PLMI   JMP DOCOL
+       FDB ZLESS
+       FDB ZBRAN
+       FDB $0004
+       FDB NEG6
+       FDB EXIT
+*
+       FCB 1           #
+       FCC '#  '
+       FDB PLMI-6      link to +-
+SHARP  JMP DOCOL
+       FDB BAS4
+       FDB CFCH
+       FDB MDM5
+       FDB ROT
+       FDB LIT3
+       FDB $0009
+       FDB OVER
+       FDB LESS
+       FDB ZBRAN
+       FDB $0008
+       FDB LIT3
+       FDB $0007
+       FDB PLUS
+       FDB LIT3
+       FDB $0030
+       FDB PLUS
+       FDB HOLD
+       FDB EXIT
+*
+       FCB 2           OR
+       FCC 'OR '
+       FDB SHARP-6     link to #
+OR2    LDX SP
+       LDA SP0,X
+       INCX
+       INCX
+       ORA SP0,X
+       STA SP0,X
+       DECX
+       LDA SP0,X
+       INCX
+       INCX
+       ORA SP0,X
+       STA SP0,X
+       DECX
+       STX SP
+       JMP NEXT
+*
+       FCB 3           AND
+       FCC 'AND'
+       FDB OR2-6       link to OR
+AND3   LDX SP
+       LDA SP0,X
+       INCX
+       INCX
+       AND SP0,X
+       STA SP0,X
+       DECX
+       LDA SP0,X
+       INCX
+       INCX
+       AND SP0,X
+       STA SP0,X
+       DECX
+       STX SP
+       JMP NEXT
+*
+       FCB 3           XOR
+       FCC 'XOR'
+       FDB AND3-6     link to AND
+XOR3   LDX SP
+       LDA SP0,X
+       INCX
+       INCX
+       EOR SP0,X
+       STA SP0,X
+       DECX
+       LDA SP0,X
+       INCX
+       INCX
+       EOR SP0,X
+       STA SP0,X
+       DECX
+       STX SP
+       JMP NEXT
+*
+       FCB 4           DDUP
+       FCC 'DDU'
+       FDB XOR3-6      link to XOR
+DDUP   JMP DOCOL
+       FDB OVER
+       FDB OVER
+       FDB EXIT
+*
+       FCB 2           #S
+       FCC '#S '
+       FDB DDUP-6      link to DDUP
+SHRPS  JMP DOCOL
+       FDB SHARP
+       FDB DDUP
+       FDB OR2
+       FDB ZEQ
+       FDB ZBRAN
+       FDB $FFF6
+       FDB EXIT
+*
+       FCB 1           .
+       FCC '.  '
+       FDB SHRPS-6     link to #S
+DOT    JMP DOCOL
+       FDB DUP3
+       FDB DUP3
+       FDB ABS
+       FDB STOD
+       FDB LSHP
+       FDB SHRPS
+       FDB ROT
+       FDB SIGN
+       FDB SPGR
+       FDB TYPE
+       FDB DROP
+       FDB BL2
+       FDB EMIT
+       FDB EXIT
+*
+       FCB 7           COMPILE
+       FCC 'COM'
+       FDB DOT-6      link to .
+COMP   JMP DOCOL
+       FDB RTO
+       FDB DUP3
+       FDB TWOP
+       FDB TOR
+       FDB FTCH
+       FDB COMA
+       FDB EXIT
+*
+       FCB $81         ;  (IMMEDIATE)
+       FCC ';  '
+       FDB COMP-6      link to COMPILE
+SEMI   JMP DOCOL
+       FDB COMP
+       FDB EXIT
+       FDB SMUDG
+       FDB LBRAK
+       FDB EXIT
+*
+       FCB 1           :
+       FCC ':  '
+       FDB SEMI-6      link to ;
+COLON  JMP DOCOL
+       FDB CUR7
+       FDB FTCH
+       FDB CON7
+       FDB STO
+       FDB CRE6
+       FDB SMUDG
+       FDB COMP
+       JMP DOCOL
+       FDB RBRAK
+       FDB EXIT
+*
+       FCB $81         '  (IMMEDIATE)
+       FCB $27
+       FCC '  '
+       FDB COLON-6     link to :
+TICK   JMP DOCOL
+       FDB DFND
+       FDB ZBRAN
+       FDB $0006
+       FDB DROP
+       FDB EXIT
+       FDB QUES
+*
+DOVAR  LDX SP
+       LDA NEXT1+2      low byte of W
+       ADD #3
+       DECX
+       STA SP0,X
+       LDA NEXT1+1      high byte of W
+       ADC #0
+       DECX
+       STA SP0,X
+       STX SP
+       JMP NEXT
+*
+       FCB 8           VARIABLE
+       FCC 'VAR'
+       FDB TICK-6      link to '
+VAR8   JMP DOCOL
+       FDB CRE6
+       FDB LIT3        compile a jump
+       FDB $00CC       to DOVAR
+       FDB CCOMA
+       FDB COMP
+       FDB DOVAR
+       FDB TWO
+       FDB ALL5
+       FDB EXIT
+*
+DOCON  LDA NEXT1+2      put W+2 into GET
+       ADD #3
+       STA GET+2
+       LDA NEXT1+1
+       ADC #0
+       STA GET+1
+       LDX #1
+       JSR GET         get low byte of constant
+       LDX SP
+       DECX
+       STA SP0,X
+       STX SP
+       CLRX
+       JSR GET         then the high byte
+       LDX SP
+       DECX
+       STA SP0,X
+       STX SP
+       JMP NEXT
+*
+       FCB 8           CONSTANT
+       FCC 'CON'
+       FDB VAR8-6      link to VARIABLE
+CON8   JMP DOCOL
+       FDB CRE6
+       FDB LIT3        compile a jump to DOCON
+       FDB $00CC
+       FDB CCOMA
+       FDB COMP
+       FDB DOCON
+       FDB COMA
+       FDB EXIT
+*
+       FCB 1           *
+       FCC '*  '
+       FDB CON8-6      link to CONSTANT
+MULT   JMP DOCOL
+       FDB UMULT
+       FDB DROP
+       FDB EXIT
+*
+       FCB $89          [COMPILE]   IMMEDIATE
+       FCC '[CO'
+       FDB MULT-6       link to *
+BCOM9  JMP DOCOL
+       FDB TICK
+       FDB COMA
+       FDB EXIT
+*
+       FCB $85           BEGIN      IMMEDIATE
+       FCC 'BEG'
+       FDB BCOM9-6       link to [COMPILE]
+BEGN   JMP DOCOL
+       FDB HERE
+       FDB EXIT
+*
+       FCB $85           AGAIN       IMMEDIATE
+       FCC 'AGA'
+       FDB BEGN-6        link to BEGIN
+AGAIN  JMP DOCOL
+       FDB COMP
+       FDB BRAN
+       FDB HERE
+       FDB MINUS
+       FDB COMA
+       FDB EXIT
+*
+       FCB $85            UNTIL      IMMEDIATE
+       FCC 'UNT'
+       FDB AGAIN-6        link to AGAIN
+UNTIL  JMP DOCOL
+       FDB COMP
+       FDB ZBRAN
+       FDB HERE
+       FDB MINUS
+       FDB COMA
+       FDB EXIT
+*
+       FCB $82             IF         IMMEDIATE
+       FCC 'IF '
+       FDB UNTIL-6         link to UNTIL
+IF2    JMP DOCOL
+       FDB COMP
+       FDB ZBRAN
+       FDB HERE
+       FDB ZERO
+       FDB COMA
+       FDB EXIT
+*
+       FCB $84              THEN       IMMEDIATE
+       FCC 'THE'
+       FDB IF2-6            link to IF
+THEN   JMP DOCOL
+       FDB HERE
+       FDB OVER
+       FDB MINUS
+       FDB SWAP
+       FDB STO
+       FDB EXIT
+*
+       FCB $84              ELSE        IMMEDIATE
+       FCC 'ELS'
+       FDB THEN-6           link to THEN
+ELSE   JMP DOCOL
+       FDB COMP
+       FDB BRAN
+       FDB HERE
+       FDB ZERO
+       FDB COMA
+       FDB SWAP
+       FDB THEN
+       FDB EXIT
+*
+       FCB $85               WHILE       IMMEDIATE
+       FCC 'WHI'
+       FDB ELSE-6            link to ELSE
+WHILE  JMP DOCOL
+       FDB IF2
+       FDB EXIT
+*
+       FCB $86                REPEAT     IMMEDIATE
+       FCC 'REP'
+       FDB WHILE-6            link to WHILE
+REPET  JMP DOCOL
+       FDB TOR
+       FDB AGAIN
+       FDB RTO
+       FDB THEN
+       FDB EXIT
+*
+       FCB 4                    <.">
+       FCC '<."'
+       FDB REPET-6               link to REPEAT
+BDOTQ  JMP DOCOL
+       FDB RFTCH
+       FDB COU5
+       FDB DUP3
+       FDB ONEP
+       FDB RTO
+       FDB PLUS
+       FDB TOR
+       FDB TYPE
+       FDB EXIT
+*
+       FCB 3                    TIB
+       FCC 'TIB'
+       FDB BDOTQ-6              link to <.">
+TIB3   JMP DOCOL
+       FDB LIT3
+       FDB TIB
+       FDB EXIT
+*
+       FCB 3                    >IN
+       FCC '>IN'
+       FDB TIB3-6               link to TIB
+FRIN   JMP DOCOL
+       FDB LIT3
+       FDB IN
+       FDB EXIT
+*
+       FCB 7                    'STREAM
+       FCB $27
+       FCC 'ST'
+       FDB FRIN-6               link to >IN
+TSTRM  JMP DOCOL
+       FDB TIB3
+       FDB FRIN
+       FDB CFCH
+       FDB PLUS
+       FDB EXIT
+*
+       FCB 4                     <DO>
+       FCC '<DO'
+       FDB TSTRM-6               link to 'STREAM
+BDO    LDA #4
+       STA COUNTR
+       ADD SP                    make 2 artificial pops
+       STA SP
+DOAGIN LDX SP                    move limit
+       DECX                      then index
+       LDA SP0,X                 from SP
+       STX SP                    to RP
+       LDX RP
+       DECX
+       STA RP0,X
+       STX RP
+       DEC COUNTR
+       BNE DOAGIN
+       LDA #4                    adjust SP
+       ADD SP
+       STA SP
+       JMP NEXT
+*
+       FCB 6                     <LOOP>
+       FCC '<LO'
+       FDB BDO-6                 link to <DO>
+BLOP   CLR PH                  set increment to 1
+       LDA #1
+       STA PL
+LOOPS  LDX RP                  increment index
+       INCX                    by value
+       LDA PL                  in P H/L
+       ADD RP0,X
+       STA RP0,X
+       DECX
+       LDA PH
+       ADC RP0,X
+       STA RP0,X
+       INCX
+       LDA RP0,X              test index-limit
+       INCX
+       INCX
+       SUB RP0,X
+       LDX RP
+       LDA RP0,X
+       INCX
+       INCX
+       SBC RP0,X
+       EOR PH            also check increment sign
+       BMI LAGIN         loop again if negative
+       INCX
+       INCX
+       STX RP
+       JMP ZBREX
+LAGIN  JMP BRAN
+*
+       FCB 7                <+LOOP>
+       FCC '<+L'
+       FDB BLOP-6           link to <LOOP>
+BPLOP  LDX SP
+       LDA SP0,X
+       INCX
+       STA PH              set increment
+       LDA SP0,X           from the stack
+       INCX
+       STA PL
+       STX SP
+       BRA LOOPS
+*
+       FCB $82              DO          IMMEDIATE
+       FCC 'DO '
+       FDB BPLOP-6           link to <+LOOP>
+DO     JMP DOCOL
+       FDB COMP
+       FDB BDO
+       FDB HERE
+       FDB EXIT
+*
+       FCB $84              LOOP         IMMEDIATE
+       FCC 'LOO'
+       FDB DO-6             link to DO
+LOOP   JMP DOCOL
+       FDB COMP
+       FDB BLOP
+       FDB HERE
+       FDB MINUS
+       FDB COMA
+       FDB EXIT
+*
+       FCB $85              +LOOP         IMMEDIATE
+       FCC '+LO'
+       FDB LOOP-6           link to LOOP
+PLOOP  JMP DOCOL
+       FDB COMP
+       FDB BPLOP
+       FDB HERE
+       FDB MINUS
+       FDB COMA
+       FDB EXIT
+*
+       FCB 7                DNEGATE
+       FCC 'DNE'
+       FDB PLOOP-6          link to +LOOP
+DNEG7  LDA #3
+       STA COUNTR
+       LDX SP
+DNLP   LDA SP0,X            ones complement
+       COMA                 three bytes
+       STA SP0,X
+       INCX
+       DEC COUNTR
+       BNE DNLP
+       LDA SP0,X            twos complement
+       NEGA                 the fourth
+       STA SP0,X
+       JMP NEXT
+*
+       FCB $81              I   IMMEDIATE
+       FCC 'I  '
+       FDB DNEG7-6          link to DNEGATE
+I1     JMP DOCOL
+       FDB COMP
+       FDB RFTCH
+       FDB EXIT
+*
+*
+*
+*
+         END
+$ 
+***************************************************************** 
+*     RAFOS FORTH V1.0       26 March  1986                     *
+*    -- ROM #1 of 2                                             *
+*                                                               * 
+*  (C) Copyright 1986, Everett Carter. All rights reserved.     * 
+*                                                               * 
+*  This FORTH is a subset of the FORTH-79 standard.             * 
+*  Some changes have been made in order to save on              * 
+*  space in the limited memory of the float.                    * 
+*                                                               * 
+***************************************************************** 
+*
+*     EQUATES FOR ROM 2
+QUES     EQU    $1000
+*
+TOG6     EQU    $105F          TOGGLE
+IMM9     EQU    $1089          IMMEDIATE
+DFND     EQU    $109B          -FIND
+COU5     EQU    $10B1          COUNT
+ZERO     EQU    $10C3          0
+ONE      EQU    $10D8          1
+TWO      EQU    $10EF          2
+TWOP     EQU    $1106          2+
+LBRAK    EQU    $1121          [
+RBRAK    EQU    $1131          ]
+DEFS     EQU    $1143          DEFINITIONS
+PLUS     EQU    $1155          +
+MINUS    EQU    $117C          -
+UMULT    EQU    $11A7          U*
+*
+PAD      EQU    $1289          PAD
+LSHP     EQU    $129B          <#
+OVER     EQU    $12AB          OVER
+SPGR     EQU    $12CE          #>
+TOR      EQU    $12E6          >R
+RTO      EQU    $130A          R>
+RFTCH    EQU    $132E          R@
+ROT      EQU    $134F          ROT
+HOLD     EQU    $1361          HOLD
+*
+COMP     EQU    $1557          COMPILE
+SEMI     EQU    $156D          ;
+COLON    EQU    $157F          :
+TICK     EQU    $159B          '
+VAR8     EQU    $15C5          VARIABLE
+*
+I1       EQU    $17EE          I
+* 
+LATEST EQU I1-6                Last Dictionary entry
+*
+ROM      EQU    $1800        ROM #1 start address
+*
+CR       EQU    $0D          CARRIAGE RETURN
+LF       EQU    $0A          LINE FEED
+BL       EQU    $20          BLANK
+BS       EQU    $08          Back Space
+DEL      EQU    $7F          Delete
+* 
+DDR      EQU    4            DATA DIRECTION REGISTER OFFSET 
+* 
+PORTA    EQU    0            I/O PORT 0 
+PORTB    EQU    1            I/O PORT 1 
+PUT      EQU    PORTB        SERIAL I/O PORT
+*
+INITSP   EQU    $7F          INITIAL STACK POINTER VALUE
+STACK    EQU    INITSP-5     TOP OF STACK 
+MEMSIZ   EQU    $2000        MEMORY ADDRESS SPACE SIZE
+* 
+SP0      EQU    $0F00 
+RP0      EQU    $0E00 
+TIB      EQU    $0D80 
+* 
+* 
+* 
+*     RAM VARIABLES 
+* 
+*        ORG    $10          ON-CHIP RAM (112 BYTES)
+* 
+ATEMP    EQU    $10          TEMP USED IN PUTDEC
+XTEMP    EQU    $11          INDEX TEMPORARY
+GETR     EQU    $12          PICK & DROP TEMPORARY
+COUNT    EQU    $16          NUMBER OF BITS LEFT TO get/send
+CHAR     EQU    $17          Current input/output character 
+* 
+BYTCNT   EQU    $1E          bytcnt.
+WTIME    EQU    $20          TIMER INTERRUPT FROM WAIT STATE
+*
+*
+PH       EQU $21          MISC SCRATCH AREAS 
+PL       EQU $22 
+TEMPA    EQU $23 
+TEMPB    EQU $24
+QH       EQU $25
+QL       EQU $26
+TEMP     EQU $27
+TERM     EQU $28
+*
+         ORG $0029
+*
+IN       FCB #0              Where FORTH will look for input
+OUT      FCB #0
+COUNTR   FCB #0
+DP       FDB #$01D0          The initial Dictionary pointer
+START    FDB #0              The start up vector
+*
+*
+IP       FDB #0              THE FORTH INSTRUCTION POINTER
+RP       FCB #0              THE RETURN POINTER OFFSET
+SP       FCB #0              THE STACK POINTER OFFSET
+BASE     FCB #$10
+*
+USER     EQU *               The space for USER variables
+FENCE    EQU 0               USER + 0
+         FDB #0                            INITIALIZE USER VARS
+STATE    EQU 2               USER + 2
+         FDB #0
+FORTH    EQU 4               USER + 4
+         FDB #0
+CONTEXT  EQU 6               USER + 6
+         FDB USER+FORTH
+CURRENT  EQU 8               USER + 8
+         FDB USER+FORTH
+HLD      EQU $0A             USER + $0A
+         FDB #0
+*
+       ORG $0080
+*
+*          The start of the INNER interpreter 
+*
+DOCOL  LDX RP                            * Push IP to RS
+*
+DOCOL1 EQU DOCOL
+*
+       DECX 
+       LDA IP+1 
+       STA RP0,X 
+       DECX 
+       LDA IP 
+       STA RP0,X 
+       STX RP 
+       LDA NEXT1+2
+       ADD #2
+       STA IP+1 
+       LDA NEXT1+1
+       ADC #0
+       STA IP 
+*
+*      fall thru to NEXT
+*
+NEXT   LDA IP+1                   NEXT The Inner Interpreter 
+       STA CA+2                   SELF-MODIFYING
+       LDA IP 
+       STA CA+1 
+CA     LDA SP0                   -- SP0 is a dummy
+       STA NEXT1+1
+       LDA IP+1 
+       ADD #1
+       STA CA2+2
+       LDA IP 
+       ADC #0
+       STA CA2+1
+CA2    LDA SP0                     -- SP0 is a dummy
+       STA NEXT1+2
+       LDA IP+1 
+       ADD #2
+       STA IP+1 
+       LDA IP 
+       ADC #0
+       STA IP 
+NEXT1  JMP COLD                    -- COLD is a dummy
+*
+*       SELF MODIFYING CODE FIRST
+*
+LOAD     STA SP0,X                       STA (HERE),X
+         RTS                             move A to HERE+X
+*
+GET      LDA SP0,X                       LDA (HERE),X
+         RTS                             get HERE+X into A
+*
+       FCB 4                  TYPE  -- SELF MODIFYING
+       FCC 'TYP'
+       FDB #0                 end link
+TYPE   LDX SP
+       INCX                   Drop high byte
+       LDA SP0,X
+       INCX
+       STA COUNTR             COUNTR = byte count
+       LDA SP0,X
+       INCX
+       STA TYSCR+1
+       LDA SP0,X
+       INCX
+       STA TYSCR+2
+       STX SP
+       CLR OUT
+       TST COUNTR
+       BEQ TXIT
+TLOOP  LDX OUT
+TYSCR  LDA SP0,X          -- SP0 is a dummy
+       JSR OUTCHAR
+       INC OUT
+       LDA OUT
+       SUB COUNTR
+       BMI TLOOP
+TXIT   JMP NEXT
+*
+*
+       FCB 6               <FIND> -- SELF MODIFYING
+       FCC '<FI'
+       FDB TYPE-6          link to TYPE
+FIN6   LDX SP
+       LDA SP0,X           get addr1 high
+       INCX
+       STA GET+1
+       LDA SP0,X           addr1 low
+       INCX
+       STA GET+2
+       LDA SP0,X           get addr2 high
+       INCX
+       STA FINSCR+1
+       STA FINCNT+1
+       LDA SP0,X
+       INCX
+       STA FINSCR+2
+       STA FINCNT+2
+       STX SP
+FINCNT LDA SP0             -- SP0 is a dummy
+       STA COUNTR          save byte count
+       TSTA                count = 0 ?
+       BEQ NONE
+FINLP1 CLRX
+FINLP2 JSR GET
+       AND #$7F             ignore bit 7
+FINSCR CMP SP0,X            -- SP0 is a dummy
+       BNE NFND
+       CPX #3               X = 3 ? if so quit as FOUND
+       BEQ FOUND
+       CPX COUNTR           X = count ?
+       BEQ FOUND
+       INCX
+       BRA FINLP2
+NFND   LDX #4                Not found, go to next element
+       JSR GET
+       STA ATEMP
+       INCX
+       JSR GET
+       ORA ATEMP             =0 ?
+       BEQ NONE             if yes, end of list
+       JSR GET              else move new pointer to get
+       STA GET+2
+       LDA ATEMP
+       STA GET+1
+       BRA FINLP1           and try again
+NONE   LDX SP               nothing, push a FALSE to stack
+       CLRA
+       BRA FQUIT
+FOUND  LDX SP
+       LDA GET+2           push CA of found word
+       ADD #6
+       DECX
+       STA SP0,X
+       LDA GET+1
+       ADC #0
+       DECX
+       STA SP0,X
+       STX SP
+       CLRX
+       JSR GET             get the byte count and push it
+       LDX SP
+       DECX
+       STA SP0,X
+       CLRA
+       DECX
+       STA SP0,X
+       LDA #$FF           push a TRUE flag
+FQUIT  DECX
+       STA SP0,X
+       DECX
+       STA SP0,X
+       STX SP
+       JMP NEXT
+*
+       FCB 4                  BRAN -- SELF MODIFYING
+       FCC 'BRA'
+       FDB  FIN6-6            link to <FIND>
+BRAN   LDA IP
+       STA BRSC1+1
+       STA BRSC2+1
+       LDA IP+1
+       STA BRSC1+2
+       STA BRSC2+2
+       LDX #1
+BRSC1  LDA SP0,X
+       ADD IP+1
+       STA IP+1
+       CLRX
+BRSC2  LDA SP0,X
+       ADC IP
+       STA IP
+       JMP NEXT
+*****************************************************************
+*
+*     NO SELF MODIFYING CODE BEYOND THIS POINT
+*
+OFFSET EQU *
+       ORG ROM+OFFSET         *  ROM #2 ORIGIN
+*
+*
+       FCB 7               0BRANCH
+       FCC '0BR'
+       FDB BRAN-6          link to BRAN
+ZBRAN  LDX SP
+       LDA SP0,X
+       INCX
+       ORA SP0,X
+       INCX
+       STX SP
+       TSTA
+       BNE ZBREX
+       JMP BRAN
+ZBREX  LDA IP+1            bump IP past offset
+       ADD #2
+       STA IP+1
+       LDA IP
+       ADC #0
+       STA IP
+       JMP NEXT
+*
+       FCB 4                    EXIT
+       FCC 'EXI'
+       FDB ZBRAN-6               link to 0BRANCH
+EXIT   LDX RP                   Pop RS into IP
+       LDA RP0,X                High byte
+       INCX
+       STA IP
+       LDA RP0,X                then low byte
+       INCX
+       STA IP+1
+       STX RP
+       JMP NEXT
+*
+       FCB 7                    EXECUTE
+       FCC 'EXE'
+       FDB EXIT-6               link to EXIT
+EXE7   LDX SP                   Pop SP into W (NEXT1+1)
+       LDA SP0,X                First high byte
+       INCX
+       STA NEXT1+1
+       LDA SP0,X		Then low byte
+       INCX
+       STA NEXT1+2
+       STX SP
+       JMP NEXT1
+*
+INLINE JSR CRLF
+       LDA #BL
+       CLR COUNTR
+       CLRX                   Clear line buffer
+INLP1  STA TIB,X
+       INCX
+       CPX #$7E               Buffer end ?
+       BNE INLP1
+       CLR IN
+       CLRX                   Clear buffer pointer
+INLP2  JSR GETCHAR            ( X = IN )
+       CMP #DEL               = DELETE ?
+       BNE INTST2             branch if not
+INDEL  CPX #0
+       BEQ INLP2              Skip if IN (LBP) = 0 already
+       DECX
+       LDA #BL                DELETE CHAR
+       STA TIB,X
+       LDA #BS
+       JSR OUTCHAR
+       LDA #BL
+       JSR OUTCHAR
+       LDA #BS
+       JSR OUTCHAR
+       BRA INLP2
+INTST2 CMP #BS               maybe its a backspace
+       BEQ INDEL
+       CMP #CR               or a CR
+       BEQ INEX
+       STA TIB,X
+       CPX #$7D
+       BHS INSKP
+       INCX
+INSKP  JSR OUTCHAR
+       BRA INLP2              Back to main loop
+INEX   LDA #BL
+       JSR OUTCHAR
+       JMP NEXT
+*
+       FCB 4                  EMIT
+       FCC 'EMI'
+       FDB EXE7-6             link to EXECUTE
+EMIT   LDX SP
+       INCX                   drop high byte
+       LDA SP0,X
+       INCX
+       STX SP
+       JSR OUTCHAR
+       JMP NEXT
+*
+       FCB 2               BL
+       FCC 'BL '
+       FDB EMIT-6          link to EMIT
+BL2    LDX SP
+       LDA #BL
+       DECX
+       STA SP0,X
+       CLRA
+       DECX
+       STA SP0,X
+       STX SP
+       JMP NEXT
+*
+       FCB 4               WORD
+       FCC 'WOR'
+       FDB BL2-6           link to BL
+WORD   LDA DP              start by setting up LOAD
+       STA LOAD+1
+       LDA DP+1
+       STA LOAD+2
+       CLR COUNTR
+       CLRA
+       CLRX
+       JSR LOAD          clear DP
+       LDX SP            get terminator
+       INCX              drop high byte
+       LDA SP0,X
+       STA TERM
+       INCX
+       STX SP
+       LDX IN            get INput pointer
+       CMP #BL           seperator = space ?
+       BNE TOK
+IGNBL  LDA TIB,X         ignore blank
+       CMP #BL
+       BNE TOK
+       INCX
+       BRA IGNBL
+TOK    INC COUNTR
+       LDA TIB,X
+       STX XTEMP          save X
+       LDX COUNTR
+       JSR LOAD          move char to DP + COUNTR
+       LDX XTEMP          get X back
+       INCX
+       CMP #$80          character = buffer end ?
+       BEQ WORXIT
+       CMP TERM
+       BNE TOK           continue unless terminator
+WORXIT STX IN            save new value of IN
+       LDA COUNTR        move count-1 to DP
+       DECA
+       CLRX
+       JSR LOAD
+       LDA DP+1          Push DP addr to stack
+       LDX SP
+       DECX
+       STA SP0,X
+       LDA DP
+       DECX
+       STA SP0,X
+       STX SP
+       JMP NEXT
+*
+MPY16  LDX #$10          16 bit X 16 bit multiply   32 bit result
+       CLR TEMPA
+       CLR TEMPB
+       ROR QH
+       ROR QL
+MPYNXT BCC ROTAT
+       LDA TEMPB
+       ADD PL
+       STA TEMPB
+       LDA TEMPA
+       ADC PH
+       STA TEMPA
+ROTAT  ROR TEMPA
+       ROR TEMPB
+       ROR QH
+       ROR QL
+       DECX
+       BNE MPYNXT
+       RTS
+*
+       FCB 8               <NUMBER>
+       FCC '<NU'
+       FDB WORD-6          link to WORD
+NUM8   LDX SP              pop stack into GET
+       LDA SP0,X
+       INCX
+       STA GET+1
+       LDA SP0,X
+       INCX
+       STA GET+2
+       STX SP
+       CLRX                Put char count into COUNTR
+       JSR GET
+       STA COUNTR
+       TSTA                count = 0 ?
+       BEQ NOTNO
+       INCX
+       CLR TEMP           TEMP is the sign flag
+       CLR QH
+       CLR QL
+       CLR PH              Set P = BASE
+       LDA BASE
+       STA PL
+       JSR GET             Get first char
+       CMP #$2D            = '-' ?
+       BNE NUMSKP
+       DEC TEMP            Minus flag = TRUE
+       INCX                bump X
+       CPX COUNTR          X > COUNTR ?
+       BHI NOTNO
+       JSR GET
+NUMSKP INCX               at this point X points 1 past char in A
+       SUB #$30
+       BMI NOTNO          if negative, not a number
+       CMP #$0A           less than 10 ?
+       BMI NUMB
+       CMP #$11           valid char?
+       BMI NOTNO
+       SUB #7
+NUMB   CMP BASE           valid for this base ?
+       BLO ANUMB
+NOTNO  CLRA               NOPE, push a FALSE
+NUMXT  LDX SP
+       DECX
+       STA SP0,X
+       DECX
+       STA SP0,X
+       STX SP
+       JMP NEXT
+ANUMB  STX XTEMP         save X in XTEMP
+       STA ATEMP         and A in ATEMP
+       JSR MPY16         Q = 	Q * BASE
+       LDA ATEMP         get A back
+       ADD QL            Q = Q + A
+       STA QL
+       LDA QH
+       ADC #0
+       STA QH
+       LDX XTEMP         get X back
+       CPX COUNTR        X > COUNTR ?
+       BHI NUMOK
+       JSR GET
+       BRA NUMSKP
+NUMOK  LDA TEMP         number OK, now check sign
+       TSTA
+       BEQ NUMPOS
+       CLRA
+       NEG QL
+       SBC QH
+       STA QH
+NUMPOS LDX SP           push number at Q and flag
+       LDA QL
+       DECX
+       STA SP0,X
+       LDA QH
+       DECX
+       STA SP0,X
+       LDA #$FF        TRUE flag
+       BRA NUMXT+2
+*
+       FCB 4               DROP
+       FCC 'DRO'
+       FDB NUM8-6          link to <NUMBER>
+DROP   LDX SP
+       INCX
+       INCX
+       STX SP
+       JMP NEXT
+*
+       FCB 2               C@
+       FCC 'C@ '
+       FDB DROP-6          link to DROP
+CFCH   LDX SP
+       LDA SP0,X
+       INCX
+       STA GET+1
+       LDA SP0,X
+       STA GET+2
+       STX SP
+       CLRX                get the byte
+       JSR GET
+       LDX SP
+       STA SP0,X
+       CLRA                zero high byte
+       DECX
+       STA SP0,X
+       STX SP
+       JMP NEXT
+*
+       FCB 1               @
+       FCC '@  '
+       FDB CFCH-6          link to C@
+FTCH   LDX SP
+       LDA SP0,X
+       INCX
+       STA GET+1
+       LDA SP0,X
+       STA GET+2
+       STX SP
+       LDX #1              get low byte
+       JSR GET
+       LDX SP
+       STA SP0,X
+       CLRX                get high byte
+       JSR GET
+       LDX SP
+       DECX
+       STA SP0,X
+       STX SP
+       JMP NEXT
+*
+       FCB 2               DP
+       FCC 'DP '
+       FDB FTCH-6          link to @
+DP2   LDX SP               push address of DP to stack
+      LDA #DP              this routine knows that DP is on page zero
+      DECX
+      STA SP0,X
+      CLRA
+      DECX
+      STA SP0,X
+      STX SP
+      JMP NEXT
+*
+      FCB 4               HERE
+      FCC 'HER'
+      FDB DP2-6           Link to DP
+HERE  JMP DOCOL
+      FDB DP2
+      FDB FTCH
+      FDB EXIT
+*
+      FCB 3               NOT
+      FCC 'NOT'
+      FDB HERE-6          Link to HERE
+NOT3  LDX SP
+      LDA SP0,X
+      COMA
+      STA SP0,X
+      INCX
+      LDA SP0,X
+      COMA
+      STA SP0,X
+      JMP NEXT
+*
+      FCB 2                 1+
+      FCC '1+ '
+      FDB NOT3-6            Link to NOT
+ONEP  LDX SP
+      INCX                  point to low byte
+      LDA SP0,X
+      ADD #1
+      STA SP0,X
+      LDX SP                now the high byte
+      LDA SP0,X
+      ADC #0
+      STA SP0,X
+      JMP NEXT
+*
+      FCB 3               HLD
+      FCC 'HLD'
+      FDB ONEP-6          link to 1+
+HLD3  LDA #HLD            (fall through to DOUSE)
+*
+DOUSE ADD #USER                Does the common part of the
+      LDX SP                   execution of a user variable
+      DECX
+      STA SP0,X
+      CLRA
+      DECX
+      STA SP0,X
+      STX SP
+      JMP NEXT
+*
+      FCB 5                STATE
+      FCC 'STA'
+      FDB HLD3-6           link to HLD
+STA5  LDA #STATE
+      BRA DOUSE
+*
+      FCB 7                CONTEXT
+      FCC 'CON'
+      FDB STA5-6           link to STATE
+CON7  LDA #CONTEXT
+      BRA DOUSE
+*
+      FCB 7                CURRENT
+      FCC 'CUR'
+      FDB CON7-6           link to CONTEXT
+CUR7  LDA #CURRENT
+      BRA DOUSE
+*
+      FCB 5               FORTH
+      FCC 'FOR'
+      FDB CUR7-6          link to CURRENT
+FOR5  LDA #FORTH
+      BRA DOUSE
+*
+      FCB 1               !
+      FCC '!  '
+      FDB FOR5-6          link to FORTH
+STO   LDX SP              move addr to Load
+      LDA SP0,X
+      INCX
+      STA LOAD+1
+      LDA SP0,X
+      INCX
+      STA LOAD+2
+      LDA SP0,X           now move data to addr
+      INCX                high byte first
+      STX SP
+      CLRX
+      JSR LOAD
+      LDX SP
+      LDA SP0,X           now the low byte
+      INCX
+      STX SP
+      LDX #1
+      JSR LOAD
+      JMP NEXT
+*
+      FCB 2               C!
+      FCC 'C! '
+      FDB STO-6           link to !
+CSTO  LDX SP              move addr to Load
+      LDA SP0,X
+      INCX
+      STA LOAD+1
+      LDA SP0,X
+      INCX
+      STA LOAD+2
+      INCX                drop high data byte
+      LDA SP0,X           and move low byte
+      INCX
+      STX SP
+      CLRX
+      JSR LOAD
+      JMP NEXT
+*
+      FCB 1                ,
+      FCC ',  '
+      FDB CSTO-6           link to C!
+COMA  LDA DP               move DP to Load
+      STA LOAD+1
+      LDA DP+1
+      STA LOAD+2
+      LDX SP               move data to DP
+      LDA SP0,X            high byte
+      INCX
+      STX SP
+      CLRX
+      JSR LOAD
+      LDX SP               low byte
+      LDA SP0,X
+      INCX
+      STX SP
+      LDX #1
+      JSR LOAD
+      LDA #2
+INCDP ADD DP+1             bump DP
+      STA DP+1
+      LDA DP
+      ADC #0
+      STA DP
+      JMP NEXT
+*
+      FCB 2                C,
+      FCC 'C, '
+      FDB COMA-6
+CCOMA LDA DP
+      STA LOAD+1
+      LDA DP+1
+      STA LOAD+2
+      LDX SP               move data to DP
+      INCX                 drop high byte
+      LDA SP0,X            get low byte
+      INCX
+      STX SP
+      CLRX
+      JSR LOAD
+      LDA #1               bump DP by 1
+      BRA INCDP
+* 
+      FCB 3               DUP
+      FCC 'DUP'
+      FDB CCOMA-6         link to C,
+DUP3  LDX SP
+      LDA SP0,X           get high byte
+      DECX                and bump SP to point to new location
+      DECX
+      STA SP0,X           then store it
+      LDX SP
+      INCX                get low byte
+      LDA SP0,X
+      DECX                bump SP for it too
+      DECX
+      STA SP0,X           and store it
+      DECX                update SP
+      STX SP
+      JMP NEXT
+*
+      FCB 2               +!
+      FCC '+! '
+      FDB DUP3-6          link to DUP
+PLSTO LDX SP              move Addr to Load and Get
+      LDA SP0,X
+      INCX
+      STA LOAD+1
+      STA GET+1
+      LDA SP0,X
+      INCX
+      STA LOAD+2
+      STA GET+2
+      STX SP
+      LDX #1              get low byte of addr data
+      JSR GET
+      LDX SP              get low byte of number
+      INCX
+      ADD SP0,X
+      LDX #1
+      JSR LOAD            and save it back
+      CLRX                The same for the high byte
+      JSR GET
+      LDX SP
+      ADC SP0,X
+      CLRX
+      JSR LOAD
+      INC SP              update SP
+      INC SP
+      JMP NEXT
+*
+      FCB 6               LATEST
+      FCC 'LAT'
+      FDB PLSTO-6         link to +!
+LAT6  JMP DOCOL
+      FDB CUR7
+      FDB FTCH
+      FDB FTCH
+      FDB EXIT
+*
+      FCB 5               ALLOT
+      FCC 'ALL'
+      FDB LAT6-6          link to LATEST
+ALL5  JMP DOCOL
+      FDB DP2
+      FDB PLSTO
+      FDB EXIT
+*
+      FCB 3                LIT
+      FCC 'LIT'
+      FDB ALL5-6
+LIT3  LDA IP               move IP to Get
+      STA GET+1
+      LDA IP+1
+      STA GET+2
+      LDX #1               move low byte to stack
+      JSR GET
+      LDX SP
+      DECX
+      STA SP0,X
+      STX SP
+      CLRX                 and then the high byte
+      JSR GET
+      LDX SP
+      DECX
+      STA SP0,X
+      STX SP
+      LDA #2                now bump IP
+      ADD IP+1
+      STA IP+1
+      CLRA
+      ADC IP
+      STA IP
+      JMP NEXT
+*
+QIMM  LDX SP          Tests for IMMEDIATE
+      INCX            using count byte
+      LDA SP0,X       from <FIND>
+      TSTA
+      BMI QID
+      CLRA
+      BRA QSKIP
+QID   LDA #$FF
+QSKIP STA SP0,X
+      DECX
+      STA SP0,X
+      JMP NEXT
+*
+* 
+MESS  FCB 67
+      FCC 'RAFOS '
+      FCC 'FORTH '
+      FCC 'V1.0'
+*
+      FCB CR
+      FCB LF
+      FCC 'A TEAM ROSSBY PRODUCTION'
+*
+      FCB CR
+      FCB LF
+      FCC  '(C) EVERETT CARTER 1986' 
+*
+LOK   FCB 3
+OK    FCC ' OK'         The FORTH prompt
+*
+*
+*     DEFAULT OUTER INTERPRETER
+*
+*
+OUTER FDB COU5
+      FDB TYPE
+      FDB INLINE
+      FDB DFND
+      FDB ZBRAN
+      FDB $001E
+      FDB QIMM
+      FDB NOT3
+      FDB ZBRAN
+      FDB $0010
+      FDB STA5
+      FDB FTCH
+      FDB ZBRAN
+      FDB $0008
+      FDB COMA
+      FDB BRAN
+      FDB $FFE6
+      FDB EXE7
+      FDB BRAN
+      FDB $FFE0
+      FDB HERE
+      FDB NUM8
+      FDB ZBRAN
+      FDB $0014
+      FDB STA5
+      FDB FTCH
+      FDB ZBRAN
+      FDB $FFD0
+      FDB COMP
+      FDB LIT3
+      FDB COMA
+      FDB BRAN
+      FDB $FFC6
+      FDB QUES
+      FDB BRAN
+      FDB $FFBA
+* 
+*               POWER ON RESET ROUTINE
+*
+      FCB 4                 COLD
+      FCC 'COL'
+      FDB LIT3-6            link to LIT
+*
+COLD  BSET3 $05
+      BSET3 PUT
+      LDX #$3F             Move the default RAM data
+SDAT  LDA ROM,X
+      STA 0,X
+      DECX
+      CPX #$20
+      BNE SDAT
+      LDX #$80             Move the self-modifying code
+SREPT LDA ROM,X            to its executable location
+      STA 0,X              (done in two steps to avoid the
+      INCX                  CPUs stack: 40-7F)
+      BNE SREPT
+      CLRX
+SREP2 LDA ROM+$100,X        (moving 200 HEX bytes)
+      STA $100,X
+      DECX
+      BNE SREP2
+*
+*     Calculate the HIGH and LOW BYTES of OUTER
+*
+HO    EQU OUTER/$100*$100
+LO    EQU OUTER-HO
+HO1   EQU OUTER/$100
+*
+      LDA #LO               Load the default
+      STA START+1           Outer Interpreter
+      LDA #HO1              into START
+      STA START
+*
+*     Calculate the HIGH and LOW BYTES of Latest entry
+*
+HCR   EQU LATEST/$100*$100
+LCR   EQU LATEST-HCR
+H1CR  EQU LATEST/$100
+*
+      LDA #H1CR         Initialize FORTH
+      STA USER+FORTH
+      LDA #LCR
+      STA USER+FORTH+1
+*
+*
+*     Calculate the HIGH and LOW BYTES of MESS
+*
+H     EQU MESS/$100*$100
+L     EQU MESS-H
+H1    EQU MESS/$100
+*
+      CLRX
+      LDA #L              Push start up message
+      DECX
+      STA SP0,X
+      LDA #H1
+      DECX
+      STA SP0,X
+      STX SP             Initialize Stack Pointer
+WARM  LDA #$80           Initialize input terminators
+      STA TIB+$7E
+      STA TIB+$7F
+      CLR USER+STATE      Put system in EXECUTION state
+      CLR USER+STATE+1
+      CLR RP              Initialize Return Stack pointer
+      JSR CRLF
+      LDA START           Load the IP
+      STA IP
+      LDA START+1
+      STA IP+1
+      JMP NEXT            GO...
+* 
+*
+      FCB 4                 SWAP
+      FCC 'SWA'
+      FDB COLD-6            link to COLD
+SWAP  LDX SP
+      LDA SP0,X
+      INCX
+      STA PH
+      LDA SP0,X
+      INCX
+      STA PL
+      LDA SP0,X
+      INCX
+      STA QH
+      LDA SP0,X
+      STA QL
+      LDA PL
+      STA SP0,X
+      LDA PH
+      DECX
+      STA SP0,X
+      LDA QL
+      DECX
+      STA SP0,X
+      LDA QH
+      DECX
+      STA SP0,X
+      JMP NEXT
+*
+      FCB 3                 SP!
+      FCC 'SP!'
+      FDB SWAP-6            link to SWAP
+SPSTO CLR SP
+      JMP NEXT
+*
+*
+* 
+*     S E R I A L  I/O  R O U T I N E S 
+* 
+* 
+* 
+*     GETCHAR/GETC --- GET A CHARACTER FROM THE TERMINAL
+* 
+*     A GETS THE CHARACTER TYPED, X IS UNCHANGED
+* 
+GETC     STX XTEMP
+GETCHAR  EQU GETC
+         LDA #8
+         STA COUNT
+GETC4    CLI
+         SEI
+         BRSET2 PUT,GETC4
+         LDA PUT
+         AND #!11
+         TAX
+         LDX DELAYS,X                  load Baud delay
+GETC3    LDA #4
+GETC2    DECA
+         BNE GETC2
+         TSTA
+         DECX
+         BNE GETC3
+         BRSET2 PUT,GETC4
+         TST ,X
+         TST ,X
+GETC7    BSR  DELAY
+         BRCLR2 PUT,GETC6
+GETC6    TST ,X
+         ROR CHAR
+         DEC COUNT
+         BNE GETC7
+         CLI
+         BSR DELAY
+         LDA CHAR
+         AND    #$7F         Mask the eighth bit. 
+         LDX XTEMP
+         RTS
+* 
+* 
+* 
+*     OUTCHAR/PUTC --- PRINT A ON THE TERMINAL
+* 
+*     X AND A UNCHANGED 
+* 
+PUTC     STA CHAR
+OUTCHAR  EQU PUTC
+         STA ATEMP
+         STX XTEMP
+         LDA #9
+         STA COUNT
+         CLRX
+         CLC
+         SEI
+         BRA PUTC2
+PUTC5    ROR CHAR
+PUTC2    BCC PUTC3
+         BSET3 PUT
+         BRA PUTC4
+PUTC3    BCLR3 PUT
+         BRA PUTC4
+PUTC4    JSR DELAY,X
+         DEC COUNT
+         BNE PUTC5
+         BSET2 PUT
+         BSET3 PUT
+         CLI
+         BSR DELAY
+         LDX XTEMP
+         LDA ATEMP
+         RTS
+* 
+* 
+*     WAIT --- PRECISE DELAY
+*              A AND X ARE ZERO AT EXIT. 
+* 
+WAIT     LDA    #1           ADJUST FOR FIRST TIME
+DELAY    EQU WAIT
+         AND #!11
+         TAX
+         LDX DELAYS,X
+         LDA #$F9
+DEL3     ADD #$08
+DEL2     DECA
+         BNE DEL2
+         TSTX
+         BSET1 PUT
+         DECX
+         BNE DEL3
+         LDA #0
+         RTS
+*
+DELAYS   FCB  $20          300 BAUD
+         FCB  $08         1200 BAUD
+         FCB  $01         9600 BAUD
+*
+*
+CRLF     LDA #CR
+         JSR OUTCHAR
+         LDA #LF
+         JSR OUTCHAR
+         RTS
+*
+      FCB 2                 CR
+      FCC 'CR '
+      FDB SPSTO-6           link to SP!
+CR2   BSR CRLF
+      JMP NEXT
+* 
+      FCB 6                 CREATE
+      FCC 'CRE'
+      FDB CR2-6            link to CR
+CRE6  JMP DOCOL
+      FDB BL2
+      FDB WORD
+      FDB LIT3
+      FDB #04
+      FDB ALL5
+      FDB LAT6
+      FDB COMA
+      FDB CUR7
+      FDB FTCH
+      FDB STO
+      FDB EXIT
+* 
+* 
+* 
+* 
+********************************************************************************
+* 
+*     INTERRUPT VECTORS 
+* 
+         ORG    MEMSIZ-10    START OF VECTORS 
+* 
+         FDB    WTIME        TIMER IRQ VECTOR FROM WAIT STATE 
+         FDB    WTIME+3      ALTERNATE TIMER VECTOR 
+         FDB    WTIME+6      IRQ VECTOR.
+         FDB    WARM         SWI TO FORTH INITIALIZATION POINT
+         FDB    COLD         POWER ON VECTOR
+*
+         END
+
+
+
+
+
+
+
+
