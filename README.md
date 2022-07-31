@@ -71,8 +71,9 @@
 [`Am2732.pdf`]: docs/Datasheets/Am2732.pdf
 [`MC6850.pdf`]: docs/Datasheets/MC6850.pdf
 [License]: LICENSE
-[Manual]: docs/Datasheets/6805_Users_Manual_2ed_1983.pdf
-[Memory]: docs/Memor%20Map.md
+[Manual]: docs/Datasheets/User%20Manual.pdf
+[Memory]: docs/Memory%20Map.md
+
 
 <!----------------------------------[ Badges ]--------------------------------->
 
