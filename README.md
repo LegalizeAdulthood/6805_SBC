@@ -1,8 +1,9 @@
 
-# 6805 SBC
+# 6805 SBC   [![Badge License]][License]
 
 *Single board computer built around the **Motorola 6805 CPU**.*
 
+<br>
 <br>
 <br>
 
@@ -69,8 +70,13 @@
 [`MSM58321.pdf`]: docs/Datasheets/MSM58321.pdf
 [`Am2732.pdf`]: docs/Datasheets/Am2732.pdf
 [`MC6850.pdf`]: docs/Datasheets/MC6850.pdf
+[License]: LICENSE
 [Manual]: docs/Datasheets/6805_Users_Manual_2ed_1983.pdf
 [Memory]: docs/Memor%20Map.md
+
+<!----------------------------------[ Badges ]--------------------------------->
+
+[Badge License]: https://img.shields.io/badge/License-GPL2-015d93.svg?style=for-the-badge&labelColor=blue
 
 
 <!---------------------------------[ Buttons ]--------------------------------->
