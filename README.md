@@ -43,11 +43,11 @@
     16K (2Kx8) CMOS Static RAM
     
     
--   [`MC146805E2.pdf`]
+-   [`MC146805E2_1983.pdf`]
 
     6805 CPU with external bus
 
--   [`Am2732.pdf`]
+-   [`Am2732-AMD.pdf`]
 
     4Kx8 UV Erasable PROM
     
@@ -62,16 +62,16 @@
 
 <!----------------------------------------------------------------------------->
 
-[`chip-inventory.xlsx`]: docs/Data/chip-inventory.xlsx
-[`chip-inventory.csv`]: docs/Data/chip-inventory.csv
-[`MC146805E2.pdf`]: docs/Datasheets/MC146805E2.pdf
-[`sn74ls138.pdf`]: docs/Datasheets/sn74ls138.pdf
-[`IDT_6116.pdf`]: docs/Datasheets/IDT_6116.pdf
-[`MSM58321.pdf`]: docs/Datasheets/MSM58321.pdf
-[`Am2732.pdf`]: docs/Datasheets/Am2732.pdf
-[`MC6850.pdf`]: docs/Datasheets/MC6850.pdf
+[`chip-inventory.xlsx`]: docs/chip-inventory.xlsx
+[`MC146805E2_1983.pdf`]: docs/MC146805E2_1983.pdf
+[`chip-inventory.csv`]: docs/chip-inventory.csv
+[`Am2732-AMD.pdf`]: docs/Am2732-AMD.pdf
+[`sn74ls138.pdf`]: docs/sn74ls138.pdf
+[`IDT_6116.pdf`]: docs/IDT_6116.pdf
+[`MSM58321.pdf`]: docs/MSM58321.pdf
+[`MC6850.pdf`]: docs/MC6850.pdf
 [License]: LICENSE
-[Manual]: docs/Datasheets/User%20Manual.pdf
+[Manual]: docs/6805_Users_Manual_2ed_1983.pdf
 [Memory]: docs/Memory%20Map.md
 
 
