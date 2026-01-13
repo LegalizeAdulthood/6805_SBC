@@ -5,17 +5,28 @@ from skidl import *
 # Includes address latch for proper demultiplexing of 6805's multiplexed B bus
 # MC146805E2 in 40-pin DIP package
 # Arduino provides manual clock on OSC1 for single-stepping
-# Arduino can directly bit-bang all digital I/O pins (PORT A, PORT B)
+# ALL 6805 pins directly controllable via I2C expanders
+# Uses multiple MCP23017 I2C GPIO expanders for complete control
 
 # Define the circuit
 set_default_tool(KICAD)
 
 # Arduino headers (connectors to Arduino board)
 arduino_d0_d7 = Bus('D', 8, Pin)  # Digital pins 0-7 (Data bus)
-arduino_d8_d13 = Bus('D', 6, Pin) # Digital pins 8-13 (Upper address bits + clock)
-arduino_a0_a5 = Bus('A', 6, Pin)  # Analog pins A0-A5 (Lower address bits)
+arduino_d8_d13 = Bus('D', 6, Pin) # Digital pins 8-13 (spare/future use)
+arduino_a0_a3 = Bus('A', 4, Pin)  # Analog pins A0-A3 (spare/future use)
+arduino_a4 = Net('ARDUINO_A4')    # I2C SDA
+arduino_a5 = Net('ARDUINO_A5')    # I2C SCL
 arduino_5v = Net('5V')
 arduino_gnd = Net('GND')
+
+# I2C bus
+i2c_sda = Net('I2C_SDA')
+i2c_scl = Net('I2C_SCL')
+
+# Connect Arduino I2C pins
+i2c_sda += arduino_a4
+i2c_scl += arduino_a5
 
 # MC146805E2 interface signals - ACTUAL PINOUT
 # Multiplexed Address/Data bus (B0-B7)
@@ -24,10 +35,10 @@ sbc_b_bus = Bus('SBC_B', 8, Pin)         # B0-B7: Multiplexed low addr (A7-A0) /
 # High address bits (A12-A8)
 sbc_addr_high = Bus('SBC_A_HIGH', 5, Pin) # A12-A8: High address bits (5 bits only!)
 
-# PORT A (PA7-PA0) - directly controllable via shift registers
+# PORT A (PA7-PA0) - controllable via I2C
 sbc_porta = Bus('SBC_PA', 8, Pin)         # PA7-PA0: General purpose I/O port
 
-# PORT B (PB7-PB0) - directly controllable via shift registers
+# PORT B (PB7-PB0) - controllable via I2C
 sbc_portb = Bus('SBC_PB', 8, Pin)         # PB7-PB0: General purpose I/O port
 
 # Control signals
@@ -51,12 +62,6 @@ sbc_gnd = Net('SBC_VSS')
 # Internal nets for demultiplexed address bus
 addr_low_latched = Bus('ADDR_LOW', 8, Pin)  # Latched low address byte (A7-A0)
 
-# Shift register control signals (for PORT A and PORT B bit-banging)
-sr_data = Net('SR_DATA')       # Serial data to shift registers
-sr_clock = Net('SR_CLOCK')     # Clock for shift registers
-sr_latch = Net('SR_LATCH')     # Latch signal for output registers
-sr_oe = Net('SR_OE')           # Output enable for shift registers
-
 # Power connections - direct connection, same voltage
 sbc_5v += arduino_5v
 sbc_gnd += arduino_gnd
@@ -74,8 +79,6 @@ addr_latch['VCC'] += sbc_5v
 addr_latch['GND'] += sbc_gnd
 
 # Connect latch enable (LE) to Address Strobe (AS)
-# When AS is high, latch is transparent (address passes through)
-# When AS goes low, address is latched
 addr_latch['LE'] += sbc_as
 
 # Output Enable (OE) - always enabled (active low)
@@ -97,13 +100,10 @@ data_buffer = Part('74xx', '74HC245', footprint='Package_SO:SOIC-20W_7.5x12.8mm_
 data_buffer['VCC'] += sbc_5v
 data_buffer['GND'] += sbc_gnd
 
-# Direction control: Arduino controls whether it's reading or writing
-# DIR signal from Arduino (LOW = B->A, HIGH = A->B)
+# Direction control and output enable from I2C expander
 buffer_dir = Net('BUF_DIR')
-data_buffer['DIR'] += buffer_dir
-
-# Output Enable (active low) - Arduino controls when buffer is active
 buffer_oe = Net('BUF_OE')
+data_buffer['DIR'] += buffer_dir
 data_buffer['OE'] += buffer_oe
 
 # Connect Arduino data pins to buffer A side
@@ -115,99 +115,148 @@ for i in range(8):
     data_buffer[f'B{i+1}'] += sbc_b_bus[i]
 
 # ============================================================================
-# PORT A bit-banging capability using 74HC595 shift registers
-# Two cascaded shift registers for 16 bits (we only use 8 for PORT A)
-# This allows Arduino to directly control all PORT A pins
+# I2C GPIO Expander #1: PORT A and PORT B control
+# MCP23017 at address 0x20
+# Port A controls 6805 PORT A (PA0-PA7)
+# Port B controls 6805 PORT B (PB0-PB7)
 # ============================================================================
 
-porta_shiftreg = Part('74xx', '74HC595', footprint='Package_SO:SOIC-16_3.9x9.9mm_P1.27mm')
+gpio_ports = Part('Interface_Expansion', 'MCP23017_SO', 
+                  footprint='Package_SO:SOIC-28W_7.5x17.9mm_P1.27mm')
 
-# Connect shift register power
-porta_shiftreg['VCC'] += sbc_5v
-porta_shiftreg['GND'] += sbc_gnd
+gpio_ports['VDD'] += sbc_5v
+gpio_ports['VSS'] += sbc_gnd
+gpio_ports['SDA'] += i2c_sda
+gpio_ports['SCL'] += i2c_scl
 
-# Connect shift register control signals
-porta_shiftreg['SER'] += sr_data          # Serial data input
-porta_shiftreg['SRCLK'] += sr_clock       # Shift register clock
-porta_shiftreg['RCLK'] += sr_latch        # Storage register clock (latch)
-porta_shiftreg['OE'] += sr_oe             # Output enable (active low)
-porta_shiftreg['SRCLR'] += sbc_5v         # Shift register clear (active low, tied high)
+# I2C address = 0x20 (A2=0, A1=0, A0=0)
+gpio_ports['A0'] += sbc_gnd
+gpio_ports['A1'] += sbc_gnd
+gpio_ports['A2'] += sbc_gnd
+gpio_ports['RESET'] += sbc_5v
 
-# Connect PORT A outputs from shift register
+# Connect to 6805 PORT A and PORT B
 for i in range(8):
-    porta_shiftreg[f'Q{i}'] += sbc_porta[i]
+    gpio_ports[f'GPA{i}'] += sbc_porta[i]
+    gpio_ports[f'GPB{i}'] += sbc_portb[i]
+
+# Interrupt outputs (optional monitoring)
+ports_inta = Net('PORTS_INTA')
+ports_intb = Net('PORTS_INTB')
+gpio_ports['INTA'] += ports_inta
+gpio_ports['INTB'] += ports_intb
 
 # ============================================================================
-# PORT B bit-banging capability using 74HC595 shift registers
-# Cascaded from PORT A shift register
+# I2C GPIO Expander #2: High Address bits and Control signals
+# MCP23017 at address 0x21
+# Port A: A8-A12 (5 bits) + 3 spare
+# Port B: Control signals (AS, R/W, DS, LI, RESET, IRQ, BUF_DIR, BUF_OE)
 # ============================================================================
 
-portb_shiftreg = Part('74xx', '74HC595', footprint='Package_SO:SOIC-16_3.9x9.9mm_P1.27mm')
+gpio_addr_ctrl = Part('Interface_Expansion', 'MCP23017_SO', 
+                      footprint='Package_SO:SOIC-28W_7.5x17.9mm_P1.27mm')
 
-# Connect shift register power
-portb_shiftreg['VCC'] += sbc_5v
-portb_shiftreg['GND'] += sbc_gnd
+gpio_addr_ctrl['VDD'] += sbc_5v
+gpio_addr_ctrl['VSS'] += sbc_gnd
+gpio_addr_ctrl['SDA'] += i2c_sda
+gpio_addr_ctrl['SCL'] += i2c_scl
 
-# Cascade from PORT A shift register
-portb_shiftreg['SER'] += porta_shiftreg['QH_prime']  # Serial data from PORT A
-portb_shiftreg['SRCLK'] += sr_clock       # Shift register clock
-portb_shiftreg['RCLK'] += sr_latch        # Storage register clock (latch)
-portb_shiftreg['OE'] += sr_oe             # Output enable (active low)
-portb_shiftreg['SRCLR'] += sbc_5v         # Shift register clear (active low, tied high)
+# I2C address = 0x21 (A2=0, A1=0, A0=1)
+gpio_addr_ctrl['A0'] += sbc_5v
+gpio_addr_ctrl['A1'] += sbc_gnd
+gpio_addr_ctrl['A2'] += sbc_gnd
+gpio_addr_ctrl['RESET'] += sbc_5v
 
-# Connect PORT B outputs from shift register
-for i in range(8):
-    portb_shiftreg[f'Q{i}'] += sbc_portb[i]
-
-# ============================================================================
-# Arduino connections
-# ============================================================================
-
-# Low address byte comes from latched address (A7-A0)
-for i in range(6):
-    arduino_a0_a5[i] += addr_low_latched[i]
-
-# Upper 2 bits of low address byte (A7-A6)
-arduino_d8_d13[0] += addr_low_latched[6]
-arduino_d8_d13[1] += addr_low_latched[7]
-
-# High address bits (A12-A8) - only 5 bits!
-# D9, D10, D11, D12, D13 = A8, A9, A10, A11, A12
+# Port A: High address bits A8-A12 (5 bits) + 3 spare
 for i in range(5):
-    if i + 2 < 6:  # D9-D13 (indices 2-5 in arduino_d8_d13)
-        arduino_d8_d13[i + 2] += sbc_addr_high[i]
+    gpio_addr_ctrl[f'GPA{i}'] += sbc_addr_high[i]
 
-# Control signal assignments
-arduino_d2 = Net('ARDUINO_D2')
-arduino_d3 = Net('ARDUINO_D3')
-arduino_d4 = Net('ARDUINO_D4')
-arduino_d5 = Net('ARDUINO_D5')
-arduino_d6 = Net('ARDUINO_D6')
-arduino_d7 = Net('ARDUINO_D7')
+# GPA5, GPA6, GPA7 are spare - could be used for future expansion
+spare1 = Net('SPARE1')
+spare2 = Net('SPARE2')
+spare3 = Net('SPARE3')
+gpio_addr_ctrl['GPA5'] += spare1
+gpio_addr_ctrl['GPA6'] += spare2
+gpio_addr_ctrl['GPA7'] += spare3
 
-buffer_dir += arduino_d2      # D2 controls buffer direction
-buffer_oe += arduino_d3       # D3 controls buffer output enable
-sbc_as += arduino_d4          # D4 monitors Address Strobe
-sbc_ds += arduino_d5          # D5 monitors Data Strobe
-sbc_rw += arduino_d6          # D6 monitors Read/Write
-sbc_reset += arduino_d7       # D7 for Reset control
+# Port B: Control signals
+gpio_addr_ctrl['GPB0'] += sbc_as      # Address Strobe
+gpio_addr_ctrl['GPB1'] += sbc_rw      # Read/Write
+gpio_addr_ctrl['GPB2'] += sbc_ds      # Data Strobe
+gpio_addr_ctrl['GPB3'] += sbc_li      # Load Instruction
+gpio_addr_ctrl['GPB4'] += sbc_reset   # Reset
+gpio_addr_ctrl['GPB5'] += sbc_irq     # IRQ
+gpio_addr_ctrl['GPB6'] += buffer_dir  # Data buffer direction control
+gpio_addr_ctrl['GPB7'] += buffer_oe   # Data buffer output enable
 
-# Shift register control from Arduino
-# These need to be connected to available Arduino pins
-# (You may need to use I2C expander or reassign pins)
-arduino_sr_data = Net('ARDUINO_SR_DATA')
-arduino_sr_clock = Net('ARDUINO_SR_CLOCK')
-arduino_sr_latch = Net('ARDUINO_SR_LATCH')
-arduino_sr_oe = Net('ARDUINO_SR_OE')
+# Interrupt outputs
+addr_ctrl_inta = Net('ADDR_CTRL_INTA')
+addr_ctrl_intb = Net('ADDR_CTRL_INTB')
+gpio_addr_ctrl['INTA'] += addr_ctrl_inta
+gpio_addr_ctrl['INTB'] += addr_ctrl_intb
 
-sr_data += arduino_sr_data
-sr_clock += arduino_sr_clock
-sr_latch += arduino_sr_latch
-sr_oe += arduino_sr_oe
+# ============================================================================
+# I2C GPIO Expander #3: Latched Address monitoring and Clock/Timer
+# MCP23017 at address 0x22
+# Port A: Monitor latched low address bits A0-A7
+# Port B: OSC1 (clock), TIMER output, + 6 spare
+# ============================================================================
 
-# Arduino provides manual clock on OSC1 for single-stepping
-arduino_clk = Net('ARDUINO_CLK')
-sbc_osc1 += arduino_clk
+gpio_addr_mon = Part('Interface_Expansion', 'MCP23017_SO', 
+                     footprint='Package_SO:SOIC-28W_7.5x17.9mm_P1.27mm')
+
+gpio_addr_mon['VDD'] += sbc_5v
+gpio_addr_mon['VSS'] += sbc_gnd
+gpio_addr_mon['SDA'] += i2c_sda
+gpio_addr_mon['SCL'] += i2c_scl
+
+# I2C address = 0x22 (A2=0, A1=1, A0=0)
+gpio_addr_mon['A0'] += sbc_gnd
+gpio_addr_mon['A1'] += sbc_5v
+gpio_addr_mon['A2'] += sbc_gnd
+gpio_addr_mon['RESET'] += sbc_5v
+
+# Port A: Monitor latched low address A0-A7
+for i in range(8):
+    gpio_addr_mon[f'GPA{i}'] += addr_low_latched[i]
+
+# Port B: Clock and timer signals
+gpio_addr_mon['GPB0'] += sbc_osc1     # Clock output to 6805
+gpio_addr_mon['GPB1'] += sbc_timer    # Timer input from 6805
+
+# GPB2-GPB7 are spare
+spare4 = Net('SPARE4')
+spare5 = Net('SPARE5')
+spare6 = Net('SPARE6')
+spare7 = Net('SPARE7')
+spare8 = Net('SPARE8')
+spare9 = Net('SPARE9')
+gpio_addr_mon['GPB2'] += spare4
+gpio_addr_mon['GPB3'] += spare5
+gpio_addr_mon['GPB4'] += spare6
+gpio_addr_mon['GPB5'] += spare7
+gpio_addr_mon['GPB6'] += spare8
+gpio_addr_mon['GPB7'] += spare9
+
+# Interrupt outputs
+addr_mon_inta = Net('ADDR_MON_INTA')
+addr_mon_intb = Net('ADDR_MON_INTB')
+gpio_addr_mon['INTA'] += addr_mon_inta
+gpio_addr_mon['INTB'] += addr_mon_intb
+
+# ============================================================================
+# I2C pull-up resistors (required for I2C bus)
+# ============================================================================
+
+i2c_pullup_sda = Part('Device', 'R', value='4.7k', 
+                      footprint='Resistor_SMD:R_0805_2012Metric')
+i2c_pullup_sda[1] += i2c_sda
+i2c_pullup_sda[2] += sbc_5v
+
+i2c_pullup_scl = Part('Device', 'R', value='4.7k', 
+                      footprint='Resistor_SMD:R_0805_2012Metric')
+i2c_pullup_scl[1] += i2c_scl
+i2c_pullup_scl[2] += sbc_5v
 
 # Series resistors for bus protection (on Arduino side of buffer)
 for i in range(8):
@@ -229,12 +278,16 @@ bulk_cap = Part('Device', 'CP', value='47uF',
 bulk_cap[1] += arduino_5v
 bulk_cap[2] += arduino_gnd
 
-# Decoupling caps for ICs
-for ic in [addr_latch, data_buffer, porta_shiftreg, portb_shiftreg]:
+# Decoupling caps for all ICs
+for ic in [addr_latch, data_buffer, gpio_ports, gpio_addr_ctrl, gpio_addr_mon]:
     cap = Part('Device', 'C', value='100nF', 
                footprint='Capacitor_SMD:C_0805_2012Metric')
-    cap[1] += ic['VCC']
-    cap[2] += ic['GND']
+    if 'VCC' in ic.pins:
+        cap[1] += ic['VCC']
+        cap[2] += ic['GND']
+    else:
+        cap[1] += ic['VDD']
+        cap[2] += ic['VSS']
 
 # Connect CPU socket pins to nets
 # MC146805E2 40-pin DIP pinout:
@@ -305,7 +358,7 @@ test_pin_map = [
     (9, sbc_b_bus[6]),      # B6
     (10, sbc_b_bus[7]),     # B7
     
-    # High address bits (A12-A8) - only 5 bits
+    # High address bits (A12-A8)
     (11, sbc_addr_high[0]), # A8
     (12, sbc_addr_high[1]), # A9
     (13, sbc_addr_high[2]), # A10
@@ -340,15 +393,15 @@ test_pin_map = [
     (36, sbc_reset),        # RESET (active low)
     (37, sbc_irq),          # IRQ (active low)
     
-    # Timer
+    # Timer and clock
     (38, sbc_timer),        # TIMER output
+    (39, sbc_osc1),         # OSC1 (manual clock)
     
-    # Clock
-    (39, sbc_osc1),         # OSC1 (manual clock from Arduino)
+    # I2C bus
+    (40, i2c_sda),          # I2C SDA
+    (41, i2c_scl),          # I2C SCL
     
     # Additional grounds for signal integrity
-    (40, sbc_gnd),
-    (41, sbc_gnd),
     (42, sbc_gnd),
     (43, sbc_gnd),
     (44, sbc_gnd),
