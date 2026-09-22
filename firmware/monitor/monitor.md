@@ -360,21 +360,6 @@ MAME directory or on any caller working directory.
 
 Planned implementation slices follow in dependency order.
 
-### 5.25. Monitor ROM Version Display
-
-Failing test: a MAME screen test resets the machine and fails until the
-boot screen includes the monitor ROM version in the upper right corner.
-
-End state: the CMake project version is the single source of truth for the
-monitor ROM version. The build passes that version into the assembly source
-so the ROM emits version text `MONITOR 1.0`, derived from project version
-`1.0.0` without the patch component. During the boot screen draw, after
-clearing the screen, the monitor uses ANSI cursor positioning to move to
-row 1, column 68 and emits the generated version text. The boot draw does
-not emit padding spaces solely to reach the upper right corner. Any CPU
-state text on row 1 remains left-aligned and does not overwrite columns 68
-through 80.
-
 ### 5.5. End-to-End Serial Boot Output
 
 Failing test: a MAME serial-file test resets the machine and fails until

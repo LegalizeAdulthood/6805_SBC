@@ -141,6 +141,9 @@ boot_screen_text:
         .byte   $1b
         .text   "[2J"
         .byte   $1b
+        .text   "[1;68H"
+#include "monitor_version.inc"
+        .byte   $1b
         .text   "[HSP 007F  PC 1000  A 00  X 00  FLAGS 111 I     STOPPED: RESET"
         .byte   $0d,$0a,$00
 

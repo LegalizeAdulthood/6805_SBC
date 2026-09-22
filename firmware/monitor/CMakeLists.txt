@@ -15,6 +15,25 @@ set(MONITOR_EXPORTS "${MONITOR_OUTPUT_DIR}/monitor.exp")
 set(MONITOR_SYMBOLS "${MONITOR_OUTPUT_DIR}/monitor.sym")
 set(MONITOR_SREC "${MONITOR_OUTPUT_DIR}/monitor.s19")
 set(MONITOR_SREC_LISTING "${MONITOR_OUTPUT_DIR}/monitor-s19.lst")
+set(MONITOR_VERSION_TEXT "MONITOR ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}")
+set(MONITOR_VERSION_INCLUDE "${MONITOR_OUTPUT_DIR}/monitor_version.inc")
+set(MONITOR_BUILD_TASM_TABLE "${MONITOR_OUTPUT_DIR}/TASM05.TAB")
+
+configure_file(
+    "${CMAKE_CURRENT_SOURCE_DIR}/monitor_version.inc.in"
+    "${MONITOR_VERSION_INCLUDE}"
+    @ONLY
+    NEWLINE_STYLE CRLF
+)
+
+add_custom_command(
+    OUTPUT "${MONITOR_BUILD_TASM_TABLE}"
+    COMMAND "${CMAKE_COMMAND}" -E make_directory "${MONITOR_OUTPUT_DIR}"
+    COMMAND "${CMAKE_COMMAND}" -E copy_if_different "${TASM_6805_TABLE}" "${MONITOR_BUILD_TASM_TABLE}"
+    DEPENDS "${TASM_6805_TABLE}"
+    COMMENT "Copying TASM 6805 table for monitor build"
+    VERBATIM
+)
 
 add_custom_command(
     OUTPUT "${MONITOR_BINARY}"
@@ -26,9 +45,10 @@ add_custom_command(
     COMMAND "${TASM_EXE}" -05 -b -fFF -s "${MONITOR_SOURCE}" "${MONITOR_BINARY}" "${MONITOR_BINARY_LISTING}" "${MONITOR_EXPORTS}" "${MONITOR_SYMBOLS}"
     DEPENDS
         "${MONITOR_SOURCE}"
+        "${MONITOR_VERSION_INCLUDE}"
+        "${MONITOR_BUILD_TASM_TABLE}"
         "${TASM_EXE}"
-        "${TASM_6805_TABLE}"
-    WORKING_DIRECTORY "${TASM_DIR}"
+    WORKING_DIRECTORY "${MONITOR_OUTPUT_DIR}"
     COMMENT "Assembling monitor.asm to binary ROM image"
     VERBATIM
 )
@@ -40,9 +60,10 @@ add_custom_command(
     COMMAND "${TASM_EXE}" -05 -g2 "${MONITOR_SOURCE}" "${MONITOR_SREC}" "${MONITOR_SREC_LISTING}"
     DEPENDS
         "${MONITOR_SOURCE}"
+        "${MONITOR_VERSION_INCLUDE}"
+        "${MONITOR_BUILD_TASM_TABLE}"
         "${TASM_EXE}"
-        "${TASM_6805_TABLE}"
-    WORKING_DIRECTORY "${TASM_DIR}"
+    WORKING_DIRECTORY "${MONITOR_OUTPUT_DIR}"
     COMMENT "Assembling monitor.asm to Motorola S-record"
     VERBATIM
 )
