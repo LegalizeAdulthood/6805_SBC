@@ -69,6 +69,21 @@ add_test(
 )
 
 add_test(
+    NAME monitor.mame.cpu_row
+    COMMAND
+        "${CMAKE_COMMAND}"
+        "-DMONITOR_BINARY=${MONITOR_BINARY}"
+        "-DMONITOR_SYMBOLS=${MONITOR_SYMBOLS}"
+        "-DCPU_ROW_EXPECTED=${CMAKE_CURRENT_SOURCE_DIR}/expected_cpu_row.txt"
+        "-DMAME_EXE=${M6805SBC_EXE}"
+        "-DMAME_DATA_DIR=${M6805SBC_DATA_DIR}"
+        "-DMAME_STAGE_DIR=${MONITOR_OUTPUT_DIR}/mame-cpu-row"
+        "-DMONITOR_OUTPUT_DIR=${MONITOR_OUTPUT_DIR}"
+        "-P"
+        "${CMAKE_CURRENT_SOURCE_DIR}/check_mame_cpu_row.cmake"
+)
+
+add_test(
     NAME monitor.mame.interrupt_vectors
     COMMAND
         "${CMAKE_COMMAND}"

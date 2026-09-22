@@ -360,19 +360,6 @@ MAME directory or on any caller working directory.
 
 Planned implementation slices follow in dependency order.
 
-### 6. CPU State Panel
-
-Failing test: a CPU-row formatter test fails until a fixed saved frame
-renders byte-for-byte to the expected CPU state text.
-
-End state: the test fills the saved frame with `SP=$007F`, `PC=$1234`,
-`A=$A5`, `X=$5A`, condition-code bits all set, and stop reason `TEST`.
-Calling the CPU row renderer emits the checked-in expected text terminated
-by `\r\n`. The output contains the required fields, uppercase hexadecimal
-values, and the documented `111HINZC` flag display. Because callers can
-erase or position the terminal before drawing the row, the renderer does
-not pad the byte stream to 80 columns.
-
 ### 7. Memory Panel Rendering
 
 Failing test: a memory-row formatter test fails until one fixed memory row
