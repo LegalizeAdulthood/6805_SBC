@@ -129,13 +129,13 @@ foreach(_symbol IN ITEMS
         timer_wait_default_handler
         timer_default_handler
         external_default_handler
-        TIMER_WAIT_VECTOR_HI
-        TIMER_WAIT_VECTOR_LO
-        TIMER_VECTOR_HI
-        TIMER_VECTOR_LO
-        EXTERNAL_VECTOR_HI
-        EXTERNAL_VECTOR_LO
-        INT_JUMP_OPCODE)
+        timer_wait_vector_hi
+        timer_wait_vector_lo
+        timer_vector_hi
+        timer_vector_lo
+        external_vector_hi
+        external_vector_lo
+        int_jump_opcode)
     _require_symbol("${_symbol}")
 endforeach()
 
@@ -165,13 +165,13 @@ file(WRITE "${_interrupt_script}"
     "local external_default = 0x${SYM_external_default_handler}\r\n"
     "local timer_dispatch = 0x${SYM_timer_dispatch}\r\n"
     "local external_dispatch = 0x${SYM_external_dispatch}\r\n"
-    "local timer_wait_hi = 0x${SYM_TIMER_WAIT_VECTOR_HI}\r\n"
-    "local timer_wait_lo = 0x${SYM_TIMER_WAIT_VECTOR_LO}\r\n"
-    "local timer_hi = 0x${SYM_TIMER_VECTOR_HI}\r\n"
-    "local timer_lo = 0x${SYM_TIMER_VECTOR_LO}\r\n"
-    "local external_hi = 0x${SYM_EXTERNAL_VECTOR_HI}\r\n"
-    "local external_lo = 0x${SYM_EXTERNAL_VECTOR_LO}\r\n"
-    "local jump_opcode = 0x${SYM_INT_JUMP_OPCODE}\r\n"
+    "local timer_wait_hi = 0x${SYM_timer_wait_vector_hi}\r\n"
+    "local timer_wait_lo = 0x${SYM_timer_wait_vector_lo}\r\n"
+    "local timer_hi = 0x${SYM_timer_vector_hi}\r\n"
+    "local timer_lo = 0x${SYM_timer_vector_lo}\r\n"
+    "local external_hi = 0x${SYM_external_vector_hi}\r\n"
+    "local external_lo = 0x${SYM_external_vector_lo}\r\n"
+    "local jump_opcode = 0x${SYM_int_jump_opcode}\r\n"
     "local marker = ${TEST_MARKER}\r\n"
     "local timer_handler = ${TIMER_TEST_HANDLER}\r\n"
     "local external_handler = ${EXTERNAL_TEST_HANDLER}\r\n"

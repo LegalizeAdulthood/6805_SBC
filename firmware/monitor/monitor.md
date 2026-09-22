@@ -30,6 +30,11 @@ the start, but the functional implementation slices should render panel
 content without depending on border glyphs. Drawing borders around the
 panels is deferred to the final polish slice.
 
+Monitor assembly sources use lowercase for directives, opcodes, operands,
+labels, and symbols. Hexadecimal operands also use lowercase hex digits
+where letters appear. User-facing display strings may use whatever casing
+the screen text requires.
+
 ```text
 | SP 00F8  PC E000  A 00  X 00  FLAGS 111HINZC  STOPPED: RESET                 |
 --------------------------------------------------------------------------------
@@ -354,20 +359,6 @@ Tests must not depend on shared mutable files in the developer's normal
 MAME directory or on any caller working directory.
 
 Planned implementation slices follow in dependency order.
-
-### 4.5. Assembly Source Style
-
-Failing test: a source-style test scans the monitor assembly sources and
-fails until directives, opcodes, operands, labels, and symbols use the
-documented lowercase style.
-
-End state: all monitor assembly sources, including generated or included
-assembly files that are checked by the build, use lowercase directives,
-opcodes, operands, labels, and symbols. Hexadecimal operands use lowercase
-hex digits where letters appear. Public monitor entry points, RAM labels,
-constants, and test-only assembly symbols are renamed consistently, and the
-existing build outputs and tests remain unchanged except for listing-file
-source text casing.
 
 ### 5. Minimal Screen Draw
 
