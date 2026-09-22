@@ -1,0 +1,102 @@
+set(ROM_START 0x1000)
+set(ROM_END 0x1FFF)
+set(VECTOR_TIMER 0x1FF8)
+set(VECTOR_SWI 0x1FFC)
+set(VECTOR_RESET 0x1FFE)
+
+function(fail message)
+    message(FATAL_ERROR "${message}")
+endfunction()
+
+function(require_file path description)
+    if(NOT EXISTS "${path}")
+        fail("Missing ${description}: ${path}")
+    endif()
+endfunction()
+
+function(read_byte out address)
+    math(EXPR offset "${address} - ${ROM_START}")
+    if(offset LESS 0)
+        fail("Address ${address} is below ROM start")
+    endif()
+    math(EXPR start "${offset} * 2")
+    string(SUBSTRING "${ROM_HEX}" ${start} 2 value)
+    string(TOUPPER "${value}" value)
+    set(${out} "${value}" PARENT_SCOPE)
+endfunction()
+
+function(read_word out address)
+    read_byte(high "${address}")
+    math(EXPR next_address "${address} + 1")
+    read_byte(low "${next_address}")
+    set(${out} "${high}${low}" PARENT_SCOPE)
+endfunction()
+
+function(require_symbol name)
+    if(NOT DEFINED "SYM_${name}")
+        fail("Missing symbol '${name}' in ${MONITOR_SYMBOLS}")
+    endif()
+endfunction()
+
+function(require_symbol_in_rom name)
+    require_symbol("${name}")
+    math(EXPR value "0x${SYM_${name}}")
+    if(value LESS ROM_START OR value GREATER ROM_END)
+        fail("Symbol '${name}' has value ${SYM_${name}}, outside ROM")
+    endif()
+endfunction()
+
+function(require_vector vector_name address label)
+    require_symbol_in_rom("${label}")
+    read_word(actual "${address}")
+    if(NOT actual STREQUAL "${SYM_${label}}")
+        fail("${vector_name} vector at ${address} is ${actual}, expected ${SYM_${label}} for ${label}")
+    endif()
+endfunction()
+
+require_file("${MONITOR_BINARY}" "monitor binary")
+require_file("${MONITOR_SYMBOLS}" "monitor symbol file")
+
+file(READ "${MONITOR_BINARY}" ROM_HEX HEX)
+string(TOUPPER "${ROM_HEX}" ROM_HEX)
+string(LENGTH "${ROM_HEX}" rom_hex_length)
+math(EXPR expected_hex_length "4096 * 2")
+if(NOT rom_hex_length EQUAL expected_hex_length)
+    math(EXPR actual_bytes "${rom_hex_length} / 2")
+    fail("monitor.bin is ${actual_bytes} bytes, expected 4096")
+endif()
+
+file(STRINGS "${MONITOR_SYMBOLS}" symbol_lines)
+foreach(line IN LISTS symbol_lines)
+    if(line MATCHES "^([A-Za-z_][A-Za-z0-9_]*)[ \t]+([0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f])")
+        string(TOUPPER "${CMAKE_MATCH_2}" symbol_value)
+        set("SYM_${CMAKE_MATCH_1}" "${symbol_value}")
+    endif()
+endforeach()
+
+require_vector("timer" "${VECTOR_TIMER}" "timer_entry")
+require_vector("SWI" "${VECTOR_SWI}" "swi_entry")
+require_vector("reset" "${VECTOR_RESET}" "reset_entry")
+require_symbol_in_rom("rom_code_end")
+
+math(EXPR fill_start "0x${SYM_rom_code_end}")
+if(fill_start LESS 0x1FF6)
+    foreach(address RANGE ${fill_start} 8181)
+        read_byte(value "${address}")
+        if(NOT value STREQUAL "FF")
+            fail("Expected fill byte FF at address ${address}, found ${value}")
+        endif()
+    endforeach()
+endif()
+
+foreach(generated_file
+        monitor.bin
+        monitor.lst
+        monitor.s19
+        monitor-s19.lst
+        monitor.exp
+        monitor.sym)
+    if(EXISTS "${MONITOR_SOURCE_DIR}/${generated_file}")
+        fail("Generated file should not be in source directory: ${MONITOR_SOURCE_DIR}/${generated_file}")
+    endif()
+endforeach()

@@ -355,17 +355,6 @@ MAME directory or on any caller working directory.
 
 Planned implementation slices follow in dependency order.
 
-### 1. ROM Layout Contract
-
-Failing test: inspect the built `monitor.bin` and fail until it has the
-exact ROM shape described here.
-
-End state: `monitor.bin` is exactly 4096 bytes. File offset `$0000` maps
-to address `$1000`. All unassembled bytes are `$FF`. The reset vector
-decodes to `reset_entry`, the SWI vector decodes to `swi_entry`, and the
-timer vector decodes to `timer_entry`. All three entry labels are within
-`$1000`-`$1FFF`. All monitor build outputs remain in the build tree.
-
 ### 2. MAME Harness
 
 Failing test: `ctest` runs `monitor.mame.reset_vector` and fails until the

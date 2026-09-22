@@ -6,14 +6,19 @@ set(MONITOR_SOURCE "${CMAKE_CURRENT_SOURCE_DIR}/monitor.asm")
 set(MONITOR_OUTPUT_DIR "${CMAKE_CURRENT_BINARY_DIR}")
 set(MONITOR_BINARY "${MONITOR_OUTPUT_DIR}/monitor.bin")
 set(MONITOR_BINARY_LISTING "${MONITOR_OUTPUT_DIR}/monitor.lst")
+set(MONITOR_EXPORTS "${MONITOR_OUTPUT_DIR}/monitor.exp")
+set(MONITOR_SYMBOLS "${MONITOR_OUTPUT_DIR}/monitor.sym")
 set(MONITOR_SREC "${MONITOR_OUTPUT_DIR}/monitor.s19")
 set(MONITOR_SREC_LISTING "${MONITOR_OUTPUT_DIR}/monitor-s19.lst")
 
 add_custom_command(
     OUTPUT "${MONITOR_BINARY}"
-    BYPRODUCTS "${MONITOR_BINARY_LISTING}"
+    BYPRODUCTS
+        "${MONITOR_BINARY_LISTING}"
+        "${MONITOR_EXPORTS}"
+        "${MONITOR_SYMBOLS}"
     COMMAND "${CMAKE_COMMAND}" -E make_directory "${MONITOR_OUTPUT_DIR}"
-    COMMAND "${TASM_EXE}" -05 -b -fFF "${MONITOR_SOURCE}" "${MONITOR_BINARY}" "${MONITOR_BINARY_LISTING}"
+    COMMAND "${TASM_EXE}" -05 -b -fFF -s "${MONITOR_SOURCE}" "${MONITOR_BINARY}" "${MONITOR_BINARY_LISTING}" "${MONITOR_EXPORTS}" "${MONITOR_SYMBOLS}"
     DEPENDS
         "${MONITOR_SOURCE}"
         "${TASM_EXE}"
@@ -39,3 +44,16 @@ add_custom_command(
 
 add_custom_target(monitor ALL DEPENDS "${MONITOR_BINARY}")
 add_custom_target(monitor-s19 ALL DEPENDS "${MONITOR_SREC}")
+
+if(BUILD_TESTING)
+    add_test(
+        NAME monitor.rom_layout
+        COMMAND
+            "${CMAKE_COMMAND}"
+            "-DMONITOR_BINARY=${MONITOR_BINARY}"
+            "-DMONITOR_SYMBOLS=${MONITOR_SYMBOLS}"
+            "-DMONITOR_SOURCE_DIR=${CMAKE_CURRENT_SOURCE_DIR}"
+            "-P"
+            "${CMAKE_CURRENT_SOURCE_DIR}/check_monitor_rom.cmake"
+    )
+endif()
