@@ -342,6 +342,22 @@ the smallest implementation that makes the test pass. After the new test
 passes, all existing tests must still pass. Every slice should leave a
 working, if minimal, monitor ROM that can be built and validated.
 
+ROM space is tight. Each implementation slice should aggressively factor
+out duplication as it is introduced, especially repeated formatting,
+emission, dispatch, and table-walking code. Clear code is still required,
+but shared ROM routines and compact data-driven paths are preferred when
+they keep behavior testable and reduce generated monitor bytes. Monitor
+code should optimize for binary size over speed.
+
+Terminal output should also be size-conscious. ANSI escape sequences
+should aggressively exploit default parameter values when they produce the
+same screen state, such as using `ESC[J` instead of `ESC[0J` or cursor
+home plus erase-to-end instead of longer clear-screen forms when that
+shares more code. Prefer reusable control-sequence helpers over storing
+one-off escape strings. Regular control characters such as BS, LF, and CR
+should be used for cursor positioning when that is simpler or shorter than
+an ANSI escape sequence.
+
 A slice is complete only when its stated end state is true. Slice numbers
 are stable progress markers; when a completed slice is removed from this
 plan, do not renumber the remaining slice headings.
