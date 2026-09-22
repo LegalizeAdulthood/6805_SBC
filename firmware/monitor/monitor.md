@@ -355,25 +355,6 @@ MAME directory or on any caller working directory.
 
 Planned implementation slices follow in dependency order.
 
-### 3.5. Interrupt RAM Vectors
-
-Failing test: a MAME interrupt-vector test fails until the hardware
-timer-from-wait, timer, and external interrupt vectors enter ROM dispatch
-stubs that indirect through RAM vector slots initialized by reset.
-
-End state: monitor RAM reserves two bytes for the timer-from-wait vector,
-two bytes for the normal timer vector, and two bytes for the external
-interrupt vector. `reset_entry` initializes those RAM vectors to default
-ROM handlers on every reset. The hardware vector table entries at `$1FF6`,
-`$1FF8`, and `$1FFA` point to ROM dispatch stubs, not directly to the
-default handlers. Each dispatch stub transfers control through its
-corresponding RAM vector. The test verifies the reset defaults, replaces
-the normal timer RAM vector with a RAM test handler, triggers a timer
-interrupt, and observes that the RAM handler runs. The same test replaces
-the external interrupt RAM vector with a RAM test handler, triggers an
-external interrupt, and observes that the RAM handler runs. A subsequent
-reset restores all three RAM vectors to the ROM defaults.
-
 ### 4. Console Primitives
 
 Failing test: a MAME console test starts at `test_console_output` and fails
