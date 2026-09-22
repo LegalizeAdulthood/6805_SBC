@@ -383,20 +383,6 @@ opcode bit organization wherever practical: mask and shift opcode fields,
 share operand emitters, use compact mnemonic tables for the irregular
 cases, and fall through to `FCB $nn` for gaps or invalid opcodes.
 
-### 9.1. Disassembler Harness and FCB Rows
-
-Failing test: a MAME disassembler fixture test fails until a minimal
-decoder entry can render one valid one-byte instruction and one invalid
-opcode row.
-
-End state: `monitor.mame.disassembler` stages a fixed byte fixture in RAM,
-calls the decoder entry for each fixture row, captures the emitted row text,
-and compares it byte-for-byte with checked-in expected output. The decoder
-emits the documented row fields: marker, address, byte field, mnemonic at
-column 20, operands at column 28, and CR LF. `NOP` decodes as a one-byte
-instruction. Invalid opcode `$02` decodes as `FCB $02`, has no symbolic
-operand, and consumes one byte.
-
 ### 9.2. Disassembler Inherent Instructions
 
 Failing test: the disassembler fixture is extended with every no-operand

@@ -99,6 +99,21 @@ add_test(
 )
 
 add_test(
+    NAME monitor.mame.disassembler
+    COMMAND
+        "${CMAKE_COMMAND}"
+        "-DMONITOR_BINARY=${MONITOR_BINARY}"
+        "-DMONITOR_SYMBOLS=${MONITOR_SYMBOLS}"
+        "-DDISASSEMBLY_EXPECTED=${CMAKE_CURRENT_SOURCE_DIR}/expected_disassembly.txt"
+        "-DMAME_EXE=${M6805SBC_EXE}"
+        "-DMAME_DATA_DIR=${M6805SBC_DATA_DIR}"
+        "-DMAME_STAGE_DIR=${MONITOR_OUTPUT_DIR}/mame-disassembler"
+        "-DMONITOR_OUTPUT_DIR=${MONITOR_OUTPUT_DIR}"
+        "-P"
+        "${CMAKE_CURRENT_SOURCE_DIR}/check_mame_disassembler.cmake"
+)
+
+add_test(
     NAME monitor.mame.memory_cursor_edit
     COMMAND
         "${CMAKE_COMMAND}"

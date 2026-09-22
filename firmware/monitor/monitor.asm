@@ -58,6 +58,9 @@ memory_write_opcode    .equ    $2c
 memory_write_hi        .equ    $2d
 memory_write_lo        .equ    $2e
 memory_write_rts       .equ    $2f
+disasm_pc_hi           .equ    $30
+disasm_pc_lo           .equ    $31
+disasm_opcode          .equ    $32
 
 acia_status            .equ    $06
 acia_control           .equ    $06
@@ -70,6 +73,7 @@ jmp_extended           .equ    $cc
 lda_extended_indexed   .equ    $d6
 sta_extended_indexed   .equ    $d7
 rts_instruction        .equ    $81
+nop_instruction        .equ    $9d
 
         .org    $1000
 reset_entry:
@@ -215,6 +219,14 @@ emit_cpu_row_text:
 emit_cpu_row_text_done:
         rts
 
+emit_spaces:
+        lda     #$20
+emit_spaces_loop:
+        jsr     chrout
+        decx
+        bne     emit_spaces_loop
+        rts
+
 emit_hex_byte:
         sta     hex_value
         lsra
@@ -334,6 +346,47 @@ draw_memory_row_ascii_loop:
         bne     draw_memory_row_ascii_loop
         ldx     #cpu_row_crlf_text-cpu_row_text
         jsr     emit_cpu_row_text
+        rts
+
+draw_disassembly_row:
+        lda     #$20
+        jsr     chrout
+        lda     disasm_pc_hi
+        sta     memory_read_hi
+        jsr     emit_hex_byte
+        lda     disasm_pc_lo
+        sta     memory_read_lo
+        jsr     emit_hex_byte
+        ldx     #memory_row_address_suffix_text-cpu_row_text
+        jsr     emit_cpu_row_text
+        clrx
+        jsr     memory_read_opcode
+        sta     disasm_opcode
+        jsr     emit_hex_byte
+        ldx     #$0a
+        jsr     emit_spaces
+        lda     disasm_opcode
+        cmp     #nop_instruction
+        beq     draw_disassembly_nop
+        ldx     #disasm_fcb_text-cpu_row_text
+        jsr     emit_cpu_row_text
+        ldx     #$05
+        jsr     emit_spaces
+        lda     #$24
+        jsr     chrout
+        lda     disasm_opcode
+        jsr     emit_hex_byte
+        bra     draw_disassembly_done
+draw_disassembly_nop:
+        ldx     #disasm_nop_text-cpu_row_text
+        jsr     emit_cpu_row_text
+draw_disassembly_done:
+        ldx     #cpu_row_crlf_text-cpu_row_text
+        jsr     emit_cpu_row_text
+        inc     disasm_pc_lo
+        bne     draw_disassembly_return
+        inc     disasm_pc_hi
+draw_disassembly_return:
         rts
 
 emit_memory_ascii:
@@ -575,6 +628,15 @@ test_memory_row_output:
         jsr     draw_memory_row
         bra     monitor_idle
 
+test_disassembler_output:
+        clra
+        sta     disasm_pc_hi
+        lda     #$80
+        sta     disasm_pc_lo
+        jsr     draw_disassembly_row
+        jsr     draw_disassembly_row
+        bra     monitor_idle
+
 monitor_idle:
         bra     monitor_idle
 
@@ -614,6 +676,12 @@ memory_row_address_suffix_text:
         .byte   $00
 cpu_row_crlf_text:
         .byte   $0d,$0a,$00
+disasm_nop_text:
+        .text   "NOP"
+        .byte   $00
+disasm_fcb_text:
+        .text   "FCB"
+        .byte   $00
 
 boot_screen_text:
         .byte   $1b
