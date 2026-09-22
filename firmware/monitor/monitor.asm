@@ -61,6 +61,7 @@ memory_write_rts       .equ    $2f
 disasm_pc_hi           .equ    $30
 disasm_pc_lo           .equ    $31
 disasm_opcode          .equ    $32
+disasm_test_count      .equ    $33
 
 acia_status            .equ    $06
 acia_control           .equ    $06
@@ -73,7 +74,6 @@ jmp_extended           .equ    $cc
 lda_extended_indexed   .equ    $d6
 sta_extended_indexed   .equ    $d7
 rts_instruction        .equ    $81
-nop_instruction        .equ    $9d
 
         .org    $1000
 reset_entry:
@@ -227,6 +227,43 @@ emit_spaces_loop:
         bne     emit_spaces_loop
         rts
 
+emit_disasm_mnemonic:
+        clrx
+emit_disasm_inherent_loop:
+        lda     disasm_inherent_table,x
+        beq     emit_disasm_fcb
+        cmp     disasm_opcode
+        beq     emit_disasm_inherent_found
+        inx
+        inx
+        bra     emit_disasm_inherent_loop
+emit_disasm_inherent_found:
+        inx
+        lda     disasm_inherent_table,x
+        tax
+        jsr     emit_disasm_text
+        rts
+
+emit_disasm_fcb:
+        ldx     #disasm_fcb_text-disasm_text
+        jsr     emit_disasm_text
+        ldx     #$05
+        jsr     emit_spaces
+        lda     #$24
+        jsr     chrout
+        lda     disasm_opcode
+        jsr     emit_hex_byte
+        rts
+
+emit_disasm_text:
+        lda     disasm_text,x
+        beq     emit_disasm_text_done
+        jsr     chrout
+        inx
+        bra     emit_disasm_text
+emit_disasm_text_done:
+        rts
+
 emit_hex_byte:
         sta     hex_value
         lsra
@@ -365,21 +402,7 @@ draw_disassembly_row:
         jsr     emit_hex_byte
         ldx     #$0a
         jsr     emit_spaces
-        lda     disasm_opcode
-        cmp     #nop_instruction
-        beq     draw_disassembly_nop
-        ldx     #disasm_fcb_text-cpu_row_text
-        jsr     emit_cpu_row_text
-        ldx     #$05
-        jsr     emit_spaces
-        lda     #$24
-        jsr     chrout
-        lda     disasm_opcode
-        jsr     emit_hex_byte
-        bra     draw_disassembly_done
-draw_disassembly_nop:
-        ldx     #disasm_nop_text-cpu_row_text
-        jsr     emit_cpu_row_text
+        jsr     emit_disasm_mnemonic
 draw_disassembly_done:
         ldx     #cpu_row_crlf_text-cpu_row_text
         jsr     emit_cpu_row_text
@@ -633,8 +656,12 @@ test_disassembler_output:
         sta     disasm_pc_hi
         lda     #$80
         sta     disasm_pc_lo
+        lda     #$29
+        sta     disasm_test_count
+test_disassembler_output_loop:
         jsr     draw_disassembly_row
-        jsr     draw_disassembly_row
+        dec     disasm_test_count
+        bne     test_disassembler_output_loop
         bra     monitor_idle
 
 monitor_idle:
@@ -676,11 +703,157 @@ memory_row_address_suffix_text:
         .byte   $00
 cpu_row_crlf_text:
         .byte   $0d,$0a,$00
+
+disasm_text:
+disasm_asla_text:
+        .text   "ASLA"
+        .byte   $00
+disasm_aslx_text:
+        .text   "ASLX"
+        .byte   $00
+disasm_asra_text:
+        .text   "ASRA"
+        .byte   $00
+disasm_asrx_text:
+        .text   "ASRX"
+        .byte   $00
+disasm_clc_text:
+        .text   "CLC"
+        .byte   $00
+disasm_cli_text:
+        .text   "CLI"
+        .byte   $00
+disasm_clra_text:
+        .text   "CLRA"
+        .byte   $00
+disasm_clrx_text:
+        .text   "CLRX"
+        .byte   $00
+disasm_coma_text:
+        .text   "COMA"
+        .byte   $00
+disasm_comx_text:
+        .text   "COMX"
+        .byte   $00
+disasm_deca_text:
+        .text   "DECA"
+        .byte   $00
+disasm_decx_text:
+        .text   "DECX"
+        .byte   $00
+disasm_inca_text:
+        .text   "INCA"
+        .byte   $00
+disasm_incx_text:
+        .text   "INCX"
+        .byte   $00
+disasm_lsra_text:
+        .text   "LSRA"
+        .byte   $00
+disasm_lsrx_text:
+        .text   "LSRX"
+        .byte   $00
+disasm_mul_text:
+        .text   "MUL"
+        .byte   $00
+disasm_nega_text:
+        .text   "NEGA"
+        .byte   $00
+disasm_negx_text:
+        .text   "NEGX"
+        .byte   $00
 disasm_nop_text:
         .text   "NOP"
         .byte   $00
+disasm_rola_text:
+        .text   "ROLA"
+        .byte   $00
+disasm_rolx_text:
+        .text   "ROLX"
+        .byte   $00
+disasm_rora_text:
+        .text   "RORA"
+        .byte   $00
+disasm_rorx_text:
+        .text   "RORX"
+        .byte   $00
+disasm_rsp_text:
+        .text   "RSP"
+        .byte   $00
+disasm_rti_text:
+        .text   "RTI"
+        .byte   $00
+disasm_rts_text:
+        .text   "RTS"
+        .byte   $00
+disasm_sec_text:
+        .text   "SEC"
+        .byte   $00
+disasm_sei_text:
+        .text   "SEI"
+        .byte   $00
+disasm_stop_text:
+        .text   "STOP"
+        .byte   $00
+disasm_swi_text:
+        .text   "SWI"
+        .byte   $00
+disasm_tax_text:
+        .text   "TAX"
+        .byte   $00
+disasm_tsta_text:
+        .text   "TSTA"
+        .byte   $00
+disasm_tstx_text:
+        .text   "TSTX"
+        .byte   $00
+disasm_txa_text:
+        .text   "TXA"
+        .byte   $00
+disasm_wait_text:
+        .text   "WAIT"
+        .byte   $00
 disasm_fcb_text:
         .text   "FCB"
+        .byte   $00
+
+disasm_inherent_table:
+        .byte   $40,disasm_nega_text-disasm_text
+        .byte   $42,disasm_mul_text-disasm_text
+        .byte   $43,disasm_coma_text-disasm_text
+        .byte   $44,disasm_lsra_text-disasm_text
+        .byte   $46,disasm_rora_text-disasm_text
+        .byte   $47,disasm_asra_text-disasm_text
+        .byte   $48,disasm_asla_text-disasm_text
+        .byte   $49,disasm_rola_text-disasm_text
+        .byte   $4a,disasm_deca_text-disasm_text
+        .byte   $4c,disasm_inca_text-disasm_text
+        .byte   $4d,disasm_tsta_text-disasm_text
+        .byte   $4f,disasm_clra_text-disasm_text
+        .byte   $50,disasm_negx_text-disasm_text
+        .byte   $53,disasm_comx_text-disasm_text
+        .byte   $54,disasm_lsrx_text-disasm_text
+        .byte   $56,disasm_rorx_text-disasm_text
+        .byte   $57,disasm_asrx_text-disasm_text
+        .byte   $58,disasm_aslx_text-disasm_text
+        .byte   $59,disasm_rolx_text-disasm_text
+        .byte   $5a,disasm_decx_text-disasm_text
+        .byte   $5c,disasm_incx_text-disasm_text
+        .byte   $5d,disasm_tstx_text-disasm_text
+        .byte   $5f,disasm_clrx_text-disasm_text
+        .byte   $80,disasm_rti_text-disasm_text
+        .byte   $81,disasm_rts_text-disasm_text
+        .byte   $83,disasm_swi_text-disasm_text
+        .byte   $8e,disasm_stop_text-disasm_text
+        .byte   $8f,disasm_wait_text-disasm_text
+        .byte   $97,disasm_tax_text-disasm_text
+        .byte   $98,disasm_clc_text-disasm_text
+        .byte   $99,disasm_sec_text-disasm_text
+        .byte   $9a,disasm_cli_text-disasm_text
+        .byte   $9b,disasm_sei_text-disasm_text
+        .byte   $9c,disasm_rsp_text-disasm_text
+        .byte   $9d,disasm_nop_text-disasm_text
+        .byte   $9f,disasm_txa_text-disasm_text
         .byte   $00
 
 boot_screen_text:

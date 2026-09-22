@@ -4,6 +4,7 @@ foreach(_required_var IN ITEMS MONITOR_BINARY MONITOR_SYMBOLS DISASSEMBLY_EXPECT
     endif()
 endforeach()
 
+set(ACIA_STATUS 0x0006)
 set(ACIA_CONTROL 0x0006)
 set(ACIA_DATA 0x0007)
 
@@ -117,6 +118,9 @@ file(WRITE "${_disassembler_script}"
     "mem:install_write_tap(${ACIA_DATA}, ${ACIA_DATA}, \"disassembler_acia_data\", function(offset, data, mask)\r\n"
     "    table.insert(bytes, data & 0xff)\r\n"
     "end)\r\n"
+    "mem:install_read_tap(${ACIA_STATUS}, ${ACIA_STATUS}, \"disassembler_acia_status\", function(offset, data, mask)\r\n"
+    "    return data | 0x02\r\n"
+    "end)\r\n"
     "local function hex_bytes()\r\n"
     "    local out = {}\r\n"
     "    for _,byte in ipairs(bytes) do table.insert(out, string.format(\"%02X\", byte)) end\r\n"
@@ -130,8 +134,13 @@ file(WRITE "${_disassembler_script}"
     "        if cpu.state[\"PC\"].value ~= idle and frames < 60 then return end\r\n"
     "        mem:write_u8(${ACIA_CONTROL}, 0x03)\r\n"
     "        mem:write_u8(${ACIA_CONTROL}, 0x15)\r\n"
-    "        mem:write_u8(0x0080, 0x9d)\r\n"
-    "        mem:write_u8(0x0081, 0x02)\r\n"
+    "        local fixture = { 0x48, 0x58, 0x47, 0x57, 0x98, 0x9a, 0x4f, 0x5f,\r\n"
+    "            0x43, 0x53, 0x4a, 0x5a, 0x5a, 0x4c, 0x5c, 0x5c,\r\n"
+    "            0x48, 0x58, 0x44, 0x54, 0x42, 0x40, 0x50, 0x9d,\r\n"
+    "            0x49, 0x59, 0x46, 0x56, 0x9c, 0x80, 0x81, 0x99,\r\n"
+    "            0x9b, 0x8e, 0x83, 0x97, 0x4d, 0x5d, 0x9f, 0x8f,\r\n"
+    "            0x02 }\r\n"
+    "        for index, byte in ipairs(fixture) do mem:write_u8(0x007f + index, byte) end\r\n"
     "        bytes = {}\r\n"
     "        cpu.state[\"PC\"].value = entry\r\n"
     "        phase = \"wait_output\"\r\n"

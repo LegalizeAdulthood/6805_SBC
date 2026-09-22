@@ -383,17 +383,6 @@ opcode bit organization wherever practical: mask and shift opcode fields,
 share operand emitters, use compact mnemonic tables for the irregular
 cases, and fall through to `FCB $nn` for gaps or invalid opcodes.
 
-### 9.2. Disassembler Inherent Instructions
-
-Failing test: the disassembler fixture is extended with every no-operand
-row in `TASM05.TAB`, and fails until each row decodes to the expected text.
-
-End state: all inherent, accumulator, index-register, condition-code,
-control, and register-transfer instructions decode with the expected byte
-count, mnemonic, byte field, and no operand text. This includes synonyms
-that share an opcode in `TASM05.TAB`; the fixture records the canonical
-mnemonic the monitor emits for each shared opcode.
-
 ### 9.3. Disassembler Relative Instructions
 
 Failing test: the disassembler fixture is extended with every relative
