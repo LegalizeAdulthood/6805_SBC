@@ -4,14 +4,30 @@ set(TASM_6805_TABLE "${TASM_DIR}/TASM05.TAB")
 
 set(MONITOR_SOURCE "${CMAKE_CURRENT_SOURCE_DIR}/monitor.asm")
 set(MONITOR_OUTPUT_DIR "${CMAKE_CURRENT_BINARY_DIR}")
+set(MONITOR_BINARY "${MONITOR_OUTPUT_DIR}/monitor.bin")
+set(MONITOR_BINARY_LISTING "${MONITOR_OUTPUT_DIR}/monitor.lst")
 set(MONITOR_SREC "${MONITOR_OUTPUT_DIR}/monitor.s19")
-set(MONITOR_LISTING "${MONITOR_OUTPUT_DIR}/monitor.lst")
+set(MONITOR_SREC_LISTING "${MONITOR_OUTPUT_DIR}/monitor-s19.lst")
+
+add_custom_command(
+    OUTPUT "${MONITOR_BINARY}"
+    BYPRODUCTS "${MONITOR_BINARY_LISTING}"
+    COMMAND "${CMAKE_COMMAND}" -E make_directory "${MONITOR_OUTPUT_DIR}"
+    COMMAND "${TASM_EXE}" -05 -b -fFF "${MONITOR_SOURCE}" "${MONITOR_BINARY}" "${MONITOR_BINARY_LISTING}"
+    DEPENDS
+        "${MONITOR_SOURCE}"
+        "${TASM_EXE}"
+        "${TASM_6805_TABLE}"
+    WORKING_DIRECTORY "${TASM_DIR}"
+    COMMENT "Assembling monitor.asm to binary ROM image"
+    VERBATIM
+)
 
 add_custom_command(
     OUTPUT "${MONITOR_SREC}"
-    BYPRODUCTS "${MONITOR_LISTING}"
+    BYPRODUCTS "${MONITOR_SREC_LISTING}"
     COMMAND "${CMAKE_COMMAND}" -E make_directory "${MONITOR_OUTPUT_DIR}"
-    COMMAND "${TASM_EXE}" -05 -g2 "${MONITOR_SOURCE}" "${MONITOR_SREC}" "${MONITOR_LISTING}"
+    COMMAND "${TASM_EXE}" -05 -g2 "${MONITOR_SOURCE}" "${MONITOR_SREC}" "${MONITOR_SREC_LISTING}"
     DEPENDS
         "${MONITOR_SOURCE}"
         "${TASM_EXE}"
@@ -21,4 +37,5 @@ add_custom_command(
     VERBATIM
 )
 
-add_custom_target(monitor ALL DEPENDS "${MONITOR_SREC}")
+add_custom_target(monitor ALL DEPENDS "${MONITOR_BINARY}")
+add_custom_target(monitor-s19 ALL DEPENDS "${MONITOR_SREC}")
