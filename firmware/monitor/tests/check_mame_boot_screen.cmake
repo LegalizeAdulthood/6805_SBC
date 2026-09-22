@@ -4,8 +4,6 @@ foreach(_required_var IN ITEMS MONITOR_BINARY MONITOR_SYMBOLS MAME_EXE MAME_DATA
     endif()
 endforeach()
 
-set(ACIA_CONTROL 0x0006)
-set(ACIA_STATUS 0x0006)
 set(ACIA_DATA 0x0007)
 
 get_filename_component(_monitor_binary "${MONITOR_BINARY}" ABSOLUTE)
@@ -82,7 +80,15 @@ foreach(_line IN LISTS _symbol_lines)
 endforeach()
 
 _require_symbol("monitor_idle")
-_require_symbol("test_console_output")
+
+string(ASCII 27 _esc)
+string(ASCII 13 _cr)
+string(ASCII 10 _lf)
+set(_expected_text "${_esc}[2J${_esc}[HSP 007F  PC 1000  A 00  X 00  FLAGS 111 I     STOPPED: RESET${_cr}${_lf}")
+string(HEX "${_expected_text}" _expected_bytes)
+string(TOUPPER "${_expected_bytes}" _expected_bytes)
+string(LENGTH "${_expected_bytes}" _expected_hex_length)
+math(EXPR _expected_count "${_expected_hex_length} / 2")
 
 _snapshot_tree("${_mame_data_dir}" _mame_data_before)
 
@@ -95,38 +101,41 @@ file(MAKE_DIRECTORY
 configure_file("${_monitor_binary}" "${_stage_dir}/roms/m6805sbc/rom1.bin" COPYONLY)
 configure_file("${_mame_data_dir}/cfg/m6805sbc.cfg" "${_stage_dir}/cfg/m6805sbc.cfg" COPYONLY)
 
-set(_console_script "${_stage_dir}/console_output.lua")
-file(WRITE "${_console_script}"
+set(_boot_script "${_stage_dir}/boot_screen.lua")
+file(WRITE "${_boot_script}"
     "local idle = 0x${SYM_monitor_idle}\r\n"
-    "local entry = 0x${SYM_test_console_output}\r\n"
     "local bytes = {}\r\n"
-    "local phase = \"wait_reset\"\r\n"
     "local frames = 0\r\n"
+    "local phase = \"wait_idle\"\r\n"
+    "local idle_frames = 0\r\n"
+    "local idle_count = nil\r\n"
     "local cpu = manager.machine.devices[\":maincpu\"]\r\n"
     "local mem = cpu.spaces[\"program\"]\r\n"
-    "mem:install_write_tap(${ACIA_DATA}, ${ACIA_DATA}, \"acia_data\", function(offset, data, mask)\r\n"
+    "mem:install_write_tap(${ACIA_DATA}, ${ACIA_DATA}, \"boot_screen_acia_data\", function(offset, data, mask)\r\n"
     "    table.insert(bytes, data & 0xff)\r\n"
     "end)\r\n"
+    "local function hex_bytes()\r\n"
+    "    local out = {}\r\n"
+    "    for _,byte in ipairs(bytes) do table.insert(out, string.format(\"%02X\", byte)) end\r\n"
+    "    return table.concat(out, \"\")\r\n"
+    "end\r\n"
     "emu.register_frame_done(function()\r\n"
     "    frames = frames + 1\r\n"
     "    cpu = manager.machine.devices[\":maincpu\"]\r\n"
-    "    mem = cpu.spaces[\"program\"]\r\n"
-    "    if phase == \"wait_reset\" then\r\n"
-    "        if cpu.state[\"PC\"].value ~= idle and frames < 60 then return end\r\n"
-    "        mem:write_u8(${ACIA_CONTROL}, 0x03)\r\n"
-    "        mem:write_u8(${ACIA_CONTROL}, 0x15)\r\n"
-    "        bytes = {}\r\n"
-    "        cpu.state[\"PC\"].value = entry\r\n"
-    "        phase = \"wait_output\"\r\n"
+    "    if phase == \"wait_idle\" then\r\n"
+    "        if cpu.state[\"PC\"].value ~= idle and frames < 180 then return end\r\n"
+    "        idle_count = #bytes\r\n"
+    "        phase = \"settle_idle\"\r\n"
     "        return\r\n"
     "    end\r\n"
-    "    if phase == \"wait_output\" then\r\n"
-    "        if #bytes < 4 and frames < 180 then return end\r\n"
-    "        print(string.format(\"CONSOLE_OUTPUT COUNT=%d BYTES=%s\", #bytes, table.concat((function() local out = {}; for _,byte in ipairs(bytes) do table.insert(out, string.format(\"%02X\", byte)) end; return out end)(), \"\")))\r\n"
+    "    if phase == \"settle_idle\" then\r\n"
+    "        idle_frames = idle_frames + 1\r\n"
+    "        if idle_frames < 20 and frames < 240 then return end\r\n"
+    "        print(string.format(\"BOOT_SCREEN COUNT=%d IDLE_EXTRA=%d BYTES=%s\", #bytes, #bytes - idle_count, hex_bytes()))\r\n"
     "        manager.machine:exit()\r\n"
     "        return\r\n"
     "    end\r\n"
-    "end, \"console_output\")\r\n"
+    "end, \"boot_screen\")\r\n"
 )
 
 execute_process(
@@ -141,7 +150,7 @@ execute_process(
         -skip_gameinfo
         -nothrottle
         -autoboot_delay 0
-        -autoboot_script console_output.lua
+        -autoboot_script boot_screen.lua
         -seconds_to_run 3
     WORKING_DIRECTORY "${_stage_dir}"
     RESULT_VARIABLE _mame_result
@@ -160,19 +169,24 @@ if(NOT _mame_result EQUAL 0)
     message(FATAL_ERROR "MAME failed with exit code ${_mame_result}\n${_mame_output}")
 endif()
 
-string(REGEX MATCH "CONSOLE_OUTPUT COUNT=([0-9]+) BYTES=([0-9A-Fa-f]*)" _output_match "${_mame_output}")
+string(REGEX MATCH "BOOT_SCREEN COUNT=([0-9]+) IDLE_EXTRA=([0-9]+) BYTES=([0-9A-Fa-f]*)" _output_match "${_mame_output}")
 if(NOT _output_match)
-    message(FATAL_ERROR "MAME output did not report CONSOLE_OUTPUT\n${_mame_output}")
+    message(FATAL_ERROR "MAME output did not report BOOT_SCREEN\n${_mame_output}")
 endif()
 
 set(_actual_count "${CMAKE_MATCH_1}")
-set(_actual_bytes "${CMAKE_MATCH_2}")
+set(_idle_extra "${CMAKE_MATCH_2}")
+set(_actual_bytes "${CMAKE_MATCH_3}")
 string(TOUPPER "${_actual_bytes}" _actual_bytes)
 
-if(NOT _actual_count STREQUAL "4")
-    message(FATAL_ERROR "Expected 4 console bytes, got ${_actual_count}\n${_mame_output}")
+if(NOT _actual_count STREQUAL "${_expected_count}")
+    message(FATAL_ERROR "Expected ${_expected_count} boot-screen bytes, got ${_actual_count}\n${_mame_output}")
 endif()
 
-if(NOT _actual_bytes STREQUAL "4F4B0D0A")
-    message(FATAL_ERROR "Expected console bytes 4F4B0D0A, got ${_actual_bytes}\n${_mame_output}")
+if(NOT _actual_bytes STREQUAL "${_expected_bytes}")
+    message(FATAL_ERROR "Expected boot-screen bytes ${_expected_bytes}, got ${_actual_bytes}\n${_mame_output}")
+endif()
+
+if(NOT _idle_extra STREQUAL "0")
+    message(FATAL_ERROR "Expected no bytes after monitor_idle, got ${_idle_extra}\n${_mame_output}")
 endif()

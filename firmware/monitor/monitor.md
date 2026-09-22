@@ -360,17 +360,6 @@ MAME directory or on any caller working directory.
 
 Planned implementation slices follow in dependency order.
 
-### 5. Minimal Screen Draw
-
-Failing test: a MAME screen test resets the machine and fails until the
-serial output begins with the exact minimal screen sequence for this slice.
-
-End state: reset output begins with VT100 clear-screen and home-cursor
-sequences, followed by the expected CPU state text for this slice and
-`\r\n`. Because the screen was erased first, this slice does not pad the
-line to 80 columns. After the row is emitted, the monitor enters
-`monitor_idle` and emits no additional bytes.
-
 ### 5.25. Monitor ROM Version Display
 
 Failing test: a MAME screen test resets the machine and fails until the

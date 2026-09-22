@@ -24,8 +24,11 @@ int_jump_hi            .equ    $1e
 int_jump_lo            .equ    $1f
 
 acia_status            .equ    $06
+acia_control           .equ    $06
 acia_data              .equ    $07
 acia_tdre_bit          .equ    1
+acia_master_reset      .equ    $03
+acia_default_control   .equ    $15
 
 jmp_extended           .equ    $cc
 
@@ -60,6 +63,8 @@ reset_entry:
         sta     external_vector_lo
         lda     #jmp_extended
         sta     int_jump_opcode
+        jsr     init_console
+        jsr     draw_boot_screen
         bra     monitor_idle
 
 swi_entry:
@@ -95,9 +100,27 @@ timer_default_handler:
 external_default_handler:
         bra     monitor_idle
 
+init_console:
+        lda     #acia_master_reset
+        sta     acia_control
+        lda     #acia_default_control
+        sta     acia_control
+        rts
+
 chrout:
         brclr   acia_tdre_bit,acia_status,chrout
         sta     acia_data
+        rts
+
+draw_boot_screen:
+        ldx     #0
+draw_boot_screen_loop:
+        lda     boot_screen_text,x
+        beq     draw_boot_screen_done
+        jsr     chrout
+        inx
+        bra     draw_boot_screen_loop
+draw_boot_screen_done:
         rts
 
 test_console_output:
@@ -113,6 +136,13 @@ test_console_output:
 
 monitor_idle:
         bra     monitor_idle
+
+boot_screen_text:
+        .byte   $1b
+        .text   "[2J"
+        .byte   $1b
+        .text   "[HSP 007F  PC 1000  A 00  X 00  FLAGS 111 I     STOPPED: RESET"
+        .byte   $0d,$0a,$00
 
 rom_code_end:
 
