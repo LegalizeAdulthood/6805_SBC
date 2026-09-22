@@ -355,6 +355,20 @@ MAME directory or on any caller working directory.
 
 Planned implementation slices follow in dependency order.
 
+### 4.5. Assembly Source Style
+
+Failing test: a source-style test scans the monitor assembly sources and
+fails until directives, opcodes, operands, labels, and symbols use the
+documented lowercase style.
+
+End state: all monitor assembly sources, including generated or included
+assembly files that are checked by the build, use lowercase directives,
+opcodes, operands, labels, and symbols. Hexadecimal operands use lowercase
+hex digits where letters appear. Public monitor entry points, RAM labels,
+constants, and test-only assembly symbols are renamed consistently, and the
+existing build outputs and tests remain unchanged except for listing-file
+source text casing.
+
 ### 5. Minimal Screen Draw
 
 Failing test: a MAME screen test resets the machine and fails until the
@@ -365,6 +379,37 @@ sequences, followed by the expected CPU state text for this slice and
 `\r\n`. Because the screen was erased first, this slice does not pad the
 line to 80 columns. After the row is emitted, the monitor enters
 `monitor_idle` and emits no additional bytes.
+
+### 5.25. Monitor ROM Version Display
+
+Failing test: a MAME screen test resets the machine and fails until the
+boot screen includes the monitor ROM version in the upper right corner.
+
+End state: the CMake project version is the single source of truth for the
+monitor ROM version. The build passes that version into the assembly source
+so the ROM emits version text `MONITOR 1.0`, derived from project version
+`1.0.0` without the patch component. During the boot screen draw, after
+clearing the screen, the monitor uses ANSI cursor positioning to move to
+row 1, column 68 and emits the generated version text. The boot draw does
+not emit padding spaces solely to reach the upper right corner. Any CPU
+state text on row 1 remains left-aligned and does not overwrite columns 68
+through 80.
+
+### 5.5. End-to-End Serial Boot Output
+
+Failing test: a MAME serial-file test resets the machine and fails until
+the boot full-screen draw is captured through MAME's serial-port path into
+a staged output file.
+
+End state: `monitor.mame.serial_file_boot_screen` creates an isolated MAME
+data directory, configures the emulated RS-232 connection to a file-backed
+serial sink whose output file lives under that staged directory, runs the
+machine from reset without forcing `PC` or installing ACIA memory taps, and
+waits for the monitor to finish its boot draw. After MAME exits, the test
+reads the staged serial-output file and compares it byte-for-byte with the
+expected boot full-screen draw sequence for this point in the plan. This
+test validates bytes after they have passed through MAME's ACIA and
+RS-232 emulation, not merely writes to ACIA data register `$0007`.
 
 ### 6. CPU State Panel
 
