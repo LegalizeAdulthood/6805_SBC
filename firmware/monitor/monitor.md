@@ -355,18 +355,6 @@ MAME directory or on any caller working directory.
 
 Planned implementation slices follow in dependency order.
 
-### 2. MAME Harness
-
-Failing test: `ctest` runs `monitor.mame.reset_vector` and fails until the
-test can launch MAME from an isolated staged data directory.
-
-End state: the test runner creates a fresh staging directory under the
-build tree, populates the MAME ROM and configuration files there, invokes
-the configured `m6805sbc` executable through an absolute path, sets the
-MAME process current directory to the staging directory, and asserts that
-the emulated reset `PC` equals the reset vector from the staged ROM. The
-repository-local `mame` directory is unchanged by the test.
-
 ### 3. Reset State
 
 Failing test: a MAME reset-state test fails until reset reaches a known

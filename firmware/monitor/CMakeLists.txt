@@ -2,6 +2,11 @@ set(TASM_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../tasm32")
 set(TASM_EXE "${TASM_DIR}/TASM.EXE")
 set(TASM_6805_TABLE "${TASM_DIR}/TASM05.TAB")
 
+get_filename_component(DEFAULT_M6805SBC_EXE "${CMAKE_SOURCE_DIR}/../mame/m6805sbc.exe" ABSOLUTE)
+get_filename_component(DEFAULT_MAME_DATA_DIR "${CMAKE_SOURCE_DIR}/../mame" ABSOLUTE)
+set(M6805SBC_EXE "${DEFAULT_M6805SBC_EXE}" CACHE FILEPATH "Path to the m6805sbc MAME executable")
+set(M6805SBC_DATA_DIR "${DEFAULT_MAME_DATA_DIR}" CACHE PATH "Path to the source MAME data directory")
+
 set(MONITOR_SOURCE "${CMAKE_CURRENT_SOURCE_DIR}/monitor.asm")
 set(MONITOR_OUTPUT_DIR "${CMAKE_CURRENT_BINARY_DIR}")
 set(MONITOR_BINARY "${MONITOR_OUTPUT_DIR}/monitor.bin")
@@ -55,5 +60,18 @@ if(BUILD_TESTING)
             "-DMONITOR_SOURCE_DIR=${CMAKE_CURRENT_SOURCE_DIR}"
             "-P"
             "${CMAKE_CURRENT_SOURCE_DIR}/check_monitor_rom.cmake"
+    )
+
+    add_test(
+        NAME monitor.mame.reset_vector
+        COMMAND
+            "${CMAKE_COMMAND}"
+            "-DMONITOR_BINARY=${MONITOR_BINARY}"
+            "-DMAME_EXE=${M6805SBC_EXE}"
+            "-DMAME_DATA_DIR=${M6805SBC_DATA_DIR}"
+            "-DMAME_STAGE_DIR=${MONITOR_OUTPUT_DIR}/mame-reset-vector"
+            "-DMONITOR_OUTPUT_DIR=${MONITOR_OUTPUT_DIR}"
+            "-P"
+            "${CMAKE_CURRENT_SOURCE_DIR}/check_mame_reset_vector.cmake"
     )
 endif()
