@@ -355,16 +355,6 @@ MAME directory or on any caller working directory.
 
 Planned implementation slices follow in dependency order.
 
-### 4. Console Primitives
-
-Failing test: a MAME console test starts at `test_console_output` and fails
-until the emulated serial output is exactly `OK\r\n`.
-
-End state: `CHROUT` waits for the ACIA transmit-ready condition and writes
-the byte in `A` to ACIA data register `$0007`. `test_console_output` emits
-`OK\r\n` through `CHROUT` and returns to `monitor_idle`. No screen drawing
-or command parsing is introduced in this slice.
-
 ### 5. Minimal Screen Draw
 
 Failing test: a MAME screen test resets the machine and fails until the

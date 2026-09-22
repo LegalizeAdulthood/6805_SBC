@@ -23,6 +23,10 @@ INT_JUMP_OPCODE        .EQU    $1D
 INT_JUMP_HI            .EQU    $1E
 INT_JUMP_LO            .EQU    $1F
 
+ACIA_STATUS            .EQU    $06
+ACIA_DATA              .EQU    $07
+ACIA_TDRE_BIT          .EQU    1
+
 JMP_EXTENDED           .EQU    $CC
 
         .ORG    $1000
@@ -89,6 +93,22 @@ timer_default_handler:
         BRA     monitor_idle
 
 external_default_handler:
+        BRA     monitor_idle
+
+CHROUT:
+        BRCLR   ACIA_TDRE_BIT,ACIA_STATUS,CHROUT
+        STA     ACIA_DATA
+        RTS
+
+test_console_output:
+        LDA     #$4F
+        JSR     CHROUT
+        LDA     #$4B
+        JSR     CHROUT
+        LDA     #$0D
+        JSR     CHROUT
+        LDA     #$0A
+        JSR     CHROUT
         BRA     monitor_idle
 
 monitor_idle:
