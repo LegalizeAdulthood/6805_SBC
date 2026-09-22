@@ -17,6 +17,19 @@ The normal display is 80 columns by 24 rows. The mockup below uses plain
 ASCII separator lines; the implementation may use VT100 line drawing if it
 is available.
 
+The renderer should exploit ANSI terminal behavior to minimize output. If
+an escape sequence has already erased, cleared, scrolled, positioned, or
+restyled part of the display, the monitor should not emit redundant spaces
+or redraw unchanged text merely to maintain a rectangular byte stream.
+Tests should distinguish the final screen state from the exact serial byte
+sequence required to produce it.
+
+Panel borders are decorative, not functional. The layout should reserve
+the vertical and horizontal spacing needed for bordered panel tiles from
+the start, but the functional implementation slices should render panel
+content without depending on border glyphs. Drawing borders around the
+panels is deferred to the final polish slice.
+
 ```text
 | SP 00F8  PC E000  A 00  X 00  FLAGS 111HINZC  STOPPED: RESET                 |
 --------------------------------------------------------------------------------
@@ -49,7 +62,8 @@ The layout is vertically fixed:
 - CPU state panel: one row.
 - Memory panel: sixteen rows.
 - Disassembly panel: five rows.
-- Horizontal separator rows divide the panels.
+- Reserved horizontal and vertical spacing divides the panel tiles and
+  leaves room for decorative borders.
 
 TAB moves focus between editable panels and subpanels. Ctrl+L clears and
 redraws the whole screen from the monitor's current state.
@@ -314,3 +328,206 @@ The following details still need concrete key bindings and command syntax:
   allowed while user code also depends on timer interrupts.
 - Where monitor RAM state, saved CPU state, input buffers, and breakpoints
   reside.
+
+## Implementation Test Plan
+
+Implementation should use strict TDD. Each slice starts by adding one
+failing test, verifying that it fails for the expected reason, then adding
+the smallest implementation that makes the test pass. After the new test
+passes, all existing tests must still pass. Every slice should leave a
+working, if minimal, monitor ROM that can be built and validated.
+
+A slice is complete only when its stated end state is true. Slice numbers
+are stable progress markers; when a completed slice is removed from this
+plan, do not renumber the remaining slice headings.
+
+The `m6805sbc` MAME emulator is the system validation target. Unit-style
+tests may inspect generated files or helper-tool output, but behavior that
+depends on CPU execution, vectors, interrupts, serial I/O, or display state
+should be validated in MAME.
+
+Each MAME-based test case must be independent. A test must stage its own
+temporary MAME data directory, including any ROM, CFG, NVRAM, input, or
+output files it needs, and must invoke the emulator through an absolute
+path with the process current directory set to the staged data directory.
+Tests must not depend on shared mutable files in the developer's normal
+MAME directory or on any caller working directory.
+
+Planned implementation slices follow in dependency order.
+
+### 1. ROM Layout Contract
+
+Failing test: inspect the built `monitor.bin` and fail until it has the
+exact ROM shape described here.
+
+End state: `monitor.bin` is exactly 4096 bytes. File offset `$0000` maps
+to address `$1000`. All unassembled bytes are `$FF`. The reset vector
+decodes to `reset_entry`, the SWI vector decodes to `swi_entry`, and the
+timer vector decodes to `timer_entry`. All three entry labels are within
+`$1000`-`$1FFF`. All monitor build outputs remain in the build tree.
+
+### 2. MAME Harness
+
+Failing test: `ctest` runs `monitor.mame.reset_vector` and fails until the
+test can launch MAME from an isolated staged data directory.
+
+End state: the test runner creates a fresh staging directory under the
+build tree, populates the MAME ROM and configuration files there, invokes
+the configured `m6805sbc` executable through an absolute path, sets the
+MAME process current directory to the staging directory, and asserts that
+the emulated reset `PC` equals the reset vector from the staged ROM. The
+repository-local `mame` directory is unchanged by the test.
+
+### 3. Reset State
+
+Failing test: a MAME reset-state test fails until reset reaches a known
+monitor idle address with initialized monitor state.
+
+End state: `reset_entry` sets the hardware stack pointer to
+`MONITOR_STACK_TOP`, initializes the saved user-state block, records stop
+reason `STOP_RESET`, and branches to `monitor_idle`. The MAME test stops at
+`monitor_idle` and verifies the stack pointer, saved `PC`, saved `A`,
+saved `X`, saved condition-code byte, and stop reason.
+
+### 4. Console Primitives
+
+Failing test: a MAME console test starts at `test_console_output` and fails
+until the emulated serial output is exactly `OK\r\n`.
+
+End state: `CHROUT` waits for the ACIA transmit-ready condition and writes
+the byte in `A` to ACIA data register `$0007`. `test_console_output` emits
+`OK\r\n` through `CHROUT` and returns to `monitor_idle`. No screen drawing
+or command parsing is introduced in this slice.
+
+### 5. Minimal Screen Draw
+
+Failing test: a MAME screen test resets the machine and fails until the
+serial output begins with the exact minimal screen sequence for this slice.
+
+End state: reset output begins with VT100 clear-screen and home-cursor
+sequences, followed by the expected CPU state text for this slice and
+`\r\n`. Because the screen was erased first, this slice does not pad the
+line to 80 columns. After the row is emitted, the monitor enters
+`monitor_idle` and emits no additional bytes.
+
+### 6. CPU State Panel
+
+Failing test: a CPU-row formatter test fails until a fixed saved frame
+renders byte-for-byte to the expected CPU state text.
+
+End state: the test fills the saved frame with `SP=$007F`, `PC=$1234`,
+`A=$A5`, `X=$5A`, condition-code bits all set, and stop reason `TEST`.
+Calling the CPU row renderer emits the checked-in expected text terminated
+by `\r\n`. The output contains the required fields, uppercase hexadecimal
+values, and the documented `111HINZC` flag display. Because callers can
+erase or position the terminal before drawing the row, the renderer does
+not pad the byte stream to 80 columns.
+
+### 7. Memory Panel Rendering
+
+Failing test: a memory-row formatter test fails until one fixed memory row
+matches the expected memory row text.
+
+End state: with bytes `$20`-`$2F` stored at `$0080`-`$008F`, the memory
+row renderer emits the `$0080` row with sixteen uppercase hex bytes and the
+matching printable ASCII dump, terminated by `\r\n`. Because callers can
+erase or position the terminal before drawing the row, the renderer does
+not pad the byte stream to 80 columns.
+
+### 8. Memory Cursor and Edit
+
+Failing test: a MAME scripted-input test fails until memory edits and
+cursor movement produce the exact expected memory state and cursor state.
+
+End state: starting with memory page `$0080` and cursor at `$0080`, hex
+input `4` then `1` stores `$41` at `$0080` and moves the cursor to `$0081`.
+TAB moves focus to the ASCII subpanel. ASCII input `Z` stores `$5A` at
+`$0081` and moves the cursor to `$0082`. Left, right, up, and down update
+the selected address by `-1`, `+1`, `-16`, and `+16`. Ctrl+N changes the
+page base from `$0080` to `$0180`; Ctrl+P changes it back to `$0080`.
+
+### 9. Non-Symbolic Disassembler
+
+Failing test: the disassembler fixture fails until every byte sequence in
+the fixture decodes to the expected address, byte field, mnemonic, and
+literal operand text.
+
+End state: the fixture covers every opcode defined by `TASM05.TAB`, plus
+at least one invalid opcode. The disassembler emits no labels and no
+symbolic operands. Immediate, direct, extended, indexed, relative branch,
+and bit-operation operands use the literal formats defined in this
+document. Invalid opcodes decode as `FCB $nn` and consume one byte.
+
+### 10. SWI Monitor Entry
+
+Failing test: a MAME SWI-entry test runs a fixed RAM program ending in
+`SWI` and fails until the monitor captures the expected saved frame.
+
+End state: the RAM program loads known values into `A` and `X`, sets a
+known condition-code state, and executes `SWI` at label `user_swi`.
+`swi_entry` records stop reason `STOP_SWI`, saves `A`, `X`, condition
+codes, and saves `PC=user_swi+1`, then enters `monitor_idle`.
+
+### 11. Timer Single-Step
+
+Failing test: a MAME timer-step test computes a checksum of the ROM test
+code, performs one monitor step, and fails until `PC` advances by one
+instruction with the checksum unchanged.
+
+End state: starting at ROM label `step_rom_start`, one step executes the
+instruction at the saved `PC`, returns through the timer interrupt, saves
+the new `PC`, preserves the user's intended interrupt-mask state, records
+stop reason `STOP_STEP`, and leaves every byte in ROM unchanged.
+
+### 12. RAM Breakpoints
+
+Failing test: a MAME breakpoint test sets one breakpoint in a fixed RAM
+program and fails until breakpoint hit and continue behavior match the
+contract below.
+
+End state: arming the breakpoint stores opcode `$83` at the breakpoint
+address and records the original opcode in the breakpoint table. When the
+program hits the breakpoint, the monitor restores the original opcode
+before drawing or exposing memory, records stop reason `STOP_BREAK`, and
+saves `PC` equal to the breakpoint address. Continuing executes the
+restored instruction exactly once under timer-step control, then re-arms
+the breakpoint before normal execution resumes.
+
+### 13. Go and Trace UI Integration
+
+Failing test: a command-dispatch test invokes internal commands `GO`,
+`STEP`, and `TRACE_COUNT` and fails until each command updates execution
+state and panel state as specified.
+
+End state: `GO` resumes from the saved `PC` and stops only at a monitor
+entry condition. `STEP` executes exactly one instruction and refreshes the
+CPU and disassembly panel state. `TRACE_COUNT` with count `3` performs
+three single steps, refreshing CPU and disassembly state after each step,
+then returns to `monitor_idle`.
+
+### 14. S-Record Load and Dump
+
+Failing test: an S-record test feeds one fixed valid record and one fixed
+invalid record, then fails until load and dump behavior is exact.
+
+End state: loading `S107011001020304DD` writes bytes `$01,$02,$03,$04` to
+`$0110`-`$0113`. Loading the same record with the checksum changed by one
+bit reports a checksum error and leaves memory unchanged. Dumping
+`$0110`-`$0113` emits exactly `S107011001020304DD\r\nS9030000FC\r\n`.
+
+### 15. Full-Screen Polish Pass
+
+Failing test: a MAME screen-snapshot test fails until the final terminal
+screen state after reset matches the checked-in expected 80x24 snapshot for
+a fixed machine state.
+
+End state: reset uses ANSI clear, cursor positioning, and targeted output
+to produce the expected 24-row by 80-column screen state. The emitted
+serial byte stream is not required to contain 80 printable characters for
+each row when ANSI clearing or positioning already supplies the intended
+blank cells. The snapshot includes the CPU state panel, sixteen memory
+rows, five disassembly rows, and reserved panel spacing in the documented
+positions. This slice adds decorative borders around the panels in the
+reserved spacing without changing any monitor behavior. Follow-PC and
+pinned disassembly modes both have snapshot tests with fixed `PC`, fixed
+memory bytes, and fixed selected panel state.
