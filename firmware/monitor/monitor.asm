@@ -30,6 +30,13 @@ int_jump_opcode        .equ    $1d
 int_jump_hi            .equ    $1e
 int_jump_lo            .equ    $1f
 hex_value              .equ    $20
+memory_row_hi          .equ    $21
+memory_row_lo          .equ    $22
+memory_row_index       .equ    $23
+memory_read_opcode     .equ    $24
+memory_read_hi         .equ    $25
+memory_read_lo         .equ    $26
+memory_read_rts        .equ    $27
 
 acia_status            .equ    $06
 acia_control           .equ    $06
@@ -39,6 +46,8 @@ acia_master_reset      .equ    $03
 acia_default_control   .equ    $15
 
 jmp_extended           .equ    $cc
+lda_extended_indexed   .equ    $d6
+rts_instruction        .equ    $81
 
         .org    $1000
 reset_entry:
@@ -71,6 +80,10 @@ reset_entry:
         sta     external_vector_lo
         lda     #jmp_extended
         sta     int_jump_opcode
+        lda     #lda_extended_indexed
+        sta     memory_read_opcode
+        lda     #rts_instruction
+        sta     memory_read_rts
         jsr     init_console
         jsr     draw_boot_screen
         jmp     monitor_idle
@@ -261,6 +274,52 @@ emit_stop_reason_write:
         jsr     emit_cpu_row_text
         rts
 
+draw_memory_row:
+        lda     memory_row_hi
+        sta     memory_read_hi
+        jsr     emit_hex_byte
+        lda     memory_row_lo
+        sta     memory_read_lo
+        jsr     emit_hex_byte
+        ldx     #memory_row_address_suffix_text-cpu_row_text
+        jsr     emit_cpu_row_text
+        clrx
+        stx     memory_row_index
+draw_memory_row_hex_loop:
+        ldx     memory_row_index
+        jsr     memory_read_opcode
+        jsr     emit_hex_byte
+        lda     #$20
+        jsr     chrout
+        ldx     memory_row_index
+        inx
+        stx     memory_row_index
+        cpx     #$10
+        bne     draw_memory_row_hex_loop
+        lda     #$20
+        jsr     chrout
+        clrx
+draw_memory_row_ascii_loop:
+        jsr     memory_read_opcode
+        jsr     emit_memory_ascii
+        inx
+        cpx     #$10
+        bne     draw_memory_row_ascii_loop
+        ldx     #cpu_row_crlf_text-cpu_row_text
+        jsr     emit_cpu_row_text
+        rts
+
+emit_memory_ascii:
+        cmp     #$20
+        blo     emit_memory_ascii_dot
+        cmp     #$7f
+        blo     emit_memory_ascii_write
+emit_memory_ascii_dot:
+        lda     #$2e
+emit_memory_ascii_write:
+        jsr     chrout
+        rts
+
 test_console_output:
         lda     #$4f
         jsr     chrout
@@ -288,6 +347,14 @@ test_cpu_row_output:
         lda     #stop_test
         sta     stop_reason
         jsr     draw_cpu_row
+        bra     monitor_idle
+
+test_memory_row_output:
+        clra
+        sta     memory_row_hi
+        lda     #$80
+        sta     memory_row_lo
+        jsr     draw_memory_row
         bra     monitor_idle
 
 monitor_idle:
@@ -323,6 +390,9 @@ stop_test_text:
         .byte   $00
 stop_unknown_text:
         .text   "UNKNOWN"
+        .byte   $00
+memory_row_address_suffix_text:
+        .text   ": "
         .byte   $00
 cpu_row_crlf_text:
         .byte   $0d,$0a,$00

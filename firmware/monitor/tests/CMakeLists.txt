@@ -84,6 +84,21 @@ add_test(
 )
 
 add_test(
+    NAME monitor.mame.memory_row
+    COMMAND
+        "${CMAKE_COMMAND}"
+        "-DMONITOR_BINARY=${MONITOR_BINARY}"
+        "-DMONITOR_SYMBOLS=${MONITOR_SYMBOLS}"
+        "-DMEMORY_ROW_EXPECTED=${CMAKE_CURRENT_SOURCE_DIR}/expected_memory_row.txt"
+        "-DMAME_EXE=${M6805SBC_EXE}"
+        "-DMAME_DATA_DIR=${M6805SBC_DATA_DIR}"
+        "-DMAME_STAGE_DIR=${MONITOR_OUTPUT_DIR}/mame-memory-row"
+        "-DMONITOR_OUTPUT_DIR=${MONITOR_OUTPUT_DIR}"
+        "-P"
+        "${CMAKE_CURRENT_SOURCE_DIR}/check_mame_memory_row.cmake"
+)
+
+add_test(
     NAME monitor.mame.interrupt_vectors
     COMMAND
         "${CMAKE_COMMAND}"

@@ -376,17 +376,6 @@ MAME directory or on any caller working directory.
 
 Planned implementation slices follow in dependency order.
 
-### 7. Memory Panel Rendering
-
-Failing test: a memory-row formatter test fails until one fixed memory row
-matches the expected memory row text.
-
-End state: with bytes `$20`-`$2F` stored at `$0080`-`$008F`, the memory
-row renderer emits the `$0080` row with sixteen uppercase hex bytes and the
-matching printable ASCII dump, terminated by `\r\n`. Because callers can
-erase or position the terminal before drawing the row, the renderer does
-not pad the byte stream to 80 columns.
-
 ### 8. Memory Cursor and Edit
 
 Failing test: a MAME scripted-input test fails until memory edits and
