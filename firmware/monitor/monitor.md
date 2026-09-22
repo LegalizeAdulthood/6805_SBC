@@ -360,22 +360,6 @@ MAME directory or on any caller working directory.
 
 Planned implementation slices follow in dependency order.
 
-### 5.5. End-to-End Serial Boot Output
-
-Failing test: a MAME serial-file test resets the machine and fails until
-the boot full-screen draw is captured through MAME's serial-port path into
-a staged output file.
-
-End state: `monitor.mame.serial_file_boot_screen` creates an isolated MAME
-data directory, configures the emulated RS-232 connection to a file-backed
-serial sink whose output file lives under that staged directory, runs the
-machine from reset without forcing `PC` or installing ACIA memory taps, and
-waits for the monitor to finish its boot draw. After MAME exits, the test
-reads the staged serial-output file and compares it byte-for-byte with the
-expected boot full-screen draw sequence for this point in the plan. This
-test validates bytes after they have passed through MAME's ACIA and
-RS-232 emulation, not merely writes to ACIA data register `$0007`.
-
 ### 6. CPU State Panel
 
 Failing test: a CPU-row formatter test fails until a fixed saved frame

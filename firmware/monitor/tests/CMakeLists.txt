@@ -54,6 +54,21 @@ add_test(
 )
 
 add_test(
+    NAME monitor.mame.serial_file_boot_screen
+    COMMAND
+        "${CMAKE_COMMAND}"
+        "-DMONITOR_BINARY=${MONITOR_BINARY}"
+        "-DMONITOR_SYMBOLS=${MONITOR_SYMBOLS}"
+        "-DMONITOR_VERSION_TEXT=${MONITOR_VERSION_TEXT}"
+        "-DMAME_EXE=${M6805SBC_EXE}"
+        "-DMAME_DATA_DIR=${M6805SBC_DATA_DIR}"
+        "-DMAME_STAGE_DIR=${MONITOR_OUTPUT_DIR}/mame-serial-file-boot-screen"
+        "-DMONITOR_OUTPUT_DIR=${MONITOR_OUTPUT_DIR}"
+        "-P"
+        "${CMAKE_CURRENT_SOURCE_DIR}/check_mame_serial_file_boot_screen.cmake"
+)
+
+add_test(
     NAME monitor.mame.interrupt_vectors
     COMMAND
         "${CMAKE_COMMAND}"
