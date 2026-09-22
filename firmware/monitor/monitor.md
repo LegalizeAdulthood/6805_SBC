@@ -376,17 +376,112 @@ MAME directory or on any caller working directory.
 
 Planned implementation slices follow in dependency order.
 
-### 9. Non-Symbolic Disassembler
+The disassembler slices are organized by addressing mode to keep tests and
+reviews focused. The implementation should not mirror that structure with
+a long opcode compare chain. To keep ROM size low, decode using the 6805
+opcode bit organization wherever practical: mask and shift opcode fields,
+share operand emitters, use compact mnemonic tables for the irregular
+cases, and fall through to `FCB $nn` for gaps or invalid opcodes.
 
-Failing test: the disassembler fixture fails until every byte sequence in
-the fixture decodes to the expected address, byte field, mnemonic, and
-literal operand text.
+### 9.1. Disassembler Harness and FCB Rows
 
-End state: the fixture covers every opcode defined by `TASM05.TAB`, plus
-at least one invalid opcode. The disassembler emits no labels and no
-symbolic operands. Immediate, direct, extended, indexed, relative branch,
-and bit-operation operands use the literal formats defined in this
-document. Invalid opcodes decode as `FCB $nn` and consume one byte.
+Failing test: a MAME disassembler fixture test fails until a minimal
+decoder entry can render one valid one-byte instruction and one invalid
+opcode row.
+
+End state: `monitor.mame.disassembler` stages a fixed byte fixture in RAM,
+calls the decoder entry for each fixture row, captures the emitted row text,
+and compares it byte-for-byte with checked-in expected output. The decoder
+emits the documented row fields: marker, address, byte field, mnemonic at
+column 20, operands at column 28, and CR LF. `NOP` decodes as a one-byte
+instruction. Invalid opcode `$02` decodes as `FCB $02`, has no symbolic
+operand, and consumes one byte.
+
+### 9.2. Disassembler Inherent Instructions
+
+Failing test: the disassembler fixture is extended with every no-operand
+row in `TASM05.TAB`, and fails until each row decodes to the expected text.
+
+End state: all inherent, accumulator, index-register, condition-code,
+control, and register-transfer instructions decode with the expected byte
+count, mnemonic, byte field, and no operand text. This includes synonyms
+that share an opcode in `TASM05.TAB`; the fixture records the canonical
+mnemonic the monitor emits for each shared opcode.
+
+### 9.3. Disassembler Relative Instructions
+
+Failing test: the disassembler fixture is extended with every relative
+branch row in `TASM05.TAB`, including `BSR`, and fails until each row
+decodes to the expected text.
+
+End state: all one-byte relative offsets decode to resolved absolute target
+addresses using uppercase hexadecimal. The fixture includes at least one
+forward branch, one backward branch, and one target crossing a page
+boundary. Relative rows emit no labels or symbolic operands.
+
+### 9.4. Disassembler Immediate Instructions
+
+Failing test: the disassembler fixture is extended with every immediate
+operand row in `TASM05.TAB`, and fails until each row decodes to the
+expected text.
+
+End state: all immediate arithmetic, logic, load, compare, and indexed
+compare forms decode with operands formatted as `#$nn`. Fixture rows cover
+each immediate mnemonic accepted by `TASM05.TAB`, including opcodes shared
+by aliases such as `CMPX` and `CPX`; shared opcodes use the monitor's
+canonical mnemonic.
+
+### 9.5. Disassembler Direct and Extended Instructions
+
+Failing test: the disassembler fixture is extended with every direct and
+extended operand row in `TASM05.TAB`, and fails until each row decodes to
+the expected text.
+
+End state: direct operands display as `$nn`, extended operands display as
+`$nnnn`, and all direct/extended arithmetic, logic, load/store, compare,
+unary memory, `JMP`, and `JSR` forms decode with the expected byte count.
+Rows using `MZERO` table behavior have fixtures for both short direct-page
+operands and full extended operands where both encodings are valid machine
+code.
+
+### 9.6. Disassembler Indexed Instructions
+
+Failing test: the disassembler fixture is extended with every indexed
+operand row in `TASM05.TAB`, and fails until each row decodes to the
+expected text.
+
+End state: no-offset indexed operands display as `,X`. Offset-indexed
+operands display the literal numeric offset and `,X`, using `$nn,X` for
+one-byte offsets and `$nnnn,X` where the opcode encoding carries a full
+extended address. Indexed arithmetic, logic, load/store, compare, unary
+memory, `JMP`, and `JSR` forms decode with the expected byte count and
+canonical mnemonic.
+
+### 9.7. Disassembler Bit Operations
+
+Failing test: the disassembler fixture is extended with every bit-test and
+bit-manipulation row in `TASM05.TAB`, and fails until each row decodes to
+the expected text.
+
+End state: `BSET` and `BCLR` rows display the bit number and literal
+direct-page address. `BRSET` and `BRCLR` rows display the bit number,
+literal direct-page address, and resolved absolute branch target. Fixture
+rows cover at least bit 0, bit 7, a forward branch, and a backward branch.
+
+### 9.8. Disassembler Coverage and Truncation
+
+Failing test: a fixture coverage audit fails until every opcode row in
+`TASM05.TAB` is represented by at least one disassembler fixture, and
+truncated end-of-memory cases fail until the decoder handles them without
+reading beyond addressable memory.
+
+End state: the disassembler fixture covers every opcode row in
+`TASM05.TAB`, plus at least one invalid opcode. The coverage check names
+any missing table row by mnemonic, operand form, and opcode byte. Truncated
+instructions near `$FFFF` display only bytes that can be read and still
+produce a deterministic `FCB $nn` fallback or decoded mnemonic text. The
+decoder emits no labels, symbol names, expressions, comments, or
+source-level information in any fixture row.
 
 ### 10. SWI Monitor Entry
 
