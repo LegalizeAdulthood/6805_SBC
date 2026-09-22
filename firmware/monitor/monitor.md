@@ -355,17 +355,6 @@ MAME directory or on any caller working directory.
 
 Planned implementation slices follow in dependency order.
 
-### 3. Reset State
-
-Failing test: a MAME reset-state test fails until reset reaches a known
-monitor idle address with initialized monitor state.
-
-End state: `reset_entry` sets the hardware stack pointer to
-`MONITOR_STACK_TOP`, initializes the saved user-state block, records stop
-reason `STOP_RESET`, and branches to `monitor_idle`. The MAME test stops at
-`monitor_idle` and verifies the stack pointer, saved `PC`, saved `A`,
-saved `X`, saved condition-code byte, and stop reason.
-
 ### 3.5. Interrupt RAM Vectors
 
 Failing test: a MAME interrupt-vector test fails until the hardware
