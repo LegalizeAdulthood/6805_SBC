@@ -376,18 +376,6 @@ MAME directory or on any caller working directory.
 
 Planned implementation slices follow in dependency order.
 
-### 8. Memory Cursor and Edit
-
-Failing test: a MAME scripted-input test fails until memory edits and
-cursor movement produce the exact expected memory state and cursor state.
-
-End state: starting with memory page `$0080` and cursor at `$0080`, hex
-input `4` then `1` stores `$41` at `$0080` and moves the cursor to `$0081`.
-TAB moves focus to the ASCII subpanel. ASCII input `Z` stores `$5A` at
-`$0081` and moves the cursor to `$0082`. Left, right, up, and down update
-the selected address by `-1`, `+1`, `-16`, and `+16`. Ctrl+N changes the
-page base from `$0080` to `$0180`; Ctrl+P changes it back to `$0080`.
-
 ### 9. Non-Symbolic Disassembler
 
 Failing test: the disassembler fixture fails until every byte sequence in

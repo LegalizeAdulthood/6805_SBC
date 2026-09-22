@@ -99,6 +99,20 @@ add_test(
 )
 
 add_test(
+    NAME monitor.mame.memory_cursor_edit
+    COMMAND
+        "${CMAKE_COMMAND}"
+        "-DMONITOR_BINARY=${MONITOR_BINARY}"
+        "-DMONITOR_SYMBOLS=${MONITOR_SYMBOLS}"
+        "-DMAME_EXE=${M6805SBC_EXE}"
+        "-DMAME_DATA_DIR=${M6805SBC_DATA_DIR}"
+        "-DMAME_STAGE_DIR=${MONITOR_OUTPUT_DIR}/mame-memory-cursor-edit"
+        "-DMONITOR_OUTPUT_DIR=${MONITOR_OUTPUT_DIR}"
+        "-P"
+        "${CMAKE_CURRENT_SOURCE_DIR}/check_mame_memory_cursor_edit.cmake"
+)
+
+add_test(
     NAME monitor.mame.interrupt_vectors
     COMMAND
         "${CMAKE_COMMAND}"

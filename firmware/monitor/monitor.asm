@@ -6,6 +6,17 @@ reset_cc               .equ    $08
 stop_reset             .equ    $01
 stop_test              .equ    $02
 
+memory_focus_hex       .equ    $00
+memory_focus_ascii     .equ    $01
+
+key_tab                .equ    $09
+key_ctrl_n             .equ    $0e
+key_ctrl_p             .equ    $10
+key_left               .equ    $80
+key_right              .equ    $81
+key_up                 .equ    $82
+key_down               .equ    $83
+
 cc_c_bit               .equ    0
 cc_z_bit               .equ    1
 cc_n_bit               .equ    2
@@ -37,6 +48,16 @@ memory_read_opcode     .equ    $24
 memory_read_hi         .equ    $25
 memory_read_lo         .equ    $26
 memory_read_rts        .equ    $27
+memory_page_hi         .equ    $21
+memory_page_lo         .equ    $22
+memory_cursor_hi       .equ    $28
+memory_cursor_lo       .equ    $29
+memory_focus           .equ    $2a
+memory_hex_phase       .equ    $2b
+memory_write_opcode    .equ    $2c
+memory_write_hi        .equ    $2d
+memory_write_lo        .equ    $2e
+memory_write_rts       .equ    $2f
 
 acia_status            .equ    $06
 acia_control           .equ    $06
@@ -47,6 +68,7 @@ acia_default_control   .equ    $15
 
 jmp_extended           .equ    $cc
 lda_extended_indexed   .equ    $d6
+sta_extended_indexed   .equ    $d7
 rts_instruction        .equ    $81
 
         .org    $1000
@@ -84,6 +106,11 @@ reset_entry:
         sta     memory_read_opcode
         lda     #rts_instruction
         sta     memory_read_rts
+        lda     #sta_extended_indexed
+        sta     memory_write_opcode
+        lda     #rts_instruction
+        sta     memory_write_rts
+        jsr     init_memory_panel
         jsr     init_console
         jsr     draw_boot_screen
         jmp     monitor_idle
@@ -318,6 +345,197 @@ emit_memory_ascii_dot:
         lda     #$2e
 emit_memory_ascii_write:
         jsr     chrout
+        rts
+
+init_memory_panel:
+        clra
+        sta     memory_page_hi
+        sta     memory_cursor_hi
+        sta     memory_focus
+        sta     memory_hex_phase
+        lda     #$80
+        sta     memory_page_lo
+        sta     memory_cursor_lo
+        rts
+
+memory_key_input:
+        jsr     handle_memory_key
+        jmp     monitor_idle
+
+handle_memory_key:
+        sta     hex_value
+        cmp     #key_tab
+        beq     memory_key_tab
+        cmp     #key_ctrl_n
+        beq     memory_key_next_page
+        cmp     #key_ctrl_p
+        beq     memory_key_prev_page
+        cmp     #key_left
+        beq     memory_key_left
+        cmp     #key_right
+        beq     memory_key_right
+        cmp     #key_up
+        beq     memory_key_up
+        cmp     #key_down
+        beq     memory_key_down
+        lda     memory_focus
+        beq     memory_key_hex_dispatch
+        lda     hex_value
+        jmp     memory_key_ascii
+
+memory_key_hex_dispatch:
+        lda     hex_value
+        jmp     memory_key_hex
+
+memory_key_tab:
+        lda     memory_focus
+        eor     #memory_focus_ascii
+        sta     memory_focus
+        clra
+        sta     memory_hex_phase
+        rts
+
+memory_key_next_page:
+        inc     memory_page_hi
+        inc     memory_cursor_hi
+        jmp     memory_cursor_done
+
+memory_key_prev_page:
+        dec     memory_page_hi
+        dec     memory_cursor_hi
+        jmp     memory_cursor_done
+
+memory_key_left:
+        jsr     memory_cursor_left
+        rts
+
+memory_key_right:
+        jsr     memory_cursor_right
+        rts
+
+memory_key_up:
+        jsr     memory_cursor_up
+        rts
+
+memory_key_down:
+        jsr     memory_cursor_down
+        rts
+
+memory_key_ascii:
+        cmp     #$20
+        blo     memory_key_done
+        cmp     #$7f
+        bhs     memory_key_done
+        jsr     memory_write_cursor
+        jsr     memory_cursor_right
+memory_key_done:
+        rts
+
+memory_key_hex:
+        cmp     #$30
+        blo     memory_key_done
+        cmp     #$3a
+        blo     memory_hex_digit
+        cmp     #$41
+        blo     memory_key_done
+        cmp     #$47
+        blo     memory_hex_upper
+        cmp     #$61
+        blo     memory_key_done
+        cmp     #$67
+        blo     memory_hex_lower
+        rts
+
+memory_hex_digit:
+        sub     #$30
+        bra     memory_hex_nibble
+
+memory_hex_upper:
+        sub     #$37
+        bra     memory_hex_nibble
+
+memory_hex_lower:
+        sub     #$57
+
+memory_hex_nibble:
+        sta     hex_value
+        lda     memory_hex_phase
+        bne     memory_hex_low
+        lda     hex_value
+        lsla
+        lsla
+        lsla
+        lsla
+        jsr     memory_write_cursor
+        lda     #$01
+        sta     memory_hex_phase
+        rts
+
+memory_hex_low:
+        jsr     memory_read_cursor
+        and     #$f0
+        sta     memory_row_index
+        lda     hex_value
+        ora     memory_row_index
+        jsr     memory_write_cursor
+        clra
+        sta     memory_hex_phase
+        jsr     memory_cursor_right
+        rts
+
+memory_select_cursor:
+        lda     memory_cursor_hi
+        sta     memory_read_hi
+        sta     memory_write_hi
+        lda     memory_cursor_lo
+        sta     memory_read_lo
+        sta     memory_write_lo
+        clrx
+        rts
+
+memory_read_cursor:
+        jsr     memory_select_cursor
+        jsr     memory_read_opcode
+        rts
+
+memory_write_cursor:
+        sta     hex_value
+        jsr     memory_select_cursor
+        lda     hex_value
+        jsr     memory_write_opcode
+        rts
+
+memory_cursor_left:
+        lda     memory_cursor_lo
+        bne     memory_cursor_left_dec
+        dec     memory_cursor_hi
+memory_cursor_left_dec:
+        dec     memory_cursor_lo
+        bra     memory_cursor_done
+
+memory_cursor_right:
+        inc     memory_cursor_lo
+        bne     memory_cursor_done
+        inc     memory_cursor_hi
+        bra     memory_cursor_done
+
+memory_cursor_up:
+        lda     memory_cursor_lo
+        sub     #$10
+        sta     memory_cursor_lo
+        bcc     memory_cursor_done
+        dec     memory_cursor_hi
+        bra     memory_cursor_done
+
+memory_cursor_down:
+        lda     memory_cursor_lo
+        add     #$10
+        sta     memory_cursor_lo
+        bcc     memory_cursor_done
+        inc     memory_cursor_hi
+memory_cursor_done:
+        clra
+        sta     memory_hex_phase
         rts
 
 test_console_output:

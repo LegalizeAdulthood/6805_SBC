@@ -1,0 +1,272 @@
+foreach(_required_var IN ITEMS MONITOR_BINARY MONITOR_SYMBOLS MAME_EXE MAME_DATA_DIR MAME_STAGE_DIR MONITOR_OUTPUT_DIR)
+    if(NOT DEFINED ${_required_var} OR "${${_required_var}}" STREQUAL "")
+        message(FATAL_ERROR "${_required_var} is required")
+    endif()
+endforeach()
+
+get_filename_component(_monitor_binary "${MONITOR_BINARY}" ABSOLUTE)
+get_filename_component(_monitor_symbols "${MONITOR_SYMBOLS}" ABSOLUTE)
+get_filename_component(_mame_exe "${MAME_EXE}" ABSOLUTE)
+get_filename_component(_mame_data_dir "${MAME_DATA_DIR}" ABSOLUTE)
+get_filename_component(_monitor_output_dir "${MONITOR_OUTPUT_DIR}" ABSOLUTE)
+get_filename_component(_stage_dir "${MAME_STAGE_DIR}" ABSOLUTE BASE_DIR "${_monitor_output_dir}")
+
+if(NOT EXISTS "${_monitor_binary}")
+    message(FATAL_ERROR "Monitor binary does not exist: ${_monitor_binary}")
+endif()
+
+if(NOT EXISTS "${_monitor_symbols}")
+    message(FATAL_ERROR "Monitor symbols do not exist: ${_monitor_symbols}")
+endif()
+
+if(NOT EXISTS "${_mame_exe}")
+    message(FATAL_ERROR "MAME executable does not exist: ${_mame_exe}")
+endif()
+
+if(NOT EXISTS "${_mame_data_dir}/cfg/m6805sbc.cfg")
+    message(FATAL_ERROR "MAME configuration does not exist: ${_mame_data_dir}/cfg/m6805sbc.cfg")
+endif()
+
+file(TO_CMAKE_PATH "${_monitor_output_dir}" _monitor_output_cmp)
+file(TO_CMAKE_PATH "${_stage_dir}" _stage_cmp)
+
+if("${_stage_cmp}" STREQUAL "${_monitor_output_cmp}")
+    message(FATAL_ERROR "MAME stage directory must not be the monitor output directory")
+endif()
+
+string(APPEND _monitor_output_cmp "/")
+string(APPEND _stage_cmp "/")
+string(FIND "${_stage_cmp}" "${_monitor_output_cmp}" _stage_prefix)
+if(NOT _stage_prefix EQUAL 0)
+    message(FATAL_ERROR "MAME stage directory must be under the monitor output directory: ${_stage_dir}")
+endif()
+
+function(_snapshot_tree _root _out_var)
+    set(_snapshot)
+
+    if(EXISTS "${_root}")
+        file(GLOB_RECURSE _paths LIST_DIRECTORIES true RELATIVE "${_root}" "${_root}/*")
+        list(SORT _paths)
+
+        foreach(_rel_path IN LISTS _paths)
+            set(_full_path "${_root}/${_rel_path}")
+
+            if(IS_DIRECTORY "${_full_path}")
+                list(APPEND _snapshot "D:${_rel_path}")
+            else()
+                file(SHA256 "${_full_path}" _hash)
+                list(APPEND _snapshot "F:${_rel_path}:${_hash}")
+            endif()
+        endforeach()
+    endif()
+
+    set(${_out_var} "${_snapshot}" PARENT_SCOPE)
+endfunction()
+
+function(_require_symbol _name)
+    if(NOT DEFINED "SYM_${_name}")
+        message(FATAL_ERROR "Missing symbol '${_name}' in ${_monitor_symbols}")
+    endif()
+endfunction()
+
+file(STRINGS "${_monitor_symbols}" _symbol_lines)
+foreach(_line IN LISTS _symbol_lines)
+    if(_line MATCHES "^([A-Za-z_][A-Za-z0-9_]*)[ \t]+([0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f])")
+        string(TOUPPER "${CMAKE_MATCH_2}" _symbol_value)
+        set("SYM_${CMAKE_MATCH_1}" "${_symbol_value}")
+    endif()
+endforeach()
+
+_require_symbol("monitor_idle")
+_require_symbol("memory_key_input")
+_require_symbol("memory_page_hi")
+_require_symbol("memory_page_lo")
+_require_symbol("memory_cursor_hi")
+_require_symbol("memory_cursor_lo")
+_require_symbol("memory_focus")
+_require_symbol("memory_hex_phase")
+
+_snapshot_tree("${_mame_data_dir}" _mame_data_before)
+
+file(REMOVE_RECURSE "${_stage_dir}")
+file(MAKE_DIRECTORY
+    "${_stage_dir}/roms/m6805sbc"
+    "${_stage_dir}/cfg"
+)
+
+configure_file("${_monitor_binary}" "${_stage_dir}/roms/m6805sbc/rom1.bin" COPYONLY)
+configure_file("${_mame_data_dir}/cfg/m6805sbc.cfg" "${_stage_dir}/cfg/m6805sbc.cfg" COPYONLY)
+
+set(_memory_cursor_script "${_stage_dir}/memory_cursor_edit.lua")
+file(WRITE "${_memory_cursor_script}"
+    "local idle = 0x${SYM_monitor_idle}\r\n"
+    "local entry = 0x${SYM_memory_key_input}\r\n"
+    "local page_hi = 0x${SYM_memory_page_hi}\r\n"
+    "local page_lo = 0x${SYM_memory_page_lo}\r\n"
+    "local cursor_hi = 0x${SYM_memory_cursor_hi}\r\n"
+    "local cursor_lo = 0x${SYM_memory_cursor_lo}\r\n"
+    "local focus = 0x${SYM_memory_focus}\r\n"
+    "local hex_phase = 0x${SYM_memory_hex_phase}\r\n"
+    "local keys = {0x34, 0x31, 0x09, 0x5a, 0x80, 0x81, 0x82, 0x83, 0x0e, 0x10}\r\n"
+    "local index = 1\r\n"
+    "local phase = \"wait_reset\"\r\n"
+    "local frames = 0\r\n"
+    "local key_frames = 0\r\n"
+    "local after_next_page = \"????\"\r\n"
+    "local after_next_cursor = \"????\"\r\n"
+    "local after_left_cursor = \"????\"\r\n"
+    "local after_right_cursor = \"????\"\r\n"
+    "local after_up_cursor = \"????\"\r\n"
+    "local after_down_cursor = \"????\"\r\n"
+    "local cpu = manager.machine.devices[\":maincpu\"]\r\n"
+    "local mem = cpu.spaces[\"program\"]\r\n"
+    "local function word_at(hi, lo)\r\n"
+    "    return string.format(\"%02X%02X\", mem:read_u8(hi), mem:read_u8(lo))\r\n"
+    "end\r\n"
+    "emu.register_frame_done(function()\r\n"
+    "    frames = frames + 1\r\n"
+    "    cpu = manager.machine.devices[\":maincpu\"]\r\n"
+    "    mem = cpu.spaces[\"program\"]\r\n"
+    "    if phase == \"wait_reset\" then\r\n"
+    "        if cpu.state[\"PC\"].value ~= idle and frames < 60 then return end\r\n"
+    "        mem:write_u8(0x0080, 0x00)\r\n"
+    "        mem:write_u8(0x0081, 0x00)\r\n"
+    "        phase = \"send_key\"\r\n"
+    "        return\r\n"
+    "    end\r\n"
+    "    if phase == \"send_key\" then\r\n"
+    "        if index > #keys then\r\n"
+    "            print(string.format(\"MEMORY_CURSOR_EDIT M0080=%02X M0081=%02X PAGE=%s CURSOR=%s FOCUS=%02X HEX=%02X AFTER_LEFT=%s AFTER_RIGHT=%s AFTER_UP=%s AFTER_DOWN=%s AFTER_N_PAGE=%s AFTER_N_CURSOR=%s\", mem:read_u8(0x0080), mem:read_u8(0x0081), word_at(page_hi, page_lo), word_at(cursor_hi, cursor_lo), mem:read_u8(focus), mem:read_u8(hex_phase), after_left_cursor, after_right_cursor, after_up_cursor, after_down_cursor, after_next_page, after_next_cursor))\r\n"
+    "            manager.machine:exit()\r\n"
+    "            return\r\n"
+    "        end\r\n"
+    "        cpu.state[\"A\"].value = keys[index]\r\n"
+    "        cpu.state[\"PC\"].value = entry\r\n"
+    "        key_frames = 0\r\n"
+    "        phase = \"wait_key\"\r\n"
+    "        return\r\n"
+    "    end\r\n"
+    "    if phase == \"wait_key\" then\r\n"
+    "        key_frames = key_frames + 1\r\n"
+    "        if cpu.state[\"PC\"].value ~= idle and key_frames < 60 then return end\r\n"
+    "        if keys[index] == 0x80 then after_left_cursor = word_at(cursor_hi, cursor_lo) end\r\n"
+    "        if keys[index] == 0x81 then after_right_cursor = word_at(cursor_hi, cursor_lo) end\r\n"
+    "        if keys[index] == 0x82 then after_up_cursor = word_at(cursor_hi, cursor_lo) end\r\n"
+    "        if keys[index] == 0x83 then after_down_cursor = word_at(cursor_hi, cursor_lo) end\r\n"
+    "        if keys[index] == 0x0e then\r\n"
+    "            after_next_page = word_at(page_hi, page_lo)\r\n"
+    "            after_next_cursor = word_at(cursor_hi, cursor_lo)\r\n"
+    "        end\r\n"
+    "        index = index + 1\r\n"
+    "        phase = \"send_key\"\r\n"
+    "        return\r\n"
+    "    end\r\n"
+    "end, \"memory_cursor_edit\")\r\n"
+)
+
+execute_process(
+    COMMAND
+        "${_mame_exe}"
+        m6805sbc
+        -rompath roms
+        -cfg_directory cfg
+        -homepath .
+        -video none
+        -sound none
+        -skip_gameinfo
+        -nothrottle
+        -autoboot_delay 0
+        -autoboot_script memory_cursor_edit.lua
+        -seconds_to_run 5
+    WORKING_DIRECTORY "${_stage_dir}"
+    RESULT_VARIABLE _mame_result
+    OUTPUT_VARIABLE _mame_stdout
+    ERROR_VARIABLE _mame_stderr
+)
+
+_snapshot_tree("${_mame_data_dir}" _mame_data_after)
+if(NOT _mame_data_before STREQUAL _mame_data_after)
+    message(FATAL_ERROR "MAME source data directory changed during test: ${_mame_data_dir}")
+endif()
+
+set(_mame_output "${_mame_stdout}\n${_mame_stderr}")
+
+if(NOT _mame_result EQUAL 0)
+    message(FATAL_ERROR "MAME failed with exit code ${_mame_result}\n${_mame_output}")
+endif()
+
+string(REGEX MATCH "MEMORY_CURSOR_EDIT " _output_match "${_mame_output}")
+if(NOT _output_match)
+    message(FATAL_ERROR "MAME output did not report MEMORY_CURSOR_EDIT\n${_mame_output}")
+endif()
+
+function(_capture_hex _out_var _pattern _description)
+    string(REGEX MATCH "${_pattern}" _field_match "${_mame_output}")
+    if(NOT _field_match)
+        message(FATAL_ERROR "MAME output did not report ${_description}\n${_mame_output}")
+    endif()
+
+    string(TOUPPER "${CMAKE_MATCH_1}" _field_value)
+    set(${_out_var} "${_field_value}" PARENT_SCOPE)
+endfunction()
+
+_capture_hex(_actual_0080 "M0080=([0-9A-Fa-f]+)" "memory $0080")
+_capture_hex(_actual_0081 "M0081=([0-9A-Fa-f]+)" "memory $0081")
+_capture_hex(_actual_page " PAGE=([0-9A-Fa-f]+)" "final memory page")
+_capture_hex(_actual_cursor " CURSOR=([0-9A-Fa-f]+)" "final memory cursor")
+_capture_hex(_actual_focus " FOCUS=([0-9A-Fa-f]+)" "memory focus")
+_capture_hex(_actual_hex " HEX=([0-9A-Fa-f]+)" "hex nibble phase")
+_capture_hex(_after_left_cursor " AFTER_LEFT=([0-9A-Fa-f]+)" "left-arrow cursor")
+_capture_hex(_after_right_cursor " AFTER_RIGHT=([0-9A-Fa-f]+)" "right-arrow cursor")
+_capture_hex(_after_up_cursor " AFTER_UP=([0-9A-Fa-f]+)" "up-arrow cursor")
+_capture_hex(_after_down_cursor " AFTER_DOWN=([0-9A-Fa-f]+)" "down-arrow cursor")
+_capture_hex(_after_next_page " AFTER_N_PAGE=([0-9A-Fa-f]+)" "Ctrl+N page")
+_capture_hex(_after_next_cursor " AFTER_N_CURSOR=([0-9A-Fa-f]+)" "Ctrl+N cursor")
+
+if(NOT _actual_0080 STREQUAL "41")
+    message(FATAL_ERROR "Expected memory $0080 to be 41, got ${_actual_0080}\n${_mame_output}")
+endif()
+
+if(NOT _actual_0081 STREQUAL "5A")
+    message(FATAL_ERROR "Expected memory $0081 to be 5A, got ${_actual_0081}\n${_mame_output}")
+endif()
+
+if(NOT _actual_page STREQUAL "0080")
+    message(FATAL_ERROR "Expected final memory page 0080, got ${_actual_page}\n${_mame_output}")
+endif()
+
+if(NOT _actual_cursor STREQUAL "0082")
+    message(FATAL_ERROR "Expected final memory cursor 0082, got ${_actual_cursor}\n${_mame_output}")
+endif()
+
+if(NOT _actual_focus STREQUAL "01")
+    message(FATAL_ERROR "Expected ASCII memory focus 01, got ${_actual_focus}\n${_mame_output}")
+endif()
+
+if(NOT _actual_hex STREQUAL "00")
+    message(FATAL_ERROR "Expected hex nibble phase 00, got ${_actual_hex}\n${_mame_output}")
+endif()
+
+if(NOT _after_left_cursor STREQUAL "0081")
+    message(FATAL_ERROR "Expected left-arrow memory cursor 0081, got ${_after_left_cursor}\n${_mame_output}")
+endif()
+
+if(NOT _after_right_cursor STREQUAL "0082")
+    message(FATAL_ERROR "Expected right-arrow memory cursor 0082, got ${_after_right_cursor}\n${_mame_output}")
+endif()
+
+if(NOT _after_up_cursor STREQUAL "0072")
+    message(FATAL_ERROR "Expected up-arrow memory cursor 0072, got ${_after_up_cursor}\n${_mame_output}")
+endif()
+
+if(NOT _after_down_cursor STREQUAL "0082")
+    message(FATAL_ERROR "Expected down-arrow memory cursor 0082, got ${_after_down_cursor}\n${_mame_output}")
+endif()
+
+if(NOT _after_next_page STREQUAL "0180")
+    message(FATAL_ERROR "Expected Ctrl+N memory page 0180, got ${_after_next_page}\n${_mame_output}")
+endif()
+
+if(NOT _after_next_cursor STREQUAL "0182")
+    message(FATAL_ERROR "Expected Ctrl+N memory cursor 0182, got ${_after_next_cursor}\n${_mame_output}")
+endif()
