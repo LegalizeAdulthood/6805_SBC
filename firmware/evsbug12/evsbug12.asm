@@ -1,15 +1,19 @@
         .msfirst
 
+sub_9c  .equ    $9c
+
         .org    $0000
         .byte   $00
         .org    $0800
+sub_0800:
         sta     $ae
         lda     #$00
         sta     $fff0
         lda     $ae
         rts
+sub_080a:
         stx     $aa
-        jsr     $0800
+        jsr     sub_0800
         ldx     $ffe1
         stx     $b1
         brset   2, $b1, $850
@@ -19,6 +23,7 @@
         lda     $ffe3
         and     #$7f
         bra     $834
+sub_0826:
         stx     $aa
         ldx     $ffe0
         stx     $b1
@@ -27,7 +32,7 @@
         stx     $ad
         sta     $ffe3
         brset   1, $a3, $84d
-        jsr     $0800
+        jsr     sub_0800
         ldx     $ffe0
         stx     $b1
         brclr   6, $b1, $83a
@@ -37,9 +42,10 @@
         ldx     $aa
         rts
         lda     $ffe3
-        jsr     $153a
+        jsr     sub_153a
         clr     $a3
         jmp     $0c77
+sub_085b:
         sta     $84
         add     $a7
         sta     $a7
@@ -56,67 +62,75 @@
         cmp     #$39
         bls     $877
         add     #$07
-        jsr     $0826
+        jsr     sub_0826
         rts
+sub_087b:
         lda     $73
         and     #$ff
-        jsr     $085b
+        jsr     sub_085b
         lda     $74
-        jsr     $085b
+        jsr     sub_085b
         rts
+sub_0888:
         lda     #$3d
-        jsr     $0826
-        jsr     $0965
+        jsr     sub_0826
+        jsr     sub_0965
         tst     $82
         beq     $89f
         and     #$ff
-        jsr     $085b
-        jsr     $098b
-        jsr     $0965
-        jsr     $085b
+        jsr     sub_085b
+        jsr     sub_098b
+        jsr     sub_0965
+        jsr     sub_085b
         rts
+sub_08a3:
         lda     $1691,x
         beq     $8a2
-        jsr     $0826
+        jsr     sub_0826
         incx
         bra     $8a3
-        jsr     $08a3
-        jsr     $08ee
+sub_08ae:
+        jsr     sub_08a3
+sub_08b1:
+        jsr     sub_08ee
         clrx
-        jsr     $09bb
+        jsr     sub_09bb
         clr     $82
-        jsr     $08d6
+        jsr     sub_08d6
         incx
         stx     $84
         ldx     #$41
-        jsr     $08a3
+        jsr     sub_08a3
         ldx     $84
         lda     $08e8,x
         beq     $932
         bsr     $909
-        jsr     $0826
-        jsr     $0888
+        jsr     sub_0826
+        jsr     sub_0888
         bra     $8bd
+sub_08d6:
         lda     #$53
-        jsr     $0826
+        jsr     sub_0826
         lda     #$3d
-        jsr     $0826
+        jsr     sub_0826
         lda     $74
         add     #$05
-        jsr     $085b
+        jsr     sub_085b
         rts
 
 ; register display field table
         .byte   "SPAXC",$00
+sub_08ee:
         lda     #$0d
-        jsr     $0826
+        jsr     sub_0826
         lda     #$0a
-        jsr     $0826
+        jsr     sub_0826
         rts
 
 ; condition-code display table
         .fill   $0008,$00
         .byte   "111HINZC"
+sub_0909:
         stx     $84
         tax
         lda     $a4
@@ -140,12 +154,12 @@
         ldx     $84
         rts
         ldx     #$41
-        jsr     $08a3
+        jsr     sub_08a3
         lda     $a4
         add     #$01
         sta     $74
         clr     $73
-        jsr     $0965
+        jsr     sub_0965
         sta     $84
         ldx     #$ff
         lda     #$08
@@ -155,16 +169,18 @@
         asl     $84
         bcc     $954
         lda     $0901,x
-        jsr     $0826
+        jsr     sub_0826
         dec     $82
         bne     $94a
         rts
+sub_095c:
         sta     $84
-        jsr     $0800
+        jsr     sub_0800
         lda     #$c7
         bra     $96a
+sub_0965:
         lda     #$c6
-        jsr     $0800
+        jsr     sub_0800
         bclr    2, $50
         sta     $9e
         lda     #$12
@@ -178,18 +194,22 @@
         lda     #$81
         sta     $a1
         lda     $84
-        jsr     $9c
+        jsr     sub_9c
         bclr    1, $50
         bset    2, $50
         rts
+sub_098b:
         lda     #$01
+sub_098d:
         add     $74
         sta     $74
         clra
         adc     $73
         sta     $73
         rts
+sub_0997:
         lda     #$01
+sub_0999:
         sta     $84
         lda     $74
         sub     $84
@@ -197,6 +217,7 @@
         lda     $73
         sbc     #$00
         bra     $994
+sub_09a7:
         lda     $75
         cmp     $73
         bcs     $9b8
@@ -208,20 +229,24 @@
         rts
         clra
         bra     $9b7
+sub_09bb:
         clr     $73
         lda     $a4
         sta     $74
         txa
-        jsr     $098d
+        jsr     sub_098d
         rts
-        jsr     $09bb
-        jsr     $0965
+        jsr     sub_09bb
+sub_09c9:
+        jsr     sub_0965
         and     #$ff
         sta     $75
-        jsr     $098b
-        jsr     $0965
+sub_09d0:
+        jsr     sub_098b
+        jsr     sub_0965
         sta     $76
         rts
+sub_09d9:
         lda     #$fc
         sta     $74
         lda     #$ff
@@ -231,49 +256,61 @@
         bsr     $9db
         bsr     $a2b
         ldx     #$91
-        jsr     $0a21
+        jsr     sub_0a21
         lda     #$fa
         bsr     $9db
         bsr     $a2b
         rts
-        jsr     $09bb
-        jsr     $0965
+sub_09f5:
+        jsr     sub_09bb
+        jsr     sub_0965
         rts
-        jsr     $09bb
+sub_09fc:
+        jsr     sub_09bb
         lda     $75
-        jsr     $095c
+        jsr     sub_095c
         rts
+sub_0a05:
         ldx     #$04
+sub_0a07:
         bsr     $9c6
         bsr     $a2b
         rts
+sub_0a0c:
         ldx     #$04
-        jsr     $09bb
+        jsr     sub_09bb
         lda     $75
-        jsr     $095c
-        jsr     $098b
+        jsr     sub_095c
+        jsr     sub_098b
         lda     $76
-        jsr     $095c
+        jsr     sub_095c
         rts
+sub_0a1f:
         ldx     #$75
+sub_0a21:
         lda     $73
         and     #$ff
         sta     ,x
         lda     $74
         sta     $01,x
         rts
+sub_0a2b:
         ldx     #$75
+sub_0a2d:
         lda     ,x
         sta     $73
         lda     $01,x
         sta     $74
         rts
+sub_0a35:
         clrx
+sub_0a36:
         clr     $85,x
         incx
         cpx     #$0d
         bls     $a36
         rts
+sub_0a3e:
         ldx     $82
         inc     $82
         inc     $82
@@ -284,7 +321,9 @@
         bne     $a50
         lda     $86,x
         rts
+sub_0a51:
         lda     #$08
+sub_0a53:
         sta     $83
         clrx
         lda     $73
@@ -305,33 +344,36 @@
         bsr     $a3e
         beq     $a81
         bset    3, $50
-        jsr     $0965
+        jsr     sub_0965
         lsrx
         sta     $93,x
         lda     #$83
-        jsr     $095c
+        jsr     sub_095c
         ldx     $82
         cpx     $83
         bls     $a70
         jmp     $14da
+sub_0a8a:
         ldx     #$08
         clra
+sub_0a8d:
         stx     $82
         sta     $83
         bsr     $a3e
         beq     $a9b
         lsrx
         lda     $93,x
-        jsr     $095c
+        jsr     sub_095c
         lda     $82
         sub     #$04
         sta     $82
         cmp     $83
         bpl     $a91
         rts
+sub_0aa6:
         clr     $a8
         clr     $a9
-        jsr     $0965
+        jsr     sub_0965
         sta     $84
         and     #$0f
         tax
@@ -409,14 +451,14 @@
         bsr     $b6b
         bne     $b12
         ldx     #$03
-        jsr     $09f5
+        jsr     sub_09f5
         bra     $bb9
         decx
         bmi     $b60
         beq     $b64
         cpx     #$02
         bne     $b5a
-        jsr     $09d9
+        jsr     sub_09d9
         clrx
         bra     $b92
         cpx     #$0c
@@ -425,7 +467,7 @@
         ldx     #$09
         bra     $b66
         ldx     #$06
-        jsr     $0a07
+        jsr     sub_0a07
         bra     $b7f
         cpx     #$0c
         beq     $b71
@@ -436,22 +478,22 @@
         bsr     $b6b
         beq     $b85
         lda     #$03
-        jsr     $098d
+        jsr     sub_098d
         ldx     #$8f
-        jsr     $0a21
+        jsr     sub_0a21
         rts
         clrx
         cmp     #$c0
         beq     $b8c
         ldx     #$03
-        jsr     $098b
-        jsr     $09c9
+        jsr     sub_098b
+        jsr     sub_09c9
         clra
         tstx
         beq     $b99
-        jsr     $09f5
+        jsr     sub_09f5
         sta     $83
-        jsr     $0a2b
+        jsr     sub_0a2b
         lda     $83
         bra     $b7c
         inc     $a8
@@ -464,36 +506,37 @@
         bra     $b7c
         cmp     #$b0
         bne     $bbf
-        jsr     $09d0
+        jsr     sub_09d0
         clr     $75
         clr     $76
         bra     $b99
         clr     $75
         ldx     #$03
-        jsr     $09d0
+        jsr     sub_09d0
         bra     $b92
         lda     #$01
         bra     $bce
         lda     #$02
         sta     $a8
         inca
-        jsr     $098d
+        jsr     sub_098d
         ldx     #$91
-        jsr     $0a21
-        jsr     $0997
-        jsr     $0965
+        jsr     sub_0a21
+        jsr     sub_0997
+        jsr     sub_0965
         tax
-        jsr     $098b
+        jsr     sub_098b
         txa
         tsta
         bpl     $b7c
         dec     $73
         bra     $b7c
-        jsr     $08ee
+        jsr     sub_08ee
+sub_0bee:
         lda     #$3e
-        jsr     $0826
+        jsr     sub_0826
         clrx
-        jsr     $080a
+        jsr     sub_080a
         cmp     #$18
         beq     $beb
         cmp     #$08
@@ -512,6 +555,7 @@
         sta     $54,x
         clr     $7f
         rts
+sub_0c18:
         stx     $84
         ldx     $7f
         lda     $54,x
@@ -519,18 +563,21 @@
         ldx     $84
         sta     $83
         rts
+sub_0c25:
         cmp     #$60
         bls     $c2d
         sub     #$20
         sta     $83
         rts
+sub_0c2e:
         clr     $7d
         clr     $7e
-        jsr     $0c18
+        jsr     sub_0c18
         cmp     #$24
         bne     $c3c
-        jsr     $0c18
-        jsr     $0c25
+        jsr     sub_0c18
+sub_0c3c:
+        jsr     sub_0c25
         clr     $aa
         dec     $aa
         sub     #$30
@@ -565,21 +612,21 @@
         rts
         inc     $52
         rsp
-        jsr     $08ee
+        jsr     sub_08ee
         tst     $52
         beq     $c89
         ldx     #$26
-        jsr     $08a3
-        jsr     $08ee
+        jsr     sub_08a3
+        jsr     sub_08ee
         clr     $52
-        jsr     $0bee
+        jsr     sub_0bee
         clr     $53
         clr     $51
         ldx     #$ff
-        jsr     $0c18
+        jsr     sub_0c18
         cmp     #$0d
         beq     $c77
-        jsr     $0c25
+        jsr     sub_0c25
         incx
         lda     $1672,x
         beq     $c75
@@ -594,7 +641,7 @@
         bra     $cac
         lda     $1672,x
         bpl     $c92
-        jsr     $0c18
+        jsr     sub_0c18
         cmp     #$0d
         beq     $ce6
         cmp     #$20
@@ -602,7 +649,7 @@
         lda     $51
         cmp     #$04
         beq     $ce6
-        jsr     $0c2e
+        jsr     sub_0c2e
         ldx     $53
         aslx
         cpx     #$0a
@@ -639,45 +686,46 @@
         bset    2, $04
         bset    1, $d7
         bset    3, $21
+sub_0d14:
         ldx     #$a5
-        jsr     $0a21
-        jsr     $08ee
-        jsr     $087b
+        jsr     sub_0a21
+        jsr     sub_08ee
+        jsr     sub_087b
         lda     #$20
         ldx     #$1d
         sta     $54,x
         decx
         bpl     $d23
-        jsr     $0aa6
-        jsr     $0e5b
+        jsr     sub_0aa6
+        jsr     sub_0e5b
         lda     $a8
         sta     $84
         sta     $53
         ldx     #$02
         stx     $7f
-        jsr     $0e64
+        jsr     sub_0e64
         inc     $7f
-        jsr     $098b
+        jsr     sub_098b
         dec     $84
         bpl     $d38
-        jsr     $0e5b
+        jsr     sub_0e5b
         tst     $52
         beq     $d54
-        jsr     $0997
+        jsr     sub_0997
         inc     $a8
         ldx     #$26
         bra     $d8c
-        jsr     $0965
+        jsr     sub_0965
         and     #$0f
         tax
-        jsr     $0965
+        jsr     sub_0965
         cmp     #$0f
         bhi     $d8e
         sta     $84
         ldx     #$17
         stx     $7f
-        jsr     $0e85
-        jsr     $0e90
+        jsr     sub_0e85
+        jsr     sub_0e90
         clrx
         stx     $80
         ldx     #$12
@@ -686,9 +734,9 @@
         brclr   0, $84, $d7b
         inc     $80
         lsra
-        jsr     $0e77
-        jsr     $0e85
-        jsr     $0e61
+        jsr     sub_0e77
+        jsr     sub_0e85
+        jsr     sub_0e61
         clr     $a8
         ldx     $80
         ldx     $0ebb,x
@@ -721,7 +769,7 @@
         sta     $80
         ldx     #$12
         stx     $7f
-        jsr     $0e8e
+        jsr     sub_0e8e
         bra     $d85
         ldx     $0eab,x
         stx     $51
@@ -771,7 +819,7 @@
         tst     $a8
         beq     $e3e
         bsr     $e89
-        jsr     $09d0
+        jsr     sub_09d0
         dec     $a8
         bmi     $e3e
         beq     $e3a
@@ -785,18 +833,21 @@
         bsr     $e7f
         clrx
         lda     $54,x
-        jsr     $0826
+        jsr     sub_0826
         incx
         cpx     #$1d
         bls     $e4a
         ldx     #$0a
-        jsr     $0a36
+        jsr     sub_0a36
         clr     $52
+sub_0e5b:
         ldx     #$a5
-        jsr     $0a2d
+        jsr     sub_0a2d
         rts
-        jsr     $098b
-        jsr     $0965
+sub_0e61:
+        jsr     sub_098b
+sub_0e64:
+        jsr     sub_0965
         ldx     $7f
         sta     $83
         bsr     $e73
@@ -807,20 +858,25 @@
         lsra
         lsra
         lsra
+sub_0e77:
         add     #$30
         cmp     #$39
         bls     $e7f
         add     #$07
+sub_0e7f:
         sta     $54,x
         incx
         stx     $7f
         rts
+sub_0e85:
         lda     #$2c
         bsr     $e7f
         lda     #$24
         bsr     $e7f
         rts
+sub_0e8e:
         bsr     $e89
+sub_0e90:
         lda     $8f
         and     #$ff
         bsr     $e67
@@ -834,15 +890,15 @@
         .byte   $1a,$18,$1b,$06,$1c,$17,$19,$0b,$11,$05,$07,$15,$08,$09,$0a,$16
         .byte   $13,$12,$14,$0e,$0d,$37,$38,$44,$40,$00,$00,$00,$41,$1d,$3a,$1e
         .byte   $3b,$36,$31,$3d,$43,$3a,$53,$26,$3d,$3f,$ab
-        jsr     $0d14
+        jsr     sub_0d14
         clr     $a8
-        jsr     $0bee
-        jsr     $0c18
+        jsr     sub_0bee
+        jsr     sub_0c18
         cmp     #$0d
         bne     $efd
         lda     $53
         inca
-        jsr     $098d
+        jsr     sub_098d
         bra     $ee6
         cmp     #$2e
         beq     $f23
@@ -850,8 +906,8 @@
         clr     $80
         clr     $51
         ldx     #$ff
-        jsr     $0c18
-        jsr     $0c25
+        jsr     sub_0c18
+        jsr     sub_0c25
         incx
         lda     $1155,x
         cmp     #$0f
@@ -886,8 +942,8 @@
         lda     $82
         cmp     #$04
         bne     $f6f
-        jsr     $0c18
-        jsr     $0c25
+        jsr     sub_0c18
+        jsr     sub_0c25
         cmp     #$41
         beq     $f65
         cmp     #$58
@@ -899,7 +955,7 @@
         sta     $51
         lda     #$01
         sta     $82
-        jsr     $0c18
+        jsr     sub_0c18
         cmp     #$2e
         beq     $f7a
         cmp     #$0d
@@ -924,7 +980,7 @@
         jmp     $1039
         jmp     $103e
         bsr     $1007
-        jsr     $0c2e
+        jsr     sub_0c2e
         tst     $7d
         bne     $fb2
         lda     $83
@@ -936,18 +992,18 @@
         bra     $fbe
         lda     #$01
         sta     $a8
-        jsr     $0c2e
+        jsr     sub_0c2e
         lda     $a8
         inca
-        jsr     $098d
+        jsr     sub_098d
         lda     $7d
         sta     $75
         lda     $7e
         sta     $76
-        jsr     $09a7
+        jsr     sub_09a7
         bne     $fe9
         lda     $76
-        jsr     $0999
+        jsr     sub_0999
         lda     $75
         sub     $73
         bne     $fe6
@@ -969,7 +1025,7 @@
         jmp     $1089
         bsr     $1007
         jmp     $10c0
-        jsr     $0c2e
+        jsr     sub_0c2e
         lda     $7e
         and     #$0f
         cmp     #$00
@@ -983,27 +1039,27 @@
         cmp     #$2c
         bne     $1093
         rts
-        jsr     $0c18
+        jsr     sub_0c18
         cmp     #$2c
         bne     $102c
         clra
         bra     $1060
         inc     $a8
         dec     $7f
-        jsr     $0c2e
+        jsr     sub_0c2e
         tst     $7d
         beq     $105e
         bra     $1093
-        jsr     $0c18
+        jsr     sub_0c18
         bra     $1045
-        jsr     $0c18
+        jsr     sub_0c18
         cmp     #$23
         beq     $10c0
         cmp     #$2c
         beq     $105e
         inc     $a8
         dec     $7f
-        jsr     $0c2e
+        jsr     sub_0c2e
         lda     #$10
         tst     $7d
         beq     $105a
@@ -1016,8 +1072,8 @@
         lda     $83
         cmp     #$2c
         bne     $1089
-        jsr     $0c18
-        jsr     $0c25
+        jsr     sub_0c18
+        jsr     sub_0c25
         cmp     #$58
         bne     $1093
         lda     $82
@@ -1029,17 +1085,17 @@
         sta     $51
         bra     $1086
         dec     $ab
-        jsr     $0c18
+        jsr     sub_0c18
         lda     $83
         cmp     #$0d
         beq     $1096
         cmp     #$2e
         beq     $1084
         jmp     $0f21
-        jsr     $0e5b
+        jsr     sub_0e5b
         lda     $51
-        jsr     $095c
-        jsr     $098b
+        jsr     sub_095c
+        jsr     sub_098b
         dec     $a8
         bmi     $10ae
         clrx
@@ -1047,14 +1103,14 @@
         incx
         lda     $7d,x
         bra     $109b
-        jsr     $0e5b
-        jsr     $0d14
+        jsr     sub_0e5b
+        jsr     sub_0d14
         tst     $ab
         bne     $10bb
         jmp     $0ef5
         jmp     $0c77
         bra     $1093
-        jsr     $0c2e
+        jsr     sub_0c2e
         tst     $7d
         bne     $1093
         dec     $7f
@@ -1152,7 +1208,7 @@
         .byte   $83,$97,$3d,$9f,$8f
         dec     $53
         bmi     $1238
-        jsr     $0a35
+        jsr     sub_0a35
         clrx
         lda     $73,x
         sta     $85,x
@@ -1162,19 +1218,19 @@
         incx
         dec     $53
         bpl     $122a
-        jsr     $08ee
+        jsr     sub_08ee
         ldx     #$14
-        jsr     $08a3
+        jsr     sub_08a3
         lda     #$73
-        jsr     $0826
+        jsr     sub_0826
         lda     #$3d
-        jsr     $0826
+        jsr     sub_0826
         clr     $82
-        jsr     $0a3e
+        jsr     sub_0a3e
         beq     $1259
-        jsr     $087b
+        jsr     sub_087b
         ldx     #$41
-        jsr     $08a3
+        jsr     sub_08a3
         ldx     $82
         cpx     #$08
         bls     $124c
@@ -1184,30 +1240,30 @@
         dec     $53
         bmi     $1277
         bne     $1262
-        jsr     $0a51
+        jsr     sub_0a51
         bne     $1262
         clr     $85,x
         clr     $86,x
         bra     $1238
-        jsr     $0a35
+        jsr     sub_0a35
         bra     $1238
         dec     $53
         bmi     $1292
         bne     $12cc
-        jsr     $0a1f
+        jsr     sub_0a1f
         ldx     #$04
-        jsr     $09fc
-        jsr     $098b
+        jsr     sub_09fc
+        jsr     sub_098b
         lda     $76
-        jsr     $095c
-        jsr     $0a05
-        jsr     $0a51
+        jsr     sub_095c
+        jsr     sub_0a05
+        jsr     sub_0a51
         beq     $129d
         jmp     $0a69
         inc     $a2
         bset    4, $50
-        jsr     $0a05
-        jsr     $0aa6
+        jsr     sub_0a05
+        jsr     sub_0aa6
         tst     $52
         bne     $12cc
         ldx     #$0a
@@ -1220,10 +1276,10 @@
         ldx     $74
         stx     $9b
         beq     $12cc
-        jsr     $0a05
+        jsr     sub_0a05
         ldx     #$a5
-        jsr     $0a21
-        jsr     $0a51
+        jsr     sub_0a21
+        jsr     sub_0a51
         beq     $129d
         inc     $52
         clr     $9b
@@ -1248,17 +1304,17 @@
         decx
         beq     $12f7
         bpl     $1349
-        jsr     $0a1f
-        jsr     $09a7
+        jsr     sub_0a1f
+        jsr     sub_09a7
         beq     $134b
         clr     $7f
         clr     $80
-        jsr     $08ee
-        jsr     $087b
+        jsr     sub_08ee
+        jsr     sub_087b
         ldx     #$41
-        jsr     $08a3
+        jsr     sub_08a3
         bsr     $134e
-        jsr     $0965
+        jsr     sub_0965
         tsta
         bmi     $131b
         cmp     #$20
@@ -1267,27 +1323,27 @@
         bcs     $131d
         lda     #$2e
         ldx     $7f
-        jsr     $0e7f
-        jsr     $0965
-        jsr     $085b
+        jsr     sub_0e7f
+        jsr     sub_0965
+        jsr     sub_085b
         lda     #$20
-        jsr     $0826
-        jsr     $098b
+        jsr     sub_0826
+        jsr     sub_098b
         inc     $80
         brclr   4, $80, $130b
         ldx     #$42
-        jsr     $08a3
+        jsr     sub_08a3
         clrx
         bsr     $134e
         lda     $54,x
-        jsr     $0826
+        jsr     sub_0826
         incx
         cpx     #$0f
         bls     $133b
         bra     $12f7
         inc     $52
         jmp     $0c77
-        jsr     $0800
+        jsr     sub_0800
         tst     $ad
         beq     $1374
         clr     $ad
@@ -1295,7 +1351,7 @@
         and     #$7f
         cmp     #$13
         bne     $1370
-        jsr     $0800
+        jsr     sub_0800
         ldx     $ffe0
         stx     $b1
         brclr   0, $b1, $1360
@@ -1304,15 +1360,16 @@
         cmp     #$18
         beq     $137d
         rts
-        jsr     $08ee
+        jsr     sub_08ee
         ldx     #$20
-        jsr     $08ae
+        jsr     sub_08ae
         jmp     $0c77
         inc     $52
         bra     $137d
-        jsr     $0888
-        jsr     $0bee
-        jsr     $0c2e
+sub_1384:
+        jsr     sub_0888
+        jsr     sub_0bee
+        jsr     sub_0c2e
         dec     $7f
         beq     $13b0
         clrx
@@ -1322,13 +1379,13 @@
         cmp     $83
         bne     $1392
         lda     $7e
-        jsr     $095c
+        jsr     sub_095c
         tst     $82
         beq     $13b0
-        jsr     $0997
+        jsr     sub_0997
         lda     $7d
-        jsr     $095c
-        jsr     $098b
+        jsr     sub_095c
+        jsr     sub_098b
         ldx     $80
         lda     $83
         cmp     #$3d
@@ -1342,12 +1399,12 @@
         inc     $52
         lda     $83
         rts
-        jsr     $0997
+        jsr     sub_0997
         decx
         bpl     $13c6
         ldx     #$04
         bra     $13c6
-        jsr     $098b
+        jsr     sub_098b
         incx
         cpx     #$04
         bls     $13c6
@@ -1355,7 +1412,7 @@
         bra     $13c6
         tst     $82
         beq     $13c6
-        jsr     $0997
+        jsr     sub_0997
         bra     $13c6
         .byte   $5e
         tst     $2e
@@ -1363,8 +1420,8 @@
         comx
         bne     $1451
         clr     $82
-        jsr     $08ee
-        jsr     $087b
+        jsr     sub_08ee
+        jsr     sub_087b
         bsr     $1384
         tst     $52
         bne     $1453
@@ -1374,23 +1431,23 @@
         ldx     $53
         bne     $1451
         stx     $80
-        jsr     $09bb
+        jsr     sub_09bb
         tstx
         bne     $141a
-        jsr     $08ee
-        jsr     $08d6
+        jsr     sub_08ee
+        jsr     sub_08d6
         bsr     $13b0
         bra     $1408
         cpx     #$04
         beq     $141f
         clrx
         stx     $82
-        jsr     $08ee
+        jsr     sub_08ee
         ldx     $80
         lda     $08e8,x
-        jsr     $0909
-        jsr     $0826
-        jsr     $1384
+        jsr     sub_0909
+        jsr     sub_0826
+        jsr     sub_1384
         tst     $52
         bne     $1453
         cmp     #$2e
@@ -1399,33 +1456,33 @@
         ldx     $53
         cpx     #$03
         bne     $1451
-        jsr     $09a7
+        jsr     sub_09a7
         beq     $1453
         lda     $78
-        jsr     $095c
-        jsr     $098b
+        jsr     sub_095c
+        jsr     sub_098b
         bra     $1442
         inc     $52
         jmp     $0c77
         inc     $52
         jmp     $0c77
-        jsr     $08ee
+        jsr     sub_08ee
         lda     $83
         cmp     #$0d
         beq     $1456
         cmp     #$20
         bne     $1456
-        jsr     $0c18
-        jsr     $0c25
+        jsr     sub_0c18
+        jsr     sub_0c25
         cmp     #$54
         bne     $1456
         bset    0, $a3
         bra     $1476
         clr     $a8
-        jsr     $080a
+        jsr     sub_080a
         cmp     #$53
         bne     $1478
-        jsr     $080a
+        jsr     sub_080a
         cmp     #$39
         beq     $148c
         cmp     #$31
@@ -1443,8 +1500,8 @@
         dec     $80
         bmi     $14ac
         bsr     $14c2
-        jsr     $095c
-        jsr     $098b
+        jsr     sub_095c
+        jsr     sub_098b
         bra     $149e
         ldx     $a7
         stx     $80
@@ -1464,8 +1521,8 @@
         sta     $a7
         lda     $7e
         rts
-        jsr     $080a
-        jsr     $0c3c
+        jsr     sub_080a
+        jsr     sub_0c3c
         tst     $aa
         bmi     $14bb
         rts
@@ -1497,18 +1554,18 @@ reset_handler:
         add     #$01
         sta     $74
         lda     #$e8
-        jsr     $095c
+        jsr     sub_095c
         clr     $a3
         clr     $ad
-        jsr     $0a35
+        jsr     sub_0a35
         lda     #$ff
         deca
         bne     $151b
         lda     #$0c
         sta     $ac
-        jsr     $153a
+        jsr     sub_153a
         clrx
-        jsr     $08ee
+        jsr     sub_08ee
         bclr    1, $a3
         clr     $9b
         clr     $52
@@ -1517,6 +1574,7 @@ reset_handler:
         clr     $50
         bset    2, $50
         jmp     $137a
+sub_153a:
         lda     $ffe1
         ora     #$80
         sta     $ffe1
@@ -1537,31 +1595,31 @@ swi_handler:
         deca
         sta     $a4
         rsp
-        jsr     $0a05
-        jsr     $0997
-        jsr     $0a1f
+        jsr     sub_0a05
+        jsr     sub_0997
+        jsr     sub_0a1f
         lda     #$0c
-        jsr     $0a53
+        jsr     sub_0a53
         beq     $157d
-        jsr     $0965
+        jsr     sub_0965
         cmp     #$83
         beq     $15f6
         bset    5, $50
         brclr   4, $50, $158e
         ldx     #$0c
         lda     #$0a
-        jsr     $0a8d
+        jsr     sub_0a8d
         ldx     #$0a
-        jsr     $0a36
+        jsr     sub_0a36
         bclr    3, $50
         brclr   3, $50, $1594
-        jsr     $0a8a
-        jsr     $0a0c
-        jsr     $0a2b
+        jsr     sub_0a8a
+        jsr     sub_0a0c
+        jsr     sub_0a2b
         brset   5, $50, $15ec
         clr     $50
         bset    2, $50
-        jsr     $0a51
+        jsr     sub_0a51
         bne     $15c6
         lda     $9b
         sub     #$01
@@ -1576,7 +1634,7 @@ swi_handler:
         tst     $9b
         bne     $15e9
         ldx     #$14
-        jsr     $08ee
+        jsr     sub_08ee
         jmp     $1529
         tst     $a2
         bne     $15d9
@@ -1584,18 +1642,18 @@ swi_handler:
         sub     #$01
         bcs     $15d2
         bne     $15de
-        jsr     $0d14
+        jsr     sub_0d14
         ldx     #$13
         bra     $15c3
         clr     $a2
         jmp     $0a69
         dec     $9a
-        jsr     $0d14
-        jsr     $08b1
+        jsr     sub_0d14
+        jsr     sub_08b1
         jmp     $129f
         jmp     $129d
-        jsr     $153a
-        jsr     $08ee
+        jsr     sub_153a
+        jsr     sub_08ee
         ldx     #$1a
         bra     $15c3
         lda     $a4
@@ -1603,55 +1661,55 @@ swi_handler:
         sta     $a4
         ldx     #$06
         stx     $82
-        jsr     $09f5
+        jsr     sub_09f5
         sta     $75
         txa
         sub     #$05
         tax
-        jsr     $09fc
+        jsr     sub_09fc
         ldx     $82
         incx
         cpx     #$08
         bls     $15fe
-        jsr     $09d9
-        jsr     $0a0c
+        jsr     sub_09d9
+        jsr     sub_0a0c
         jmp     $14da
         inc     $52
         jmp     $0c77
         clrx
-        jsr     $08ee
-        jsr     $08ee
+        jsr     sub_08ee
+        jsr     sub_08ee
         lda     $16d7,x
         beq     $1633
-        jsr     $0826
+        jsr     sub_0826
         incx
         bra     $1628
         clrx
-        jsr     $08ee
+        jsr     sub_08ee
         lda     $1785,x
         beq     $1642
-        jsr     $0826
+        jsr     sub_0826
         incx
         bra     $1637
         clrx
-        jsr     $08ee
+        jsr     sub_08ee
         lda     $17b2,x
         beq     $1651
-        jsr     $0826
+        jsr     sub_0826
         incx
         bra     $1646
         clrx
-        jsr     $08ee
+        jsr     sub_08ee
         lda     $182e,x
         beq     $1660
-        jsr     $0826
+        jsr     sub_0826
         incx
         bra     $1655
         clrx
-        jsr     $08ee
+        jsr     sub_08ee
         lda     $18c2,x
         beq     $166f
-        jsr     $0826
+        jsr     sub_0826
         incx
         bra     $1664
         jmp     $0c77
