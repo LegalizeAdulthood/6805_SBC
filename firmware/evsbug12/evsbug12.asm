@@ -7,6 +7,14 @@
 ;
         .msfirst
 
+NUL             .equ    $00             ; null character
+BS              .equ    $08             ; backspace
+LF              .equ    $0a             ; line feed
+CR              .equ    $0d             ; carriage return
+DC3             .equ    $13             ; control-S
+CAN             .equ    $18             ; cancel
+msg_end         .equ    $80             ; string high-bit terminator
+
 acia_base       .equ    $ffe0
 acia_isra       .equ    acia_base + $00
 acia_iera       .equ    acia_base + $00
@@ -258,12 +266,12 @@ write_sp:
 ; register display field table
 
 register_fields:
-        .byte   "SPAXC",$00
+        .byte   "SPAXC",NUL
 
 write_crlf:
-        lda     #$0d
+        lda     #CR
         jsr     write_console_char
-        lda     #$0a
+        lda     #LF
         jsr     write_console_char
         rts
 
@@ -849,9 +857,9 @@ read_command_line:
 
 _read_char:
         jsr     read_console_char_echo
-        cmp     #$18
+        cmp     #CAN
         beq     _restart
-        cmp     #$08
+        cmp     #BS
         bne     _store_char
         cpx     #$00
         beq     _skip_back
@@ -865,11 +873,11 @@ _store_char:
         incx
         cpx     #$1e
         beq     _finish_line
-        cmp     #$0d
+        cmp     #CR
         bne     _read_char
 
 _finish_line:
-        lda     #$0d
+        lda     #CR
         sta     line_buf,x
         clr     line_pos
         rts
@@ -969,7 +977,7 @@ _read_line:
 
 _scan_char:
         jsr     read_command_char
-        cmp     #$0d
+        cmp     #CR
         beq     cmd_loop
         jsr     uppercase_command_char
         incx
@@ -993,7 +1001,7 @@ _match_char:
         lda     cmd_tokens,x
         bpl     _scan_char
         jsr     read_command_char
-        cmp     #$0d
+        cmp     #CR
         beq     _dispatch
         cmp     #$20
         bne     _no_match
@@ -1014,7 +1022,7 @@ _parse_arg:
         lda     cmd_char
         cmp     #$20
         beq     _parse_arg
-        cmp     #$0d
+        cmp     #CR
         bne     _bad_cmd
 
 _dispatch:
@@ -1354,7 +1362,7 @@ _again:
         clr     op_len
         jsr     read_command_line
         jsr     read_command_char
-        cmp     #$0d
+        cmp     #CR
         bne     _parse_mnem
 
 _next_line:
@@ -1444,7 +1452,7 @@ _read_suffix:
 _check_suffix:
         cmp     #'.'
         beq     _finish_no_arg
-        cmp     #$0d
+        cmp     #CR
         bne     _need_space
 
 _finish_no_arg:
@@ -1623,7 +1631,7 @@ _read_next_char:
 
 _check_end:
         lda     cmd_char
-        cmp     #$0d
+        cmp     #CR
         beq     _write_bytes
         cmp     #'.'
         beq     _dot_suffix
@@ -1673,76 +1681,76 @@ _parse_zp:
 
         .module mnemonics
 mnemonics:
-        .byte   "AD",('C' | $80)
-        .byte   ('D' | $80)
-        .byte   "N",('D' | $80)
-        .byte   "S",('L' | $80)
-        .byte   ('R' | $80)
-        .byte   "BC",('C' | $80)
-        .byte   "L",('R' | $80)
-        .byte   ('S' | $80)
-        .byte   "E",('Q' | $80)
-        .byte   "HC",('C' | $80)
-        .byte   ('S' | $80)
-        .byte   ('I' | $80)
-        .byte   ('S' | $80)
-        .byte   "I",('H' | $80)
-        .byte   ('L' | $80)
-        .byte   ('T' | $80)
-        .byte   "L",('O' | $80)
-        .byte   ('S' | $80)
-        .byte   "M",('C' | $80)
-        .byte   ('I' | $80)
-        .byte   ('S' | $80)
-        .byte   "N",('E' | $80)
-        .byte   "P",('L' | $80)
-        .byte   "R",('A' | $80)
-        .byte   "CL",('R' | $80)
-        .byte   ('N' | $80)
-        .byte   "SE",('T' | $80)
-        .byte   "SE",('T' | $80)
-        .byte   ('R' | $80)
-        .byte   "CL",('C' | $80)
-        .byte   ('I' | $80)
-        .byte   ('R' | $80)
-        .byte   "M",('P' | $80)
-        .byte   "O",('M' | $80)
-        .byte   "P",('X' | $80)
-        .byte   "DE",('C' | $80)
-        .byte   ('X' | $80)
-        .byte   "EO",('R' | $80)
-        .byte   "FC",('B' | $80)
-        .byte   "IN",('C' | $80)
-        .byte   ('X' | $80)
-        .byte   "JM",('P' | $80)
-        .byte   "S",('R' | $80)
-        .byte   "LD",('A' | $80)
-        .byte   ('X' | $80)
-        .byte   "S",('L' | $80)
-        .byte   ('R' | $80)
-        .byte   "MU",('L' | $80)
-        .byte   "NE",('G' | $80)
-        .byte   "O",('P' | $80)
-        .byte   "OR",('A' | $80)
-        .byte   ('G' | $80)
-        .byte   "RO",('L' | $80)
-        .byte   ('R' | $80)
-        .byte   "S",('P' | $80)
-        .byte   "T",('I' | $80)
-        .byte   ('S' | $80)
-        .byte   "SB",('C' | $80)
-        .byte   "E",('C' | $80)
-        .byte   ('I' | $80)
-        .byte   "T",('A' | $80)
-        .byte   "O",('P' | $80)
-        .byte   ('X' | $80)
-        .byte   "U",('B' | $80)
-        .byte   "W",('I' | $80)
-        .byte   "TA",('X' | $80)
-        .byte   "S",('T' | $80)
-        .byte   "X",('A' | $80)
-        .byte   "WAI",('T' | $80)
-        .byte   $00
+        .byte   "AD",('C' | msg_end)
+        .byte   ('D' | msg_end)
+        .byte   "N",('D' | msg_end)
+        .byte   "S",('L' | msg_end)
+        .byte   ('R' | msg_end)
+        .byte   "BC",('C' | msg_end)
+        .byte   "L",('R' | msg_end)
+        .byte   ('S' | msg_end)
+        .byte   "E",('Q' | msg_end)
+        .byte   "HC",('C' | msg_end)
+        .byte   ('S' | msg_end)
+        .byte   ('I' | msg_end)
+        .byte   ('S' | msg_end)
+        .byte   "I",('H' | msg_end)
+        .byte   ('L' | msg_end)
+        .byte   ('T' | msg_end)
+        .byte   "L",('O' | msg_end)
+        .byte   ('S' | msg_end)
+        .byte   "M",('C' | msg_end)
+        .byte   ('I' | msg_end)
+        .byte   ('S' | msg_end)
+        .byte   "N",('E' | msg_end)
+        .byte   "P",('L' | msg_end)
+        .byte   "R",('A' | msg_end)
+        .byte   "CL",('R' | msg_end)
+        .byte   ('N' | msg_end)
+        .byte   "SE",('T' | msg_end)
+        .byte   "SE",('T' | msg_end)
+        .byte   ('R' | msg_end)
+        .byte   "CL",('C' | msg_end)
+        .byte   ('I' | msg_end)
+        .byte   ('R' | msg_end)
+        .byte   "M",('P' | msg_end)
+        .byte   "O",('M' | msg_end)
+        .byte   "P",('X' | msg_end)
+        .byte   "DE",('C' | msg_end)
+        .byte   ('X' | msg_end)
+        .byte   "EO",('R' | msg_end)
+        .byte   "FC",('B' | msg_end)
+        .byte   "IN",('C' | msg_end)
+        .byte   ('X' | msg_end)
+        .byte   "JM",('P' | msg_end)
+        .byte   "S",('R' | msg_end)
+        .byte   "LD",('A' | msg_end)
+        .byte   ('X' | msg_end)
+        .byte   "S",('L' | msg_end)
+        .byte   ('R' | msg_end)
+        .byte   "MU",('L' | msg_end)
+        .byte   "NE",('G' | msg_end)
+        .byte   "O",('P' | msg_end)
+        .byte   "OR",('A' | msg_end)
+        .byte   ('G' | msg_end)
+        .byte   "RO",('L' | msg_end)
+        .byte   ('R' | msg_end)
+        .byte   "S",('P' | msg_end)
+        .byte   "T",('I' | msg_end)
+        .byte   ('S' | msg_end)
+        .byte   "SB",('C' | msg_end)
+        .byte   "E",('C' | msg_end)
+        .byte   ('I' | msg_end)
+        .byte   "T",('A' | msg_end)
+        .byte   "O",('P' | msg_end)
+        .byte   ('X' | msg_end)
+        .byte   "U",('B' | msg_end)
+        .byte   "W",('I' | msg_end)
+        .byte   "TA",('X' | msg_end)
+        .byte   "S",('T' | msg_end)
+        .byte   "X",('A' | msg_end)
+        .byte   "WAI",('T' | msg_end)
+        .byte   NUL
 
 ; mnemonic addressing-mode table
 
@@ -1972,7 +1980,7 @@ _check_pause:
         clr     poll_flag
         lda     acia_rdra
         and     #$7f
-        cmp     #$13
+        cmp     #DC3
         bne     _check_cancel
 
 _wait_resume:
@@ -1984,7 +1992,7 @@ _wait_resume:
         and     #$7f
 
 _check_cancel:
-        cmp     #$18
+        cmp     #CAN
         beq     cmd_exit
 
 _return:
@@ -2034,7 +2042,7 @@ step_modify:
         beq     _eq_addr
         cmp     #'^'
         beq     _prev_addr
-        cmp     #$0d
+        cmp     #CR
         beq     _next_addr
         cmp     #'.'
         beq     _return_char
@@ -2068,7 +2076,7 @@ _eq_addr:
         bra     _return_char
 
 _modify_chars:
-        .byte   "^=.",$0d,$00
+        .byte   "^=.",CR,NUL
 
         .module mem_modify_cmd
 _fill_byte      .equ    scratch+$27   ; fill byte argument
@@ -2152,7 +2160,7 @@ _bad_cmd:
 load_cmd:
         jsr     write_crlf
         lda     cmd_char
-        cmp     #$0d
+        cmp     #CR
         beq     _bad_cmd
         cmp     #$20
         bne     _bad_cmd
@@ -2495,64 +2503,64 @@ _done:
 ; command token table; high bit marks token end
 
 cmd_tokens:
-        .byte   "AS",('M' | $80)
-        .byte   "B",('F' | $80)
-        .byte   "B",('R' | $80)
-        .byte   ('G' | $80)
-        .byte   "LOA",('D' | $80)
-        .byte   "M",('D' | $80)
-        .byte   "M",('M' | $80)
-        .byte   "NOB",('R' | $80)
-        .byte   ('P' | $80)
-        .byte   "R",('D' | $80)
-        .byte   "R",('M' | $80)
-        .byte   ('T' | $80)
-        .byte   "HEL",('P' | $80)
-        .byte   $00
+        .byte   "AS",('M' | msg_end)
+        .byte   "B",('F' | msg_end)
+        .byte   "B",('R' | msg_end)
+        .byte   ('G' | msg_end)
+        .byte   "LOA",('D' | msg_end)
+        .byte   "M",('D' | msg_end)
+        .byte   "M",('M' | msg_end)
+        .byte   "NOB",('R' | msg_end)
+        .byte   ('P' | msg_end)
+        .byte   "R",('D' | msg_end)
+        .byte   "R",('M' | msg_end)
+        .byte   ('T' | msg_end)
+        .byte   "HEL",('P' | msg_end)
+        .byte   NUL
 
 ; banner text
 
 message_text:
 msg_banner  .equ    ($ - message_text)
-        .byte   "EVSbug-HC05 REV 1.2",$00
+        .byte   "EVSbug-HC05 REV 1.2",NUL
 msg_brkpt  .equ    ($ - message_text)
-        .byte   "Brkpt",$00
+        .byte   "Brkpt",NUL
 msg_abort  .equ    ($ - message_text)
-        .byte   "Abort",$00
+        .byte   "Abort",NUL
 msg_regs  .equ    ($ - message_text)
-        .byte   "Regs ",$00
+        .byte   "Regs ",NUL
 msg_bad_entry  .equ    ($ - message_text)
-        .byte   "ILLEGAL/INSUFFICIENT ENTRY",$00
+        .byte   "ILLEGAL/INSUFFICIENT ENTRY",NUL
 msg_sp4  .equ    ($ - message_text)
         .byte   " "
 msg_sp3  .equ    ($ - message_text)
-        .byte   "   ",$00
+        .byte   "   ",NUL
 
 ; help text
 
 help_intro:
-        .byte   "BREAK = Abort command, ",$0d,$0a
-        .byte   "CTRL-S = Freeze screen, CTRL-X = Cancel command line",$0d,$0a
-        .byte   "ASM <START ADDR>- Assembler/disassembler",$0d,$0a
-        .byte   "BF <START ADDR> <END ADDR> <DATA>- Block fill memory",$00
+        .byte   "BREAK = Abort command, ",CR,LF
+        .byte   "CTRL-S = Freeze screen, CTRL-X = Cancel command line",CR,LF
+        .byte   "ASM <START ADDR>- Assembler/disassembler",CR,LF
+        .byte   "BF <START ADDR> <END ADDR> <DATA>- Block fill memory",NUL
 
 help_breakpoint:
-        .byte   "BR [<ADDR1 - ADDR5>]- Set 1 to 5 breakpoints",$00
+        .byte   "BR [<ADDR1 - ADDR5>]- Set 1 to 5 breakpoints",NUL
 
 help_go_load_md:
-        .byte   "G [<START ADDR>]- Execute user program",$0d,$0a
-        .byte   "LOAD T - Download from port to memory",$0d,$0a
-        .byte   "MD <START ADDR> [<END ADDR>]- Display memory",$00
+        .byte   "G [<START ADDR>]- Execute user program",CR,LF
+        .byte   "LOAD T - Download from port to memory",CR,LF
+        .byte   "MD <START ADDR> [<END ADDR>]- Display memory",NUL
 
 help_modify_nobr_proceed:
-        .byte   "MM <ADDRESS>- Modify memory",$0d,$0a
-        .byte   "NOBR [<ADDR1 - ADDR5>]- Remove breakpoints",$0d,$0a
-        .byte   "P [<COUNT>]- Proceed 1-FF times through a breakpoint",$0d,$0a
-        .byte   "RD- Register display",$00
+        .byte   "MM <ADDRESS>- Modify memory",CR,LF
+        .byte   "NOBR [<ADDR1 - ADDR5>]- Remove breakpoints",CR,LF
+        .byte   "P [<COUNT>]- Proceed 1-FF times through a breakpoint",CR,LF
+        .byte   "RD- Register display",NUL
 
 help_register_trace:
-        .byte   "RM- Register modify",$0d,$0a
-        .byte   "T [<COUNT>]- Trace 1-FF instructions",$00
+        .byte   "RM- Register modify",CR,LF
+        .byte   "T [<COUNT>]- Trace 1-FF instructions",NUL
 
 ; padding and interrupt vectors
         .dw     (int_vecs - $)
