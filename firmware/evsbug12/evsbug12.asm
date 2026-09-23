@@ -101,7 +101,7 @@ sub_08b1:
         jsr     sub_08d6
         incx
         stx     scratch+$33
-        ldx     #$41
+        ldx     #msg_sp4
         jsr     write_string
         ldx     scratch+$33
         lda     register_fields,x
@@ -157,7 +157,7 @@ sub_0909:
         txa
         ldx     scratch+$33
         rts
-        ldx     #$41
+        ldx     #msg_sp4
         jsr     write_string
         lda     scratch+$53
         add     #$01
@@ -619,7 +619,7 @@ parse_hex_digit:
         jsr     write_crlf
         tst     scratch+$01
         beq     $c89
-        ldx     #$26
+        ldx     #msg_bad_entry
         jsr     write_string
         jsr     write_crlf
         clr     scratch+$01
@@ -1230,7 +1230,7 @@ breakpoint_cmd:
         dec     scratch+$02
         bpl     $122a
         jsr     write_crlf
-        ldx     #$14
+        ldx     #msg_brkpt
         jsr     write_string
         lda     #$73
         jsr     write_console_char
@@ -1240,7 +1240,7 @@ breakpoint_cmd:
         jsr     load_breakpoint_address
         beq     $1259
         jsr     write_hex_word_at_73
-        ldx     #$41
+        ldx     #msg_sp4
         jsr     write_string
         ldx     scratch+$31
         cpx     #$08
@@ -1327,7 +1327,7 @@ mem_display_cmd:
         clr     scratch+$2f
         jsr     write_crlf
         jsr     write_hex_word_at_73
-        ldx     #$41
+        ldx     #msg_sp4
         jsr     write_string
         bsr     $134e
         jsr     read_memory_byte
@@ -1347,7 +1347,7 @@ mem_display_cmd:
         jsr     increment_address
         inc     scratch+$2f
         brclr   4, scratch+$2f, $130b
-        ldx     #$42
+        ldx     #msg_sp3
         jsr     write_string
         clrx
         bsr     $134e
@@ -1754,12 +1754,20 @@ cmd_tokens:
 
 ; banner and help text
 message_text:
+msg_banner  .equ    ($ - message_text)
         .byte   "EVSbug-HC05 REV 1.2",$00
+msg_brkpt  .equ    ($ - message_text)
         .byte   "Brkpt",$00
+msg_abort  .equ    ($ - message_text)
         .byte   "Abort",$00
+msg_regs  .equ    ($ - message_text)
         .byte   "Regs ",$00
+msg_bad_entry  .equ    ($ - message_text)
         .byte   "ILLEGAL/INSUFFICIENT ENTRY",$00
-        .byte   "    ",$00
+msg_sp4  .equ    ($ - message_text)
+        .byte   " "
+msg_sp3  .equ    ($ - message_text)
+        .byte   "   ",$00
 help_intro:
         .byte   "BREAK = Abort command, ",$0d,$0a
         .byte   "CTRL-S = Freeze screen, CTRL-X = Cancel command line",$0d,$0a
