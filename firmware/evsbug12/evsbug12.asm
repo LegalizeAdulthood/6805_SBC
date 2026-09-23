@@ -31,6 +31,7 @@ cmd_thunk       .equ    $9c
 int_vecs        .equ    $1ff0
 
 cmd_err         .equ    scratch+$01   ; command error flag
+cmd_args        .equ    scratch+$02   ; command argument count
 line_buf        .equ    scratch+$03   ; command line buffer
 addr_hi         .equ    scratch+$22   ; active address high
 addr_lo         .equ    scratch+$23   ; active address low
@@ -47,6 +48,7 @@ step_flag       .equ    scratch+$51   ; step-over pending flag
 user_sp         .equ    scratch+$53   ; captured user SP
 checksum        .equ    scratch+$56   ; checksum accumulator
 decode_flags    .equ    scratch+$58   ; decode attribute flags
+hex_digit       .equ    scratch+$59   ; parsed hex digit
 asm_once        .equ    scratch+$5a   ; assembler one-shot flag
 serial_ctl      .equ    scratch+$5b   ; serial control bits
 poll_flag       .equ    scratch+$5c   ; pause poll pending
@@ -776,28 +778,36 @@ uppercase_command_char:
         sta     scratch+$32
         rts
 
+        .module parse_hex_word
+_flags          .equ    scratch+$52   ; parser control flags
+_save_x         .equ    scratch+$33   ; command reader X save
+
 parse_hex_word:
         clr     parse_hi
         clr     parse_lo
         jsr     read_command_char
         cmp     #$24
-        bne     $0c3c
+        bne     parse_hex_digit
+
+_next_digit:
         jsr     read_command_char
 
 parse_hex_digit:
         jsr     uppercase_command_char
-        clr     scratch+$59
-        dec     scratch+$59
+        clr     hex_digit
+        dec     hex_digit
         sub     #$30
-        bmi     $0c72
+        bmi     _finish
         cmp     #$09
-        bls     $0c55
+        bls     _valid_digit
         sub     #$07
         cmp     #$09
-        bls     $0c72
+        bls     _finish
         cmp     #$0f
-        bhi     $0c72
-        sta     scratch+$59
+        bhi     _finish
+
+_valid_digit:
+        sta     hex_digit
         lda     parse_hi
         ldx     parse_lo
         aslx
@@ -810,13 +820,15 @@ parse_hex_digit:
         rola
         sta     parse_hi
         txa
-        ora     scratch+$59
+        ora     hex_digit
         sta     parse_lo
-        ldx     scratch+$33
-        tst     scratch+$52
-        bne     $0c72
-        bra     $0c39
-        inc     scratch+$02
+        ldx     _save_x
+        tst     _flags
+        bne     _finish
+        bra     _next_digit
+
+_finish:
+        inc     cmd_args
         rts
 
         .module cmd_loop
@@ -835,7 +847,7 @@ cmd_loop:
 
 _read_line:
         jsr     read_command_line
-        clr     scratch+$02
+        clr     cmd_args
         clr     scratch
         ldx     #$ff
 
@@ -875,7 +887,7 @@ _match_char:
 
 _parse_arg:
         jsr     parse_hex_word
-        ldx     scratch+$02
+        ldx     cmd_args
         aslx
         cpx     #$0a
         bhi     _bad_cmd
@@ -1212,7 +1224,7 @@ opcode_80_9f_index:
 
         .module asm_cmd
 asm_cmd:
-        dec     scratch+$02
+        dec     cmd_args
         bne     _bad_entry
         clr     asm_once
 
@@ -1636,14 +1648,13 @@ opcode_table:
         .byte   $83,$97,$3d,$9f,$8f
 
         .module exec_cmds
-_argc           .equ    scratch+$02   ; command arg count
 _save_lo        .equ    scratch+$25   ; saved addr low byte
 _brk_idx        .equ    scratch+$31   ; breakpoint slot index
 _brk_lo         .equ    scratch+$35   ; breakpoint low bytes
 _proc_addr      .equ    scratch+$54   ; proceed resume address
 
 breakpoint_cmd:
-        dec     _argc
+        dec     cmd_args
         bmi     _show_brks
         jsr     clear_breakpoints
         clrx
@@ -1655,7 +1666,7 @@ _save_brk:
         sta     _brk_lo,x
         incx
         incx
-        dec     _argc
+        dec     cmd_args
         bpl     _save_brk
 
 _show_brks:
@@ -1688,7 +1699,7 @@ _bad_brk:
         bra     _cmd_loop
 
 nobr_cmd:
-        dec     _argc
+        dec     cmd_args
         bmi     _clear_brks
         bne     _bad_brk
         jsr     find_br_slot
@@ -1702,7 +1713,7 @@ _clear_brks:
         bra     _show_brks
 
 go_cmd:
-        dec     _argc
+        dec     cmd_args
         bmi     _go_saved_pc
         bne     _bad_run
         jsr     save_addr
@@ -1732,7 +1743,7 @@ arm_step_breaks:
         jmp     arm_break_range
 
 proceed_cmd:
-        ldx     _argc
+        ldx     cmd_args
         decx
         bmi     _def_proceed
         bne     _bad_run
@@ -1758,7 +1769,7 @@ _def_proceed:
         bra     _set_proceed
 
 trace_cmd:
-        ldx     _argc
+        ldx     cmd_args
         decx
         bmi     _def_trace
         bne     _bad_run
@@ -1776,7 +1787,7 @@ _def_trace:
 
         .module mem_display_cmd
 mem_display_cmd:
-        ldx     scratch+$02
+        ldx     cmd_args
         decx
         bmi     _bad_cmd
         decx
@@ -1943,7 +1954,7 @@ _modify_chars:
 
         .module mem_modify_cmd
 mem_modify_cmd:
-        dec     scratch+$02
+        dec     cmd_args
         bne     $1451
         clr     scratch+$31
         jsr     write_crlf
@@ -1956,7 +1967,7 @@ mem_modify_cmd:
         bra     $1453
 
 reg_modify_cmd:
-        ldx     scratch+$02
+        ldx     cmd_args
         bne     $1451
         stx     scratch+$2f
         jsr     stack_addr
@@ -1983,7 +1994,7 @@ reg_modify_cmd:
         bra     $1453
 
 block_fill_cmd:
-        ldx     scratch+$02
+        ldx     cmd_args
         cpx     #$03
         bne     $1451
         jsr     address_in_range
@@ -2078,7 +2089,7 @@ _read_srec_byte:
 _read_srec_nibl:
         jsr     read_console_char_echo
         jsr     parse_hex_digit
-        tst     scratch+$59
+        tst     hex_digit
         bmi     _bad_srec
         rts
 
