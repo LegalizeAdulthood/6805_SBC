@@ -26,6 +26,7 @@ acia_cdrb       .equ    acia_base + $06
 acia_acrb       .equ    acia_base + $06
 acia_rdrb       .equ    acia_base + $07
 acia_tdrb       .equ    acia_base + $07
+cop_update      .equ    $fff0           ; COP watchdog update register
 map_switch      .equ    $50
 scratch         .equ    $51
 cmd_thunk       .equ    $9c
@@ -80,10 +81,10 @@ op_jmp          .equ    $cc
         .module console_io
 _save_x         .equ    scratch+$59   ; saved X register
 
-sub_0800:
+service_cop:
         sta     tmp_a
         lda     #$00
-        sta     $fff0
+        sta     cop_update
         lda     tmp_a
         rts
 
@@ -91,7 +92,7 @@ read_console_char_echo:
         stx     _save_x
 
 _read_poll:
-        jsr     sub_0800
+        jsr     service_cop
         ldx     acia_csra
         stx     io_stat
         brset   2, io_stat, _serial_event
@@ -115,7 +116,7 @@ _write_char:
         brset   1, mon_flags, _return
 
 _tx_poll:
-        jsr     sub_0800
+        jsr     service_cop
         ldx     acia_isra
         stx     io_stat
         brclr   6, io_stat, _tx_poll
@@ -316,13 +317,13 @@ _byte           .equ    scratch+$33   ; memory write byte
 
 write_memory_byte:
         sta     _byte
-        jsr     sub_0800
+        jsr     service_cop
         lda     #$c7
         bra     _access_user
 
 read_memory_byte:
         lda     #$c6
-        jsr     sub_0800
+        jsr     service_cop
 
 _access_user:
         bclr    2, map_switch
@@ -1943,7 +1944,7 @@ _done:
         jmp     cmd_loop
 
 _check_pause:
-        jsr     sub_0800
+        jsr     service_cop
         tst     poll_flag
         beq     _return
         clr     poll_flag
@@ -1953,7 +1954,7 @@ _check_pause:
         bne     _check_cancel
 
 _wait_resume:
-        jsr     sub_0800
+        jsr     service_cop
         ldx     acia_isra
         stx     io_stat
         brclr   0, io_stat, _wait_resume
