@@ -67,7 +67,7 @@ op_jmp          .equ    $cc
         .org    $0800
 
         .module console_io
-_save_x         .equ    scratch+$59   ; saved X index
+_save_x         .equ    scratch+$59   ; saved X register
 
 sub_0800:
         sta     tmp_a
@@ -185,6 +185,8 @@ write_string:
         bra     write_string
 
         .module display_regs_msg
+_reg_idx        .equ    scratch+$33   ; register field index
+
 display_regs_msg:
         jsr     write_string
 
@@ -192,19 +194,21 @@ display_regs:
         jsr     write_crlf
         clrx
         jsr     stack_addr
-        clr     scratch+$31
+        clr     mod_len
         jsr     write_sp
+
+_next_reg:
         incx
-        stx     scratch+$33
+        stx     _reg_idx
         ldx     #msg_sp4
         jsr     write_string
-        ldx     scratch+$33
+        ldx     _reg_idx
         lda     register_fields,x
         beq     display_cc
         bsr     select_reg_addr
         jsr     write_console_char
         jsr     write_eq_value
-        bra     $08bd
+        bra     _next_reg
 
 write_sp:
         lda     #$53
@@ -783,7 +787,7 @@ _finish_rel_addr:
         bra     _add_to_addr
 
         .module read_command_line
-_save_x         .equ    scratch+$33   ; saved X index
+_save_x         .equ    scratch+$33   ; saved X register
 
 _restart:
         jsr     write_crlf
@@ -840,7 +844,7 @@ _return:
 
         .module parse_hex_word
 _flags          .equ    scratch+$52   ; parser control flags
-_save_x         .equ    scratch+$33   ; command reader X save
+_save_x         .equ    scratch+$33   ; saved X register
 
 parse_hex_word:
         clr     parse_hi
@@ -987,7 +991,7 @@ _mnem           .equ    scratch       ; mnemonic index
 _ret_len        .equ    scratch+$02   ; operand count result
 _reg_ch         .equ    scratch+$12   ; A/X suffix slot
 _mode           .equ    scratch+$2f   ; mode/index temp
-_save_x         .equ    scratch+$31   ; saved X index
+_mnem_x         .equ    scratch+$31   ; mnemonic scan index
 _tmp            .equ    scratch+$33   ; shared temp byte
 _line_addr      .equ    scratch+$54   ; line start address
 _op_len         .equ    scratch+$57   ; operand byte count
@@ -1138,7 +1142,7 @@ _emit_mnem:
         bhi     _prev_ch
         lda     mnemonics,x
         and     #$7f
-        stx     _save_x
+        stx     _mnem_x
         sta     _tmp
         lda     _mode
         add     #$0c
@@ -1147,7 +1151,7 @@ _emit_mnem:
         sta     line_buf,x
         dec     _mode
         bmi     _append_reg
-        ldx     _save_x
+        ldx     _mnem_x
 
 _prev_ch:
         decx
