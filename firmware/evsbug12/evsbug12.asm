@@ -38,6 +38,7 @@ addr_lo         .equ    scratch+$23   ; active address low
 parse_hi        .equ    scratch+$2c   ; parsed word high
 parse_lo        .equ    scratch+$2d   ; parsed word low
 line_pos        .equ    scratch+$2e   ; line buffer index
+cmd_char        .equ    scratch+$32   ; command input character
 brk_addr_hi     .equ    scratch+$34   ; breakpoint table: high first
 brk_addr_lo     .equ    scratch+$35   ; breakpoint table: low next
 inst_target     .equ    scratch+$3e   ; decoded target address
@@ -754,47 +755,61 @@ _finish_rel_addr:
         bpl     _add_to_addr
         dec     addr_hi
         bra     _add_to_addr
+
         .module read_command_line
+_save_x         .equ    scratch+$33   ; saved X index
+
+_restart:
         jsr     write_crlf
 
 read_command_line:
         lda     #$3e
         jsr     write_console_char
         clrx
+
+_read_char:
         jsr     read_console_char_echo
         cmp     #$18
-        beq     $0beb
+        beq     _restart
         cmp     #$08
-        bne     $0c06
+        bne     _store_char
         cpx     #$00
-        beq     $0c04
+        beq     _skip_back
         decx
-        bra     $0bf4
+
+_skip_back:
+        bra     _read_char
+
+_store_char:
         sta     line_buf,x
         incx
         cpx     #$1e
-        beq     $0c11
+        beq     _finish_line
         cmp     #$0d
-        bne     $0bf4
+        bne     _read_char
+
+_finish_line:
         lda     #$0d
         sta     line_buf,x
         clr     line_pos
         rts
 
 read_command_char:
-        stx     scratch+$33
+        stx     _save_x
         ldx     line_pos
         lda     line_buf,x
         inc     line_pos
-        ldx     scratch+$33
-        sta     scratch+$32
+        ldx     _save_x
+        sta     cmd_char
         rts
 
 uppercase_command_char:
         cmp     #$60
-        bls     $0c2d
+        bls     _return
         sub     #$20
-        sta     scratch+$32
+        sta     cmd_char
+
+_return:
         rts
 
         .module parse_hex_word
@@ -879,7 +894,7 @@ _scan_char:
         lda     cmd_tokens,x
         beq     _bad_cmd
         and     #$7f
-        cmp     scratch+$32
+        cmp     cmd_char
         beq     _match_char
 
 _no_match:
@@ -914,7 +929,7 @@ _parse_arg:
         sta     scratch+$20,x
         lda     parse_lo
         sta     scratch+$21,x
-        lda     scratch+$32
+        lda     cmd_char
         cmp     #$20
         beq     _parse_arg
         cmp     #$0d
@@ -1298,7 +1313,7 @@ _got_mnem:
         lda     mnemonics,x
         beq     _bad_entry
         and     #$7f
-        cmp     scratch+$32
+        cmp     cmd_char
         bhi     _bad_entry
         bne     _next_mnem
         lda     mnemonics,x
@@ -1377,7 +1392,7 @@ _mode_table:
         jsr     parse_hex_word
         tst     parse_hi
         bne     _need_comma
-        lda     scratch+$32
+        lda     cmd_char
         cmp     #$2c
 
 _need_comma:
@@ -1445,7 +1460,7 @@ _parse_bit_num:
         asla
         add     scratch
         sta     scratch
-        lda     scratch+$32
+        lda     cmd_char
         cmp     #$2c
         bne     _bad_to_entry
         rts
@@ -1497,7 +1512,7 @@ _set_mode10:
 
 _store_mode:
         sta     scratch+$31
-        lda     scratch+$32
+        lda     cmd_char
         cmp     #$2c
         bne     _check_end
         jsr     read_command_char
@@ -1522,7 +1537,7 @@ _read_next_char:
         jsr     read_command_char
 
 _check_end:
-        lda     scratch+$32
+        lda     cmd_char
         cmp     #$0d
         beq     _write_bytes
         cmp     #$2e
@@ -1916,7 +1931,7 @@ _scan_chars:
         lda     _modify_chars,x
         beq     _bad_cmd
         incx
-        cmp     scratch+$32
+        cmp     cmd_char
         bne     _scan_chars
         lda     parse_lo
         jsr     write_memory_byte
@@ -1929,7 +1944,7 @@ _scan_chars:
 
 step_modify:
         ldx     scratch+$2f
-        lda     scratch+$32
+        lda     cmd_char
         cmp     #$3d
         beq     _eq_addr
         cmp     #$5e
@@ -1943,7 +1958,7 @@ _bad_cmd:
         inc     cmd_err
 
 _return_char:
-        lda     scratch+$32
+        lda     cmd_char
         rts
 
 _prev_addr:
@@ -2031,7 +2046,7 @@ _bad_cmd:
 
 load_cmd:
         jsr     write_crlf
-        lda     scratch+$32
+        lda     cmd_char
         cmp     #$0d
         beq     _bad_cmd
         cmp     #$20
