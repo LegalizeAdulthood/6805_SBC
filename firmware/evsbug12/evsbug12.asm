@@ -33,8 +33,12 @@ int_vecs        .equ    $1ff0
 cmd_err         .equ    scratch+$01   ; command error flag
 cmd_args        .equ    scratch+$02   ; command argument count
 line_buf        .equ    scratch+$03   ; command line buffer
+cmd_arg_hi      .equ    scratch+$20   ; command arg table high
+cmd_arg_lo      .equ    scratch+$21   ; command arg table low
 addr_hi         .equ    scratch+$22   ; active address high
 addr_lo         .equ    scratch+$23   ; active address low
+word_hi         .equ    scratch+$24   ; secondary word high
+word_lo         .equ    scratch+$25   ; secondary word low
 parse_hi        .equ    scratch+$2c   ; parsed word high
 parse_lo        .equ    scratch+$2d   ; parsed word low
 line_pos        .equ    scratch+$2e   ; line buffer index
@@ -43,12 +47,14 @@ mod_len         .equ    scratch+$31   ; modify value byte count
 cmd_char        .equ    scratch+$32   ; command input character
 brk_addr_hi     .equ    scratch+$34   ; breakpoint table: high first
 brk_addr_lo     .equ    scratch+$35   ; breakpoint table: low next
-inst_target     .equ    scratch+$3e   ; decoded target address
+inst_target_hi  .equ    scratch+$3e   ; decoded target high
+inst_target_lo  .equ    scratch+$3f   ; decoded target low
 inst_next       .equ    scratch+$40   ; decoded next address
 brk_ops         .equ    scratch+$42   ; saved breakpoint opcodes
 trace_cnt       .equ    scratch+$49   ; trace instruction count
 proceed_cnt     .equ    scratch+$4a   ; proceed breakpoint count
 step_flag       .equ    scratch+$51   ; step-over pending flag
+mon_flags       .equ    scratch+$52   ; monitor control flags
 user_sp         .equ    scratch+$53   ; captured user SP
 checksum        .equ    scratch+$56   ; checksum accumulator
 decode_flags    .equ    scratch+$58   ; decode attribute flags
@@ -101,7 +107,7 @@ write_console_char:
 
 _write_char:
         sta     $ffe3
-        brset   1, scratch+$52, _return
+        brset   1, mon_flags, _return
 
 _tx_poll:
         jsr     sub_0800
@@ -119,7 +125,7 @@ _return:
 _serial_event:
         lda     $ffe3
         jsr     init_serial_or_timer
-        clr     scratch+$52
+        clr     mon_flags
         jmp     cmd_loop
 
         .module write_hex_byte
@@ -361,11 +367,11 @@ subtract_a_from_address:
         bra     _store_hi
 
 address_in_range:
-        lda     scratch+$24
+        lda     word_hi
         cmp     addr_hi
         bcs     _out_of_range
         bhi     _return
-        lda     scratch+$25
+        lda     word_lo
         cmp     addr_lo
         bcs     _out_of_range
         lda     #$01
@@ -391,12 +397,12 @@ read_stack_word:
 read_mem_word:
         jsr     read_memory_byte
         and     #$ff
-        sta     scratch+$24
+        sta     word_hi
 
 read_next_byte:
         jsr     increment_address
         jsr     read_memory_byte
-        sta     scratch+$25
+        sta     word_lo
         rts
 
 read_swi_vector:
@@ -424,7 +430,7 @@ read_stack_byte:
 
 write_stack_byte:
         jsr     stack_addr
-        lda     scratch+$24
+        lda     word_hi
         jsr     write_memory_byte
         rts
 
@@ -439,15 +445,15 @@ load_stack_addr:
 write_stack_pc:
         ldx     #$04
         jsr     stack_addr
-        lda     scratch+$24
+        lda     word_hi
         jsr     write_memory_byte
         jsr     increment_address
-        lda     scratch+$25
+        lda     word_lo
         jsr     write_memory_byte
         rts
 
 save_addr:
-        ldx     #scratch+$24
+        ldx     #word_hi
 
 store_address_pair:
         lda     addr_hi
@@ -458,7 +464,7 @@ store_address_pair:
         rts
 
 restore_addr:
-        ldx     #scratch+$24
+        ldx     #word_hi
 
 load_address_pair:
         lda     ,x
@@ -718,7 +724,7 @@ _add_to_addr:
         jsr     add_a_to_address
 
 _save_target_addr:
-        ldx     #inst_target
+        ldx     #inst_target_hi
         jsr     store_address_pair
         rts
 
@@ -762,12 +768,12 @@ _decode_b0_operand:
         jsr     read_next_byte
 
 _clear_word:
-        clr     scratch+$24
-        clr     scratch+$25
+        clr     word_hi
+        clr     word_lo
         bra     _restore_saved_addr
 
 _read_next_word_lo:
-        clr     scratch+$24
+        clr     word_hi
         ldx     #$03
         jsr     read_next_byte
         bra     _stack_or_zero
@@ -856,7 +862,7 @@ _return:
         rts
 
         .module parse_hex_word
-_flags          .equ    scratch+$52   ; parser control flags
+_flags          .equ    mon_flags     ; parser control flags
 _save_x         .equ    scratch+$33   ; saved X register
 
 parse_hex_word:
@@ -969,9 +975,9 @@ _parse_arg:
         cpx     #$0a
         bhi     _bad_cmd
         lda     parse_hi
-        sta     scratch+$20,x
+        sta     cmd_arg_hi,x
         lda     parse_lo
-        sta     scratch+$21,x
+        sta     cmd_arg_lo,x
         lda     cmd_char
         cmp     #$20
         beq     _parse_arg
@@ -1276,10 +1282,10 @@ app_dol_word:
         bsr     app_dol
 
 app_hex_word:
-        lda     inst_target
+        lda     inst_target_hi
         and     #$ff
         bsr     app_hex_a
-        lda     scratch+$3f
+        lda     inst_target_lo
         bsr     app_hex_a
         rts
 
@@ -1455,14 +1461,14 @@ _parse_operand:
         inca
         jsr     add_a_to_address
         lda     parse_hi
-        sta     scratch+$24
+        sta     word_hi
         lda     parse_lo
-        sta     scratch+$25
+        sta     word_lo
         jsr     address_in_range
         bne     _calc_rel
-        lda     scratch+$25
+        lda     word_lo
         jsr     subtract_a_from_address
-        lda     scratch+$24
+        lda     word_hi
         sub     addr_hi
         bne     _bad_jump
         lda     addr_lo
@@ -1473,10 +1479,10 @@ _bad_jump:
         jmp     _bad_entry
 
 _calc_rel:
-        lda     scratch+$25
+        lda     word_lo
         sub     addr_lo
         sta     addr_lo
-        lda     scratch+$24
+        lda     word_hi
         sbc     addr_hi
         bne     _bad_jump
         lda     addr_lo
@@ -1725,7 +1731,7 @@ opcode_table:
         .byte   $83,$97,$3d,$9f,$8f
 
         .module exec_cmds
-_save_lo        .equ    scratch+$25   ; saved addr low byte
+_save_lo        .equ    word_lo       ; saved addr low byte
 _brk_idx        .equ    scratch+$31   ; breakpoint slot index
 _proc_addr      .equ    scratch+$54   ; proceed resume address
 
@@ -2114,7 +2120,7 @@ load_cmd:
         jsr     uppercase_command_char
         cmp     #$54
         bne     _bad_cmd
-        bset    0, scratch+$52
+        bset    0, mon_flags
         bra     _init_srec
 
 _init_srec:
@@ -2166,7 +2172,7 @@ _bad_srec:
         inc     cmd_err
 
 _done:
-        clr     scratch+$52
+        clr     mon_flags
         jmp     cmd_loop
 
 _read_srec_byte:
@@ -2227,7 +2233,7 @@ reset_handler:
         sta     addr_lo
         lda     #$e8
         jsr     write_memory_byte
-        clr     scratch+$52
+        clr     mon_flags
         clr     poll_flag
         jsr     clear_breakpoints
         lda     #$ff
@@ -2242,7 +2248,7 @@ _reset_delay:
         jsr     write_crlf
 
 enter_monitor:
-        bclr    1, scratch+$52
+        bclr    1, mon_flags
         clr     proceed_cnt
         clr     cmd_err
         clr     trace_cnt
@@ -2369,7 +2375,7 @@ _adjust_swi_stack:
 _copy_stack_byte:
         stx     scratch+$31
         jsr     read_stack_byte
-        sta     scratch+$24
+        sta     word_hi
         txa
         sub     #$05
         tax
