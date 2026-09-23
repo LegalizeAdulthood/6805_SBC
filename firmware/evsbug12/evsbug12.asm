@@ -1759,6 +1759,8 @@ init_serial_or_timer:
         ora     scratch+$5b
         sta     $ffe1
         rts
+
+        .module swi_handler
 swi_handler:
         bclr    0, map_switch
         brset   7, map_switch, $14f9
@@ -1771,66 +1773,80 @@ swi_handler:
         jsr     save_addr
         lda     #$0c
         jsr     find_address_slot
-        beq     $157d
+        beq     _breaks_ready
         jsr     read_memory_byte
         cmp     #$83
-        beq     $15f6
+        beq     _adjust_swi_stack
         bset    5, map_switch
-        brclr   4, map_switch, $158e
+_breaks_ready:
+        brclr   4, map_switch, _restore_trace
         ldx     #$0c
         lda     #$0a
         jsr     restore_break_range
         ldx     #$0a
         jsr     clear_addr_slots
         bclr    3, map_switch
-        brclr   3, map_switch, $1594
+_restore_trace:
+        brclr   3, map_switch, _restore_user_pc
         jsr     restore_breaks
+_restore_user_pc:
         jsr     write_stack_pc
         jsr     restore_addr
-        brset   5, map_switch, $15ec
+        brset   5, map_switch, _step_break
         clr     map_switch
         bset    2, map_switch
         jsr     find_br_slot
-        bne     $15c6
+        bne     _trace_break
         lda     scratch+$4a
         sub     #$01
-        bcs     $15be
+        bcs     _show_break
         lda     scratch+$54
         cmp     scratch+$22
-        bne     $15ba
+        bne     _check_break_count
         lda     scratch+$55
         cmp     scratch+$23
-        bne     $15ba
+        bne     _check_break_count
         dec     scratch+$4a
+_check_break_count:
         tst     scratch+$4a
-        bne     $15e9
+        bne     _resume_display
+_show_break:
         ldx     #$14
         jsr     write_crlf
+_reset_msg:
         jmp     $1529
+_trace_break:
         tst     scratch+$51
-        bne     $15d9
+        bne     _run_armed_breaks
         lda     scratch+$49
         sub     #$01
-        bcs     $15d2
-        bne     $15de
+        bcs     _show_trace
+        bne     _step_trace
+_show_trace:
         jsr     disassemble_line
         ldx     #$13
-        bra     $15c3
+        bra     _reset_msg
+_run_armed_breaks:
         clr     scratch+$51
         jmp     arm_breaks
+_step_trace:
         dec     scratch+$49
         jsr     disassemble_line
         jsr     display_regs
         jmp     $129f
+_resume_display:
         jmp     $129d
+_step_break:
         jsr     init_serial_or_timer
         jsr     write_crlf
         ldx     #$1a
-        bra     $15c3
+        bra     _reset_msg
+_adjust_swi_stack:
         lda     scratch+$53
         sub     #$05
         sta     scratch+$53
         ldx     #$06
+_copy_stack_byte:
         stx     scratch+$31
         jsr     read_stack_byte
         sta     scratch+$24
@@ -1841,12 +1857,14 @@ swi_handler:
         ldx     scratch+$31
         incx
         cpx     #$08
-        bls     $15fe
+        bls     _copy_stack_byte
         jsr     read_swi_vector
         jsr     write_stack_pc
         jmp     resume_user
         inc     scratch+$01
         jmp     cmd_loop
+
+        .module help_cmd
 help_cmd:
         clrx
         jsr     write_crlf
