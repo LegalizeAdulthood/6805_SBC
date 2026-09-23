@@ -102,8 +102,79 @@ tmp_a           .equ    scratch+$5d   ; temporary A save
 unknown         .equ    scratch+$5e   ; unknown scratch byte
 io_stat         .equ    scratch+$60   ; I/O status scratch
 
+op_adc_imm      .equ    $a9
+op_add_imm      .equ    $ab
+op_and_imm      .equ    $a4
+op_asl_dir      .equ    $38
+op_asr_dir      .equ    $37
+op_bcc          .equ    $24
+op_bclr0        .equ    $11
+op_bcs          .equ    $25
+op_beq          .equ    $27
+op_bhcc         .equ    $28
+op_bhcs         .equ    $29
+op_bih          .equ    $2f
+op_bil          .equ    $2e
+op_bit_imm      .equ    $a5
+op_bhi          .equ    $22
+op_bhs          .equ    $24
+op_blo          .equ    $25
+op_bls          .equ    $23
+op_bmc          .equ    $2c
+op_bmi          .equ    $2b
+op_bms          .equ    $2d
+op_bne          .equ    $26
+op_bpl          .equ    $2a
+op_bra          .equ    $20
+op_brclr0       .equ    $01
+op_brn          .equ    $21
+op_brset0       .equ    $00
+op_bset0        .equ    $10
 op_bset1        .equ    $12
-op_jmp          .equ    $cc
+op_bsr          .equ    $ad
+op_clc          .equ    $98
+op_cli          .equ    $9a
+op_clr_dir      .equ    $3f
+op_cmp_imm      .equ    $a1
+op_com_dir      .equ    $33
+op_cpx_imm      .equ    $a3
+op_dec_dir      .equ    $3a
+op_dex          .equ    $5a
+op_eor_imm      .equ    $a8
+op_fcb          .equ    $01
+op_inc_dir      .equ    $3c
+op_inx          .equ    $5c
+op_jmp_base     .equ    $ac
+op_jmp_ext      .equ    $cc
+op_jsr_base     .equ    $ad
+op_lda_ext      .equ    $c6
+op_lda_imm      .equ    $a6
+op_ldx_imm      .equ    $ae
+op_lsl_dir      .equ    $38
+op_lsr_dir      .equ    $34
+op_mul          .equ    $42
+op_neg_dir      .equ    $30
+op_nop          .equ    $9d
+op_ora_imm      .equ    $aa
+op_org          .equ    $00
+op_rol_dir      .equ    $39
+op_ror_dir      .equ    $36
+op_rsp          .equ    $9c
+op_rti          .equ    $80
+op_rts          .equ    $81
+op_sbc_imm      .equ    $a2
+op_sec          .equ    $99
+op_sei          .equ    $9b
+op_sta_base     .equ    $a7
+op_sta_ext      .equ    $c7
+op_stop         .equ    $8e
+op_stx_base     .equ    $af
+op_sub_imm      .equ    $a0
+op_swi          .equ    $83
+op_tax          .equ    $97
+op_tst_dir      .equ    $3d
+op_txa          .equ    $9f
+op_wait         .equ    $8f
 
         .org    $0000
         .byte   $00
@@ -349,11 +420,11 @@ _byte           .equ    scratch+$33   ; memory write byte
 write_memory_byte:
         sta     _byte
         jsr     service_cop
-        lda     #$c7
+        lda     #op_sta_ext
         bra     _access_user
 
 read_memory_byte:
-        lda     #$c6
+        lda     #op_lda_ext
         jsr     service_cop
 
 _access_user:
@@ -367,7 +438,7 @@ _access_user:
         sta     cmd_thunk+$03
         lda     addr_lo
         sta     cmd_thunk+$04
-        lda     #$81
+        lda     #op_rts
         sta     cmd_thunk+$05
         lda     _byte
         jsr     cmd_thunk
@@ -574,7 +645,7 @@ _arm_slot:
         jsr     read_memory_byte
         lsrx
         sta     brk_ops,x
-        lda     #$83
+        lda     #op_swi
         jsr     write_memory_byte
 
 _next_arm:
@@ -1029,7 +1100,7 @@ _dispatch:
         lda     _cmd_idx
         asla
         tax
-        lda     #op_jmp
+        lda     #op_jmp_ext
         sta     cmd_thunk
         lda     cmd_handlers,x
         sta     cmd_thunk+$01
@@ -1146,7 +1217,7 @@ _chk_30:
 _chk_80:
         cmp     #$9f
         bhi     _chk_a0
-        cmp     #$8f
+        cmp     #op_wait
         bne     _idx_80
         ldx     #$02
 
@@ -1155,7 +1226,7 @@ _idx_80:
         bra     _store_mnem
 
 _chk_a0:
-        cmp     #$ad
+        cmp     #op_bsr
         bne     _idx_a0
         lda     #$04
 
@@ -1768,11 +1839,24 @@ mnemonic_modes:
 ; opcode table
 
 opcode_table:
-        .byte   $a9,$ab,$a4,$38,$37,$24,$11,$25,$27,$28,$29,$22,$24,$2f,$2e,$a5
-        .byte   $25,$23,$2c,$2b,$2d,$26,$2a,$20,$01,$21,$00,$10,$ad,$98,$9a,$3f
-        .byte   $a1,$33,$a3,$3a,$5a,$a8,$01,$3c,$5c,$ac,$ad,$a6,$ae,$38,$34,$42
-        .byte   $30,$9d,$aa,$00,$39,$36,$9c,$80,$81,$a2,$99,$9b,$a7,$8e,$af,$a0
-        .byte   $83,$97,$3d,$9f,$8f
+        .byte   op_adc_imm,     op_add_imm,     op_and_imm,     op_asl_dir
+        .byte   op_asr_dir,     op_bcc,         op_bclr0,       op_bcs
+        .byte   op_beq,         op_bhcc,        op_bhcs,        op_bhi
+        .byte   op_bhs,         op_bih,         op_bil,         op_bit_imm
+        .byte   op_blo,         op_bls,         op_bmc,         op_bmi
+        .byte   op_bms,         op_bne,         op_bpl,         op_bra
+        .byte   op_brclr0,      op_brn,         op_brset0,      op_bset0
+        .byte   op_bsr,         op_clc,         op_cli,         op_clr_dir
+        .byte   op_cmp_imm,     op_com_dir,     op_cpx_imm,     op_dec_dir
+        .byte   op_dex,         op_eor_imm,     op_fcb,         op_inc_dir
+        .byte   op_inx,         op_jmp_base,    op_jsr_base,    op_lda_imm
+        .byte   op_ldx_imm,     op_lsl_dir,     op_lsr_dir,     op_mul
+        .byte   op_neg_dir,     op_nop,         op_ora_imm,     op_org
+        .byte   op_rol_dir,     op_ror_dir,     op_rsp,         op_rti
+        .byte   op_rts,         op_sbc_imm,     op_sec,         op_sei
+        .byte   op_sta_base,    op_stop,        op_stx_base,    op_sub_imm
+        .byte   op_swi,         op_tax,         op_tst_dir,     op_txa
+        .byte   op_wait
 
         .module exec_cmds
 _save_lo        .equ    word_lo       ; saved addr low byte
@@ -2337,7 +2421,7 @@ swi_handler:
         jsr     find_address_slot
         beq     _breaks_ready
         jsr     read_memory_byte
-        cmp     #$83
+        cmp     #op_swi
         beq     _adjust_swi_stack
         bset    map_step_brk_bit, map_switch
 
