@@ -170,7 +170,7 @@ display_regs:
         jsr     write_string
         ldx     scratch+$33
         lda     register_fields,x
-        beq     $0932
+        beq     display_cc
         bsr     select_reg_addr
         jsr     write_console_char
         jsr     write_eq_value
@@ -204,29 +204,43 @@ write_crlf:
 condition_bits:
         .byte   "111HINZC"
 
+        .module select_reg_addr
+_cnt            .equ    scratch+$31   ; offset/flag count
+_tmp            .equ    scratch+$33   ; X save/flags byte
+
 select_reg_addr:
-        stx     scratch+$33
+        stx     _tmp
         tax
         lda     user_sp
-        clr     scratch+$31
+        clr     _cnt
         clr     addr_hi
         cpx     #$50
-        bne     $091a
-        inc     scratch+$31
+        bne     _check_x
+        inc     _cnt
         add     #$04
+
+_check_x:
         cpx     #$58
-        bne     $0920
+        bne     _check_a
         add     #$03
+
+_check_a:
         cpx     #$41
-        bne     $0926
+        bne     _check_cc
         add     #$02
+
+_check_cc:
         cpx     #$43
-        bne     $092c
+        bne     _store_addr
         add     #$01
+
+_store_addr:
         sta     addr_lo
         txa
-        ldx     scratch+$33
+        ldx     _tmp
         rts
+
+display_cc:
         ldx     #msg_sp4
         jsr     write_string
         lda     user_sp
@@ -234,20 +248,25 @@ select_reg_addr:
         sta     addr_lo
         clr     addr_hi
         jsr     read_memory_byte
-        sta     scratch+$33
+        sta     _tmp
         ldx     #$ff
         lda     #$08
-        sta     scratch+$31
+        sta     _cnt
+
+_flag_loop:
         incx
         lda     #$2e
-        asl     scratch+$33
-        bcc     $0954
+        asl     _tmp
+        bcc     _write_flag
         lda     condition_bits,x
+
+_write_flag:
         jsr     write_console_char
-        dec     scratch+$31
-        bne     $094a
+        dec     _cnt
+        bne     _flag_loop
         rts
 
+        .module write_memory_byte
 write_memory_byte:
         sta     scratch+$33
         jsr     sub_0800
