@@ -38,6 +38,8 @@ addr_lo         .equ    scratch+$23   ; active address low
 parse_hi        .equ    scratch+$2c   ; parsed word high
 parse_lo        .equ    scratch+$2d   ; parsed word low
 line_pos        .equ    scratch+$2e   ; line buffer index
+mod_idx         .equ    scratch+$2f   ; modify register field index
+mod_len         .equ    scratch+$31   ; modify value byte count
 cmd_char        .equ    scratch+$32   ; command input character
 brk_addr_hi     .equ    scratch+$34   ; breakpoint table: high first
 brk_addr_lo     .equ    scratch+$35   ; breakpoint table: low next
@@ -1935,7 +1937,7 @@ _scan_chars:
         bne     _scan_chars
         lda     parse_lo
         jsr     write_memory_byte
-        tst     scratch+$31
+        tst     mod_len
         beq     step_modify
         jsr     decrement_address
         lda     parse_hi
@@ -1943,7 +1945,7 @@ _scan_chars:
         jsr     increment_address
 
 step_modify:
-        ldx     scratch+$2f
+        ldx     mod_idx
         lda     cmd_char
         cmp     #$3d
         beq     _eq_addr
@@ -1977,7 +1979,7 @@ _next_addr:
         bra     _return_char
 
 _eq_addr:
-        tst     scratch+$31
+        tst     mod_len
         beq     _return_char
         jsr     decrement_address
         bra     _return_char
@@ -1986,57 +1988,73 @@ _modify_chars:
         .byte   "^=.",$0d,$00
 
         .module mem_modify_cmd
+_fill_byte      .equ    scratch+$27   ; fill byte argument
+
 mem_modify_cmd:
         dec     cmd_args
-        bne     $1451
-        clr     scratch+$31
+        bne     _bad_cmd
+        clr     mod_len
+
+_mem_loop:
         jsr     write_crlf
         jsr     write_hex_word_at_73
         bsr     modify_value
         tst     cmd_err
-        bne     $1453
+        bne     _cmd_exit
         cmp     #$2e
-        bne     $13f2
-        bra     $1453
+        bne     _mem_loop
+        bra     _cmd_exit
 
 reg_modify_cmd:
         ldx     cmd_args
-        bne     $1451
-        stx     scratch+$2f
+        bne     _bad_cmd
+
+_reg_loop:
+        stx     mod_idx
         jsr     stack_addr
         tstx
-        bne     $141a
+        bne     _reg_value
         jsr     write_crlf
         jsr     write_sp
         bsr     step_modify
-        bra     $1408
+        bra     _reg_loop
+
+_reg_value:
         cpx     #$04
-        beq     $141f
+        beq     _save_reg_len
         clrx
-        stx     scratch+$31
+
+_save_reg_len:
+        stx     mod_len
         jsr     write_crlf
-        ldx     scratch+$2f
+        ldx     mod_idx
         lda     register_fields,x
         jsr     select_reg_addr
         jsr     write_console_char
         jsr     modify_value
         tst     cmd_err
-        bne     $1453
+        bne     _cmd_exit
         cmp     #$2e
-        bne     $1408
-        bra     $1453
+        bne     _reg_loop
+        bra     _cmd_exit
 
 block_fill_cmd:
         ldx     cmd_args
         cpx     #$03
-        bne     $1451
+        bne     _bad_cmd
+
+_fill_loop:
         jsr     address_in_range
-        beq     $1453
-        lda     scratch+$27
+        beq     _cmd_exit
+        lda     _fill_byte
         jsr     write_memory_byte
         jsr     increment_address
-        bra     $1442
+        bra     _fill_loop
+
+_bad_cmd:
         inc     cmd_err
+
+_cmd_exit:
         jmp     cmd_loop
 
         .module load_cmd
