@@ -363,15 +363,19 @@ subtract_a_from_address:
 address_in_range:
         lda     scratch+$24
         cmp     addr_hi
-        bcs     $09b8
-        bhi     $09b7
+        bcs     _out_of_range
+        bhi     _return
         lda     scratch+$25
         cmp     addr_lo
-        bcs     $09b8
+        bcs     _out_of_range
         lda     #$01
+
+_return:
         rts
+
+_out_of_range:
         clra
-        bra     $09b7
+        bra     _return
 
 stack_addr:
         clr     addr_hi
