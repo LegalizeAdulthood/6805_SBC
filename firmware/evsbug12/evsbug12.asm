@@ -1,3 +1,5 @@
+        .msfirst
+
         .org    $0000
         .byte   $00
         .org    $0800
@@ -1484,6 +1486,7 @@
         inc     $52
         jmp     $0c77
         bra     $14f0
+reset_handler:
         lda     #$ff
         sta     $af
         clr     $50
@@ -1527,6 +1530,7 @@
         ora     $ac
         sta     $ffe1
         rts
+swi_handler:
         bclr    0, $50
         brset   7, $50, $14f9
         lda     $ffe4
@@ -1692,6 +1696,13 @@
 
 ; padding and interrupt vectors
         .byte   $06,$f4
-        .fill   $06f2,$00
-        .byte   $14,$fb,$14,$fb,$14,$fb,$14,$fb,$14,$fb,$14,$fb,$15,$58,$14,$fb
+        .org    $1ff0
+        .dw     reset_handler              ; Reserved
+        .dw     reset_handler              ; Wait timer erratum mirror
+        .dw     reset_handler              ; Reserved
+        .dw     reset_handler              ; Timer from wait state
+        .dw     reset_handler              ; Timer
+        .dw     reset_handler              ; External interrupt
+        .dw     swi_handler                ; Software interrupt
+        .dw     reset_handler              ; Reset
         .end
