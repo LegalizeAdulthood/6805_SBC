@@ -2,8 +2,11 @@
 
 map_switch      .equ    $50
 scratch         .equ    $51
-user_mem_trampoline  .equ    $9c
+cmd_thunk       .equ    $9c
 int_vecs        .equ    $1ff0
+
+op_bset1        .equ    $12
+op_jmp          .equ    $cc
 
         .org    $0000
         .byte   $00
@@ -187,19 +190,19 @@ read_memory_byte:
         lda     #$c6
         jsr     sub_0800
         bclr    2, map_switch
-        sta     scratch+$4d
-        lda     #$12
-        sta     scratch+$4b
+        sta     cmd_thunk+$02
+        lda     #op_bset1
+        sta     cmd_thunk
         lda     #$50
-        sta     scratch+$4c
+        sta     cmd_thunk+$01
         lda     scratch+$22
-        sta     scratch+$4e
+        sta     cmd_thunk+$03
         lda     scratch+$23
-        sta     scratch+$4f
+        sta     cmd_thunk+$04
         lda     #$81
-        sta     scratch+$50
+        sta     cmd_thunk+$05
         lda     scratch+$33
-        jsr     user_mem_trampoline
+        jsr     cmd_thunk
         bclr    1, map_switch
         bset    2, map_switch
         rts
@@ -671,13 +674,13 @@ parse_hex_digit:
         lda     scratch
         asla
         tax
-        lda     #$cc
-        sta     scratch+$4b
+        lda     #op_jmp
+        sta     cmd_thunk
         lda     cmd_handlers,x
-        sta     scratch+$4c
+        sta     cmd_thunk+$01
         lda     cmd_handlers+1,x
-        sta     scratch+$4d
-        jmp     scratch+$4b
+        sta     cmd_thunk+$02
+        jmp     cmd_thunk
 
 ; command handler table
 cmd_handlers:
