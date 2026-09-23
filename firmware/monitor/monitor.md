@@ -385,6 +385,9 @@ cases, and fall through to `fcb $nn` for gaps or invalid opcodes.
 Disassembled source text follows local assembly style: mnemonics,
 directives, pseudo-ops, operands, labels, and symbols are lower-case, while
 hexadecimal digits remain uppercase.
+Mnemonic text tables should use fixed-width four-character records padded
+with spaces, not null-terminated strings. The renderer emits all four
+characters, then emits a fixed number of spaces before any operands.
 
 ### 9.3. Disassembler Relative Instructions
 

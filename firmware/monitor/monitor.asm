@@ -247,7 +247,7 @@ emit_disasm_inherent_found:
 emit_disasm_fcb:
         ldx     #disasm_fcb_text-disasm_text
         jsr     emit_disasm_text
-        ldx     #$05
+        ldx     #$04
         jsr     emit_spaces
         lda     #$24
         jsr     chrout
@@ -256,12 +256,14 @@ emit_disasm_fcb:
         rts
 
 emit_disasm_text:
+        lda     #$04
+        sta     hex_value
+emit_disasm_text_loop:
         lda     disasm_text,x
-        beq     emit_disasm_text_done
         jsr     chrout
         inx
-        bra     emit_disasm_text
-emit_disasm_text_done:
+        dec     hex_value
+        bne     emit_disasm_text_loop
         rts
 
 emit_hex_byte:
@@ -707,115 +709,78 @@ cpu_row_crlf_text:
 disasm_text:
 disasm_asla_text:
         .text   "asla"
-        .byte   $00
 disasm_aslx_text:
         .text   "aslx"
-        .byte   $00
 disasm_asra_text:
         .text   "asra"
-        .byte   $00
 disasm_asrx_text:
         .text   "asrx"
-        .byte   $00
 disasm_clc_text:
-        .text   "clc"
-        .byte   $00
+        .text   "clc "
 disasm_cli_text:
-        .text   "cli"
-        .byte   $00
+        .text   "cli "
 disasm_clra_text:
         .text   "clra"
-        .byte   $00
 disasm_clrx_text:
         .text   "clrx"
-        .byte   $00
 disasm_coma_text:
         .text   "coma"
-        .byte   $00
 disasm_comx_text:
         .text   "comx"
-        .byte   $00
 disasm_deca_text:
         .text   "deca"
-        .byte   $00
 disasm_decx_text:
         .text   "decx"
-        .byte   $00
 disasm_inca_text:
         .text   "inca"
-        .byte   $00
 disasm_incx_text:
         .text   "incx"
-        .byte   $00
 disasm_lsra_text:
         .text   "lsra"
-        .byte   $00
 disasm_lsrx_text:
         .text   "lsrx"
-        .byte   $00
 disasm_mul_text:
-        .text   "mul"
-        .byte   $00
+        .text   "mul "
 disasm_nega_text:
         .text   "nega"
-        .byte   $00
 disasm_negx_text:
         .text   "negx"
-        .byte   $00
 disasm_nop_text:
-        .text   "nop"
-        .byte   $00
+        .text   "nop "
 disasm_rola_text:
         .text   "rola"
-        .byte   $00
 disasm_rolx_text:
         .text   "rolx"
-        .byte   $00
 disasm_rora_text:
         .text   "rora"
-        .byte   $00
 disasm_rorx_text:
         .text   "rorx"
-        .byte   $00
 disasm_rsp_text:
-        .text   "rsp"
-        .byte   $00
+        .text   "rsp "
 disasm_rti_text:
-        .text   "rti"
-        .byte   $00
+        .text   "rti "
 disasm_rts_text:
-        .text   "rts"
-        .byte   $00
+        .text   "rts "
 disasm_sec_text:
-        .text   "sec"
-        .byte   $00
+        .text   "sec "
 disasm_sei_text:
-        .text   "sei"
-        .byte   $00
+        .text   "sei "
 disasm_stop_text:
         .text   "stop"
-        .byte   $00
 disasm_swi_text:
-        .text   "swi"
-        .byte   $00
+        .text   "swi "
 disasm_tax_text:
-        .text   "tax"
-        .byte   $00
+        .text   "tax "
 disasm_tsta_text:
         .text   "tsta"
-        .byte   $00
 disasm_tstx_text:
         .text   "tstx"
-        .byte   $00
 disasm_txa_text:
-        .text   "txa"
-        .byte   $00
+        .text   "txa "
 disasm_wait_text:
         .text   "wait"
-        .byte   $00
 disasm_fcb_text:
-        .text   "fcb"
-        .byte   $00
+        .text   "fcb "
 
 disasm_inherent_table:
         .byte   $40,disasm_nega_text-disasm_text

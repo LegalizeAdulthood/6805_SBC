@@ -2,8 +2,8 @@
  0081: 58          aslx
  0082: 47          asra
  0083: 57          asrx
- 0084: 98          clc
- 0085: 9A          cli
+ 0084: 98          clc 
+ 0085: 9A          cli 
  0086: 4F          clra
  0087: 5F          clrx
  0088: 43          coma
@@ -18,24 +18,24 @@
  0091: 58          aslx
  0092: 44          lsra
  0093: 54          lsrx
- 0094: 42          mul
+ 0094: 42          mul 
  0095: 40          nega
  0096: 50          negx
- 0097: 9D          nop
+ 0097: 9D          nop 
  0098: 49          rola
  0099: 59          rolx
  009A: 46          rora
  009B: 56          rorx
- 009C: 9C          rsp
- 009D: 80          rti
- 009E: 81          rts
- 009F: 99          sec
- 00A0: 9B          sei
+ 009C: 9C          rsp 
+ 009D: 80          rti 
+ 009E: 81          rts 
+ 009F: 99          sec 
+ 00A0: 9B          sei 
  00A1: 8E          stop
- 00A2: 83          swi
- 00A3: 97          tax
+ 00A2: 83          swi 
+ 00A3: 97          tax 
  00A4: 4D          tsta
  00A5: 5D          tstx
- 00A6: 9F          txa
+ 00A6: 9F          txa 
  00A7: 8F          wait
  00A8: 02          fcb     $02
