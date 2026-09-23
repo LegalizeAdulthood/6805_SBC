@@ -1,8 +1,9 @@
         .msfirst
 
-map_switch  .equ    $50
-scratch  .equ    $51
+map_switch      .equ    $50
+scratch         .equ    $51
 user_mem_trampoline  .equ    $9c
+int_vecs        .equ    $1ff0
 
         .org    $0000
         .byte   $00
@@ -1789,8 +1790,8 @@ help_register_trace:
         .byte   "T [<COUNT>]- Trace 1-FF instructions",$00
 
 ; padding and interrupt vectors
-        .byte   $06,$f4
-        .org    $1ff0
+        .dw     (int_vecs - $)
+        .org    int_vecs
         .dw     reset_handler              ; Reserved
         .dw     reset_handler              ; Wait timer erratum mirror
         .dw     reset_handler              ; Reserved
