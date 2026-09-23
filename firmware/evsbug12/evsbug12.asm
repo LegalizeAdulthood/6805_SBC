@@ -1774,7 +1774,7 @@ cmd_tokens:
         .byte   "HEL",('P' | $80)
         .byte   $00
 
-; banner and help text
+; banner text
 message_text:
 msg_banner  .equ    ($ - message_text)
         .byte   "EVSbug-HC05 REV 1.2",$00
@@ -1790,6 +1790,8 @@ msg_sp4  .equ    ($ - message_text)
         .byte   " "
 msg_sp3  .equ    ($ - message_text)
         .byte   "   ",$00
+
+; help text
 help_intro:
         .byte   "BREAK = Abort command, ",$0d,$0a
         .byte   "CTRL-S = Freeze screen, CTRL-X = Cancel command line",$0d,$0a
