@@ -157,6 +157,7 @@ write_sp:
         rts
 
 ; register display field table
+
 register_fields:
         .byte   "SPAXC",$00
 
@@ -852,6 +853,7 @@ _dispatch:
         jmp     cmd_thunk
 
 ; command handler table
+
         .module cmd_handlers
 cmd_handlers:
         .dw     asm_cmd,block_fill_cmd,breakpoint_cmd,go_cmd
@@ -1072,6 +1074,7 @@ app_hex_word:
         rts
 
 ; assembler/disassembler mnemonic index tables
+
 opcode_30_7f_index:
         .byte   $30,$00,$2f,$21,$2e,$00,$35,$04,$2d,$34,$23,$00,$27,$42,$00,$1f
 
@@ -1415,6 +1418,7 @@ _parse_zp:
         bra     _read_next_char
 
 ; mnemonic text table; high bit marks token end
+
         .module mnemonics
 mnemonics:
         .byte   "AD",('C' | $80)
@@ -1489,6 +1493,7 @@ mnemonics:
         .byte   $00
 
 ; mnemonic addressing-mode table
+
 mnemonic_modes:
         .byte   $00,$01,$72,$72,$01,$72,$01,$42,$42,$00,$01,$32,$02,$23,$32,$01
         .byte   $32,$01,$02,$33,$33,$32,$32,$01,$32,$32,$72,$01,$32,$32,$01,$32
@@ -1501,6 +1506,7 @@ mnemonic_modes:
         .byte   $42,$01,$12,$00,$01,$02,$13,$00
 
 ; opcode table
+
 opcode_table:
         .byte   $a9,$ab,$a4,$38,$37,$24,$11,$25,$27,$28,$29,$22,$24,$2f,$2e,$a5
         .byte   $25,$23,$2c,$2b,$2d,$26,$2a,$20,$01,$21,$00,$10,$ad,$98,$9a,$3f
@@ -1619,6 +1625,7 @@ mem_display_cmd:
         beq     _display_loop
         bpl     _bad_cmd
         jsr     save_addr
+
 _display_loop:
         jsr     address_in_range
         beq     _done
@@ -1628,6 +1635,7 @@ _display_loop:
         jsr     write_hex_word_at_73
         ldx     #msg_sp4
         jsr     write_string
+
 _byte_loop:
         bsr     _check_pause
         jsr     read_memory_byte
@@ -1637,8 +1645,10 @@ _byte_loop:
         bcs     _dot_char
         cmp     #$7f
         bcs     _save_char
+
 _dot_char:
         lda     #$2e
+
 _save_char:
         ldx     scratch+$2e
         jsr     app_char
@@ -1652,6 +1662,7 @@ _save_char:
         ldx     #msg_sp3
         jsr     write_string
         clrx
+
 _ascii_loop:
         bsr     _check_pause
         lda     scratch+$03,x
@@ -1660,8 +1671,10 @@ _ascii_loop:
         cpx     #$0f
         bls     _ascii_loop
         bra     _display_loop
+
 _bad_cmd:
         inc     scratch+$01
+
 _done:
         jmp     cmd_loop
 
@@ -1674,6 +1687,7 @@ _check_pause:
         and     #$7f
         cmp     #$13
         bne     _check_cancel
+
 _wait_resume:
         jsr     sub_0800
         ldx     $ffe0
@@ -1681,9 +1695,11 @@ _wait_resume:
         brclr   0, scratch+$60, _wait_resume
         lda     $ffe3
         and     #$7f
+
 _check_cancel:
         cmp     #$18
         beq     $137d
+
 _return:
         rts
 
@@ -1704,6 +1720,7 @@ modify_value:
         dec     scratch+$2e
         beq     step_modify
         clrx
+
 _scan_chars:
         lda     _modify_chars,x
         beq     _bad_cmd
@@ -1730,17 +1747,21 @@ step_modify:
         beq     _next_addr
         cmp     #$2e
         beq     _return_char
+
 _bad_cmd:
         inc     scratch+$01
+
 _return_char:
         lda     scratch+$32
         rts
+
 _prev_addr:
         jsr     decrement_address
         decx
         bpl     _return_char
         ldx     #$04
         bra     _return_char
+
 _next_addr:
         jsr     increment_address
         incx
@@ -1748,6 +1769,7 @@ _next_addr:
         bls     _return_char
         clrx
         bra     _return_char
+
 _eq_addr:
         tst     scratch+$31
         beq     _return_char
@@ -2126,6 +2148,7 @@ help_cmd:
         jmp     cmd_loop
 
 ; command token table; high bit marks token end
+
 cmd_tokens:
         .byte   "AS",('M' | $80)
         .byte   "B",('F' | $80)
@@ -2143,6 +2166,7 @@ cmd_tokens:
         .byte   $00
 
 ; banner text
+
 message_text:
 msg_banner  .equ    ($ - message_text)
         .byte   "EVSbug-HC05 REV 1.2",$00
@@ -2160,6 +2184,7 @@ msg_sp3  .equ    ($ - message_text)
         .byte   "   ",$00
 
 ; help text
+
 help_intro:
         .byte   "BREAK = Abort command, ",$0d,$0a
         .byte   "CTRL-S = Freeze screen, CTRL-X = Cancel command line",$0d,$0a

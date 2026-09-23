@@ -76,6 +76,7 @@ sta_extended_indexed   .equ    $d7
 rts_instruction        .equ    $81
 
         .org    $1000
+
 reset_entry:
         rsp
         lda     #monitor_stack_top
@@ -166,12 +167,14 @@ chrout:
 
 draw_boot_screen:
         ldx     #0
+
 draw_boot_screen_loop:
         lda     boot_screen_text,x
         beq     draw_boot_screen_done
         jsr     chrout
         inx
         bra     draw_boot_screen_loop
+
 draw_boot_screen_done:
         jmp     draw_cpu_row
 
@@ -216,11 +219,13 @@ emit_cpu_row_text:
         jsr     chrout
         inx
         bra     emit_cpu_row_text
+
 emit_cpu_row_text_done:
         rts
 
 emit_spaces:
         lda     #$20
+
 emit_spaces_loop:
         jsr     chrout
         decx
@@ -229,6 +234,7 @@ emit_spaces_loop:
 
 emit_disasm_mnemonic:
         clrx
+
 emit_disasm_inherent_loop:
         lda     disasm_inherent_table,x
         beq     emit_disasm_fcb
@@ -237,6 +243,7 @@ emit_disasm_inherent_loop:
         inx
         inx
         bra     emit_disasm_inherent_loop
+
 emit_disasm_inherent_found:
         inx
         lda     disasm_inherent_table,x
@@ -258,6 +265,7 @@ emit_disasm_fcb:
 emit_disasm_text:
         lda     #$04
         sta     hex_value
+
 emit_disasm_text_loop:
         lda     disasm_text,x
         jsr     chrout
@@ -289,8 +297,10 @@ emit_flag_h:
         brset   cc_h_bit,saved_cc,emit_flag_h_set
         lda     #$20
         bra     emit_flag_h_write
+
 emit_flag_h_set:
         lda     #$48
+
 emit_flag_h_write:
         jsr     chrout
         rts
@@ -299,8 +309,10 @@ emit_flag_i:
         brset   cc_i_bit,saved_cc,emit_flag_i_set
         lda     #$20
         bra     emit_flag_i_write
+
 emit_flag_i_set:
         lda     #$49
+
 emit_flag_i_write:
         jsr     chrout
         rts
@@ -309,8 +321,10 @@ emit_flag_n:
         brset   cc_n_bit,saved_cc,emit_flag_n_set
         lda     #$20
         bra     emit_flag_n_write
+
 emit_flag_n_set:
         lda     #$4e
+
 emit_flag_n_write:
         jsr     chrout
         rts
@@ -319,8 +333,10 @@ emit_flag_z:
         brset   cc_z_bit,saved_cc,emit_flag_z_set
         lda     #$20
         bra     emit_flag_z_write
+
 emit_flag_z_set:
         lda     #$5a
+
 emit_flag_z_write:
         jsr     chrout
         rts
@@ -329,8 +345,10 @@ emit_flag_c:
         brset   cc_c_bit,saved_cc,emit_flag_c_set
         lda     #$20
         bra     emit_flag_c_write
+
 emit_flag_c_set:
         lda     #$43
+
 emit_flag_c_write:
         jsr     chrout
         rts
@@ -343,11 +361,14 @@ emit_stop_reason:
         beq     emit_stop_reason_test
         ldx     #stop_unknown_text-cpu_row_text
         bra     emit_stop_reason_write
+
 emit_stop_reason_reset:
         ldx     #stop_reset_text-cpu_row_text
         bra     emit_stop_reason_write
+
 emit_stop_reason_test:
         ldx     #stop_test_text-cpu_row_text
+
 emit_stop_reason_write:
         jsr     emit_cpu_row_text
         rts
@@ -363,6 +384,7 @@ draw_memory_row:
         jsr     emit_cpu_row_text
         clrx
         stx     memory_row_index
+
 draw_memory_row_hex_loop:
         ldx     memory_row_index
         jsr     memory_read_opcode
@@ -377,6 +399,7 @@ draw_memory_row_hex_loop:
         lda     #$20
         jsr     chrout
         clrx
+
 draw_memory_row_ascii_loop:
         jsr     memory_read_opcode
         jsr     emit_memory_ascii
@@ -405,12 +428,14 @@ draw_disassembly_row:
         ldx     #$0a
         jsr     emit_spaces
         jsr     emit_disasm_mnemonic
+
 draw_disassembly_done:
         ldx     #cpu_row_crlf_text-cpu_row_text
         jsr     emit_cpu_row_text
         inc     disasm_pc_lo
         bne     draw_disassembly_return
         inc     disasm_pc_hi
+
 draw_disassembly_return:
         rts
 
@@ -419,8 +444,10 @@ emit_memory_ascii:
         blo     emit_memory_ascii_dot
         cmp     #$7f
         blo     emit_memory_ascii_write
+
 emit_memory_ascii_dot:
         lda     #$2e
+
 emit_memory_ascii_write:
         jsr     chrout
         rts
@@ -506,6 +533,7 @@ memory_key_ascii:
         bhs     memory_key_done
         jsr     memory_write_cursor
         jsr     memory_cursor_right
+
 memory_key_done:
         rts
 
@@ -587,6 +615,7 @@ memory_cursor_left:
         lda     memory_cursor_lo
         bne     memory_cursor_left_dec
         dec     memory_cursor_hi
+
 memory_cursor_left_dec:
         dec     memory_cursor_lo
         bra     memory_cursor_done
@@ -611,6 +640,7 @@ memory_cursor_down:
         sta     memory_cursor_lo
         bcc     memory_cursor_done
         inc     memory_cursor_hi
+
 memory_cursor_done:
         clra
         sta     memory_hex_phase
@@ -660,6 +690,7 @@ test_disassembler_output:
         sta     disasm_pc_lo
         lda     #$29
         sta     disasm_test_count
+
 test_disassembler_output_loop:
         jsr     draw_disassembly_row
         dec     disasm_test_count
@@ -673,112 +704,160 @@ hex_digits:
         .text   "0123456789ABCDEF"
 
 cpu_row_text:
+
 cpu_row_sp_text:
         .text   "SP "
         .byte   $00
+
 cpu_row_pc_text:
         .text   "  PC "
         .byte   $00
+
 cpu_row_a_text:
         .text   "  A "
         .byte   $00
+
 cpu_row_x_text:
         .text   "  X "
         .byte   $00
+
 cpu_row_flags_text:
         .text   "  FLAGS 111"
         .byte   $00
+
 cpu_row_stopped_text:
         .text   "  STOPPED: "
         .byte   $00
+
 stop_reset_text:
         .text   "RESET"
         .byte   $00
+
 stop_test_text:
         .text   "TEST"
         .byte   $00
+
 stop_unknown_text:
         .text   "UNKNOWN"
         .byte   $00
+
 memory_row_address_suffix_text:
         .text   ": "
         .byte   $00
+
 cpu_row_crlf_text:
         .byte   $0d,$0a,$00
 
 disasm_text:
+
 disasm_asla_text:
         .text   "asla"
+
 disasm_aslx_text:
         .text   "aslx"
+
 disasm_asra_text:
         .text   "asra"
+
 disasm_asrx_text:
         .text   "asrx"
+
 disasm_clc_text:
         .text   "clc "
+
 disasm_cli_text:
         .text   "cli "
+
 disasm_clra_text:
         .text   "clra"
+
 disasm_clrx_text:
         .text   "clrx"
+
 disasm_coma_text:
         .text   "coma"
+
 disasm_comx_text:
         .text   "comx"
+
 disasm_deca_text:
         .text   "deca"
+
 disasm_decx_text:
         .text   "decx"
+
 disasm_inca_text:
         .text   "inca"
+
 disasm_incx_text:
         .text   "incx"
+
 disasm_lsra_text:
         .text   "lsra"
+
 disasm_lsrx_text:
         .text   "lsrx"
+
 disasm_mul_text:
         .text   "mul "
+
 disasm_nega_text:
         .text   "nega"
+
 disasm_negx_text:
         .text   "negx"
+
 disasm_nop_text:
         .text   "nop "
+
 disasm_rola_text:
         .text   "rola"
+
 disasm_rolx_text:
         .text   "rolx"
+
 disasm_rora_text:
         .text   "rora"
+
 disasm_rorx_text:
         .text   "rorx"
+
 disasm_rsp_text:
         .text   "rsp "
+
 disasm_rti_text:
         .text   "rti "
+
 disasm_rts_text:
         .text   "rts "
+
 disasm_sec_text:
         .text   "sec "
+
 disasm_sei_text:
         .text   "sei "
+
 disasm_stop_text:
         .text   "stop"
+
 disasm_swi_text:
         .text   "swi "
+
 disasm_tax_text:
         .text   "tax "
+
 disasm_tsta_text:
         .text   "tsta"
+
 disasm_tstx_text:
         .text   "tstx"
+
 disasm_txa_text:
         .text   "txa "
+
 disasm_wait_text:
         .text   "wait"
+
 disasm_fcb_text:
         .text   "fcb "
 
