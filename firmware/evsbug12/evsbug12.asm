@@ -68,7 +68,7 @@ write_console_char:
         lda     $ffe3
         jsr     init_serial_or_timer
         clr     scratch+$52
-        jmp     $0c77
+        jmp     cmd_loop
 write_hex_byte:
         sta     scratch+$33
         add     scratch+$56
@@ -95,7 +95,7 @@ write_hex_word_at_73:
         lda     scratch+$23
         jsr     write_hex_byte
         rts
-sub_0888:
+write_eq_value:
         lda     #$3d
         jsr     write_console_char
         jsr     read_memory_byte
@@ -113,14 +113,14 @@ write_string:
         jsr     write_console_char
         incx
         bra     $8a3
-sub_08ae:
+display_regs_msg:
         jsr     write_string
-sub_08b1:
+display_regs:
         jsr     write_crlf
         clrx
-        jsr     sub_09bb
+        jsr     stack_addr
         clr     scratch+$31
-        jsr     sub_08d6
+        jsr     write_sp
         incx
         stx     scratch+$33
         ldx     #msg_sp4
@@ -128,11 +128,11 @@ sub_08b1:
         ldx     scratch+$33
         lda     register_fields,x
         beq     $932
-        bsr     $909
+        bsr     select_reg_addr
         jsr     write_console_char
-        jsr     sub_0888
+        jsr     write_eq_value
         bra     $8bd
-sub_08d6:
+write_sp:
         lda     #$53
         jsr     write_console_char
         lda     #$3d
@@ -156,7 +156,7 @@ write_crlf:
         .fill   $0008,$00
 condition_bits:
         .byte   "111HINZC"
-sub_0909:
+select_reg_addr:
         stx     scratch+$33
         tax
         lda     scratch+$53
@@ -255,63 +255,65 @@ address_in_range:
         rts
         clra
         bra     $9b7
-sub_09bb:
+stack_addr:
         clr     scratch+$22
         lda     scratch+$53
         sta     scratch+$23
         txa
         jsr     add_a_to_address
         rts
-        jsr     sub_09bb
-sub_09c9:
+read_stack_word:
+        jsr     stack_addr
+read_mem_word:
         jsr     read_memory_byte
         and     #$ff
         sta     scratch+$24
-sub_09d0:
+read_next_byte:
         jsr     increment_address
         jsr     read_memory_byte
         sta     scratch+$25
         rts
-sub_09d9:
+read_swi_vector:
         lda     #$fc
+read_vector_at_a:
         sta     scratch+$23
         lda     #$ff
         sta     scratch+$22
-        bra     $9c9
+        bra     read_mem_word
         lda     #$f8
-        bsr     $9db
-        bsr     $a2b
+        bsr     read_vector_at_a
+        bsr     restore_addr
         ldx     #scratch+$40
         jsr     store_address_pair
         lda     #$fa
-        bsr     $9db
-        bsr     $a2b
+        bsr     read_vector_at_a
+        bsr     restore_addr
         rts
-sub_09f5:
-        jsr     sub_09bb
+read_stack_byte:
+        jsr     stack_addr
         jsr     read_memory_byte
         rts
-sub_09fc:
-        jsr     sub_09bb
+write_stack_byte:
+        jsr     stack_addr
         lda     scratch+$24
         jsr     write_memory_byte
         rts
-sub_0a05:
+load_stack_pc:
         ldx     #$04
-sub_0a07:
-        bsr     $9c6
-        bsr     $a2b
+load_stack_addr:
+        bsr     read_stack_word
+        bsr     restore_addr
         rts
-sub_0a0c:
+write_stack_pc:
         ldx     #$04
-        jsr     sub_09bb
+        jsr     stack_addr
         lda     scratch+$24
         jsr     write_memory_byte
         jsr     increment_address
         lda     scratch+$25
         jsr     write_memory_byte
         rts
-sub_0a1f:
+save_addr:
         ldx     #scratch+$24
 store_address_pair:
         lda     scratch+$22
@@ -320,7 +322,7 @@ store_address_pair:
         lda     scratch+$23
         sta     $01,x
         rts
-sub_0a2b:
+restore_addr:
         ldx     #scratch+$24
 load_address_pair:
         lda     ,x
@@ -330,11 +332,11 @@ load_address_pair:
         rts
 clear_breakpoints:
         clrx
-sub_0a36:
+clear_addr_slots:
         clr     scratch+$34,x
         incx
         cpx     #$0d
-        bls     $a36
+        bls     clear_addr_slots
         rts
 load_breakpoint_address:
         ldx     scratch+$31
@@ -347,7 +349,7 @@ load_breakpoint_address:
         bne     $a50
         lda     scratch+$35,x
         rts
-sub_0a51:
+find_br_slot:
         lda     #$08
 find_address_slot:
         sta     scratch+$32
@@ -363,11 +365,13 @@ find_address_slot:
         cpx     scratch+$32
         bls     $a56
         rts
+arm_breaks:
         clrx
         lda     #$08
+arm_break_range:
         sta     scratch+$32
         stx     scratch+$31
-        bsr     $a3e
+        bsr     load_breakpoint_address
         beq     $a81
         bset    3, map_switch
         jsr     read_memory_byte
@@ -378,14 +382,14 @@ find_address_slot:
         ldx     scratch+$31
         cpx     scratch+$32
         bls     $a70
-        jmp     $14da
-sub_0a8a:
+        jmp     resume_user
+restore_breaks:
         ldx     #$08
         clra
-sub_0a8d:
+restore_break_range:
         stx     scratch+$31
         sta     scratch+$32
-        bsr     $a3e
+        bsr     load_breakpoint_address
         beq     $a9b
         lsrx
         lda     scratch+$42,x
@@ -396,7 +400,7 @@ sub_0a8d:
         cmp     scratch+$32
         bpl     $a91
         rts
-sub_0aa6:
+decode_inst:
         clr     scratch+$57
         clr     scratch+$58
         jsr     read_memory_byte
@@ -477,14 +481,14 @@ sub_0aa6:
         bsr     $b6b
         bne     $b12
         ldx     #$03
-        jsr     sub_09f5
+        jsr     read_stack_byte
         bra     $bb9
         decx
         bmi     $b60
         beq     $b64
         cpx     #$02
         bne     $b5a
-        jsr     sub_09d9
+        jsr     read_swi_vector
         clrx
         bra     $b92
         cpx     #$0c
@@ -493,7 +497,7 @@ sub_0aa6:
         ldx     #$09
         bra     $b66
         ldx     #$06
-        jsr     sub_0a07
+        jsr     load_stack_addr
         bra     $b7f
         cpx     #$0c
         beq     $b71
@@ -513,13 +517,13 @@ sub_0aa6:
         beq     $b8c
         ldx     #$03
         jsr     increment_address
-        jsr     sub_09c9
+        jsr     read_mem_word
         clra
         tstx
         beq     $b99
-        jsr     sub_09f5
+        jsr     read_stack_byte
         sta     scratch+$32
-        jsr     sub_0a2b
+        jsr     restore_addr
         lda     scratch+$32
         bra     $b7c
         inc     scratch+$57
@@ -532,13 +536,13 @@ sub_0aa6:
         bra     $b7c
         cmp     #$b0
         bne     $bbf
-        jsr     sub_09d0
+        jsr     read_next_byte
         clr     scratch+$24
         clr     scratch+$25
         bra     $b99
         clr     scratch+$24
         ldx     #$03
-        jsr     sub_09d0
+        jsr     read_next_byte
         bra     $b92
         lda     #$01
         bra     $bce
@@ -637,6 +641,7 @@ parse_hex_digit:
         inc     scratch+$02
         rts
         inc     scratch+$01
+cmd_loop:
         rsp
         jsr     write_crlf
         tst     scratch+$01
@@ -651,7 +656,7 @@ parse_hex_digit:
         ldx     #$ff
         jsr     read_command_char
         cmp     #$0d
-        beq     $c77
+        beq     cmd_loop
         jsr     uppercase_command_char
         incx
         lda     cmd_tokens,x
@@ -716,19 +721,19 @@ disassemble_line:
         sta     scratch+$03,x
         decx
         bpl     $d23
-        jsr     sub_0aa6
-        jsr     sub_0e5b
+        jsr     decode_inst
+        jsr     load_line_addr
         lda     scratch+$57
         sta     scratch+$33
         sta     scratch+$02
         ldx     #$02
         stx     scratch+$2e
-        jsr     sub_0e64
+        jsr     app_hex_byte
         inc     scratch+$2e
         jsr     increment_address
         dec     scratch+$33
         bpl     $d38
-        jsr     sub_0e5b
+        jsr     load_line_addr
         tst     scratch+$01
         beq     $d54
         jsr     decrement_address
@@ -744,8 +749,8 @@ disassemble_line:
         sta     scratch+$33
         ldx     #$17
         stx     scratch+$2e
-        jsr     append_comma_dollar
-        jsr     append_hex_word
+        jsr     app_comma_dol
+        jsr     app_hex_word
         clrx
         stx     scratch+$2f
         ldx     #$12
@@ -754,9 +759,9 @@ disassemble_line:
         brclr   0, scratch+$33, $d7b
         inc     scratch+$2f
         lsra
-        jsr     hex_nibble_to_ascii
-        jsr     append_comma_dollar
-        jsr     sub_0e61
+        jsr     nibl_ascii
+        jsr     app_comma_dol
+        jsr     app_next_hex
         clr     scratch+$57
         ldx     scratch+$2f
         ldx     branch_bit_index,x
@@ -789,7 +794,7 @@ disassemble_line:
         sta     scratch+$2f
         ldx     #$12
         stx     scratch+$2e
-        jsr     sub_0e8e
+        jsr     app_dol_word
         bra     $d85
         ldx     opcode_a0_af_index,x
         stx     scratch
@@ -835,22 +840,22 @@ disassemble_line:
         stx     scratch+$2e
         brclr   2, scratch+$58, $e29
         lda     #$23
-        bsr     $e7f
+        bsr     app_char
         tst     scratch+$57
         beq     $e3e
-        bsr     $e89
-        jsr     sub_09d0
+        bsr     app_dol
+        jsr     read_next_byte
         dec     scratch+$57
         bmi     $e3e
         beq     $e3a
         and     #$ff
-        bsr     $e67
+        bsr     app_hex_a
         bra     $e2f
         brclr   3, scratch+$58, $e49
         lda     #$2c
-        bsr     $e7f
+        bsr     app_char
         lda     #$58
-        bsr     $e7f
+        bsr     app_char
         clrx
         lda     scratch+$03,x
         jsr     write_console_char
@@ -858,50 +863,53 @@ disassemble_line:
         cpx     #$1d
         bls     $e4a
         ldx     #$0a
-        jsr     sub_0a36
+        jsr     clear_addr_slots
         clr     scratch+$01
-sub_0e5b:
+load_line_addr:
         ldx     #scratch+$54
         jsr     load_address_pair
         rts
-sub_0e61:
+app_next_hex:
         jsr     increment_address
-sub_0e64:
+app_hex_byte:
         jsr     read_memory_byte
+app_hex_a:
         ldx     scratch+$2e
         sta     scratch+$32
-        bsr     $e73
+        bsr     app_hi_nibl
         lda     scratch+$32
         and     #$0f
-        bra     $e77
+        bra     nibl_ascii
+app_hi_nibl:
         lsra
         lsra
         lsra
         lsra
-hex_nibble_to_ascii:
+nibl_ascii:
         add     #$30
         cmp     #$39
-        bls     $e7f
+        bls     app_char
         add     #$07
-append_disasm_char:
+app_char:
         sta     scratch+$03,x
         incx
         stx     scratch+$2e
         rts
-append_comma_dollar:
+app_comma_dol:
         lda     #$2c
-        bsr     $e7f
+        bsr     app_char
+app_dol:
         lda     #$24
-        bsr     $e7f
+        bsr     app_char
         rts
-sub_0e8e:
-        bsr     $e89
-append_hex_word:
+app_dol_word:
+        bsr     app_dol
+app_hex_word:
         lda     scratch+$3e
         and     #$ff
-        bsr     $e67
+        bsr     app_hex_a
         lda     scratch+$3f
-        bsr     $e67
+        bsr     app_hex_a
         rts
 
 ; assembler/disassembler mnemonic index tables
@@ -947,7 +955,7 @@ asm_cmd:
         beq     $f26
         bhi     $f0f
         inc     scratch+$01
-        jmp     $0c77
+        jmp     cmd_loop
         lda     mnemonics,x
         beq     $f21
         and     #$7f
@@ -1121,7 +1129,7 @@ asm_cmd:
         cmp     #$2e
         beq     $1084
         jmp     $0f21
-        jsr     sub_0e5b
+        jsr     load_line_addr
         lda     scratch
         jsr     write_memory_byte
         jsr     increment_address
@@ -1132,12 +1140,12 @@ asm_cmd:
         incx
         lda     scratch+$2c,x
         bra     $109b
-        jsr     sub_0e5b
+        jsr     load_line_addr
         jsr     disassemble_line
         tst     scratch+$5a
         bne     $10bb
         jmp     $0ef5
-        jmp     $0c77
+        jmp     cmd_loop
         bra     $1093
         jsr     parse_hex_word
         tst     scratch+$2c
@@ -1267,14 +1275,14 @@ breakpoint_cmd:
         ldx     scratch+$31
         cpx     #$08
         bls     $124c
-        jmp     $0c77
+        jmp     cmd_loop
         inc     scratch+$01
         bra     $125f
 nobr_cmd:
         dec     scratch+$02
         bmi     $1277
         bne     $1262
-        jsr     sub_0a51
+        jsr     find_br_slot
         bne     $1262
         clr     scratch+$34,x
         clr     scratch+$35,x
@@ -1285,25 +1293,25 @@ go_cmd:
         dec     scratch+$02
         bmi     $1292
         bne     $12cc
-        jsr     sub_0a1f
+        jsr     save_addr
         ldx     #$04
-        jsr     sub_09fc
+        jsr     write_stack_byte
         jsr     increment_address
         lda     scratch+$25
         jsr     write_memory_byte
-        jsr     sub_0a05
-        jsr     sub_0a51
+        jsr     load_stack_pc
+        jsr     find_br_slot
         beq     $129d
-        jmp     $0a69
+        jmp     arm_breaks
         inc     scratch+$51
         bset    4, map_switch
-        jsr     sub_0a05
-        jsr     sub_0aa6
+        jsr     load_stack_pc
+        jsr     decode_inst
         tst     scratch+$01
         bne     $12cc
         ldx     #$0a
         lda     #$0c
-        jmp     $0a6c
+        jmp     arm_break_range
 proceed_cmd:
         ldx     scratch+$02
         decx
@@ -1312,14 +1320,14 @@ proceed_cmd:
         ldx     scratch+$23
         stx     scratch+$4a
         beq     $12cc
-        jsr     sub_0a05
+        jsr     load_stack_pc
         ldx     #scratch+$54
         jsr     store_address_pair
-        jsr     sub_0a51
+        jsr     find_br_slot
         beq     $129d
         inc     scratch+$01
         clr     scratch+$4a
-        jmp     $0c77
+        jmp     cmd_loop
         incx
         incx
         bra     $12bb
@@ -1342,7 +1350,7 @@ mem_display_cmd:
         decx
         beq     $12f7
         bpl     $1349
-        jsr     sub_0a1f
+        jsr     save_addr
         jsr     address_in_range
         beq     $134b
         clr     scratch+$2e
@@ -1351,7 +1359,7 @@ mem_display_cmd:
         jsr     write_hex_word_at_73
         ldx     #msg_sp4
         jsr     write_string
-        bsr     $134e
+        bsr     check_display_pause
         jsr     read_memory_byte
         tsta
         bmi     $131b
@@ -1361,7 +1369,7 @@ mem_display_cmd:
         bcs     $131d
         lda     #$2e
         ldx     scratch+$2e
-        jsr     append_disasm_char
+        jsr     app_char
         jsr     read_memory_byte
         jsr     write_hex_byte
         lda     #$20
@@ -1372,7 +1380,7 @@ mem_display_cmd:
         ldx     #msg_sp3
         jsr     write_string
         clrx
-        bsr     $134e
+        bsr     check_display_pause
         lda     scratch+$03,x
         jsr     write_console_char
         incx
@@ -1380,7 +1388,8 @@ mem_display_cmd:
         bls     $133b
         bra     $12f7
         inc     scratch+$01
-        jmp     $0c77
+        jmp     cmd_loop
+check_display_pause:
         jsr     sub_0800
         tst     scratch+$5c
         beq     $1374
@@ -1401,16 +1410,16 @@ mem_display_cmd:
 reg_display_cmd:
         jsr     write_crlf
         ldx     #$20
-        jsr     sub_08ae
-        jmp     $0c77
+        jsr     display_regs_msg
+        jmp     cmd_loop
         inc     scratch+$01
         bra     $137d
-sub_1384:
-        jsr     sub_0888
+modify_value:
+        jsr     write_eq_value
         jsr     read_command_line
         jsr     parse_hex_word
         dec     scratch+$2e
-        beq     $13b0
+        beq     step_modify
         clrx
         lda     memory_modify_chars,x
         beq     $13c4
@@ -1420,11 +1429,12 @@ sub_1384:
         lda     scratch+$2d
         jsr     write_memory_byte
         tst     scratch+$31
-        beq     $13b0
+        beq     step_modify
         jsr     decrement_address
         lda     scratch+$2c
         jsr     write_memory_byte
         jsr     increment_address
+step_modify:
         ldx     scratch+$2f
         lda     scratch+$32
         cmp     #$3d
@@ -1461,7 +1471,7 @@ mem_modify_cmd:
         clr     scratch+$31
         jsr     write_crlf
         jsr     write_hex_word_at_73
-        bsr     $1384
+        bsr     modify_value
         tst     scratch+$01
         bne     $1453
         cmp     #$2e
@@ -1471,12 +1481,12 @@ reg_modify_cmd:
         ldx     scratch+$02
         bne     $1451
         stx     scratch+$2f
-        jsr     sub_09bb
+        jsr     stack_addr
         tstx
         bne     $141a
         jsr     write_crlf
-        jsr     sub_08d6
-        bsr     $13b0
+        jsr     write_sp
+        bsr     step_modify
         bra     $1408
         cpx     #$04
         beq     $141f
@@ -1485,9 +1495,9 @@ reg_modify_cmd:
         jsr     write_crlf
         ldx     scratch+$2f
         lda     register_fields,x
-        jsr     sub_0909
+        jsr     select_reg_addr
         jsr     write_console_char
-        jsr     sub_1384
+        jsr     modify_value
         tst     scratch+$01
         bne     $1453
         cmp     #$2e
@@ -1504,9 +1514,9 @@ block_fill_cmd:
         jsr     increment_address
         bra     $1442
         inc     scratch+$01
-        jmp     $0c77
+        jmp     cmd_loop
         inc     scratch+$01
-        jmp     $0c77
+        jmp     cmd_loop
 load_cmd:
         jsr     write_crlf
         lda     scratch+$32
@@ -1532,22 +1542,22 @@ load_cmd:
         bra     $148e
         inc     scratch+$57
         clr     scratch+$56
-        bsr     $14c2
+        bsr     read_srec_byte
         sub     #$03
         sta     scratch+$2f
-        bsr     $14c2
+        bsr     read_srec_byte
         sta     scratch+$22
-        bsr     $14c2
+        bsr     read_srec_byte
         sta     scratch+$23
         dec     scratch+$2f
         bmi     $14ac
-        bsr     $14c2
+        bsr     read_srec_byte
         jsr     write_memory_byte
         jsr     increment_address
         bra     $149e
         ldx     scratch+$56
         stx     scratch+$2f
-        bsr     $14c2
+        bsr     read_srec_byte
         tst     scratch+$57
         bne     $14bd
         coma
@@ -1555,19 +1565,22 @@ load_cmd:
         beq     $1478
         inc     scratch+$01
         clr     scratch+$52
-        jmp     $0c77
+        jmp     cmd_loop
+read_srec_byte:
         clr     scratch+$2d
-        bsr     $14cf
-        bsr     $14cf
+        bsr     read_srec_nibl
+        bsr     read_srec_nibl
         add     scratch+$56
         sta     scratch+$56
         lda     scratch+$2d
         rts
+read_srec_nibl:
         jsr     read_console_char_echo
         jsr     parse_hex_digit
         tst     scratch+$59
         bmi     $14bb
         rts
+resume_user:
         lda     scratch+$53
         bclr    7, map_switch
         cmp     #$ff
@@ -1583,7 +1596,7 @@ load_cmd:
         add     #$02
         bra     $14dc
         inc     scratch+$01
-        jmp     $0c77
+        jmp     cmd_loop
         bra     $14f0
 reset_handler:
         lda     #$ff
@@ -1637,9 +1650,9 @@ swi_handler:
         deca
         sta     scratch+$53
         rsp
-        jsr     sub_0a05
+        jsr     load_stack_pc
         jsr     decrement_address
-        jsr     sub_0a1f
+        jsr     save_addr
         lda     #$0c
         jsr     find_address_slot
         beq     $157d
@@ -1650,18 +1663,18 @@ swi_handler:
         brclr   4, map_switch, $158e
         ldx     #$0c
         lda     #$0a
-        jsr     sub_0a8d
+        jsr     restore_break_range
         ldx     #$0a
-        jsr     sub_0a36
+        jsr     clear_addr_slots
         bclr    3, map_switch
         brclr   3, map_switch, $1594
-        jsr     sub_0a8a
-        jsr     sub_0a0c
-        jsr     sub_0a2b
+        jsr     restore_breaks
+        jsr     write_stack_pc
+        jsr     restore_addr
         brset   5, map_switch, $15ec
         clr     map_switch
         bset    2, map_switch
-        jsr     sub_0a51
+        jsr     find_br_slot
         bne     $15c6
         lda     scratch+$4a
         sub     #$01
@@ -1688,10 +1701,10 @@ swi_handler:
         ldx     #$13
         bra     $15c3
         clr     scratch+$51
-        jmp     $0a69
+        jmp     arm_breaks
         dec     scratch+$49
         jsr     disassemble_line
-        jsr     sub_08b1
+        jsr     display_regs
         jmp     $129f
         jmp     $129d
         jsr     init_serial_or_timer
@@ -1703,21 +1716,21 @@ swi_handler:
         sta     scratch+$53
         ldx     #$06
         stx     scratch+$31
-        jsr     sub_09f5
+        jsr     read_stack_byte
         sta     scratch+$24
         txa
         sub     #$05
         tax
-        jsr     sub_09fc
+        jsr     write_stack_byte
         ldx     scratch+$31
         incx
         cpx     #$08
         bls     $15fe
-        jsr     sub_09d9
-        jsr     sub_0a0c
-        jmp     $14da
+        jsr     read_swi_vector
+        jsr     write_stack_pc
+        jmp     resume_user
         inc     scratch+$01
-        jmp     $0c77
+        jmp     cmd_loop
 help_cmd:
         clrx
         jsr     write_crlf
@@ -1755,7 +1768,7 @@ help_cmd:
         jsr     write_console_char
         incx
         bra     $1664
-        jmp     $0c77
+        jmp     cmd_loop
 
 ; command token table; high bit marks token end
 cmd_tokens:
