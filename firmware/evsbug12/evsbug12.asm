@@ -2147,26 +2147,32 @@ _read_srec_nibl:
         .module resume_user
 resume_user:
         lda     user_sp
+
+_resume_sp:
         bclr    7, map_switch
         cmp     #$ff
-        bne     $14e5
+        bne     _check_sp
         bset    0, map_switch
         rti
+
+_check_sp:
         bit     #$01
-        bne     $14ee
+        bne     _push_pc
         add     #$03
         bset    7, map_switch
         swi
-        bsr     resume_plus2
 
-resume_plus2:
+_push_pc:
+        bsr     _resume_plus2
+
+_resume_plus2:
         add     #$02
-        bra     $14dc
+        bra     _resume_sp
         inc     cmd_err
         jmp     cmd_loop
 
 resume_from_swi:
-        bra     resume_plus2
+        bra     _resume_plus2
 
 reset_handler:
         lda     #$ff
@@ -2184,8 +2190,10 @@ reset_handler:
         clr     poll_flag
         jsr     clear_breakpoints
         lda     #$ff
+
+_reset_delay:
         deca
-        bne     $151b
+        bne     _reset_delay
         lda     #$0c
         sta     serial_ctl
         jsr     init_serial_or_timer
