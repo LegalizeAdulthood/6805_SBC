@@ -44,6 +44,7 @@ parse_lo        .equ    scratch+$2d   ; parsed word low
 line_pos        .equ    scratch+$2e   ; line buffer index
 mod_idx         .equ    scratch+$2f   ; modify register field index
 mod_len         .equ    scratch+$31   ; modify value byte count
+brk_idx         .equ    scratch+$31   ; breakpoint slot index
 cmd_char        .equ    scratch+$32   ; command input character
 brk_addr_hi     .equ    scratch+$34   ; breakpoint table: high first
 brk_addr_lo     .equ    scratch+$35   ; breakpoint table: low next
@@ -59,6 +60,7 @@ user_sp         .equ    scratch+$53   ; captured user SP
 saved_addr_hi   .equ    scratch+$54   ; saved address high
 saved_addr_lo   .equ    scratch+$55   ; saved address low
 checksum        .equ    scratch+$56   ; checksum accumulator
+op_len          .equ    scratch+$57   ; operand byte count
 decode_flags    .equ    scratch+$58   ; decode attribute flags
 hex_digit       .equ    scratch+$59   ; parsed hex digit
 asm_once        .equ    scratch+$5a   ; assembler one-shot flag
@@ -486,13 +488,12 @@ clear_addr_slots:
         rts
 
         .module brk_helpers
-_idx            .equ    scratch+$31   ; breakpoint slot index
 _end            .equ    scratch+$32   ; breakpoint range limit
 
 load_breakpoint_address:
-        ldx     _idx
-        inc     _idx
-        inc     _idx
+        ldx     brk_idx
+        inc     brk_idx
+        inc     brk_idx
         lda     brk_addr_lo,x
         sta     addr_lo
         lda     brk_addr_hi,x
@@ -531,7 +532,7 @@ arm_breaks:
 
 arm_break_range:
         sta     _end
-        stx     _idx
+        stx     brk_idx
 
 _arm_slot:
         bsr     load_breakpoint_address
@@ -544,7 +545,7 @@ _arm_slot:
         jsr     write_memory_byte
 
 _next_arm:
-        ldx     _idx
+        ldx     brk_idx
         cpx     _end
         bls     _arm_slot
         jmp     resume_user
@@ -554,7 +555,7 @@ restore_breaks:
         clra
 
 restore_break_range:
-        stx     _idx
+        stx     brk_idx
         sta     _end
 
 _restore_slot:
@@ -565,16 +566,16 @@ _restore_slot:
         jsr     write_memory_byte
 
 _next_restore:
-        lda     _idx
+        lda     brk_idx
         sub     #$04
-        sta     _idx
+        sta     brk_idx
         cmp     _end
         bpl     _restore_slot
         rts
 
         .module decode_inst
 decode_inst:
-        clr     scratch+$57
+        clr     op_len
         clr     decode_flags
         jsr     read_memory_byte
         sta     scratch+$33
@@ -716,8 +717,8 @@ _done:
         rts
 
 _read_ext_addr:
-        inc     scratch+$57
-        inc     scratch+$57
+        inc     op_len
+        inc     op_len
         bsr     _is_jmp_jsr
         beq     _read_cur_ext
         lda     #$03
@@ -753,7 +754,7 @@ _restore_saved_addr:
         bra     _add_to_addr
 
 _op_from_code:
-        inc     scratch+$57
+        inc     op_len
         bsr     _is_jmp_jsr
         bne     _len2_addr
         cmp     #$a0
@@ -788,7 +789,7 @@ _set_len2:
         lda     #$02
 
 _set_len:
-        sta     scratch+$57
+        sta     op_len
         inca
         jsr     add_a_to_address
 
@@ -1014,7 +1015,6 @@ _reg_ch         .equ    scratch+$12   ; A/X suffix slot
 _mode           .equ    scratch+$2f   ; mode/index temp
 _mnem_x         .equ    scratch+$31   ; mnemonic scan index
 _tmp            .equ    scratch+$33   ; shared temp byte
-_op_len         .equ    scratch+$57   ; operand byte count
 
 disassemble_line:
         ldx     #saved_addr_hi
@@ -1030,7 +1030,7 @@ _clear_line:
         bpl     _clear_line
         jsr     decode_inst
         jsr     load_line_addr
-        lda     _op_len
+        lda     op_len
         sta     _tmp
         sta     _ret_len
         ldx     #$02
@@ -1046,7 +1046,7 @@ _byte_loop:
         tst     cmd_err
         beq     _class_op
         jsr     decrement_address
-        inc     _op_len
+        inc     op_len
         ldx     #$26
         bra     _to_mnem
 
@@ -1079,7 +1079,7 @@ _bit_arg:
         jsr     app_next_hex
 
 _br_idx:
-        clr     _op_len
+        clr     op_len
         ldx     _mode
         ldx     branch_bit_index,x
 _to_mnem:
@@ -1197,13 +1197,13 @@ _op_pos:
         bsr     app_char
 
 _operand:
-        tst     _op_len
+        tst     op_len
         beq     _append_index
         bsr     app_dol
 
 _operand_loop:
         jsr     read_next_byte
-        dec     _op_len
+        dec     op_len
         bmi     _append_index
         beq     _op_byte
         and     #$ff
@@ -1316,7 +1316,7 @@ _show_line:
         jsr     disassemble_line
 
 _again:
-        clr     scratch+$57
+        clr     op_len
         jsr     read_command_line
         jsr     read_command_char
         cmp     #$0d
@@ -1456,9 +1456,9 @@ _rel_mode:
         lda     #$01
 
 _parse_operand:
-        sta     scratch+$57
+        sta     op_len
         jsr     parse_hex_word
-        lda     scratch+$57
+        lda     op_len
         inca
         jsr     add_a_to_address
         lda     parse_hi
@@ -1523,7 +1523,7 @@ _parse_index:
         bra     _store_mode
 
 _parse_offset:
-        inc     scratch+$57
+        inc     op_len
         dec     line_pos
         jsr     parse_hex_word
         tst     parse_hi
@@ -1544,13 +1544,13 @@ _imm_or_comma:
 _check_comma:
         cmp     #$2c
         beq     _set_mode10
-        inc     scratch+$57
+        inc     op_len
         dec     line_pos
         jsr     parse_hex_word
         lda     #$10
         tst     parse_hi
         beq     _add_opcode
-        inc     scratch+$57
+        inc     op_len
         add     #$10
 
 _add_opcode:
@@ -1570,9 +1570,9 @@ _store_mode:
         cmp     #$58
         bne     _bad_to_entry
         lda     scratch+$31
-        brset   1, scratch+$57, _finish_opcode
+        brset   1, op_len, _finish_opcode
         add     #$20
-        brset   0, scratch+$57, _finish_opcode
+        brset   0, op_len, _finish_opcode
         add     #$20
 
 _finish_opcode:
@@ -1603,10 +1603,10 @@ _write_bytes:
 _write_loop:
         jsr     write_memory_byte
         jsr     increment_address
-        dec     scratch+$57
+        dec     op_len
         bmi     _redisasm
         clrx
-        brset   0, scratch+$57, _load_operand
+        brset   0, op_len, _load_operand
         incx
 
 _load_operand:
@@ -1631,7 +1631,7 @@ _parse_zp:
         tst     parse_hi
         bne     _bad_to_entry
         dec     line_pos
-        inc     scratch+$57
+        inc     op_len
         bra     _read_next_char
 
 ; mnemonic text table; high bit marks token end
@@ -1733,7 +1733,6 @@ opcode_table:
 
         .module exec_cmds
 _save_lo        .equ    word_lo       ; saved addr low byte
-_brk_idx        .equ    scratch+$31   ; breakpoint slot index
 
 breakpoint_cmd:
         dec     cmd_args
@@ -1759,7 +1758,7 @@ _show_brks:
         jsr     write_console_char
         lda     #$3d
         jsr     write_console_char
-        clr     _brk_idx
+        clr     brk_idx
 
 _disp_brk:
         jsr     load_breakpoint_address
@@ -1769,7 +1768,7 @@ _disp_brk:
         jsr     write_string
 
 _next_brk:
-        ldx     _brk_idx
+        ldx     brk_idx
         cpx     #$08
         bls     _disp_brk
 
