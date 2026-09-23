@@ -921,6 +921,8 @@ _finish:
         rts
 
         .module cmd_loop
+_cmd_idx        .equ    scratch       ; command handler index
+
 _bad_cmd:
         inc     cmd_err
 
@@ -937,7 +939,7 @@ cmd_loop:
 _read_line:
         jsr     read_command_line
         clr     cmd_args
-        clr     scratch
+        clr     _cmd_idx
         ldx     #$ff
 
 _scan_char:
@@ -954,7 +956,7 @@ _scan_char:
 
 _no_match:
         clr     line_pos
-        inc     scratch
+        inc     _cmd_idx
 
 _skip_token:
         lda     cmd_tokens,x
@@ -970,7 +972,7 @@ _match_char:
         beq     _dispatch
         cmp     #$20
         bne     _no_match
-        lda     scratch
+        lda     _cmd_idx
         cmp     #$04
         beq     _dispatch
 
@@ -991,7 +993,7 @@ _parse_arg:
         bne     _bad_cmd
 
 _dispatch:
-        lda     scratch
+        lda     _cmd_idx
         asla
         tax
         lda     #op_jmp
