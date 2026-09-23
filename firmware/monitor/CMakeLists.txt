@@ -2,10 +2,35 @@ set(TASM_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../tasm32")
 set(TASM_EXE "${TASM_DIR}/TASM.EXE")
 set(TASM_6805_TABLE "${TASM_DIR}/TASM05.TAB")
 
-get_filename_component(DEFAULT_M6805SBC_EXE "${CMAKE_SOURCE_DIR}/../mame/m6805sbc.exe" ABSOLUTE)
-get_filename_component(DEFAULT_MAME_DATA_DIR "${CMAKE_SOURCE_DIR}/../mame" ABSOLUTE)
-set(M6805SBC_EXE "${DEFAULT_M6805SBC_EXE}" CACHE FILEPATH "Path to the m6805sbc MAME executable")
-set(M6805SBC_DATA_DIR "${DEFAULT_MAME_DATA_DIR}" CACHE PATH "Path to the source MAME data directory")
+set(MAME_COMMAND "" CACHE PATH "Directory hint used to find the MAME executable")
+
+if(NOT MAME_COMMAND AND DEFINED M6805SBC_EXE)
+    get_filename_component(MAME_COMMAND "${M6805SBC_EXE}" DIRECTORY)
+    set(MAME_COMMAND "${MAME_COMMAND}" CACHE PATH "Directory hint used to find the MAME executable" FORCE)
+endif()
+
+if(DEFINED ENV{MAME_COMMAND} AND NOT "$ENV{MAME_COMMAND}" STREQUAL "")
+    file(TO_CMAKE_PATH "$ENV{MAME_COMMAND}" MAME_COMMAND)
+    set(MAME_COMMAND "${MAME_COMMAND}" CACHE PATH "Directory hint used to find the MAME executable" FORCE)
+endif()
+
+unset(MAME_EXECUTABLE CACHE)
+unset(MAME_EXECUTABLE)
+
+if(MAME_COMMAND)
+    set(MAME_COMMAND_HINT "${MAME_COMMAND}")
+
+    if(NOT IS_DIRECTORY "${MAME_COMMAND}")
+        get_filename_component(MAME_COMMAND_HINT "${MAME_COMMAND}" DIRECTORY)
+    endif()
+
+    find_program(
+        MAME_EXECUTABLE
+        NAMES mame mame.exe m6805sbc.exe
+        HINTS "${MAME_COMMAND_HINT}"
+        DOC "Path to the MAME executable"
+    )
+endif()
 
 set(MONITOR_SOURCE "${CMAKE_CURRENT_SOURCE_DIR}/monitor.asm")
 set(MONITOR_OUTPUT_DIR "${CMAKE_CURRENT_BINARY_DIR}")
