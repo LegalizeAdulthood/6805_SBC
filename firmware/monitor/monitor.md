@@ -36,7 +36,8 @@ labels, and symbols. Hexadecimal operands also use lowercase hex digits
 where letters appear. User-facing display strings may use whatever casing
 the screen text requires. Labels should be preceded by a blank line,
 unless the previous line is a module operation; in that case, the blank
-line should precede the module operation.
+line should precede the module operation. A blank line should separate
+module-local equates from the global entry point for the module.
 
 ```text
 | SP 00F8  PC E000  A 00  X 00  FLAGS 111HINZC  STOPPED: RESET                 |

@@ -891,161 +891,233 @@ cmd_handlers:
         .dw     proceed_cmd,reg_display_cmd,reg_modify_cmd,trace_cmd
         .dw     help_cmd
 
+        .module disassemble_line
+_mnem           .equ    scratch       ; mnemonic index
+_ret_len        .equ    scratch+$02   ; operand count result
+_reg_ch         .equ    scratch+$12   ; A/X suffix slot
+_mode           .equ    scratch+$2f   ; mode/index temp
+_save_x         .equ    scratch+$31   ; saved X index
+_tmp            .equ    scratch+$33   ; shared temp byte
+_line_addr      .equ    scratch+$54   ; line start address
+_op_len         .equ    scratch+$57   ; operand byte count
+
 disassemble_line:
-        ldx     #scratch+$54
+        ldx     #_line_addr
         jsr     store_address_pair
         jsr     write_crlf
         jsr     write_hex_word_at_73
         lda     #$20
         ldx     #$1d
+
+_clear_line:
         sta     line_buf,x
         decx
-        bpl     $0d23
+        bpl     _clear_line
         jsr     decode_inst
         jsr     load_line_addr
-        lda     scratch+$57
-        sta     scratch+$33
-        sta     scratch+$02
+        lda     _op_len
+        sta     _tmp
+        sta     _ret_len
         ldx     #$02
         stx     line_pos
+
+_byte_loop:
         jsr     app_hex_byte
         inc     line_pos
         jsr     increment_address
-        dec     scratch+$33
-        bpl     $0d38
+        dec     _tmp
+        bpl     _byte_loop
         jsr     load_line_addr
         tst     cmd_err
-        beq     $0d54
+        beq     _class_op
         jsr     decrement_address
-        inc     scratch+$57
+        inc     _op_len
         ldx     #$26
-        bra     $0d8c
+        bra     _to_mnem
+
+_class_op:
         jsr     read_memory_byte
         and     #$0f
         tax
         jsr     read_memory_byte
         cmp     #$0f
-        bhi     $0d8e
-        sta     scratch+$33
+        bhi     _chk_10
+        sta     _tmp
         ldx     #$17
         stx     line_pos
         jsr     app_comma_dol
         jsr     app_hex_word
         clrx
-        stx     scratch+$2f
+
+_set_bit:
+        stx     _mode
         ldx     #$12
         stx     line_pos
-        lda     scratch+$33
-        brclr   0, scratch+$33, $0d7b
-        inc     scratch+$2f
+        lda     _tmp
+        brclr   0, _tmp, _bit_arg
+        inc     _mode
+
+_bit_arg:
         lsra
         jsr     nibl_ascii
         jsr     app_comma_dol
         jsr     app_next_hex
-        clr     scratch+$57
-        ldx     scratch+$2f
+
+_br_idx:
+        clr     _op_len
+        ldx     _mode
         ldx     branch_bit_index,x
-        bra     $0dcf
+_to_mnem:
+        bra     _store_mnem
+
+_chk_10:
         cmp     #$1f
-        bhi     $0d9a
+        bhi     _chk_20
         sub     #$10
-        sta     scratch+$33
+        sta     _tmp
         ldx     #$02
-        bra     $0d6e
+        bra     _set_bit
+
+_chk_20:
         cmp     #$2f
-        bhi     $0da3
+        bhi     _chk_30
         txa
         add     #$05
-        bra     $0dc1
+        bra     _set_mode
+
+_chk_30:
         cmp     #$7f
-        bhi     $0dac
+        bhi     _chk_80
         ldx     opcode_30_7f_index,x
-        bra     $0dcf
+        bra     _store_mnem
+
+_chk_80:
         cmp     #$9f
-        bhi     $0dbb
+        bhi     _chk_a0
         cmp     #$8f
-        bne     $0db6
+        bne     _idx_80
         ldx     #$02
+
+_idx_80:
         ldx     opcode_80_9f_index,x
-        bra     $0dcf
+        bra     _store_mnem
+
+_chk_a0:
         cmp     #$ad
-        bne     $0dcc
+        bne     _idx_a0
         lda     #$04
-        sta     scratch+$2f
+
+_set_mode:
+        sta     _mode
         ldx     #$12
         stx     line_pos
         jsr     app_dol_word
-        bra     $0d85
+        bra     _br_idx
+
+_idx_a0:
         ldx     opcode_a0_af_index,x
-        stx     scratch
-        clr     scratch+$33
+
+_store_mnem:
+        stx     _mnem
+        clr     _tmp
         clrx
+
+_scan_mode:
         lda     mnemonic_modes,x
         cmp     #$0f
-        bhi     $0dde
+        bhi     _chk_mnem
+
+_next_mode:
         incx
-        bra     $0dd4
+        bra     _scan_mode
+
+_chk_mnem:
         and     #$0f
-        sta     scratch+$2f
-        lda     scratch+$33
-        cmp     scratch
-        beq     $0dec
-        inc     scratch+$33
-        bra     $0ddb
+        sta     _mode
+        lda     _tmp
+        cmp     _mnem
+        beq     _emit_mnem
+        inc     _tmp
+        bra     _next_mode
+
+_emit_mnem:
         lda     mnemonic_modes,x
         and     #$0f
-        cmp     scratch+$2f
-        bhi     $0e0d
+        cmp     _mode
+        bhi     _prev_ch
         lda     mnemonics,x
         and     #$7f
-        stx     scratch+$31
-        sta     scratch+$33
-        lda     scratch+$2f
+        stx     _save_x
+        sta     _tmp
+        lda     _mode
         add     #$0c
         tax
-        lda     scratch+$33
+        lda     _tmp
         sta     line_buf,x
-        dec     scratch+$2f
-        bmi     $0e10
-        ldx     scratch+$31
+        dec     _mode
+        bmi     _append_reg
+        ldx     _save_x
+
+_prev_ch:
         decx
-        bra     $0dec
-        brset   0, decode_flags, $0e1a
-        brclr   1, decode_flags, $0e1e
+        bra     _emit_mnem
+
+_append_reg:
+        brset   0, decode_flags, _reg_a
+        brclr   1, decode_flags, _op_pos
         lda     #$58
-        bra     $0e1c
+        bra     _store_reg
+
+_reg_a:
         lda     #$41
-        sta     scratch+$12
+
+_store_reg:
+        sta     _reg_ch
+
+_op_pos:
         ldx     #$12
         stx     line_pos
-        brclr   2, decode_flags, $0e29
+        brclr   2, decode_flags, _operand
         lda     #$23
         bsr     app_char
-        tst     scratch+$57
-        beq     $0e3e
+
+_operand:
+        tst     _op_len
+        beq     _append_index
         bsr     app_dol
+
+_operand_loop:
         jsr     read_next_byte
-        dec     scratch+$57
-        bmi     $0e3e
-        beq     $0e3a
+        dec     _op_len
+        bmi     _append_index
+        beq     _op_byte
         and     #$ff
+
+_op_byte:
         bsr     app_hex_a
-        bra     $0e2f
-        brclr   3, decode_flags, $0e49
+        bra     _operand_loop
+
+_append_index:
+        brclr   3, decode_flags, _write_line
         lda     #$2c
         bsr     app_char
         lda     #$58
         bsr     app_char
+
+_write_line:
         clrx
+
+_write_loop:
         lda     line_buf,x
         jsr     write_console_char
         incx
         cpx     #$1d
-        bls     $0e4a
+        bls     _write_loop
         ldx     #$0a
         jsr     clear_addr_slots
         clr     cmd_err
 
+        .module load_line_addr
 load_line_addr:
         ldx     #scratch+$54
         jsr     load_address_pair
