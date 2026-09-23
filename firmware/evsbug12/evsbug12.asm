@@ -402,6 +402,7 @@ restore_break_range:
         cmp     scratch+$32
         bpl     $a91
         rts
+        .module decode_inst
 decode_inst:
         clr     scratch+$57
         clr     scratch+$58
@@ -411,159 +412,195 @@ decode_inst:
         tax
         lda     scratch+$33
         and     #$f0
-        bne     $abb
-        jmp     $0bcc
+        bne     _nonzero_op
+        jmp     _set_len2
+_nonzero_op:
         cmp     #$10
-        beq     $b2c
+        beq     _operand_byte
         cmp     #$20
-        bne     $ac6
-        jmp     $0bc8
+        bne     _decode_20_up
+        jmp     _set_len1
+_decode_20_up:
         cmp     #$70
-        bhi     $b02
+        bhi     _decode_80_up
         tstx
-        beq     $ae8
+        beq     _decode_30_up
         cmp     #$40
-        bne     $ad5
+        bne     _check_low_nibl
         cpx     #$02
-        beq     $b12
+        beq     _len1_addr
+_check_low_nibl:
         cpx     #$02
-        bls     $ae5
+        bls     _bad_opcode
         cpx     #$05
-        beq     $ae5
+        beq     _bad_opcode
         cpx     #$0b
-        beq     $ae5
+        beq     _bad_opcode
         cpx     #$0e
-        bne     $ae8
+        bne     _decode_30_up
+_bad_opcode:
         inc     scratch+$01
         rts
+_decode_30_up:
         cmp     #$30
-        beq     $b2c
+        beq     _operand_byte
         cmp     #$40
-        beq     $afc
+        beq     _set_flag0
         cmp     #$50
-        beq     $afe
+        beq     _set_flag1
         bset    3, scratch+$58
         cmp     #$60
-        beq     $b2c
-        bra     $b12
+        beq     _operand_byte
+        bra     _len1_addr
+_set_flag0:
         bset    0, scratch+$58
+_set_flag1:
         bset    1, scratch+$58
-        bra     $b12
+        bra     _len1_addr
+_decode_80_up:
         cmp     #$80
-        beq     $b4b
+        beq     _decode_80
         cmp     #$90
-        bne     $b16
+        bne     _decode_a0_up
         cpx     #$06
-        bls     $ae5
+        bls     _bad_opcode
         cpx     #$0e
-        beq     $ae5
+        beq     _bad_opcode
+_len1_addr:
         lda     #$01
-        bra     $b7c
+        bra     _add_to_addr
+_decode_a0_up:
         cmp     #$a0
-        bne     $b2e
+        bne     _decode_b0_up
         cpx     #$0d
-        beq     $b2c
+        beq     _operand_byte
         cpx     #$07
-        beq     $ae5
+        beq     _bad_opcode
         cpx     #$0c
-        beq     $ae5
+        beq     _bad_opcode
         cpx     #$0f
-        beq     $ae5
+        beq     _bad_opcode
         bset    2, scratch+$58
-        bra     $ba2
+_operand_byte:
+        bra     _op_from_code
+_decode_b0_up:
         cmp     #$b0
-        beq     $ba2
+        beq     _op_from_code
         cmp     #$c0
-        beq     $b72
+        beq     _read_ext_addr
         bset    3, scratch+$58
         cmp     #$d0
-        beq     $b72
+        beq     _read_ext_addr
         cmp     #$e0
-        beq     $ba2
+        beq     _op_from_code
         bsr     is_jmp_jsr
-        bne     $b12
+        bne     _len1_addr
         ldx     #$03
         jsr     read_stack_byte
-        bra     $bb9
+        bra     _clear_word
+_decode_80:
         decx
-        bmi     $b60
-        beq     $b64
+        bmi     _stack_x9
+        beq     _stack_x6
         cpx     #$02
-        bne     $b5a
+        bne     _check_c_d
         jsr     read_swi_vector
         clrx
-        bra     $b92
+        bra     _stack_or_zero
+_check_c_d:
         cpx     #$0c
-        bls     $ae5
-        bra     $b12
+        bls     _bad_opcode
+        bra     _len1_addr
+_stack_x9:
         ldx     #$09
-        bra     $b66
+        bra     _load_stack_x
+_stack_x6:
         ldx     #$06
+_load_stack_x:
         jsr     load_stack_addr
-        bra     $b7f
+        bra     _save_target_addr
 is_jmp_jsr:
         cpx     #$0c
-        beq     $b71
+        beq     _done
         cpx     #$0d
+_done:
         rts
+_read_ext_addr:
         inc     scratch+$57
         inc     scratch+$57
         bsr     is_jmp_jsr
-        beq     $b85
+        beq     _read_cur_ext
         lda     #$03
+_add_to_addr:
         jsr     add_a_to_address
+_save_target_addr:
         ldx     #scratch+$3e
         jsr     store_address_pair
         rts
+_read_cur_ext:
         clrx
         cmp     #$c0
-        beq     $b8c
+        beq     _read_next_word
         ldx     #$03
+_read_next_word:
         jsr     increment_address
         jsr     read_mem_word
+_stack_or_zero:
         clra
         tstx
-        beq     $b99
+        beq     _restore_saved_addr
         jsr     read_stack_byte
+_restore_saved_addr:
         sta     scratch+$32
         jsr     restore_addr
         lda     scratch+$32
-        bra     $b7c
+        bra     _add_to_addr
+_op_from_code:
         inc     scratch+$57
         bsr     is_jmp_jsr
-        bne     $bae
+        bne     _len2_addr
         cmp     #$a0
-        beq     $bc8
-        bhi     $bb2
+        beq     _set_len1
+        bhi     _decode_b0_operand
+_len2_addr:
         lda     #$02
-        bra     $b7c
+        bra     _add_to_addr
+_decode_b0_operand:
         cmp     #$b0
-        bne     $bbf
+        bne     _read_next_word_lo
         jsr     read_next_byte
+_clear_word:
         clr     scratch+$24
         clr     scratch+$25
-        bra     $b99
+        bra     _restore_saved_addr
+_read_next_word_lo:
         clr     scratch+$24
         ldx     #$03
         jsr     read_next_byte
-        bra     $b92
+        bra     _stack_or_zero
+_set_len1:
         lda     #$01
-        bra     $bce
+        bra     _set_len
+_set_len2:
         lda     #$02
+_set_len:
         sta     scratch+$57
         inca
         jsr     add_a_to_address
+_save_next_addr:
         ldx     #scratch+$40
         jsr     store_address_pair
+_finish_rel_addr:
         jsr     decrement_address
         jsr     read_memory_byte
         tax
         jsr     increment_address
         txa
         tsta
-        bpl     $b7c
+        bpl     _add_to_addr
         dec     scratch+$22
-        bra     $b7c
+        bra     _add_to_addr
+        .module read_command_line
         jsr     write_crlf
 read_command_line:
         lda     #$3e
