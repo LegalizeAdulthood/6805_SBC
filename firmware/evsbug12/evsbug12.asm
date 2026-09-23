@@ -159,7 +159,7 @@ write_hex_word_at_73:
         jsr     write_hex_byte
         rts
 
-        .module write_eq_value
+        .module write_values
 write_eq_value:
         lda     #$3d
         jsr     write_console_char
@@ -173,16 +173,18 @@ write_eq_value:
 
 _write_byte:
         jsr     write_hex_byte
+
+_return:
         rts
 
-        .module write_string
 write_string:
         lda     message_text,x
-        beq     $08a2
+        beq     _return
         jsr     write_console_char
         incx
-        bra     $08a3
+        bra     write_string
 
+        .module display_regs_msg
 display_regs_msg:
         jsr     write_string
 
