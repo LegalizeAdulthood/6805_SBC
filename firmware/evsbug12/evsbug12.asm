@@ -40,29 +40,29 @@ read_console_char_echo:
         jsr     sub_0800
         ldx     $ffe1
         stx     scratch+$60
-        brset   2, scratch+$60, $850
+        brset   2, scratch+$60, $0850
         ldx     $ffe0
         stx     scratch+$60
-        brclr   0, scratch+$60, $80c
+        brclr   0, scratch+$60, $080c
         lda     $ffe3
         and     #$7f
-        bra     $834
+        bra     $0834
 write_console_char:
         stx     scratch+$59
         ldx     $ffe0
         stx     scratch+$60
-        brclr   0, scratch+$60, $834
+        brclr   0, scratch+$60, $0834
         ldx     #$ff
         stx     scratch+$5c
         sta     $ffe3
-        brset   1, scratch+$52, $84d
+        brset   1, scratch+$52, $084d
         jsr     sub_0800
         ldx     $ffe0
         stx     scratch+$60
-        brclr   6, scratch+$60, $83a
+        brclr   6, scratch+$60, $083a
         ldx     $ffe1
         stx     scratch+$60
-        brset   2, scratch+$60, $850
+        brset   2, scratch+$60, $0850
         ldx     scratch+$59
         rts
         lda     $ffe3
@@ -86,7 +86,7 @@ write_hi_nibl:
 write_lo_nibl:
         add     #$30
         cmp     #$39
-        bls     $877
+        bls     $0877
         add     #$07
         jsr     write_console_char
         rts
@@ -102,7 +102,7 @@ write_eq_value:
         jsr     write_console_char
         jsr     read_memory_byte
         tst     scratch+$31
-        beq     $89f
+        beq     $089f
         and     #$ff
         jsr     write_hex_byte
         jsr     increment_address
@@ -111,10 +111,10 @@ write_eq_value:
         rts
 write_string:
         lda     message_text,x
-        beq     $8a2
+        beq     $08a2
         jsr     write_console_char
         incx
-        bra     $8a3
+        bra     $08a3
 display_regs_msg:
         jsr     write_string
 display_regs:
@@ -129,11 +129,11 @@ display_regs:
         jsr     write_string
         ldx     scratch+$33
         lda     register_fields,x
-        beq     $932
+        beq     $0932
         bsr     select_reg_addr
         jsr     write_console_char
         jsr     write_eq_value
-        bra     $8bd
+        bra     $08bd
 write_sp:
         lda     #$53
         jsr     write_console_char
@@ -165,17 +165,17 @@ select_reg_addr:
         clr     scratch+$31
         clr     scratch+$22
         cpx     #$50
-        bne     $91a
+        bne     $091a
         inc     scratch+$31
         add     #$04
         cpx     #$58
-        bne     $920
+        bne     $0920
         add     #$03
         cpx     #$41
-        bne     $926
+        bne     $0926
         add     #$02
         cpx     #$43
-        bne     $92c
+        bne     $092c
         add     #$01
         sta     scratch+$23
         txa
@@ -195,17 +195,17 @@ select_reg_addr:
         incx
         lda     #$2e
         asl     scratch+$33
-        bcc     $954
+        bcc     $0954
         lda     condition_bits,x
         jsr     write_console_char
         dec     scratch+$31
-        bne     $94a
+        bne     $094a
         rts
 write_memory_byte:
         sta     scratch+$33
         jsr     sub_0800
         lda     #$c7
-        bra     $96a
+        bra     $096a
 read_memory_byte:
         lda     #$c6
         jsr     sub_0800
@@ -244,19 +244,19 @@ subtract_a_from_address:
         sta     scratch+$23
         lda     scratch+$22
         sbc     #$00
-        bra     $994
+        bra     $0994
 address_in_range:
         lda     scratch+$24
         cmp     scratch+$22
-        bcs     $9b8
-        bhi     $9b7
+        bcs     $09b8
+        bhi     $09b7
         lda     scratch+$25
         cmp     scratch+$23
-        bcs     $9b8
+        bcs     $09b8
         lda     #$01
         rts
         clra
-        bra     $9b7
+        bra     $09b7
 stack_addr:
         clr     scratch+$22
         lda     scratch+$53
@@ -348,7 +348,7 @@ load_breakpoint_address:
         sta     scratch+$23
         lda     scratch+$34,x
         sta     scratch+$22
-        bne     $a50
+        bne     $0a50
         lda     scratch+$35,x
         rts
 find_br_slot:
@@ -358,14 +358,14 @@ find_address_slot:
         clrx
         lda     scratch+$22
         cmp     scratch+$34,x
-        bne     $a62
+        bne     $0a62
         lda     scratch+$23
         cmp     scratch+$35,x
-        beq     $a50
+        beq     $0a50
         incx
         incx
         cpx     scratch+$32
-        bls     $a56
+        bls     $0a56
         rts
 arm_breaks:
         clrx
@@ -374,7 +374,7 @@ arm_break_range:
         sta     scratch+$32
         stx     scratch+$31
         bsr     load_breakpoint_address
-        beq     $a81
+        beq     $0a81
         bset    3, map_switch
         jsr     read_memory_byte
         lsrx
@@ -383,7 +383,7 @@ arm_break_range:
         jsr     write_memory_byte
         ldx     scratch+$31
         cpx     scratch+$32
-        bls     $a70
+        bls     $0a70
         jmp     resume_user
 restore_breaks:
         ldx     #$08
@@ -392,7 +392,7 @@ restore_break_range:
         stx     scratch+$31
         sta     scratch+$32
         bsr     load_breakpoint_address
-        beq     $a9b
+        beq     $0a9b
         lsrx
         lda     scratch+$42,x
         jsr     write_memory_byte
@@ -400,7 +400,7 @@ restore_break_range:
         sub     #$04
         sta     scratch+$31
         cmp     scratch+$32
-        bpl     $a91
+        bpl     $0a91
         rts
         .module decode_inst
 decode_inst:
@@ -608,19 +608,19 @@ read_command_line:
         clrx
         jsr     read_console_char_echo
         cmp     #$18
-        beq     $beb
+        beq     $0beb
         cmp     #$08
-        bne     $c06
+        bne     $0c06
         cpx     #$00
-        beq     $c04
+        beq     $0c04
         decx
-        bra     $bf4
+        bra     $0bf4
         sta     scratch+$03,x
         incx
         cpx     #$1e
-        beq     $c11
+        beq     $0c11
         cmp     #$0d
-        bne     $bf4
+        bne     $0bf4
         lda     #$0d
         sta     scratch+$03,x
         clr     scratch+$2e
@@ -635,7 +635,7 @@ read_command_char:
         rts
 uppercase_command_char:
         cmp     #$60
-        bls     $c2d
+        bls     $0c2d
         sub     #$20
         sta     scratch+$32
         rts
@@ -644,21 +644,21 @@ parse_hex_word:
         clr     scratch+$2d
         jsr     read_command_char
         cmp     #$24
-        bne     $c3c
+        bne     $0c3c
         jsr     read_command_char
 parse_hex_digit:
         jsr     uppercase_command_char
         clr     scratch+$59
         dec     scratch+$59
         sub     #$30
-        bmi     $c72
+        bmi     $0c72
         cmp     #$09
-        bls     $c55
+        bls     $0c55
         sub     #$07
         cmp     #$09
-        bls     $c72
+        bls     $0c72
         cmp     #$0f
-        bhi     $c72
+        bhi     $0c72
         sta     scratch+$59
         lda     scratch+$2c
         ldx     scratch+$2d
@@ -676,8 +676,8 @@ parse_hex_digit:
         sta     scratch+$2d
         ldx     scratch+$33
         tst     scratch+$52
-        bne     $c72
-        bra     $c39
+        bne     $0c72
+        bra     $0c39
         inc     scratch+$02
         rts
 
@@ -771,7 +771,7 @@ disassemble_line:
         ldx     #$1d
         sta     scratch+$03,x
         decx
-        bpl     $d23
+        bpl     $0d23
         jsr     decode_inst
         jsr     load_line_addr
         lda     scratch+$57
@@ -783,20 +783,20 @@ disassemble_line:
         inc     scratch+$2e
         jsr     increment_address
         dec     scratch+$33
-        bpl     $d38
+        bpl     $0d38
         jsr     load_line_addr
         tst     scratch+$01
-        beq     $d54
+        beq     $0d54
         jsr     decrement_address
         inc     scratch+$57
         ldx     #$26
-        bra     $d8c
+        bra     $0d8c
         jsr     read_memory_byte
         and     #$0f
         tax
         jsr     read_memory_byte
         cmp     #$0f
-        bhi     $d8e
+        bhi     $0d8e
         sta     scratch+$33
         ldx     #$17
         stx     scratch+$2e
@@ -807,7 +807,7 @@ disassemble_line:
         ldx     #$12
         stx     scratch+$2e
         lda     scratch+$33
-        brclr   0, scratch+$33, $d7b
+        brclr   0, scratch+$33, $0d7b
         inc     scratch+$2f
         lsra
         jsr     nibl_ascii
@@ -816,57 +816,57 @@ disassemble_line:
         clr     scratch+$57
         ldx     scratch+$2f
         ldx     branch_bit_index,x
-        bra     $dcf
+        bra     $0dcf
         cmp     #$1f
-        bhi     $d9a
+        bhi     $0d9a
         sub     #$10
         sta     scratch+$33
         ldx     #$02
-        bra     $d6e
+        bra     $0d6e
         cmp     #$2f
-        bhi     $da3
+        bhi     $0da3
         txa
         add     #$05
-        bra     $dc1
+        bra     $0dc1
         cmp     #$7f
-        bhi     $dac
+        bhi     $0dac
         ldx     opcode_30_7f_index,x
-        bra     $dcf
+        bra     $0dcf
         cmp     #$9f
-        bhi     $dbb
+        bhi     $0dbb
         cmp     #$8f
-        bne     $db6
+        bne     $0db6
         ldx     #$02
         ldx     opcode_80_9f_index,x
-        bra     $dcf
+        bra     $0dcf
         cmp     #$ad
-        bne     $dcc
+        bne     $0dcc
         lda     #$04
         sta     scratch+$2f
         ldx     #$12
         stx     scratch+$2e
         jsr     app_dol_word
-        bra     $d85
+        bra     $0d85
         ldx     opcode_a0_af_index,x
         stx     scratch
         clr     scratch+$33
         clrx
         lda     mnemonic_modes,x
         cmp     #$0f
-        bhi     $dde
+        bhi     $0dde
         incx
-        bra     $dd4
+        bra     $0dd4
         and     #$0f
         sta     scratch+$2f
         lda     scratch+$33
         cmp     scratch
-        beq     $dec
+        beq     $0dec
         inc     scratch+$33
-        bra     $ddb
+        bra     $0ddb
         lda     mnemonic_modes,x
         and     #$0f
         cmp     scratch+$2f
-        bhi     $e0d
+        bhi     $0e0d
         lda     mnemonics,x
         and     #$7f
         stx     scratch+$31
@@ -877,32 +877,32 @@ disassemble_line:
         lda     scratch+$33
         sta     scratch+$03,x
         dec     scratch+$2f
-        bmi     $e10
+        bmi     $0e10
         ldx     scratch+$31
         decx
-        bra     $dec
-        brset   0, scratch+$58, $e1a
-        brclr   1, scratch+$58, $e1e
+        bra     $0dec
+        brset   0, scratch+$58, $0e1a
+        brclr   1, scratch+$58, $0e1e
         lda     #$58
-        bra     $e1c
+        bra     $0e1c
         lda     #$41
         sta     scratch+$12
         ldx     #$12
         stx     scratch+$2e
-        brclr   2, scratch+$58, $e29
+        brclr   2, scratch+$58, $0e29
         lda     #$23
         bsr     app_char
         tst     scratch+$57
-        beq     $e3e
+        beq     $0e3e
         bsr     app_dol
         jsr     read_next_byte
         dec     scratch+$57
-        bmi     $e3e
-        beq     $e3a
+        bmi     $0e3e
+        beq     $0e3a
         and     #$ff
         bsr     app_hex_a
-        bra     $e2f
-        brclr   3, scratch+$58, $e49
+        bra     $0e2f
+        brclr   3, scratch+$58, $0e49
         lda     #$2c
         bsr     app_char
         lda     #$58
@@ -912,7 +912,7 @@ disassemble_line:
         jsr     write_console_char
         incx
         cpx     #$1d
-        bls     $e4a
+        bls     $0e4a
         ldx     #$0a
         jsr     clear_addr_slots
         clr     scratch+$01
