@@ -70,6 +70,7 @@ asm_once        .equ    scratch+$5a   ; assembler one-shot flag
 serial_ctl      .equ    scratch+$5b   ; serial control bits
 poll_flag       .equ    scratch+$5c   ; pause poll pending
 tmp_a           .equ    scratch+$5d   ; temporary A save
+unknown         .equ    scratch+$5e   ; unknown scratch byte
 io_stat         .equ    scratch+$60   ; I/O status scratch
 
 op_bset1        .equ    $12
@@ -2241,7 +2242,7 @@ resume_from_swi:
 
 reset_handler:
         lda     #$ff
-        sta     scratch+$5e
+        sta     unknown
         clr     map_switch
         bset    2, map_switch
         lda     #$fa
