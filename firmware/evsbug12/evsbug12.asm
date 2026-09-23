@@ -164,15 +164,18 @@ write_eq_value:
         lda     #$3d
         jsr     write_console_char
         jsr     read_memory_byte
-        tst     scratch+$31
-        beq     $089f
+        tst     mod_len
+        beq     _write_byte
         and     #$ff
         jsr     write_hex_byte
         jsr     increment_address
         jsr     read_memory_byte
+
+_write_byte:
         jsr     write_hex_byte
         rts
 
+        .module write_string
 write_string:
         lda     message_text,x
         beq     $08a2
