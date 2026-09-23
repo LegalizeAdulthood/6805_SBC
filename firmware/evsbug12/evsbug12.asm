@@ -56,6 +56,8 @@ proceed_cnt     .equ    scratch+$4a   ; proceed breakpoint count
 step_flag       .equ    scratch+$51   ; step-over pending flag
 mon_flags       .equ    scratch+$52   ; monitor control flags
 user_sp         .equ    scratch+$53   ; captured user SP
+saved_addr_hi   .equ    scratch+$54   ; saved address high
+saved_addr_lo   .equ    scratch+$55   ; saved address low
 checksum        .equ    scratch+$56   ; checksum accumulator
 decode_flags    .equ    scratch+$58   ; decode attribute flags
 hex_digit       .equ    scratch+$59   ; parsed hex digit
@@ -1012,11 +1014,10 @@ _reg_ch         .equ    scratch+$12   ; A/X suffix slot
 _mode           .equ    scratch+$2f   ; mode/index temp
 _mnem_x         .equ    scratch+$31   ; mnemonic scan index
 _tmp            .equ    scratch+$33   ; shared temp byte
-_line_addr      .equ    scratch+$54   ; line start address
 _op_len         .equ    scratch+$57   ; operand byte count
 
 disassemble_line:
-        ldx     #_line_addr
+        ldx     #saved_addr_hi
         jsr     store_address_pair
         jsr     write_crlf
         jsr     write_hex_word_at_73
@@ -1233,7 +1234,7 @@ _write_loop:
 
         .module load_line_addr
 load_line_addr:
-        ldx     #scratch+$54
+        ldx     #saved_addr_hi
         jsr     load_address_pair
         rts
 
@@ -1733,7 +1734,6 @@ opcode_table:
         .module exec_cmds
 _save_lo        .equ    word_lo       ; saved addr low byte
 _brk_idx        .equ    scratch+$31   ; breakpoint slot index
-_proc_addr      .equ    scratch+$54   ; proceed resume address
 
 breakpoint_cmd:
         dec     cmd_args
@@ -1835,7 +1835,7 @@ _set_proceed:
         stx     proceed_cnt
         beq     _bad_run
         jsr     load_stack_pc
-        ldx     #_proc_addr
+        ldx     #saved_addr_hi
         jsr     store_address_pair
         jsr     find_br_slot
         beq     step_over_brk
@@ -2315,10 +2315,10 @@ _restore_user_pc:
         lda     proceed_cnt
         sub     #$01
         bcs     _show_break
-        lda     scratch+$54
+        lda     saved_addr_hi
         cmp     addr_hi
         bne     _check_break_count
-        lda     scratch+$55
+        lda     saved_addr_lo
         cmp     addr_lo
         bne     _check_break_count
         dec     proceed_cnt
