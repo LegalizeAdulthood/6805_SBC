@@ -1,5 +1,23 @@
         .msfirst
 
+acia_isra       .equ    $20
+acia_iera       .equ    acia_isra
+acia_csra       .equ    $21
+acia_cra        .equ    acia_csra
+acia_fra        .equ    acia_csra
+acia_cdra       .equ    $22
+acia_acra       .equ    acia_cdra
+acia_rdra       .equ    $23
+acia_tdra       .equ    acia_rdra
+acia_isrb       .equ    $24
+acia_ierb       .equ    acia_isrb
+acia_csrb       .equ    $25
+acia_crb        .equ    acia_csrb
+acia_frb        .equ    acia_csrb
+acia_cdrb       .equ    $26
+acia_acrb       .equ    acia_cdrb
+acia_rdrb       .equ    $27
+acia_tdrb       .equ    acia_rdrb
 map_switch      .equ    $50
 scratch         .equ    $51
 cmd_thunk       .equ    $9c
