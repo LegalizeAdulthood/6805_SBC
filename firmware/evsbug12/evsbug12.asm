@@ -2117,6 +2117,10 @@ _cmd_exit:
         jmp     cmd_loop
 
         .module load_cmd
+_s9_flag        .equ    scratch+$57     ; S9/end record flag
+_rec_cnt        .equ    scratch+$2f     ; S-record byte count
+_rec_sum        .equ    scratch+$2f     ; checksum compare save
+
 _bad_cmd:
         inc     cmd_err
         jmp     cmd_loop
@@ -2136,7 +2140,7 @@ load_cmd:
         bra     _init_srec
 
 _init_srec:
-        clr     scratch+$57
+        clr     _s9_flag
 
 _wait_srec:
         jsr     read_console_char_echo
@@ -2150,20 +2154,20 @@ _wait_srec:
         bra     _read_record
 
 _s9_record:
-        inc     scratch+$57
+        inc     _s9_flag
 
 _read_record:
         clr     checksum
         bsr     _read_srec_byte
         sub     #$03
-        sta     scratch+$2f
+        sta     _rec_cnt
         bsr     _read_srec_byte
         sta     addr_hi
         bsr     _read_srec_byte
         sta     addr_lo
 
 _data_loop:
-        dec     scratch+$2f
+        dec     _rec_cnt
         bmi     _checksum
         bsr     _read_srec_byte
         jsr     write_memory_byte
@@ -2172,12 +2176,12 @@ _data_loop:
 
 _checksum:
         ldx     checksum
-        stx     scratch+$2f
+        stx     _rec_sum
         bsr     _read_srec_byte
-        tst     scratch+$57
+        tst     _s9_flag
         bne     _done
         coma
-        cmp     scratch+$2f
+        cmp     _rec_sum
         beq     _wait_srec
 
 _bad_srec:
