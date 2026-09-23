@@ -33,7 +33,9 @@ panels is deferred to the final polish slice.
 Monitor assembly sources use lowercase for directives, opcodes, operands,
 labels, and symbols. Hexadecimal operands also use lowercase hex digits
 where letters appear. User-facing display strings may use whatever casing
-the screen text requires.
+the screen text requires. Labels should be preceded by a blank line,
+unless the previous line is a module operation; in that case, the blank
+line should precede the module operation.
 
 ```text
 | SP 00F8  PC E000  A 00  X 00  FLAGS 111HINZC  STOPPED: RESET                 |
