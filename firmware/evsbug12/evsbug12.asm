@@ -26,6 +26,16 @@ acia_cdrb       .equ    acia_base + $06
 acia_acrb       .equ    acia_base + $06
 acia_rdrb       .equ    acia_base + $07
 acia_tdrb       .equ    acia_base + $07
+acia_isr_rdrf_bit .equ  0               ; receive data full
+acia_isr_tdre_bit .equ  6               ; transmit data empty
+acia_csr_rx_brk_bit .equ 2              ; receive break seen
+acia_cfr_fmt    .equ    $80             ; write format register
+acia_cfr_ctl_mask .equ  $7f             ; write control register
+acia_fr_8bit    .equ    $60             ; 8 data bits
+acia_fr_8n      .equ    acia_cfr_fmt | acia_fr_8bit
+acia_cr_tbr     .equ    $40             ; select transmit break reg
+acia_baud_9600  .equ    $0c             ; 9600 baud select
+acia_cr_9600    .equ    acia_cr_tbr | acia_baud_9600
 cop_update      .equ    $fff0           ; COP watchdog update register
 map_switch      .equ    $50
 scratch         .equ    $51
@@ -97,10 +107,10 @@ _read_poll:
         jsr     service_cop
         ldx     acia_csra
         stx     io_stat
-        brset   2, io_stat, _serial_event
+        brset   acia_csr_rx_brk_bit, io_stat, _serial_event
         ldx     acia_isra
         stx     io_stat
-        brclr   0, io_stat, _read_poll
+        brclr   acia_isr_rdrf_bit, io_stat, _read_poll
         lda     acia_rdra
         and     #$7f
         bra     _write_char
@@ -109,7 +119,7 @@ write_console_char:
         stx     _save_x
         ldx     acia_isra
         stx     io_stat
-        brclr   0, io_stat, _write_char
+        brclr   acia_isr_rdrf_bit, io_stat, _write_char
         ldx     #$ff
         stx     poll_flag
 
@@ -121,10 +131,10 @@ _tx_poll:
         jsr     service_cop
         ldx     acia_isra
         stx     io_stat
-        brclr   6, io_stat, _tx_poll
+        brclr   acia_isr_tdre_bit, io_stat, _tx_poll
         ldx     acia_csra
         stx     io_stat
-        brset   2, io_stat, _serial_event
+        brset   acia_csr_rx_brk_bit, io_stat, _serial_event
 
 _return:
         ldx     _save_x
@@ -1958,7 +1968,7 @@ _wait_resume:
         jsr     service_cop
         ldx     acia_isra
         stx     io_stat
-        brclr   0, io_stat, _wait_resume
+        brclr   acia_isr_rdrf_bit, io_stat, _wait_resume
         lda     acia_rdra
         and     #$7f
 
@@ -2260,7 +2270,7 @@ reset_handler:
 _reset_delay:
         deca
         bne     _reset_delay
-        lda     #$0c
+        lda     #acia_baud_9600
         sta     serial_ctl
         jsr     init_serial_or_timer
         clrx
@@ -2278,14 +2288,14 @@ enter_monitor:
 
 init_serial_or_timer:
         lda     acia_csra
-        ora     #$80
+        ora     #acia_cfr_fmt
         sta     acia_cra
-        lda     #$e0
+        lda     #acia_fr_8n
         sta     acia_fra
         lda     acia_csra
-        and     #$7f
+        and     #acia_cfr_ctl_mask
         sta     acia_cra
-        lda     #$40
+        lda     #acia_cr_tbr
         tax
         ora     serial_ctl
         sta     acia_cra
