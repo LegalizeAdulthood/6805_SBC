@@ -112,26 +112,18 @@
         adda    #$05
         jsr     $085b
         rts
-        comx
-        negx
-        fcb     $41
-        aslx
-        coma
-        brset   0, $a6, $8fd
+
+; register display field table
+        .byte   "SPAXC",$00
+        lda     #$0d
         jsr     $0826
         lda     #$0a
         jsr     $0826
         rts
-        brset   0, $00, $8fc
-        brset   0, $00, $8ff
-        brset   0, $00, $933
-        fcb     $31
-        fcb     $31
-        asla
-        rola
-        fcb     $4e
-        decx
-        coma
+
+; condition-code display table
+        .fill   $0008,$00
+        .byte   "111HINZC"
         stx     $84
         tax
         lda     $a4
@@ -842,42 +834,13 @@
         lda     $90
         bsr     $e67
         rts
-        neg     $00
-        bih     $ec0
-        bil     $ea1
-        fcb     $35
-        brset   2, $2d, $ed9
-        bls     $ea7
-        beq     $eeb
-        brset   0, $1f, $eeb
-        bra     $ee7
-        bhi     $eb2
-        brclr   7, $2b, $eef
-        bcs     $eb5
-        fcb     $32
-        brclr   0, $29, $ee3
-        bmc     $ef9
-        bset    5, $18
-        bclr    5, $06
-        bset    6, $17
-        bclr    4, $0b
-        bclr    0, $05
-        brclr   3, $15, $ed0
-        brclr   4, $0a, $ee1
-        bclr    1, $12
-        bset    2, $0e
-        brclr   6, $37, $f0a
-        lsra
-        nega
-        brset   0, $00, $ed7
-        fcb     $41
-        bclr    6, $3a
-        bset    7, $3b
-        ror     $31
-        tst     $43
-        dec     $53
-        bne     $f21
-        clr     $ab
+
+; assembler/disassembler decode tables
+        .byte   $30,$00,$2f,$21,$2e,$00,$35,$04,$2d,$34,$23,$00,$27,$42,$00,$1f
+        .byte   $3f,$20,$39,$22,$02,$0f,$2b,$3c,$25,$00,$32,$01,$29,$2a,$2c,$3e
+        .byte   $1a,$18,$1b,$06,$1c,$17,$19,$0b,$11,$05,$07,$15,$08,$09,$0a,$16
+        .byte   $13,$12,$14,$0e,$0d,$37,$38,$44,$40,$00,$00,$00,$41,$1d,$3a,$1e
+        .byte   $3b,$36,$31,$3d,$43,$3a,$53,$26,$3d,$3f,$ab
         jsr     $0d14
         clr     $a8
         jsr     $0bee
@@ -1104,162 +1067,96 @@
         dec     $7f
         inc     $a8
         bra     $1086
-        fcb     $41
-        lsra
-        cpx     $c44e
-        anda    $53cc
-        sbca    $4243,x
-        cpx     $4cd2
-        cpx     $45d1,x
-        asla
-        coma
-        cpx     $d3c9
-        cpx     $49c8,x
-        jmp     $d44c
-        stx     $d34d
-        cpx     $c9d3
-        fcb     $4e
-        bit     $50cc
-        fcb     $52
-        cmpa    $434c
-        sbca    $ce53,x
-        fcb     $45
-        anda    $5345,x
-        anda    $d243,x
-        inca
-        cpx     $c9d2
-        tsta
-        suba    $4fcd,x
-        negx
-        eora    $4445,x
-        cpx     $d845
-        clra
-        sbca    $4643,x
-        sbca    $494e
-        cpx     $d84a
-        tsta
-        suba    $53d2,x
-        inca
-        lsra
-        cmpa    $d853
-        jmp     $d24d
-        fcb     $55
-        jmp     $4e45
-        sta     $4fd0
-        clra
-        fcb     $52
-        cmpa    $c752
-        clra
-        jmp     $d253
-        suba    $54c9,x
-        cpx     $5342,x
-        cpx     $45c3
-        adca    $54c1
-        clra
-        suba    $d855,x
-        sbca    $57c9
-        lsrx
-        fcb     $41
-        eora    $53d4,x
-        aslx
-        cmpa    $5741
-        rola
-        anda    $10000,x
-        brclr   0, $72, $11cb
-        brclr   0, $72, $115d
-        mul
-        mul
-        brset   0, $01, $1193
-        brset   1, $23, $1196
-        brclr   0, $32, $1168
-        brset   1, $33, $119d
-        fcb     $32
-        fcb     $32
-        brclr   0, $32, $11a1
-        fcb     $72
-        brclr   0, $32, $11a5
-        brclr   0, $32, $11a8
-        fcb     $32
-        brclr   0, $32, $117b
-        fcb     $32
-        brclr   0, $32, $1180
-        brclr   1, $84, $11b3
-        brset   1, $03, $1108
-        brclr   0, $02, $11aa
-        fcb     $32
-        brset   0, $01, $119d
-        bset    1, $42
-        brclr   0, $72, $1191
-        mul
-        brclr   0, $72, $1194
-        brclr   0, $42, $11a9
-        brset   0, $01, $120c
-        brset   0, $01, $11ef
-        brset   0, $01, $11e2
-        bset    1, $00
-        brclr   0, $62, $11a6
-        fcb     $62
-        brset   0, $01, $121b
-        fcb     $72
-        brclr   0, $42, $11ef
-        brset   0, $01, $11c2
-        brset   0, $01, $11f5
-        brclr   0, $12, $11b6
-        brclr   0, $72, $120b
-        brset   0, $01, $11fe
-        mul
-        brclr   0, $12, $11c1
-        bset    1, $12
-        brset   0, $01, $1237
-        brclr   0, $12, $11da
-        brclr   0, $62, $11cd
-        bclr    1, $62
-        brclr   0, $72, $11d1
-        bset    1, $00
-        brclr   0, $12, $11d6
-        mul
-        brclr   0, $12, $11d9
-        brclr   0, $02, $11ef
-        brset   0, $a9, $118a
-        anda    #$38
-        asr     $24
-        bclr    0, $25
-        beq     $120f
-        bhcs    $120b
-        bcc     $121a
-        bil     $1192
-        bcs     $1212
-        bmc     $121c
-        bms     $1219
-        bpl     $1215
-        brclr   0, $21, $11f8
-        bset    0, $ad
-        clc
-        cli
-        clr     $a1
-        com     $a3
-        dec     $5a
-        eora    #$01
-        inc     $5c
-        fcb     $ac
-        bsr     $11af
-        ldx     #$38
-        lsr     $42
-        neg     $9d
-        ora     #$00
-        rol     $36
-        rsp
-        rti
-        rts
-        sbca    #$99
-        sei
-        fcb     $a7
-        stop
-        fcb     $af
-        suba    #$83
-        tax
-        tst     $9f
-        wait
+
+; mnemonic text table; high bit marks token end
+        .byte   "AD",('C' | $80)
+        .byte   ('D' | $80)
+        .byte   "N",('D' | $80)
+        .byte   "S",('L' | $80)
+        .byte   ('R' | $80)
+        .byte   "BC",('C' | $80)
+        .byte   "L",('R' | $80)
+        .byte   ('S' | $80)
+        .byte   "E",('Q' | $80)
+        .byte   "HC",('C' | $80)
+        .byte   ('S' | $80)
+        .byte   ('I' | $80)
+        .byte   ('S' | $80)
+        .byte   "I",('H' | $80)
+        .byte   ('L' | $80)
+        .byte   ('T' | $80)
+        .byte   "L",('O' | $80)
+        .byte   ('S' | $80)
+        .byte   "M",('C' | $80)
+        .byte   ('I' | $80)
+        .byte   ('S' | $80)
+        .byte   "N",('E' | $80)
+        .byte   "P",('L' | $80)
+        .byte   "R",('A' | $80)
+        .byte   "CL",('R' | $80)
+        .byte   ('N' | $80)
+        .byte   "SE",('T' | $80)
+        .byte   "SE",('T' | $80)
+        .byte   ('R' | $80)
+        .byte   "CL",('C' | $80)
+        .byte   ('I' | $80)
+        .byte   ('R' | $80)
+        .byte   "M",('P' | $80)
+        .byte   "O",('M' | $80)
+        .byte   "P",('X' | $80)
+        .byte   "DE",('C' | $80)
+        .byte   ('X' | $80)
+        .byte   "EO",('R' | $80)
+        .byte   "FC",('B' | $80)
+        .byte   "IN",('C' | $80)
+        .byte   ('X' | $80)
+        .byte   "JM",('P' | $80)
+        .byte   "S",('R' | $80)
+        .byte   "LD",('A' | $80)
+        .byte   ('X' | $80)
+        .byte   "S",('L' | $80)
+        .byte   ('R' | $80)
+        .byte   "MU",('L' | $80)
+        .byte   "NE",('G' | $80)
+        .byte   "O",('P' | $80)
+        .byte   "OR",('A' | $80)
+        .byte   ('G' | $80)
+        .byte   "RO",('L' | $80)
+        .byte   ('R' | $80)
+        .byte   "S",('P' | $80)
+        .byte   "T",('I' | $80)
+        .byte   ('S' | $80)
+        .byte   "SB",('C' | $80)
+        .byte   "E",('C' | $80)
+        .byte   ('I' | $80)
+        .byte   "T",('A' | $80)
+        .byte   "O",('P' | $80)
+        .byte   ('X' | $80)
+        .byte   "U",('B' | $80)
+        .byte   "W",('I' | $80)
+        .byte   "TA",('X' | $80)
+        .byte   "S",('T' | $80)
+        .byte   "X",('A' | $80)
+        .byte   "WAI",('T' | $80)
+        .byte   $00
+
+; mnemonic addressing-mode table
+        .byte   $00,$01,$72,$72,$01,$72,$01,$42,$42,$00,$01,$32,$02,$23,$32,$01
+        .byte   $32,$01,$02,$33,$33,$32,$32,$01,$32,$32,$72,$01,$32,$32,$01,$32
+        .byte   $32,$32,$01,$32,$01,$32,$01,$32,$02,$03,$84,$32,$02,$03,$84,$01
+        .byte   $02,$23,$32,$00,$01,$12,$12,$42,$01,$72,$01,$42,$01,$72,$00,$01
+        .byte   $42,$12,$00,$01,$72,$00,$01,$52,$00,$01,$42,$12,$00,$01,$62,$01
+        .byte   $62,$00,$01,$72,$72,$01,$42,$42,$00,$01,$12,$00,$01,$42,$01,$12
+        .byte   $00,$01,$72,$52,$00,$01,$42,$42,$01,$12,$01,$12,$12,$00,$01,$72
+        .byte   $01,$12,$12,$01,$62,$02,$13,$62,$01,$72,$01,$12,$00,$01,$12,$01
+        .byte   $42,$01,$12,$00,$01,$02,$13,$00
+
+; opcode table
+        .byte   $a9,$ab,$a4,$38,$37,$24,$11,$25,$27,$28,$29,$22,$24,$2f,$2e,$a5
+        .byte   $25,$23,$2c,$2b,$2d,$26,$2a,$20,$01,$21,$00,$10,$ad,$98,$9a,$3f
+        .byte   $a1,$33,$a3,$3a,$5a,$a8,$01,$3c,$5c,$ac,$ad,$a6,$ae,$38,$34,$42
+        .byte   $30,$9d,$aa,$00,$39,$36,$9c,$80,$81,$a2,$99,$9b,$a7,$8e,$af,$a0
+        .byte   $83,$97,$3d,$9f,$8f
         dec     $53
         bmi     $1238
         jsr     $0a35
@@ -1763,1049 +1660,47 @@
         incx
         bra     $1664
         jmp     $0c77
-        fcb     $41
-        comx
-        jsr     $42c6
-        mul
-        sbca    $c74c,x
-        clra
-        fcb     $41
-        anda    $4dc4
-        tsta
-        jsr     $4e4f
-        mul
-        sbca    $d052,x
-        anda    $52cd
-        anda    $4845,x
-        inca
-        suba    $10045,x
-        rorx
-        comx
-        fcb     $62
-        fcb     $75
-        asr     $2d,x
-        asla
-        coma
-        neg     $35
-        bra     $16f0
-        fcb     $45
-        rorx
-        bra     $16d3
-        bil     $16d6
-        brset   0, $42, $1719
-        fcb     $6b
-        neg     ,x
-        lsr     ,x
-        brset   0, $41, $170f
-        clr     $72,x
-        lsr     ,x
-        brset   0, $52, $1718
-        asr     $73,x
-        bra     $16b7
-        rola
-        inca
-        inca
-        fcb     $45
-        asra
-        fcb     $41
-        inca
-        bih     $1709
-        fcb     $4e
-        comx
-        fcb     $55
-        rora
-        rora
-        rola
-        coma
-        rola
-        fcb     $45
-        fcb     $4e
-        lsrx
-        bra     $1712
-        fcb     $4e
-        lsrx
-        fcb     $52
-        rolx
-        brset   0, $20, $16f4
-        bra     $16f6
-        brset   0, $42, $172b
-        fcb     $45
-        fcb     $41
-        fcb     $4b
-        bra     $171b
-        bra     $1721
-        fcb     $62
-        clr     $72,x
-        lsr     ,x
-        bra     $1749
-        clr     $6d,x
-        tst     $61,x
-        fcb     $6e,$64
-        bmc     $170e
-        brclr   6, $0a, $1734
-        lsrx
-        fcb     $52
-        inca
-        bms     $1749
-        bra     $1735
-        bra     $1740
-        fcb     $72
-        fcb     $65
-        fcb     $65
-        dec     ,x
-        fcb     $65
-        bra     $1774
-        com     $72,x
-        fcb     $65
-        fcb     $65
-        fcb     $6e,$2c
-        bra     $174c
-        lsrx
-        fcb     $52
-        inca
-        bms     $1766
-        bra     $174d
-        bra     $1755
-        fcb     $61
-        fcb     $6e,$63
-        fcb     $65
-        inc     $20,x
-        com     $6f,x
-        tst     $6d,x
-        fcb     $61
-        fcb     $6e,$64
-        bra     $178d
-        rol     $6e,x
-        fcb     $65
-        brclr   6, $0a, $1768
-        comx
-        tsta
-        bra     $1767
-        comx
-        lsrx
-        fcb     $41
-        fcb     $52
-        lsrx
-        bra     $1773
-        lsra
-        lsra
-        fcb     $52
-        fcb     $3e
-        bms     $1758
-        fcb     $41
-        com     ,x
-        com     ,x
-        fcb     $65
-        tst     $62,x
-        inc     $65,x
-        fcb     $72
-        bih     $17a7
-        rol     $73,x
-        fcb     $61
-        com     ,x
-        com     ,x
-        fcb     $65
-        tst     $62,x
-        inc     $65,x
-        fcb     $72
-        brclr   6, $0a, $1793
-        rora
-        bra     $1790
-        comx
-        lsrx
-        fcb     $41
-        fcb     $52
-        lsrx
-        bra     $179c
-        lsra
-        lsra
-        fcb     $52
-        fcb     $3e
-        bra     $179d
-        fcb     $45
-        fcb     $4e
-        lsra
-        bra     $17a7
-        lsra
-        lsra
-        fcb     $52
-        fcb     $3e
-        bra     $17a8
-        lsra
-        fcb     $41
-        lsrx
-        fcb     $41
-        fcb     $3e
-        bms     $1793
-        mul
-        inc     $6f,x
-        com     $6b,x
-        bra     $17e0
-        rol     $6c,x
-        inc     $20,x
-        tst     $65,x
-        tst     $6f,x
-        fcb     $72
-        rol     ,x
-        brset   0, $42, $17d9
-        bra     $17e4
-        inc     $41
-        lsra
-        lsra
-        fcb     $52
-        fcb     $31
-        bra     $17be
-        bra     $17d4
-        lsra
-        lsra
-        fcb     $52
-        fcb     $35
-        fcb     $3e
-        tstx
-        bms     $17bb
-        comx
-        fcb     $65
-        lsr     ,x
-        bra     $17d1
-        bra     $1816
-        clr     $20,x
-        fcb     $35
-        bra     $1809
-        fcb     $72
-        fcb     $65
-        fcb     $61
-        fcb     $6b
-        neg     ,x
-        clr     $69,x
-        fcb     $6e,$74
-        com     ,x
-        brset   0, $47, $17d4
-        fcb     $5b
-        inc     $53
-        lsrx
-        fcb     $41
-        fcb     $52
-        lsrx
-        bra     $17fe
-        lsra
-        lsra
-        fcb     $52
-        fcb     $3e
-        tstx
-        bms     $17e4
-        fcb     $45
-        asl     ,x
-        fcb     $65
-        com     $75,x
-        lsr     ,x
-        fcb     $65
-        bra     $1842
-        com     ,x
-        fcb     $65
-        fcb     $72
-        bra     $1842
-        fcb     $72
-        clr     $67,x
-        fcb     $72
-        fcb     $61
-        tst     $0d,x
-        brset   5, $4c, $182b
-        fcb     $41
-        lsra
-        bra     $1834
-        bra     $180f
-        bra     $1828
-        clr     $77,x
-        fcb     $6e,$6c
-        clr     $61,x
-        lsr     $20,x
-        ror     $72,x
-        clr     $6d,x
-        bra     $1862
-        clr     $72,x
-        lsr     ,x
-        bra     $186b
-        clr     $20,x
-        tst     $65,x
-        tst     $6f,x
-        fcb     $72
-        rol     ,x
-        brclr   6, $0a, $184f
-        lsra
-        bra     $1841
-        comx
-        lsrx
-        fcb     $41
-        fcb     $52
-        lsrx
-        bra     $184d
-        lsra
-        lsra
-        fcb     $52
-        fcb     $3e
-        bra     $186d
-        inc     $45
-        fcb     $4e
-        lsra
-        bra     $1859
-        lsra
-        lsra
-        fcb     $52
-        fcb     $3e
-        tstx
-        bms     $183f
-        lsra
-        rol     $73,x
-        neg     ,x
-        inc     $61,x
-        rol     ,x
-        bra     $1895
-        fcb     $65
-        tst     $6f,x
-        fcb     $72
-        rol     ,x
-        brset   0, $4d, $187d
-        bra     $186e
-        fcb     $41
-        lsra
-        lsra
-        fcb     $52
-        fcb     $45
-        comx
-        comx
-        fcb     $3e
-        bms     $185c
-        tsta
-        clr     $64,x
-        rol     $66,x
-        rol     ,x
-        bra     $18b1
-        fcb     $65
-        tst     $6f,x
-        fcb     $72
-        rol     ,x
-        brclr   6, $0a, $189a
-        clra
-        mul
-        fcb     $52
-        bra     $18ac
-        inc     $41
-        lsra
-        lsra
-        fcb     $52
-        fcb     $31
-        bra     $1886
-        bra     $189c
-        lsra
-        lsra
-        fcb     $52
-        fcb     $35
-        fcb     $3e
-        tstx
-        bms     $1883
-        fcb     $52
-        fcb     $65
-        tst     $6f,x
-        ror     ,x
-        fcb     $65
-        bra     $18cd
-        fcb     $72
-        fcb     $65
-        fcb     $61
-        fcb     $6b
-        neg     ,x
-        clr     $69,x
-        fcb     $6e,$74
-        com     ,x
-        brclr   6, $0a, $18c8
-        bra     $18d5
-        inc     $43
-        clra
-        fcb     $55
-        fcb     $4e
-        lsrx
-        fcb     $3e
-        tstx
-        bms     $18a4
-        negx
-        fcb     $72
-        clr     $63,x
-        fcb     $65
-        fcb     $65
-        lsr     $20,x
-        fcb     $31
-        bms     $18d5
-        rora
-        bra     $1906
-        rol     $6d,x
-        fcb     $65
-        com     ,x
-        bra     $190c
-        asl     $72,x
-        clr     $75,x
-        asr     $68,x
-        bra     $1901
-        bra     $1904
-        fcb     $72
-        fcb     $65
-        fcb     $61
-        fcb     $6b
-        neg     ,x
-        clr     $69,x
-        fcb     $6e,$74
-        brclr   6, $0a, $1900
-        lsra
-        bms     $18d1
-        fcb     $52
-        fcb     $65
-        asr     $69,x
-        com     ,x
-        lsr     ,x
-        fcb     $65
-        fcb     $72
-        bra     $191f
-        rol     $73,x
-        neg     ,x
-        inc     $61,x
-        rol     ,x
-        brset   0, $52, $1911
-        bms     $18e6
-        fcb     $52
-        fcb     $65
-        asr     $69,x
-        com     ,x
-        lsr     ,x
-        fcb     $65
-        fcb     $72
-        bra     $193d
-        clr     $64,x
-        rol     $66,x
-        rol     ,x
-        brclr   6, $0a, $192c
-        bra     $1935
-        inc     $43
-        clra
-        fcb     $55
-        fcb     $4e
-        lsrx
-        fcb     $3e
-        tstx
-        bms     $1904
-        lsrx
-        fcb     $72
-        fcb     $61
-        com     $65,x
-        bra     $191c
-        bms     $1933
-        rora
-        bra     $1959
-        fcb     $6e,$73
-        lsr     ,x
-        fcb     $72
-        fcb     $75
-        com     $74,x
-        rol     $6f,x
-        fcb     $6e,$73
-        brset   0, $06, $18f2
-        brset   0, $00, $1901
-        brset   0, $00, $1904
-        brset   0, $00, $1907
-        brset   0, $00, $190a
-        brset   0, $00, $190d
-        brset   0, $00, $1910
-        brset   0, $00, $1913
-        brset   0, $00, $1916
-        brset   0, $00, $1919
-        brset   0, $00, $191c
-        brset   0, $00, $191f
-        brset   0, $00, $1922
-        brset   0, $00, $1925
-        brset   0, $00, $1928
-        brset   0, $00, $192b
-        brset   0, $00, $192e
-        brset   0, $00, $1931
-        brset   0, $00, $1934
-        brset   0, $00, $1937
-        brset   0, $00, $193a
-        brset   0, $00, $193d
-        brset   0, $00, $1940
-        brset   0, $00, $1943
-        brset   0, $00, $1946
-        brset   0, $00, $1949
-        brset   0, $00, $194c
-        brset   0, $00, $194f
-        brset   0, $00, $1952
-        brset   0, $00, $1955
-        brset   0, $00, $1958
-        brset   0, $00, $195b
-        brset   0, $00, $195e
-        brset   0, $00, $1961
-        brset   0, $00, $1964
-        brset   0, $00, $1967
-        brset   0, $00, $196a
-        brset   0, $00, $196d
-        brset   0, $00, $1970
-        brset   0, $00, $1973
-        brset   0, $00, $1976
-        brset   0, $00, $1979
-        brset   0, $00, $197c
-        brset   0, $00, $197f
-        brset   0, $00, $1982
-        brset   0, $00, $1985
-        brset   0, $00, $1988
-        brset   0, $00, $198b
-        brset   0, $00, $198e
-        brset   0, $00, $1991
-        brset   0, $00, $1994
-        brset   0, $00, $1997
-        brset   0, $00, $199a
-        brset   0, $00, $199d
-        brset   0, $00, $19a0
-        brset   0, $00, $19a3
-        brset   0, $00, $19a6
-        brset   0, $00, $19a9
-        brset   0, $00, $19ac
-        brset   0, $00, $19af
-        brset   0, $00, $19b2
-        brset   0, $00, $19b5
-        brset   0, $00, $19b8
-        brset   0, $00, $19bb
-        brset   0, $00, $19be
-        brset   0, $00, $19c1
-        brset   0, $00, $19c4
-        brset   0, $00, $19c7
-        brset   0, $00, $19ca
-        brset   0, $00, $19cd
-        brset   0, $00, $19d0
-        brset   0, $00, $19d3
-        brset   0, $00, $19d6
-        brset   0, $00, $19d9
-        brset   0, $00, $19dc
-        brset   0, $00, $19df
-        brset   0, $00, $19e2
-        brset   0, $00, $19e5
-        brset   0, $00, $19e8
-        brset   0, $00, $19eb
-        brset   0, $00, $19ee
-        brset   0, $00, $19f1
-        brset   0, $00, $19f4
-        brset   0, $00, $19f7
-        brset   0, $00, $19fa
-        brset   0, $00, $19fd
-        brset   0, $00, $1a00
-        brset   0, $00, $1a03
-        brset   0, $00, $1a06
-        brset   0, $00, $1a09
-        brset   0, $00, $1a0c
-        brset   0, $00, $1a0f
-        brset   0, $00, $1a12
-        brset   0, $00, $1a15
-        brset   0, $00, $1a18
-        brset   0, $00, $1a1b
-        brset   0, $00, $1a1e
-        brset   0, $00, $1a21
-        brset   0, $00, $1a24
-        brset   0, $00, $1a27
-        brset   0, $00, $1a2a
-        brset   0, $00, $1a2d
-        brset   0, $00, $1a30
-        brset   0, $00, $1a33
-        brset   0, $00, $1a36
-        brset   0, $00, $1a39
-        brset   0, $00, $1a3c
-        brset   0, $00, $1a3f
-        brset   0, $00, $1a42
-        brset   0, $00, $1a45
-        brset   0, $00, $1a48
-        brset   0, $00, $1a4b
-        brset   0, $00, $1a4e
-        brset   0, $00, $1a51
-        brset   0, $00, $1a54
-        brset   0, $00, $1a57
-        brset   0, $00, $1a5a
-        brset   0, $00, $1a5d
-        brset   0, $00, $1a60
-        brset   0, $00, $1a63
-        brset   0, $00, $1a66
-        brset   0, $00, $1a69
-        brset   0, $00, $1a6c
-        brset   0, $00, $1a6f
-        brset   0, $00, $1a72
-        brset   0, $00, $1a75
-        brset   0, $00, $1a78
-        brset   0, $00, $1a7b
-        brset   0, $00, $1a7e
-        brset   0, $00, $1a81
-        brset   0, $00, $1a84
-        brset   0, $00, $1a87
-        brset   0, $00, $1a8a
-        brset   0, $00, $1a8d
-        brset   0, $00, $1a90
-        brset   0, $00, $1a93
-        brset   0, $00, $1a96
-        brset   0, $00, $1a99
-        brset   0, $00, $1a9c
-        brset   0, $00, $1a9f
-        brset   0, $00, $1aa2
-        brset   0, $00, $1aa5
-        brset   0, $00, $1aa8
-        brset   0, $00, $1aab
-        brset   0, $00, $1aae
-        brset   0, $00, $1ab1
-        brset   0, $00, $1ab4
-        brset   0, $00, $1ab7
-        brset   0, $00, $1aba
-        brset   0, $00, $1abd
-        brset   0, $00, $1ac0
-        brset   0, $00, $1ac3
-        brset   0, $00, $1ac6
-        brset   0, $00, $1ac9
-        brset   0, $00, $1acc
-        brset   0, $00, $1acf
-        brset   0, $00, $1ad2
-        brset   0, $00, $1ad5
-        brset   0, $00, $1ad8
-        brset   0, $00, $1adb
-        brset   0, $00, $1ade
-        brset   0, $00, $1ae1
-        brset   0, $00, $1ae4
-        brset   0, $00, $1ae7
-        brset   0, $00, $1aea
-        brset   0, $00, $1aed
-        brset   0, $00, $1af0
-        brset   0, $00, $1af3
-        brset   0, $00, $1af6
-        brset   0, $00, $1af9
-        brset   0, $00, $1afc
-        brset   0, $00, $1aff
-        brset   0, $00, $1b02
-        brset   0, $00, $1b05
-        brset   0, $00, $1b08
-        brset   0, $00, $1b0b
-        brset   0, $00, $1b0e
-        brset   0, $00, $1b11
-        brset   0, $00, $1b14
-        brset   0, $00, $1b17
-        brset   0, $00, $1b1a
-        brset   0, $00, $1b1d
-        brset   0, $00, $1b20
-        brset   0, $00, $1b23
-        brset   0, $00, $1b26
-        brset   0, $00, $1b29
-        brset   0, $00, $1b2c
-        brset   0, $00, $1b2f
-        brset   0, $00, $1b32
-        brset   0, $00, $1b35
-        brset   0, $00, $1b38
-        brset   0, $00, $1b3b
-        brset   0, $00, $1b3e
-        brset   0, $00, $1b41
-        brset   0, $00, $1b44
-        brset   0, $00, $1b47
-        brset   0, $00, $1b4a
-        brset   0, $00, $1b4d
-        brset   0, $00, $1b50
-        brset   0, $00, $1b53
-        brset   0, $00, $1b56
-        brset   0, $00, $1b59
-        brset   0, $00, $1b5c
-        brset   0, $00, $1b5f
-        brset   0, $00, $1b62
-        brset   0, $00, $1b65
-        brset   0, $00, $1b68
-        brset   0, $00, $1b6b
-        brset   0, $00, $1b6e
-        brset   0, $00, $1b71
-        brset   0, $00, $1b74
-        brset   0, $00, $1b77
-        brset   0, $00, $1b7a
-        brset   0, $00, $1b7d
-        brset   0, $00, $1b80
-        brset   0, $00, $1b83
-        brset   0, $00, $1b86
-        brset   0, $00, $1b89
-        brset   0, $00, $1b8c
-        brset   0, $00, $1b8f
-        brset   0, $00, $1b92
-        brset   0, $00, $1b95
-        brset   0, $00, $1b98
-        brset   0, $00, $1b9b
-        brset   0, $00, $1b9e
-        brset   0, $00, $1ba1
-        brset   0, $00, $1ba4
-        brset   0, $00, $1ba7
-        brset   0, $00, $1baa
-        brset   0, $00, $1bad
-        brset   0, $00, $1bb0
-        brset   0, $00, $1bb3
-        brset   0, $00, $1bb6
-        brset   0, $00, $1bb9
-        brset   0, $00, $1bbc
-        brset   0, $00, $1bbf
-        brset   0, $00, $1bc2
-        brset   0, $00, $1bc5
-        brset   0, $00, $1bc8
-        brset   0, $00, $1bcb
-        brset   0, $00, $1bce
-        brset   0, $00, $1bd1
-        brset   0, $00, $1bd4
-        brset   0, $00, $1bd7
-        brset   0, $00, $1bda
-        brset   0, $00, $1bdd
-        brset   0, $00, $1be0
-        brset   0, $00, $1be3
-        brset   0, $00, $1be6
-        brset   0, $00, $1be9
-        brset   0, $00, $1bec
-        brset   0, $00, $1bef
-        brset   0, $00, $1bf2
-        brset   0, $00, $1bf5
-        brset   0, $00, $1bf8
-        brset   0, $00, $1bfb
-        brset   0, $00, $1bfe
-        brset   0, $00, $1c01
-        brset   0, $00, $1c04
-        brset   0, $00, $1c07
-        brset   0, $00, $1c0a
-        brset   0, $00, $1c0d
-        brset   0, $00, $1c10
-        brset   0, $00, $1c13
-        brset   0, $00, $1c16
-        brset   0, $00, $1c19
-        brset   0, $00, $1c1c
-        brset   0, $00, $1c1f
-        brset   0, $00, $1c22
-        brset   0, $00, $1c25
-        brset   0, $00, $1c28
-        brset   0, $00, $1c2b
-        brset   0, $00, $1c2e
-        brset   0, $00, $1c31
-        brset   0, $00, $1c34
-        brset   0, $00, $1c37
-        brset   0, $00, $1c3a
-        brset   0, $00, $1c3d
-        brset   0, $00, $1c40
-        brset   0, $00, $1c43
-        brset   0, $00, $1c46
-        brset   0, $00, $1c49
-        brset   0, $00, $1c4c
-        brset   0, $00, $1c4f
-        brset   0, $00, $1c52
-        brset   0, $00, $1c55
-        brset   0, $00, $1c58
-        brset   0, $00, $1c5b
-        brset   0, $00, $1c5e
-        brset   0, $00, $1c61
-        brset   0, $00, $1c64
-        brset   0, $00, $1c67
-        brset   0, $00, $1c6a
-        brset   0, $00, $1c6d
-        brset   0, $00, $1c70
-        brset   0, $00, $1c73
-        brset   0, $00, $1c76
-        brset   0, $00, $1c79
-        brset   0, $00, $1c7c
-        brset   0, $00, $1c7f
-        brset   0, $00, $1c82
-        brset   0, $00, $1c85
-        brset   0, $00, $1c88
-        brset   0, $00, $1c8b
-        brset   0, $00, $1c8e
-        brset   0, $00, $1c91
-        brset   0, $00, $1c94
-        brset   0, $00, $1c97
-        brset   0, $00, $1c9a
-        brset   0, $00, $1c9d
-        brset   0, $00, $1ca0
-        brset   0, $00, $1ca3
-        brset   0, $00, $1ca6
-        brset   0, $00, $1ca9
-        brset   0, $00, $1cac
-        brset   0, $00, $1caf
-        brset   0, $00, $1cb2
-        brset   0, $00, $1cb5
-        brset   0, $00, $1cb8
-        brset   0, $00, $1cbb
-        brset   0, $00, $1cbe
-        brset   0, $00, $1cc1
-        brset   0, $00, $1cc4
-        brset   0, $00, $1cc7
-        brset   0, $00, $1cca
-        brset   0, $00, $1ccd
-        brset   0, $00, $1cd0
-        brset   0, $00, $1cd3
-        brset   0, $00, $1cd6
-        brset   0, $00, $1cd9
-        brset   0, $00, $1cdc
-        brset   0, $00, $1cdf
-        brset   0, $00, $1ce2
-        brset   0, $00, $1ce5
-        brset   0, $00, $1ce8
-        brset   0, $00, $1ceb
-        brset   0, $00, $1cee
-        brset   0, $00, $1cf1
-        brset   0, $00, $1cf4
-        brset   0, $00, $1cf7
-        brset   0, $00, $1cfa
-        brset   0, $00, $1cfd
-        brset   0, $00, $1d00
-        brset   0, $00, $1d03
-        brset   0, $00, $1d06
-        brset   0, $00, $1d09
-        brset   0, $00, $1d0c
-        brset   0, $00, $1d0f
-        brset   0, $00, $1d12
-        brset   0, $00, $1d15
-        brset   0, $00, $1d18
-        brset   0, $00, $1d1b
-        brset   0, $00, $1d1e
-        brset   0, $00, $1d21
-        brset   0, $00, $1d24
-        brset   0, $00, $1d27
-        brset   0, $00, $1d2a
-        brset   0, $00, $1d2d
-        brset   0, $00, $1d30
-        brset   0, $00, $1d33
-        brset   0, $00, $1d36
-        brset   0, $00, $1d39
-        brset   0, $00, $1d3c
-        brset   0, $00, $1d3f
-        brset   0, $00, $1d42
-        brset   0, $00, $1d45
-        brset   0, $00, $1d48
-        brset   0, $00, $1d4b
-        brset   0, $00, $1d4e
-        brset   0, $00, $1d51
-        brset   0, $00, $1d54
-        brset   0, $00, $1d57
-        brset   0, $00, $1d5a
-        brset   0, $00, $1d5d
-        brset   0, $00, $1d60
-        brset   0, $00, $1d63
-        brset   0, $00, $1d66
-        brset   0, $00, $1d69
-        brset   0, $00, $1d6c
-        brset   0, $00, $1d6f
-        brset   0, $00, $1d72
-        brset   0, $00, $1d75
-        brset   0, $00, $1d78
-        brset   0, $00, $1d7b
-        brset   0, $00, $1d7e
-        brset   0, $00, $1d81
-        brset   0, $00, $1d84
-        brset   0, $00, $1d87
-        brset   0, $00, $1d8a
-        brset   0, $00, $1d8d
-        brset   0, $00, $1d90
-        brset   0, $00, $1d93
-        brset   0, $00, $1d96
-        brset   0, $00, $1d99
-        brset   0, $00, $1d9c
-        brset   0, $00, $1d9f
-        brset   0, $00, $1da2
-        brset   0, $00, $1da5
-        brset   0, $00, $1da8
-        brset   0, $00, $1dab
-        brset   0, $00, $1dae
-        brset   0, $00, $1db1
-        brset   0, $00, $1db4
-        brset   0, $00, $1db7
-        brset   0, $00, $1dba
-        brset   0, $00, $1dbd
-        brset   0, $00, $1dc0
-        brset   0, $00, $1dc3
-        brset   0, $00, $1dc6
-        brset   0, $00, $1dc9
-        brset   0, $00, $1dcc
-        brset   0, $00, $1dcf
-        brset   0, $00, $1dd2
-        brset   0, $00, $1dd5
-        brset   0, $00, $1dd8
-        brset   0, $00, $1ddb
-        brset   0, $00, $1dde
-        brset   0, $00, $1de1
-        brset   0, $00, $1de4
-        brset   0, $00, $1de7
-        brset   0, $00, $1dea
-        brset   0, $00, $1ded
-        brset   0, $00, $1df0
-        brset   0, $00, $1df3
-        brset   0, $00, $1df6
-        brset   0, $00, $1df9
-        brset   0, $00, $1dfc
-        brset   0, $00, $1dff
-        brset   0, $00, $1e02
-        brset   0, $00, $1e05
-        brset   0, $00, $1e08
-        brset   0, $00, $1e0b
-        brset   0, $00, $1e0e
-        brset   0, $00, $1e11
-        brset   0, $00, $1e14
-        brset   0, $00, $1e17
-        brset   0, $00, $1e1a
-        brset   0, $00, $1e1d
-        brset   0, $00, $1e20
-        brset   0, $00, $1e23
-        brset   0, $00, $1e26
-        brset   0, $00, $1e29
-        brset   0, $00, $1e2c
-        brset   0, $00, $1e2f
-        brset   0, $00, $1e32
-        brset   0, $00, $1e35
-        brset   0, $00, $1e38
-        brset   0, $00, $1e3b
-        brset   0, $00, $1e3e
-        brset   0, $00, $1e41
-        brset   0, $00, $1e44
-        brset   0, $00, $1e47
-        brset   0, $00, $1e4a
-        brset   0, $00, $1e4d
-        brset   0, $00, $1e50
-        brset   0, $00, $1e53
-        brset   0, $00, $1e56
-        brset   0, $00, $1e59
-        brset   0, $00, $1e5c
-        brset   0, $00, $1e5f
-        brset   0, $00, $1e62
-        brset   0, $00, $1e65
-        brset   0, $00, $1e68
-        brset   0, $00, $1e6b
-        brset   0, $00, $1e6e
-        brset   0, $00, $1e71
-        brset   0, $00, $1e74
-        brset   0, $00, $1e77
-        brset   0, $00, $1e7a
-        brset   0, $00, $1e7d
-        brset   0, $00, $1e80
-        brset   0, $00, $1e83
-        brset   0, $00, $1e86
-        brset   0, $00, $1e89
-        brset   0, $00, $1e8c
-        brset   0, $00, $1e8f
-        brset   0, $00, $1e92
-        brset   0, $00, $1e95
-        brset   0, $00, $1e98
-        brset   0, $00, $1e9b
-        brset   0, $00, $1e9e
-        brset   0, $00, $1ea1
-        brset   0, $00, $1ea4
-        brset   0, $00, $1ea7
-        brset   0, $00, $1eaa
-        brset   0, $00, $1ead
-        brset   0, $00, $1eb0
-        brset   0, $00, $1eb3
-        brset   0, $00, $1eb6
-        brset   0, $00, $1eb9
-        brset   0, $00, $1ebc
-        brset   0, $00, $1ebf
-        brset   0, $00, $1ec2
-        brset   0, $00, $1ec5
-        brset   0, $00, $1ec8
-        brset   0, $00, $1ecb
-        brset   0, $00, $1ece
-        brset   0, $00, $1ed1
-        brset   0, $00, $1ed4
-        brset   0, $00, $1ed7
-        brset   0, $00, $1eda
-        brset   0, $00, $1edd
-        brset   0, $00, $1ee0
-        brset   0, $00, $1ee3
-        brset   0, $00, $1ee6
-        brset   0, $00, $1ee9
-        brset   0, $00, $1eec
-        brset   0, $00, $1eef
-        brset   0, $00, $1ef2
-        brset   0, $00, $1ef5
-        brset   0, $00, $1ef8
-        brset   0, $00, $1efb
-        brset   0, $00, $1efe
-        brset   0, $00, $1f01
-        brset   0, $00, $1f04
-        brset   0, $00, $1f07
-        brset   0, $00, $1f0a
-        brset   0, $00, $1f0d
-        brset   0, $00, $1f10
-        brset   0, $00, $1f13
-        brset   0, $00, $1f16
-        brset   0, $00, $1f19
-        brset   0, $00, $1f1c
-        brset   0, $00, $1f1f
-        brset   0, $00, $1f22
-        brset   0, $00, $1f25
-        brset   0, $00, $1f28
-        brset   0, $00, $1f2b
-        brset   0, $00, $1f2e
-        brset   0, $00, $1f31
-        brset   0, $00, $1f34
-        brset   0, $00, $1f37
-        brset   0, $00, $1f3a
-        brset   0, $00, $1f3d
-        brset   0, $00, $1f40
-        brset   0, $00, $1f43
-        brset   0, $00, $1f46
-        brset   0, $00, $1f49
-        brset   0, $00, $1f4c
-        brset   0, $00, $1f4f
-        brset   0, $00, $1f52
-        brset   0, $00, $1f55
-        brset   0, $00, $1f58
-        brset   0, $00, $1f5b
-        brset   0, $00, $1f5e
-        brset   0, $00, $1f61
-        brset   0, $00, $1f64
-        brset   0, $00, $1f67
-        brset   0, $00, $1f6a
-        brset   0, $00, $1f6d
-        brset   0, $00, $1f70
-        brset   0, $00, $1f73
-        brset   0, $00, $1f76
-        brset   0, $00, $1f79
-        brset   0, $00, $1f7c
-        brset   0, $00, $1f7f
-        brset   0, $00, $1f82
-        brset   0, $00, $1f85
-        brset   0, $00, $1f88
-        brset   0, $00, $1f8b
-        brset   0, $00, $1f8e
-        brset   0, $00, $1f91
-        brset   0, $00, $1f94
-        brset   0, $00, $1f97
-        brset   0, $00, $1f9a
-        brset   0, $00, $1f9d
-        brset   0, $00, $1fa0
-        brset   0, $00, $1fa3
-        brset   0, $00, $1fa6
-        brset   0, $00, $1fa9
-        brset   0, $00, $1fac
-        brset   0, $00, $1faf
-        brset   0, $00, $1fb2
-        brset   0, $00, $1fb5
-        brset   0, $00, $1fb8
-        brset   0, $00, $1fbb
-        brset   0, $00, $1fbe
-        brset   0, $00, $1fc1
-        brset   0, $00, $1fc4
-        brset   0, $00, $1fc7
-        brset   0, $00, $1fca
-        brset   0, $00, $1fcd
-        brset   0, $00, $1fd0
-        brset   0, $00, $1fd3
-        brset   0, $00, $1fd6
-        brset   0, $00, $1fd9
-        brset   0, $00, $1fdc
-        brset   0, $00, $1fdf
-        brset   0, $00, $1fe2
-        brset   0, $00, $1fe5
-        brset   0, $00, $1fe8
-        brset   0, $00, $1feb
-        brset   0, $00, $1fee
-        brset   0, $00, $2005
-        adda    ,x
-        bset    2, $fb
-        bset    2, $fb
-        bset    2, $fb
-        bset    2, $fb
-        bset    2, $fb
-        bclr    2, $58
-        bset    2, $fb
+
+; command token table; high bit marks token end
+        .byte   "AS",('M' | $80)
+        .byte   "B",('F' | $80)
+        .byte   "B",('R' | $80)
+        .byte   ('G' | $80)
+        .byte   "LOA",('D' | $80)
+        .byte   "M",('D' | $80)
+        .byte   "M",('M' | $80)
+        .byte   "NOB",('R' | $80)
+        .byte   ('P' | $80)
+        .byte   "R",('D' | $80)
+        .byte   "R",('M' | $80)
+        .byte   ('T' | $80)
+        .byte   "HEL",('P' | $80)
+        .byte   $00
+
+; banner and help text
+        .byte   "EVSbug-HC05 REV 1.2",$00
+        .byte   "Brkpt",$00
+        .byte   "Abort",$00
+        .byte   "Regs ",$00
+        .byte   "ILLEGAL/INSUFFICIENT ENTRY",$00
+        .byte   "    ",$00
+        .byte   "BREAK = Abort command, ",$0d,$0a
+        .byte   "CTRL-S = Freeze screen, CTRL-X = Cancel command line",$0d,$0a
+        .byte   "ASM <START ADDR>- Assembler/disassembler",$0d,$0a
+        .byte   "BF <START ADDR> <END ADDR> <DATA>- Block fill memory",$00
+        .byte   "BR [<ADDR1 - ADDR5>]- Set 1 to 5 breakpoints",$00
+        .byte   "G [<START ADDR>]- Execute user program",$0d,$0a
+        .byte   "LOAD T - Download from port to memory",$0d,$0a
+        .byte   "MD <START ADDR> [<END ADDR>]- Display memory",$00
+        .byte   "MM <ADDRESS>- Modify memory",$0d,$0a
+        .byte   "NOBR [<ADDR1 - ADDR5>]- Remove breakpoints",$0d,$0a
+        .byte   "P [<COUNT>]- Proceed 1-FF times through a breakpoint",$0d,$0a
+        .byte   "RD- Register display",$00
+        .byte   "RM- Register modify",$0d,$0a
+        .byte   "T [<COUNT>]- Trace 1-FF instructions",$00
+
+; padding and interrupt vectors
+        .byte   $06,$f4
+        .fill   $06f2,$00
+        .byte   $14,$fb,$14,$fb,$14,$fb,$14,$fb,$14,$fb,$14,$fb,$15,$58,$14,$fb
         .end
