@@ -1314,6 +1314,10 @@ opcode_80_9f_index:
         .byte   $3b,$36,$31,$3d,$43
 
         .module asm_cmd
+_op             .equ    scratch         ; assembled opcode byte
+_mpos           .equ    scratch+$2f     ; mnemonic match position
+_mode           .equ    scratch+$31     ; mode/operand temp
+
 asm_cmd:
         dec     cmd_args
         bne     _bad_entry
@@ -1339,8 +1343,8 @@ _parse_mnem:
         cmp     #$2e
         beq     _exit_cmd
         dec     line_pos
-        clr     scratch+$2f
-        clr     scratch
+        clr     _mpos
+        clr     _op
         ldx     #$ff
 
 _mnem_loop:
@@ -1353,10 +1357,10 @@ _next_mnem:
         cmp     #$0f
         bls     _check_mode
         and     #$0f
-        inc     scratch
+        inc     _op
 
 _check_mode:
-        cmp     scratch+$2f
+        cmp     _mpos
         beq     _got_mnem
         bhi     _next_mnem
 
@@ -1375,7 +1379,7 @@ _got_mnem:
         bne     _next_mnem
         lda     mnemonics,x
         bmi     _set_mode
-        inc     scratch+$2f
+        inc     _mpos
         bra     _mnem_loop
 
 _set_mode:
@@ -1384,12 +1388,12 @@ _set_mode:
         lsra
         lsra
         lsra
-        sta     scratch+$31
-        ldx     scratch
+        sta     _mode
+        ldx     _op
         decx
         lda     opcode_table,x
-        sta     scratch
-        lda     scratch+$31
+        sta     _op
+        lda     _mode
         cmp     #$04
         bne     _read_suffix
         jsr     read_command_char
@@ -1405,10 +1409,10 @@ _reg_a:
         lda     #$10
 
 _add_reg:
-        add     scratch
-        sta     scratch
+        add     _op
+        sta     _op
         lda     #$01
-        sta     scratch+$31
+        sta     _mode
 
 _read_suffix:
         jsr     read_command_char
@@ -1420,7 +1424,7 @@ _check_suffix:
         bne     _need_space
 
 _finish_no_arg:
-        lda     scratch+$31
+        lda     _mode
         deca
         bne     _bad_entry
         dec     line_pos
@@ -1431,9 +1435,9 @@ _need_space:
         bne     _bad_entry
 
 _mode_jump:
-        lda     scratch+$31
+        lda     _mode
         asla
-        add     scratch+$31
+        add     _mode
         tax
 
 _mode_table:
@@ -1455,7 +1459,7 @@ _mode_table:
 _need_comma:
         bne     _bad_jump
         lda     parse_lo
-        sta     scratch+$31
+        sta     _mode
         lda     #$02
         bra     _parse_operand
 
@@ -1498,7 +1502,7 @@ _calc_rel:
 
 _store_operand:
         sta     parse_lo
-        lda     scratch+$31
+        lda     _mode
         sta     parse_hi
         jmp     _check_end
 
@@ -1515,8 +1519,8 @@ _parse_bit_num:
         cmp     #$07
         bhi     _bad_branch
         asla
-        add     scratch
-        sta     scratch
+        add     _op
+        sta     _op
         lda     cmd_char
         cmp     #$2c
         bne     _bad_to_entry
@@ -1561,14 +1565,14 @@ _check_comma:
         add     #$10
 
 _add_opcode:
-        add     scratch
-        sta     scratch
+        add     _op
+        sta     _op
 
 _set_mode10:
         lda     #$10
 
 _store_mode:
-        sta     scratch+$31
+        sta     _mode
         lda     cmd_char
         cmp     #$2c
         bne     _check_end
@@ -1576,15 +1580,15 @@ _store_mode:
         jsr     uppercase_command_char
         cmp     #$58
         bne     _bad_to_entry
-        lda     scratch+$31
+        lda     _mode
         brset   1, op_len, _finish_opcode
         add     #$20
         brset   0, op_len, _finish_opcode
         add     #$20
 
 _finish_opcode:
-        add     scratch
-        sta     scratch
+        add     _op
+        sta     _op
         bra     _read_next_char
 
 _dot_suffix:
@@ -1605,7 +1609,7 @@ _bad_to_entry:
 
 _write_bytes:
         jsr     load_line_addr
-        lda     scratch
+        lda     _op
 
 _write_loop:
         jsr     write_memory_byte
