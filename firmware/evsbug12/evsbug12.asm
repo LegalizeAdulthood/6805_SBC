@@ -74,14 +74,16 @@ write_hex_byte:
         add     scratch+$56
         sta     scratch+$56
         lda     scratch+$33
-        bsr     $86b
+        bsr     write_hi_nibl
         lda     scratch+$33
         and     #$0f
-        bra     $86f
+        bra     write_lo_nibl
+write_hi_nibl:
         lsra
         lsra
         lsra
         lsra
+write_lo_nibl:
         add     #$30
         cmp     #$39
         bls     $877
@@ -478,7 +480,7 @@ decode_inst:
         beq     $b72
         cmp     #$e0
         beq     $ba2
-        bsr     $b6b
+        bsr     is_jmp_jsr
         bne     $b12
         ldx     #$03
         jsr     read_stack_byte
@@ -499,13 +501,14 @@ decode_inst:
         ldx     #$06
         jsr     load_stack_addr
         bra     $b7f
+is_jmp_jsr:
         cpx     #$0c
         beq     $b71
         cpx     #$0d
         rts
         inc     scratch+$57
         inc     scratch+$57
-        bsr     $b6b
+        bsr     is_jmp_jsr
         beq     $b85
         lda     #$03
         jsr     add_a_to_address
@@ -527,7 +530,7 @@ decode_inst:
         lda     scratch+$32
         bra     $b7c
         inc     scratch+$57
-        bsr     $b6b
+        bsr     is_jmp_jsr
         bne     $bae
         cmp     #$a0
         beq     $bc8
@@ -1016,7 +1019,7 @@ asm_cmd:
         jmp     $10be
         jmp     $1039
         jmp     $103e
-        bsr     $1007
+        bsr     parse_bit_num
         jsr     parse_hex_word
         tst     scratch+$2c
         bne     $fb2
@@ -1060,8 +1063,9 @@ asm_cmd:
         lda     scratch+$31
         sta     scratch+$2c
         jmp     $1089
-        bsr     $1007
+        bsr     parse_bit_num
         jmp     $10c0
+parse_bit_num:
         jsr     parse_hex_word
         lda     scratch+$2d
         and     #$0f
@@ -1592,12 +1596,13 @@ resume_user:
         add     #$03
         bset    7, map_switch
         swi
-        bsr     $14f0
+        bsr     resume_plus2
+resume_plus2:
         add     #$02
         bra     $14dc
         inc     scratch+$01
         jmp     cmd_loop
-        bra     $14f0
+        bra     resume_plus2
 reset_handler:
         lda     #$ff
         sta     scratch+$5e
