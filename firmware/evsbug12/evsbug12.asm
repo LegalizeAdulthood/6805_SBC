@@ -1,12 +1,3 @@
-#define adca adc
-#define adda add
-#define anda and
-#define cmpa cmp
-#define eora eor
-#define sbca sbc
-#define suba sub
-#define fcb .byte
-
         .org    $0000
         .byte   $00
         .org    $0800
@@ -24,7 +15,7 @@
         stx     $b1
         brclr   0, $b1, $80c
         lda     $ffe3
-        anda    #$7f
+        and     #$7f
         bra     $834
         stx     $aa
         ldx     $ffe0
@@ -48,25 +39,25 @@
         clr     $a3
         jmp     $0c77
         sta     $84
-        adda    $a7
+        add     $a7
         sta     $a7
         lda     $84
         bsr     $86b
         lda     $84
-        anda    #$0f
+        and     #$0f
         bra     $86f
         lsra
         lsra
         lsra
         lsra
-        adda    #$30
-        cmpa    #$39
+        add     #$30
+        cmp     #$39
         bls     $877
-        adda    #$07
+        add     #$07
         jsr     $0826
         rts
         lda     $73
-        anda    #$ff
+        and     #$ff
         jsr     $085b
         lda     $74
         jsr     $085b
@@ -76,7 +67,7 @@
         jsr     $0965
         tst     $82
         beq     $89f
-        anda    #$ff
+        and     #$ff
         jsr     $085b
         jsr     $098b
         jsr     $0965
@@ -109,7 +100,7 @@
         lda     #$3d
         jsr     $0826
         lda     $74
-        adda    #$05
+        add     #$05
         jsr     $085b
         rts
 
@@ -132,16 +123,16 @@
         cpx     #$50
         bne     $91a
         inc     $82
-        adda    #$04
+        add     #$04
         cpx     #$58
         bne     $920
-        adda    #$03
+        add     #$03
         cpx     #$41
         bne     $926
-        adda    #$02
+        add     #$02
         cpx     #$43
         bne     $92c
-        adda    #$01
+        add     #$01
         sta     $74
         txa
         ldx     $84
@@ -149,7 +140,7 @@
         ldx     #$41
         jsr     $08a3
         lda     $a4
-        adda    #$01
+        add     #$01
         sta     $74
         clr     $73
         jsr     $0965
@@ -190,26 +181,26 @@
         bset    2, $50
         rts
         lda     #$01
-        adda    $74
+        add     $74
         sta     $74
         clra
-        adca    $73
+        adc     $73
         sta     $73
         rts
         lda     #$01
         sta     $84
         lda     $74
-        suba    $84
+        sub     $84
         sta     $74
         lda     $73
-        sbca    #$00
+        sbc     #$00
         bra     $994
         lda     $75
-        cmpa    $73
+        cmp     $73
         bcs     $9b8
         bhi     $9b7
         lda     $76
-        cmpa    $74
+        cmp     $74
         bcs     $9b8
         lda     #$01
         rts
@@ -223,7 +214,7 @@
         rts
         jsr     $09bb
         jsr     $0965
-        anda    #$ff
+        and     #$ff
         sta     $75
         jsr     $098b
         jsr     $0965
@@ -264,7 +255,7 @@
         rts
         ldx     #$75
         lda     $73
-        anda    #$ff
+        and     #$ff
         sta     ,x
         lda     $74
         sta     $01,x
@@ -295,10 +286,10 @@
         sta     $83
         clrx
         lda     $73
-        cmpa    $85,x
+        cmp     $85,x
         bne     $a62
         lda     $74
-        cmpa    $86,x
+        cmp     $86,x
         beq     $a50
         incx
         incx
@@ -331,31 +322,31 @@
         lda     $93,x
         jsr     $095c
         lda     $82
-        suba    #$04
+        sub     #$04
         sta     $82
-        cmpa    $83
+        cmp     $83
         bpl     $a91
         rts
         clr     $a8
         clr     $a9
         jsr     $0965
         sta     $84
-        anda    #$0f
+        and     #$0f
         tax
         lda     $84
-        anda    #$f0
+        and     #$f0
         bne     $abb
         jmp     $0bcc
-        cmpa    #$10
+        cmp     #$10
         beq     $b2c
-        cmpa    #$20
+        cmp     #$20
         bne     $ac6
         jmp     $0bc8
-        cmpa    #$70
+        cmp     #$70
         bhi     $b02
         tstx
         beq     $ae8
-        cmpa    #$40
+        cmp     #$40
         bne     $ad5
         cpx     #$02
         beq     $b12
@@ -369,22 +360,22 @@
         bne     $ae8
         inc     $52
         rts
-        cmpa    #$30
+        cmp     #$30
         beq     $b2c
-        cmpa    #$40
+        cmp     #$40
         beq     $afc
-        cmpa    #$50
+        cmp     #$50
         beq     $afe
         bset    3, $a9
-        cmpa    #$60
+        cmp     #$60
         beq     $b2c
         bra     $b12
         bset    0, $a9
         bset    1, $a9
         bra     $b12
-        cmpa    #$80
+        cmp     #$80
         beq     $b4b
-        cmpa    #$90
+        cmp     #$90
         bne     $b16
         cpx     #$06
         bls     $ae5
@@ -392,7 +383,7 @@
         beq     $ae5
         lda     #$01
         bra     $b7c
-        cmpa    #$a0
+        cmp     #$a0
         bne     $b2e
         cpx     #$0d
         beq     $b2c
@@ -404,14 +395,14 @@
         beq     $ae5
         bset    2, $a9
         bra     $ba2
-        cmpa    #$b0
+        cmp     #$b0
         beq     $ba2
-        cmpa    #$c0
+        cmp     #$c0
         beq     $b72
         bset    3, $a9
-        cmpa    #$d0
+        cmp     #$d0
         beq     $b72
-        cmpa    #$e0
+        cmp     #$e0
         beq     $ba2
         bsr     $b6b
         bne     $b12
@@ -448,7 +439,7 @@
         jsr     $0a21
         rts
         clrx
-        cmpa    #$c0
+        cmp     #$c0
         beq     $b8c
         ldx     #$03
         jsr     $098b
@@ -464,12 +455,12 @@
         inc     $a8
         bsr     $b6b
         bne     $bae
-        cmpa    #$a0
+        cmp     #$a0
         beq     $bc8
         bhi     $bb2
         lda     #$02
         bra     $b7c
-        cmpa    #$b0
+        cmp     #$b0
         bne     $bbf
         jsr     $09d0
         clr     $75
@@ -501,9 +492,9 @@
         jsr     $0826
         clrx
         jsr     $080a
-        cmpa    #$18
+        cmp     #$18
         beq     $beb
-        cmpa    #$08
+        cmp     #$08
         bne     $c06
         cpx     #$00
         beq     $c04
@@ -513,7 +504,7 @@
         incx
         cpx     #$1e
         beq     $c11
-        cmpa    #$0d
+        cmp     #$0d
         bne     $bf4
         lda     #$0d
         sta     $54,x
@@ -526,28 +517,28 @@
         ldx     $84
         sta     $83
         rts
-        cmpa    #$60
+        cmp     #$60
         bls     $c2d
-        suba    #$20
+        sub     #$20
         sta     $83
         rts
         clr     $7d
         clr     $7e
         jsr     $0c18
-        cmpa    #$24
+        cmp     #$24
         bne     $c3c
         jsr     $0c18
         jsr     $0c25
         clr     $aa
         dec     $aa
-        suba    #$30
+        sub     #$30
         bmi     $c72
-        cmpa    #$09
+        cmp     #$09
         bls     $c55
-        suba    #$07
-        cmpa    #$09
+        sub     #$07
+        cmp     #$09
         bls     $c72
-        cmpa    #$0f
+        cmp     #$0f
         bhi     $c72
         sta     $aa
         lda     $7d
@@ -584,14 +575,14 @@
         clr     $51
         ldx     #$ff
         jsr     $0c18
-        cmpa    #$0d
+        cmp     #$0d
         beq     $c77
         jsr     $0c25
         incx
         lda     $1672,x
         beq     $c75
-        anda    #$7f
-        cmpa    $83
+        and     #$7f
+        cmp     $83
         beq     $cb4
         clr     $7f
         inc     $51
@@ -602,12 +593,12 @@
         lda     $1672,x
         bpl     $c92
         jsr     $0c18
-        cmpa    #$0d
+        cmp     #$0d
         beq     $ce6
-        cmpa    #$20
+        cmp     #$20
         bne     $ca8
         lda     $51
-        cmpa    #$04
+        cmp     #$04
         beq     $ce6
         jsr     $0c2e
         ldx     $53
@@ -619,9 +610,9 @@
         lda     $7e
         sta     $72,x
         lda     $83
-        cmpa    #$20
+        cmp     #$20
         beq     $cca
-        cmpa    #$0d
+        cmp     #$0d
         bne     $c75
         lda     $51
         asla
@@ -675,10 +666,10 @@
         ldx     #$26
         bra     $d8c
         jsr     $0965
-        anda    #$0f
+        and     #$0f
         tax
         jsr     $0965
-        cmpa    #$0f
+        cmp     #$0f
         bhi     $d8e
         sta     $84
         ldx     #$17
@@ -700,29 +691,29 @@
         ldx     $80
         ldx     $0ebb,x
         bra     $dcf
-        cmpa    #$1f
+        cmp     #$1f
         bhi     $d9a
-        suba    #$10
+        sub     #$10
         sta     $84
         ldx     #$02
         bra     $d6e
-        cmpa    #$2f
+        cmp     #$2f
         bhi     $da3
         txa
-        adda    #$05
+        add     #$05
         bra     $dc1
-        cmpa    #$7f
+        cmp     #$7f
         bhi     $dac
         ldx     $0e9b,x
         bra     $dcf
-        cmpa    #$9f
+        cmp     #$9f
         bhi     $dbb
-        cmpa    #$8f
+        cmp     #$8f
         bne     $db6
         ldx     #$02
         ldx     $0ed0,x
         bra     $dcf
-        cmpa    #$ad
+        cmp     #$ad
         bne     $dcc
         lda     #$04
         sta     $80
@@ -735,27 +726,27 @@
         clr     $84
         clrx
         lda     $1155,x
-        cmpa    #$0f
+        cmp     #$0f
         bhi     $dde
         incx
         bra     $dd4
-        anda    #$0f
+        and     #$0f
         sta     $80
         lda     $84
-        cmpa    $51
+        cmp     $51
         beq     $dec
         inc     $84
         bra     $ddb
         lda     $1155,x
-        anda    #$0f
-        cmpa    $80
+        and     #$0f
+        cmp     $80
         bhi     $e0d
         lda     $10cd,x
-        anda    #$7f
+        and     #$7f
         stx     $82
         sta     $84
         lda     $80
-        adda    #$0c
+        add     #$0c
         tax
         lda     $84
         sta     $54,x
@@ -782,7 +773,7 @@
         dec     $a8
         bmi     $e3e
         beq     $e3a
-        anda    #$ff
+        and     #$ff
         bsr     $e67
         bra     $e2f
         brclr   3, $a9, $e49
@@ -808,16 +799,16 @@
         sta     $83
         bsr     $e73
         lda     $83
-        anda    #$0f
+        and     #$0f
         bra     $e77
         lsra
         lsra
         lsra
         lsra
-        adda    #$30
-        cmpa    #$39
+        add     #$30
+        cmp     #$39
         bls     $e7f
-        adda    #$07
+        add     #$07
         sta     $54,x
         incx
         stx     $7f
@@ -829,7 +820,7 @@
         rts
         bsr     $e89
         lda     $8f
-        anda    #$ff
+        and     #$ff
         bsr     $e67
         lda     $90
         bsr     $e67
@@ -845,13 +836,13 @@
         clr     $a8
         jsr     $0bee
         jsr     $0c18
-        cmpa    #$0d
+        cmp     #$0d
         bne     $efd
         lda     $53
         inca
         jsr     $098d
         bra     $ee6
-        cmpa    #$2e
+        cmp     #$2e
         beq     $f23
         dec     $7f
         clr     $80
@@ -861,19 +852,19 @@
         jsr     $0c25
         incx
         lda     $1155,x
-        cmpa    #$0f
+        cmp     #$0f
         bls     $f1b
-        anda    #$0f
+        and     #$0f
         inc     $51
-        cmpa    $80
+        cmp     $80
         beq     $f26
         bhi     $f0f
         inc     $52
         jmp     $0c77
         lda     $10cd,x
         beq     $f21
-        anda    #$7f
-        cmpa    $83
+        and     #$7f
+        cmp     $83
         bhi     $f21
         bne     $f0f
         lda     $10cd,x
@@ -891,36 +882,36 @@
         lda     $11dd,x
         sta     $51
         lda     $82
-        cmpa    #$04
+        cmp     #$04
         bne     $f6f
         jsr     $0c18
         jsr     $0c25
-        cmpa    #$41
+        cmp     #$41
         beq     $f65
-        cmpa    #$58
+        cmp     #$58
         bne     $f72
         lda     #$20
         bra     $f67
         lda     #$10
-        adda    $51
+        add     $51
         sta     $51
         lda     #$01
         sta     $82
         jsr     $0c18
-        cmpa    #$2e
+        cmp     #$2e
         beq     $f7a
-        cmpa    #$0d
+        cmp     #$0d
         bne     $f83
         lda     $82
         deca
         bne     $f21
         dec     $7f
         bra     $f87
-        cmpa    #$20
+        cmp     #$20
         bne     $f21
         lda     $82
         asla
-        adda    $82
+        add     $82
         tax
         jmp     $0f8d,x
         jmp     $1086
@@ -935,7 +926,7 @@
         tst     $7d
         bne     $fb2
         lda     $83
-        cmpa    #$2c
+        cmp     #$2c
         bne     $fe6
         lda     $7e
         sta     $82
@@ -956,17 +947,17 @@
         lda     $76
         jsr     $0999
         lda     $75
-        suba    $73
+        sub     $73
         bne     $fe6
         lda     $74
         nega
         bmi     $ff9
         jmp     $0f21
         lda     $76
-        suba    $74
+        sub     $74
         sta     $74
         lda     $75
-        sbca    $73
+        sbc     $73
         bne     $fe6
         lda     $74
         bmi     $fe6
@@ -978,20 +969,20 @@
         jmp     $10c0
         jsr     $0c2e
         lda     $7e
-        anda    #$0f
-        cmpa    #$00
+        and     #$0f
+        cmp     #$00
         bcs     $1037
-        cmpa    #$07
+        cmp     #$07
         bhi     $1037
         asla
-        adda    $51
+        add     $51
         sta     $51
         lda     $83
-        cmpa    #$2c
+        cmp     #$2c
         bne     $1093
         rts
         jsr     $0c18
-        cmpa    #$2c
+        cmp     #$2c
         bne     $102c
         clra
         bra     $1060
@@ -1004,9 +995,9 @@
         jsr     $0c18
         bra     $1045
         jsr     $0c18
-        cmpa    #$23
+        cmp     #$23
         beq     $10c0
-        cmpa    #$2c
+        cmp     #$2c
         beq     $105e
         inc     $a8
         dec     $7f
@@ -1015,32 +1006,32 @@
         tst     $7d
         beq     $105a
         inc     $a8
-        adda    #$10
-        adda    $51
+        add     #$10
+        add     $51
         sta     $51
         lda     #$10
         sta     $82
         lda     $83
-        cmpa    #$2c
+        cmp     #$2c
         bne     $1089
         jsr     $0c18
         jsr     $0c25
-        cmpa    #$58
+        cmp     #$58
         bne     $1093
         lda     $82
         brset   1, $a8, $107e
-        adda    #$20
+        add     #$20
         brset   0, $a8, $107e
-        adda    #$20
-        adda    $51
+        add     #$20
+        add     $51
         sta     $51
         bra     $1086
         dec     $ab
         jsr     $0c18
         lda     $83
-        cmpa    #$0d
+        cmp     #$0d
         beq     $1096
-        cmpa    #$2e
+        cmp     #$2e
         beq     $1084
         jmp     $0f21
         jsr     $0e5b
@@ -1268,9 +1259,9 @@
         jsr     $0965
         tsta
         bmi     $131b
-        cmpa    #$20
+        cmp     #$20
         bcs     $131b
-        cmpa    #$7f
+        cmp     #$7f
         bcs     $131d
         lda     #$2e
         ldx     $7f
@@ -1299,16 +1290,16 @@
         beq     $1374
         clr     $ad
         lda     $ffe3
-        anda    #$7f
-        cmpa    #$13
+        and     #$7f
+        cmp     #$13
         bne     $1370
         jsr     $0800
         ldx     $ffe0
         stx     $b1
         brclr   0, $b1, $1360
         lda     $ffe3
-        anda    #$7f
-        cmpa    #$18
+        and     #$7f
+        cmp     #$18
         beq     $137d
         rts
         jsr     $08ee
@@ -1326,7 +1317,7 @@
         lda     $13e7,x
         beq     $13c4
         incx
-        cmpa    $83
+        cmp     $83
         bne     $1392
         lda     $7e
         jsr     $095c
@@ -1338,13 +1329,13 @@
         jsr     $098b
         ldx     $80
         lda     $83
-        cmpa    #$3d
+        cmp     #$3d
         beq     $13de
-        cmpa    #$5e
+        cmp     #$5e
         beq     $13c9
-        cmpa    #$0d
+        cmp     #$0d
         beq     $13d3
-        cmpa    #$2e
+        cmp     #$2e
         beq     $13c6
         inc     $52
         lda     $83
@@ -1364,7 +1355,7 @@
         beq     $13c6
         jsr     $0997
         bra     $13c6
-        fcb     $5e
+        .byte   $5e
         tst     $2e
         brclr   6, $00, $1427
         comx
@@ -1375,7 +1366,7 @@
         bsr     $1384
         tst     $52
         bne     $1453
-        cmpa    #$2e
+        cmp     #$2e
         bne     $13f2
         bra     $1453
         ldx     $53
@@ -1400,7 +1391,7 @@
         jsr     $1384
         tst     $52
         bne     $1453
-        cmpa    #$2e
+        cmp     #$2e
         bne     $1408
         bra     $1453
         ldx     $53
@@ -1418,30 +1409,30 @@
         jmp     $0c77
         jsr     $08ee
         lda     $83
-        cmpa    #$0d
+        cmp     #$0d
         beq     $1456
-        cmpa    #$20
+        cmp     #$20
         bne     $1456
         jsr     $0c18
         jsr     $0c25
-        cmpa    #$54
+        cmp     #$54
         bne     $1456
         bset    0, $a3
         bra     $1476
         clr     $a8
         jsr     $080a
-        cmpa    #$53
+        cmp     #$53
         bne     $1478
         jsr     $080a
-        cmpa    #$39
+        cmp     #$39
         beq     $148c
-        cmpa    #$31
+        cmp     #$31
         bne     $1478
         bra     $148e
         inc     $a8
         clr     $a7
         bsr     $14c2
-        suba    #$03
+        sub     #$03
         sta     $80
         bsr     $14c2
         sta     $73
@@ -1459,7 +1450,7 @@
         tst     $a8
         bne     $14bd
         coma
-        cmpa    $80
+        cmp     $80
         beq     $1478
         inc     $52
         clr     $a3
@@ -1467,7 +1458,7 @@
         clr     $7e
         bsr     $14cf
         bsr     $14cf
-        adda    $a7
+        add     $a7
         sta     $a7
         lda     $7e
         rts
@@ -1478,17 +1469,17 @@
         rts
         lda     $a4
         bclr    7, $50
-        cmpa    #$ff
+        cmp     #$ff
         bne     $14e5
         bset    0, $50
         rti
         bit     #$01
         bne     $14ee
-        adda    #$03
+        add     #$03
         bset    7, $50
         swi
         bsr     $14f0
-        adda    #$02
+        add     #$02
         bra     $14dc
         inc     $52
         jmp     $0c77
@@ -1500,7 +1491,7 @@
         lda     #$fa
         sta     $a4
         clr     $73
-        adda    #$01
+        add     #$01
         sta     $74
         lda     #$e8
         jsr     $095c
@@ -1529,7 +1520,7 @@
         lda     #$e0
         sta     $ffe1
         lda     $ffe1
-        anda    #$7f
+        and     #$7f
         sta     $ffe1
         lda     #$40
         tax
@@ -1549,7 +1540,7 @@
         jsr     $0a53
         beq     $157d
         jsr     $0965
-        cmpa    #$83
+        cmp     #$83
         beq     $15f6
         bset    5, $50
         brclr   4, $50, $158e
@@ -1569,13 +1560,13 @@
         jsr     $0a51
         bne     $15c6
         lda     $9b
-        suba    #$01
+        sub     #$01
         bcs     $15be
         lda     $a5
-        cmpa    $73
+        cmp     $73
         bne     $15ba
         lda     $a6
-        cmpa    $74
+        cmp     $74
         bne     $15ba
         dec     $9b
         tst     $9b
@@ -1586,7 +1577,7 @@
         tst     $a2
         bne     $15d9
         lda     $9a
-        suba    #$01
+        sub     #$01
         bcs     $15d2
         bne     $15de
         jsr     $0d14
@@ -1604,14 +1595,14 @@
         ldx     #$1a
         bra     $15c3
         lda     $a4
-        suba    #$05
+        sub     #$05
         sta     $a4
         ldx     #$06
         stx     $82
         jsr     $09f5
         sta     $75
         txa
-        suba    #$05
+        sub     #$05
         tax
         jsr     $09fc
         ldx     $82
