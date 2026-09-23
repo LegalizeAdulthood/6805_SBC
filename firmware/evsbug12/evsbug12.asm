@@ -1,6 +1,7 @@
         .msfirst
 
 sub_9c  .equ    $9c
+map_switch  .equ    $50
 
         .org    $0000
         .byte   $00
@@ -84,7 +85,7 @@ sub_0888:
         jsr     write_hex_byte
         rts
 write_string:
-        lda     $1691,x
+        lda     message_text,x
         beq     $8a2
         jsr     write_console_char
         incx
@@ -102,7 +103,7 @@ sub_08b1:
         ldx     #$41
         jsr     write_string
         ldx     $84
-        lda     $08e8,x
+        lda     register_fields,x
         beq     $932
         bsr     $909
         jsr     write_console_char
@@ -119,6 +120,7 @@ sub_08d6:
         rts
 
 ; register display field table
+register_fields:
         .byte   "SPAXC",$00
 write_crlf:
         lda     #$0d
@@ -129,6 +131,7 @@ write_crlf:
 
 ; condition-code display table
         .fill   $0008,$00
+condition_bits:
         .byte   "111HINZC"
 sub_0909:
         stx     $84
@@ -168,7 +171,7 @@ sub_0909:
         lda     #$2e
         asl     $84
         bcc     $954
-        lda     $0901,x
+        lda     condition_bits,x
         jsr     write_console_char
         dec     $82
         bne     $94a
@@ -181,7 +184,7 @@ write_memory_byte:
 read_memory_byte:
         lda     #$c6
         jsr     sub_0800
-        bclr    2, $50
+        bclr    2, map_switch
         sta     $9e
         lda     #$12
         sta     $9c
@@ -195,8 +198,8 @@ read_memory_byte:
         sta     $a1
         lda     $84
         jsr     sub_9c
-        bclr    1, $50
-        bset    2, $50
+        bclr    1, map_switch
+        bset    2, map_switch
         rts
 increment_address:
         lda     #$01
@@ -343,7 +346,7 @@ find_address_slot:
         stx     $82
         bsr     $a3e
         beq     $a81
-        bset    3, $50
+        bset    3, map_switch
         jsr     read_memory_byte
         lsrx
         sta     $93,x
@@ -628,18 +631,18 @@ parse_hex_digit:
         beq     $c77
         jsr     uppercase_command_char
         incx
-        lda     $1672,x
+        lda     cmd_tokens,x
         beq     $c75
         and     #$7f
         cmp     $83
         beq     $cb4
         clr     $7f
         inc     $51
-        lda     $1672,x
+        lda     cmd_tokens,x
         bmi     $c92
         incx
         bra     $cac
-        lda     $1672,x
+        lda     cmd_tokens,x
         bpl     $c92
         jsr     read_command_char
         cmp     #$0d
@@ -668,24 +671,16 @@ parse_hex_digit:
         tax
         lda     #$cc
         sta     $9c
-        lda     $0cfa,x
+        lda     cmd_handlers,x
         sta     $9d
-        lda     $0cfb,x
+        lda     cmd_handlers+1,x
         sta     $9e
         jmp     $9c
-        brset   7, $e0, $d11
-        inc     $12
-        bhi     $d13
-        inc     ,x
-        bset    2, $5b
-        bset    1, $ea
-        bclr    1, $ec
-        bset    1, $66
-        bset    1, $b2
-        bclr    1, $75
-        bset    2, $04
-        bset    1, $d7
-        bset    3, $21
+
+; command handler table
+cmd_handlers:
+        .dw     $0ee0,$143c,$1222,$127c,$145b,$12ea,$13ec,$1266
+        .dw     $12b2,$1375,$1404,$12d7,$1621
 disassemble_line:
         ldx     #$a5
         jsr     store_address_pair
@@ -739,7 +734,7 @@ disassemble_line:
         jsr     sub_0e61
         clr     $a8
         ldx     $80
-        ldx     $0ebb,x
+        ldx     branch_bit_index,x
         bra     $dcf
         cmp     #$1f
         bhi     $d9a
@@ -754,14 +749,14 @@ disassemble_line:
         bra     $dc1
         cmp     #$7f
         bhi     $dac
-        ldx     $0e9b,x
+        ldx     opcode_30_7f_index,x
         bra     $dcf
         cmp     #$9f
         bhi     $dbb
         cmp     #$8f
         bne     $db6
         ldx     #$02
-        ldx     $0ed0,x
+        ldx     opcode_80_9f_index,x
         bra     $dcf
         cmp     #$ad
         bne     $dcc
@@ -771,11 +766,11 @@ disassemble_line:
         stx     $7f
         jsr     sub_0e8e
         bra     $d85
-        ldx     $0eab,x
+        ldx     opcode_a0_af_index,x
         stx     $51
         clr     $84
         clrx
-        lda     $1155,x
+        lda     mnemonic_modes,x
         cmp     #$0f
         bhi     $dde
         incx
@@ -787,11 +782,11 @@ disassemble_line:
         beq     $dec
         inc     $84
         bra     $ddb
-        lda     $1155,x
+        lda     mnemonic_modes,x
         and     #$0f
         cmp     $80
         bhi     $e0d
-        lda     $10cd,x
+        lda     mnemonics,x
         and     #$7f
         stx     $82
         sta     $84
@@ -884,12 +879,20 @@ append_hex_word:
         bsr     $e67
         rts
 
-; assembler/disassembler decode tables
+; assembler/disassembler mnemonic index tables
+opcode_30_7f_index:
         .byte   $30,$00,$2f,$21,$2e,$00,$35,$04,$2d,$34,$23,$00,$27,$42,$00,$1f
+opcode_a0_af_index:
         .byte   $3f,$20,$39,$22,$02,$0f,$2b,$3c,$25,$00,$32,$01,$29,$2a,$2c,$3e
+branch_bit_index:
         .byte   $1a,$18,$1b,$06,$1c,$17,$19,$0b,$11,$05,$07,$15,$08,$09,$0a,$16
-        .byte   $13,$12,$14,$0e,$0d,$37,$38,$44,$40,$00,$00,$00,$41,$1d,$3a,$1e
-        .byte   $3b,$36,$31,$3d,$43,$3a,$53,$26,$3d,$3f,$ab
+        .byte   $13,$12,$14,$0e,$0d
+opcode_80_9f_index:
+        .byte   $37,$38,$44,$40,$00,$00,$00,$41,$1d,$3a,$1e
+        .byte   $3b,$36,$31,$3d,$43
+        dec     $53
+        bne     $0f21
+        clr     $ab
         jsr     disassemble_line
         clr     $a8
         jsr     read_command_line
@@ -909,7 +912,7 @@ append_hex_word:
         jsr     read_command_char
         jsr     uppercase_command_char
         incx
-        lda     $1155,x
+        lda     mnemonic_modes,x
         cmp     #$0f
         bls     $f1b
         and     #$0f
@@ -919,17 +922,17 @@ append_hex_word:
         bhi     $f0f
         inc     $52
         jmp     $0c77
-        lda     $10cd,x
+        lda     mnemonics,x
         beq     $f21
         and     #$7f
         cmp     $83
         bhi     $f21
         bne     $f0f
-        lda     $10cd,x
+        lda     mnemonics,x
         bmi     $f3c
         inc     $80
         bra     $f09
-        lda     $1155,x
+        lda     mnemonic_modes,x
         lsra
         lsra
         lsra
@@ -937,7 +940,7 @@ append_hex_word:
         sta     $82
         ldx     $51
         decx
-        lda     $11dd,x
+        lda     opcode_table,x
         sta     $51
         lda     $82
         cmp     #$04
@@ -1118,6 +1121,7 @@ append_hex_word:
         bra     $1086
 
 ; mnemonic text table; high bit marks token end
+mnemonics:
         .byte   "AD",('C' | $80)
         .byte   ('D' | $80)
         .byte   "N",('D' | $80)
@@ -1190,6 +1194,7 @@ append_hex_word:
         .byte   $00
 
 ; mnemonic addressing-mode table
+mnemonic_modes:
         .byte   $00,$01,$72,$72,$01,$72,$01,$42,$42,$00,$01,$32,$02,$23,$32,$01
         .byte   $32,$01,$02,$33,$33,$32,$32,$01,$32,$32,$72,$01,$32,$32,$01,$32
         .byte   $32,$32,$01,$32,$01,$32,$01,$32,$02,$03,$84,$32,$02,$03,$84,$01
@@ -1201,6 +1206,7 @@ append_hex_word:
         .byte   $42,$01,$12,$00,$01,$02,$13,$00
 
 ; opcode table
+opcode_table:
         .byte   $a9,$ab,$a4,$38,$37,$24,$11,$25,$27,$28,$29,$22,$24,$2f,$2e,$a5
         .byte   $25,$23,$2c,$2b,$2d,$26,$2a,$20,$01,$21,$00,$10,$ad,$98,$9a,$3f
         .byte   $a1,$33,$a3,$3a,$5a,$a8,$01,$3c,$5c,$ac,$ad,$a6,$ae,$38,$34,$42
@@ -1261,7 +1267,7 @@ append_hex_word:
         beq     $129d
         jmp     $0a69
         inc     $a2
-        bset    4, $50
+        bset    4, map_switch
         jsr     sub_0a05
         jsr     sub_0aa6
         tst     $52
@@ -1373,7 +1379,7 @@ sub_1384:
         dec     $7f
         beq     $13b0
         clrx
-        lda     $13e7,x
+        lda     memory_modify_chars,x
         beq     $13c4
         incx
         cmp     $83
@@ -1414,10 +1420,9 @@ sub_1384:
         beq     $13c6
         jsr     decrement_address
         bra     $13c6
-        .byte   $5e
-        tst     $2e
-        brclr   6, $00, $1427
-        comx
+memory_modify_chars:
+        .byte   "^=.",$0d,$00
+        dec     $53
         bne     $1451
         clr     $82
         jsr     write_crlf
@@ -1444,7 +1449,7 @@ sub_1384:
         stx     $82
         jsr     write_crlf
         ldx     $80
-        lda     $08e8,x
+        lda     register_fields,x
         jsr     sub_0909
         jsr     write_console_char
         jsr     sub_1384
@@ -1527,15 +1532,15 @@ sub_1384:
         bmi     $14bb
         rts
         lda     $a4
-        bclr    7, $50
+        bclr    7, map_switch
         cmp     #$ff
         bne     $14e5
-        bset    0, $50
+        bset    0, map_switch
         rti
         bit     #$01
         bne     $14ee
         add     #$03
-        bset    7, $50
+        bset    7, map_switch
         swi
         bsr     $14f0
         add     #$02
@@ -1546,8 +1551,8 @@ sub_1384:
 reset_handler:
         lda     #$ff
         sta     $af
-        clr     $50
-        bset    2, $50
+        clr     map_switch
+        bset    2, map_switch
         lda     #$fa
         sta     $a4
         clr     $73
@@ -1571,8 +1576,8 @@ reset_handler:
         clr     $52
         clr     $9a
         clr     $a2
-        clr     $50
-        bset    2, $50
+        clr     map_switch
+        bset    2, map_switch
         jmp     $137a
 init_serial_or_timer:
         lda     $ffe1
@@ -1589,8 +1594,8 @@ init_serial_or_timer:
         sta     $ffe1
         rts
 swi_handler:
-        bclr    0, $50
-        brset   7, $50, $14f9
+        bclr    0, map_switch
+        brset   7, map_switch, $14f9
         lda     $ffe4
         deca
         sta     $a4
@@ -1604,21 +1609,21 @@ swi_handler:
         jsr     read_memory_byte
         cmp     #$83
         beq     $15f6
-        bset    5, $50
-        brclr   4, $50, $158e
+        bset    5, map_switch
+        brclr   4, map_switch, $158e
         ldx     #$0c
         lda     #$0a
         jsr     sub_0a8d
         ldx     #$0a
         jsr     sub_0a36
-        bclr    3, $50
-        brclr   3, $50, $1594
+        bclr    3, map_switch
+        brclr   3, map_switch, $1594
         jsr     sub_0a8a
         jsr     sub_0a0c
         jsr     sub_0a2b
-        brset   5, $50, $15ec
-        clr     $50
-        bset    2, $50
+        brset   5, map_switch, $15ec
+        clr     map_switch
+        bset    2, map_switch
         jsr     sub_0a51
         bne     $15c6
         lda     $9b
@@ -1679,35 +1684,35 @@ swi_handler:
         clrx
         jsr     write_crlf
         jsr     write_crlf
-        lda     $16d7,x
+        lda     help_intro,x
         beq     $1633
         jsr     write_console_char
         incx
         bra     $1628
         clrx
         jsr     write_crlf
-        lda     $1785,x
+        lda     help_breakpoint,x
         beq     $1642
         jsr     write_console_char
         incx
         bra     $1637
         clrx
         jsr     write_crlf
-        lda     $17b2,x
+        lda     help_go_load_md,x
         beq     $1651
         jsr     write_console_char
         incx
         bra     $1646
         clrx
         jsr     write_crlf
-        lda     $182e,x
+        lda     help_modify_nobr_proceed,x
         beq     $1660
         jsr     write_console_char
         incx
         bra     $1655
         clrx
         jsr     write_crlf
-        lda     $18c2,x
+        lda     help_register_trace,x
         beq     $166f
         jsr     write_console_char
         incx
@@ -1715,6 +1720,7 @@ swi_handler:
         jmp     $0c77
 
 ; command token table; high bit marks token end
+cmd_tokens:
         .byte   "AS",('M' | $80)
         .byte   "B",('F' | $80)
         .byte   "B",('R' | $80)
@@ -1731,24 +1737,30 @@ swi_handler:
         .byte   $00
 
 ; banner and help text
+message_text:
         .byte   "EVSbug-HC05 REV 1.2",$00
         .byte   "Brkpt",$00
         .byte   "Abort",$00
         .byte   "Regs ",$00
         .byte   "ILLEGAL/INSUFFICIENT ENTRY",$00
         .byte   "    ",$00
+help_intro:
         .byte   "BREAK = Abort command, ",$0d,$0a
         .byte   "CTRL-S = Freeze screen, CTRL-X = Cancel command line",$0d,$0a
         .byte   "ASM <START ADDR>- Assembler/disassembler",$0d,$0a
         .byte   "BF <START ADDR> <END ADDR> <DATA>- Block fill memory",$00
+help_breakpoint:
         .byte   "BR [<ADDR1 - ADDR5>]- Set 1 to 5 breakpoints",$00
+help_go_load_md:
         .byte   "G [<START ADDR>]- Execute user program",$0d,$0a
         .byte   "LOAD T - Download from port to memory",$0d,$0a
         .byte   "MD <START ADDR> [<END ADDR>]- Display memory",$00
+help_modify_nobr_proceed:
         .byte   "MM <ADDRESS>- Modify memory",$0d,$0a
         .byte   "NOBR [<ADDR1 - ADDR5>]- Remove breakpoints",$0d,$0a
         .byte   "P [<COUNT>]- Proceed 1-FF times through a breakpoint",$0d,$0a
         .byte   "RD- Register display",$00
+help_register_trace:
         .byte   "RM- Register modify",$0d,$0a
         .byte   "T [<COUNT>]- Trace 1-FF instructions",$00
 
