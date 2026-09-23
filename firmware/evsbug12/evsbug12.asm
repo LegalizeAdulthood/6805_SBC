@@ -301,15 +301,19 @@ _write_flag:
         rts
 
         .module write_memory_byte
+_byte           .equ    scratch+$33   ; memory write byte
+
 write_memory_byte:
-        sta     scratch+$33
+        sta     _byte
         jsr     sub_0800
         lda     #$c7
-        bra     $096a
+        bra     _access_user
 
 read_memory_byte:
         lda     #$c6
         jsr     sub_0800
+
+_access_user:
         bclr    2, map_switch
         sta     cmd_thunk+$02
         lda     #op_bset1
@@ -322,7 +326,7 @@ read_memory_byte:
         sta     cmd_thunk+$04
         lda     #$81
         sta     cmd_thunk+$05
-        lda     scratch+$33
+        lda     _byte
         jsr     cmd_thunk
         bclr    1, map_switch
         bset    2, map_switch
