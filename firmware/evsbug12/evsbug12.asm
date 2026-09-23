@@ -1,3 +1,10 @@
+; EVSBUG12 source provenance:
+;
+; - Disassembled the binary dump with unidasm to produce evsbug12.lst.
+; - Extracted the initial evsbug12.asm source from the listing file.
+; - Assembled with TASM until the output matched the binary byte for byte.
+; - Revised the source to identify routines, tables, and related symbols.
+;
         .msfirst
 
 acia_isra       .equ    $20
