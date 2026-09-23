@@ -680,8 +680,10 @@ parse_hex_digit:
 
 ; command handler table
 cmd_handlers:
-        .dw     $0ee0,$143c,$1222,$127c,$145b,$12ea,$13ec,$1266
-        .dw     $12b2,$1375,$1404,$12d7,$1621
+        .dw     asm_cmd,block_fill_cmd,breakpoint_cmd,go_cmd
+        .dw     load_cmd,mem_display_cmd,mem_modify_cmd,nobr_cmd
+        .dw     proceed_cmd,reg_display_cmd,reg_modify_cmd,trace_cmd
+        .dw     help_cmd
 disassemble_line:
         ldx     #scratch+$54
         jsr     store_address_pair
@@ -891,6 +893,7 @@ branch_bit_index:
 opcode_80_9f_index:
         .byte   $37,$38,$44,$40,$00,$00,$00,$41,$1d,$3a,$1e
         .byte   $3b,$36,$31,$3d,$43
+asm_cmd:
         dec     scratch+$02
         bne     $0f21
         clr     scratch+$5a
@@ -1213,6 +1216,7 @@ opcode_table:
         .byte   $a1,$33,$a3,$3a,$5a,$a8,$01,$3c,$5c,$ac,$ad,$a6,$ae,$38,$34,$42
         .byte   $30,$9d,$aa,$00,$39,$36,$9c,$80,$81,$a2,$99,$9b,$a7,$8e,$af,$a0
         .byte   $83,$97,$3d,$9f,$8f
+breakpoint_cmd:
         dec     scratch+$02
         bmi     $1238
         jsr     clear_breakpoints
@@ -1244,6 +1248,7 @@ opcode_table:
         jmp     $0c77
         inc     scratch+$01
         bra     $125f
+nobr_cmd:
         dec     scratch+$02
         bmi     $1277
         bne     $1262
@@ -1254,6 +1259,7 @@ opcode_table:
         bra     $1238
         jsr     clear_breakpoints
         bra     $1238
+go_cmd:
         dec     scratch+$02
         bmi     $1292
         bne     $12cc
@@ -1276,6 +1282,7 @@ opcode_table:
         ldx     #$0a
         lda     #$0c
         jmp     $0a6c
+proceed_cmd:
         ldx     scratch+$02
         decx
         bmi     $12d3
@@ -1294,6 +1301,7 @@ opcode_table:
         incx
         incx
         bra     $12bb
+trace_cmd:
         ldx     scratch+$02
         decx
         bmi     $12e6
@@ -1305,6 +1313,7 @@ opcode_table:
         incx
         incx
         bra     $12e0
+mem_display_cmd:
         ldx     scratch+$02
         decx
         bmi     $1349
@@ -1367,6 +1376,7 @@ opcode_table:
         cmp     #$18
         beq     $137d
         rts
+reg_display_cmd:
         jsr     write_crlf
         ldx     #$20
         jsr     sub_08ae
@@ -1423,6 +1433,7 @@ sub_1384:
         bra     $13c6
 memory_modify_chars:
         .byte   "^=.",$0d,$00
+mem_modify_cmd:
         dec     scratch+$02
         bne     $1451
         clr     scratch+$31
@@ -1434,6 +1445,7 @@ memory_modify_chars:
         cmp     #$2e
         bne     $13f2
         bra     $1453
+reg_modify_cmd:
         ldx     scratch+$02
         bne     $1451
         stx     scratch+$2f
@@ -1459,6 +1471,7 @@ memory_modify_chars:
         cmp     #$2e
         bne     $1408
         bra     $1453
+block_fill_cmd:
         ldx     scratch+$02
         cpx     #$03
         bne     $1451
@@ -1472,6 +1485,7 @@ memory_modify_chars:
         jmp     $0c77
         inc     scratch+$01
         jmp     $0c77
+load_cmd:
         jsr     write_crlf
         lda     scratch+$32
         cmp     #$0d
@@ -1682,6 +1696,7 @@ swi_handler:
         jmp     $14da
         inc     scratch+$01
         jmp     $0c77
+help_cmd:
         clrx
         jsr     write_crlf
         jsr     write_crlf
