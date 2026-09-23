@@ -1571,9 +1571,13 @@ go_cmd:
         jsr     write_memory_byte
         jsr     load_stack_pc
         jsr     find_br_slot
-        beq     $129d
+        beq     step_over_brk
         jmp     arm_breaks
+
+step_over_brk:
         inc     scratch+$51
+
+arm_step_breaks:
         bset    4, map_switch
         jsr     load_stack_pc
         jsr     decode_inst
@@ -1595,7 +1599,7 @@ proceed_cmd:
         ldx     #scratch+$54
         jsr     store_address_pair
         jsr     find_br_slot
-        beq     $129d
+        beq     step_over_brk
         inc     scratch+$01
         clr     scratch+$4a
         jmp     cmd_loop
@@ -1611,7 +1615,7 @@ trace_cmd:
         ldx     scratch+$23
         stx     scratch+$49
         beq     $12cc
-        bra     $129f
+        bra     arm_step_breaks
         incx
         incx
         bra     $12e0
@@ -1698,7 +1702,7 @@ _wait_resume:
 
 _check_cancel:
         cmp     #$18
-        beq     $137d
+        beq     cmd_exit
 
 _return:
         rts
@@ -1707,10 +1711,14 @@ _return:
 reg_display_cmd:
         jsr     write_crlf
         ldx     #$20
+
+show_msg_regs:
         jsr     display_regs_msg
+
+cmd_exit:
         jmp     cmd_loop
         inc     scratch+$01
-        bra     $137d
+        bra     cmd_exit
 
         .module modify_value
 modify_value:
@@ -1940,6 +1948,8 @@ resume_plus2:
         bra     $14dc
         inc     scratch+$01
         jmp     cmd_loop
+
+resume_from_swi:
         bra     resume_plus2
 
 reset_handler:
@@ -1965,6 +1975,8 @@ reset_handler:
         jsr     init_serial_or_timer
         clrx
         jsr     write_crlf
+
+enter_monitor:
         bclr    1, scratch+$52
         clr     scratch+$4a
         clr     scratch+$01
@@ -1972,7 +1984,7 @@ reset_handler:
         clr     scratch+$51
         clr     map_switch
         bset    2, map_switch
-        jmp     $137a
+        jmp     show_msg_regs
 
 init_serial_or_timer:
         lda     $ffe1
@@ -1992,7 +2004,7 @@ init_serial_or_timer:
         .module swi_handler
 swi_handler:
         bclr    0, map_switch
-        brset   7, map_switch, $14f9
+        brset   7, map_switch, resume_from_swi
         lda     $ffe4
         deca
         sta     scratch+$53
@@ -2049,7 +2061,7 @@ _show_break:
         jsr     write_crlf
 
 _reset_msg:
-        jmp     $1529
+        jmp     enter_monitor
 
 _trace_break:
         tst     scratch+$51
@@ -2072,10 +2084,10 @@ _step_trace:
         dec     scratch+$49
         jsr     disassemble_line
         jsr     display_regs
-        jmp     $129f
+        jmp     arm_step_breaks
 
 _resume_display:
-        jmp     $129d
+        jmp     step_over_brk
 
 _step_break:
         jsr     init_serial_or_timer
