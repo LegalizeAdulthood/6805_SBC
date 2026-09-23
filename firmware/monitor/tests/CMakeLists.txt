@@ -146,5 +146,5 @@ add_test(
         "${CMAKE_CURRENT_SOURCE_DIR}/check_mame_console_output.cmake"
 )
 else()
-    message(STATUS "MAME_COMMAND was not set or MAME was not found; skipping monitor MAME tests")
+    message(STATUS "No MAME executable with m6805sbc support was found; skipping monitor MAME tests")
 endif()

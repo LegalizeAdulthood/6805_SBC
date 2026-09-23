@@ -1,6 +1,8 @@
 set(TASM_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../tasm32")
 set(TASM_EXE "${TASM_DIR}/TASM.EXE")
 set(TASM_6805_TABLE "${TASM_DIR}/TASM05.TAB")
+set(BUNDLED_MAME_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../mame")
+set(MAME_SYSTEM_NAME "m6805sbc")
 
 set(MAME_COMMAND "" CACHE PATH "Directory hint used to find the MAME executable")
 
@@ -17,6 +19,27 @@ endif()
 unset(MAME_EXECUTABLE CACHE)
 unset(MAME_EXECUTABLE)
 
+function(_mame_supports_system _candidate _supports_var)
+    set(${_supports_var} FALSE PARENT_SCOPE)
+
+    if(NOT _candidate)
+        return()
+    endif()
+
+    execute_process(
+        COMMAND "${_candidate}" -listxml "${MAME_SYSTEM_NAME}"
+        RESULT_VARIABLE _mame_listxml_result
+        OUTPUT_VARIABLE _mame_listxml_stdout
+        ERROR_VARIABLE _mame_listxml_stderr
+    )
+
+    if(_mame_listxml_result EQUAL 0 AND _mame_listxml_stdout MATCHES "<machine name=\"${MAME_SYSTEM_NAME}\"")
+        set(${_supports_var} TRUE PARENT_SCOPE)
+    else()
+        message(STATUS "MAME executable does not support ${MAME_SYSTEM_NAME}: ${_candidate}")
+    endif()
+endfunction()
+
 if(MAME_COMMAND)
     set(MAME_COMMAND_HINT "${MAME_COMMAND}")
 
@@ -26,10 +49,36 @@ if(MAME_COMMAND)
 
     find_program(
         MAME_EXECUTABLE
-        NAMES mame mame.exe m6805sbc.exe
+        NAMES m6805sbc m6805sbc.exe mame mame.exe
         HINTS "${MAME_COMMAND_HINT}"
         DOC "Path to the MAME executable"
     )
+
+    _mame_supports_system("${MAME_EXECUTABLE}" _mame_command_supports_system)
+    if(NOT _mame_command_supports_system)
+        unset(MAME_EXECUTABLE CACHE)
+        unset(MAME_EXECUTABLE)
+    endif()
+endif()
+
+if(NOT MAME_EXECUTABLE)
+    find_program(
+        MAME_EXECUTABLE
+        NAMES m6805sbc m6805sbc.exe mame mame.exe
+        HINTS "${BUNDLED_MAME_DIR}"
+        NO_DEFAULT_PATH
+        DOC "Path to the MAME executable"
+    )
+
+    _mame_supports_system("${MAME_EXECUTABLE}" _bundled_mame_supports_system)
+    if(NOT _bundled_mame_supports_system)
+        unset(MAME_EXECUTABLE CACHE)
+        unset(MAME_EXECUTABLE)
+    endif()
+endif()
+
+if(MAME_EXECUTABLE)
+    message(STATUS "Using MAME executable for ${MAME_SYSTEM_NAME}: ${MAME_EXECUTABLE}")
 endif()
 
 set(MONITOR_SOURCE "${CMAKE_CURRENT_SOURCE_DIR}/monitor.asm")
