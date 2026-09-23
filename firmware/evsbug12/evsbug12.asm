@@ -38,6 +38,13 @@ acia_baud_9600  .equ    $0c             ; 9600 baud select
 acia_cr_9600    .equ    acia_cr_tbr | acia_baud_9600
 cop_update      .equ    $fff0           ; COP watchdog update register
 map_switch      .equ    $50
+map_direct_rti_bit .equ 0               ; direct RTI resume path
+map_user_bit    .equ    1               ; transient user access
+map_mon_bit     .equ    2               ; monitor map selected
+map_brk_armed_bit .equ 3                ; normal breaks armed
+map_step_armed_bit .equ 4               ; step breaks armed
+map_step_brk_bit .equ 5                 ; step break path
+map_resume_swi_bit .equ 7               ; monitor resume SWI
 scratch         .equ    $51
 cmd_thunk       .equ    $9c
 int_vecs        .equ    $1ff0
@@ -342,7 +349,7 @@ read_memory_byte:
         jsr     service_cop
 
 _access_user:
-        bclr    2, map_switch
+        bclr    map_mon_bit, map_switch
         sta     cmd_thunk+$02
         lda     #op_bset1
         sta     cmd_thunk
@@ -356,8 +363,8 @@ _access_user:
         sta     cmd_thunk+$05
         lda     _byte
         jsr     cmd_thunk
-        bclr    1, map_switch
-        bset    2, map_switch
+        bclr    map_user_bit, map_switch
+        bset    map_mon_bit, map_switch
         rts
 
         .module address_math
@@ -555,7 +562,7 @@ arm_break_range:
 _arm_slot:
         bsr     load_breakpoint_address
         beq     _next_arm
-        bset    3, map_switch
+        bset    map_brk_armed_bit, map_switch
         jsr     read_memory_byte
         lsrx
         sta     brk_ops,x
@@ -1842,7 +1849,7 @@ step_over_brk:
         inc     step_flag
 
 arm_step_breaks:
-        bset    4, map_switch
+        bset    map_step_armed_bit, map_switch
         jsr     load_stack_pc
         jsr     decode_inst
         tst     cmd_err
@@ -2229,17 +2236,17 @@ resume_user:
         lda     user_sp
 
 _resume_sp:
-        bclr    7, map_switch
+        bclr    map_resume_swi_bit, map_switch
         cmp     #$ff
         bne     _check_sp
-        bset    0, map_switch
+        bset    map_direct_rti_bit, map_switch
         rti
 
 _check_sp:
         bit     #$01
         bne     _push_pc
         add     #$03
-        bset    7, map_switch
+        bset    map_resume_swi_bit, map_switch
         swi
 
 _push_pc:
@@ -2258,7 +2265,7 @@ reset_handler:
         lda     #$ff
         sta     unknown
         clr     map_switch
-        bset    2, map_switch
+        bset    map_mon_bit, map_switch
         lda     #$fa
         sta     user_sp
         clr     addr_hi
@@ -2287,7 +2294,7 @@ enter_monitor:
         clr     trace_cnt
         clr     step_flag
         clr     map_switch
-        bset    2, map_switch
+        bset    map_mon_bit, map_switch
         jmp     show_msg_regs
 
 init_serial_or_timer:
@@ -2309,8 +2316,8 @@ init_serial_or_timer:
 _stk_idx        .equ    scratch+$31     ; stack copy index
 
 swi_handler:
-        bclr    0, map_switch
-        brset   7, map_switch, resume_from_swi
+        bclr    map_direct_rti_bit, map_switch
+        brset   map_resume_swi_bit, map_switch, resume_from_swi
         lda     acia_isrb
         deca
         sta     user_sp
@@ -2324,27 +2331,27 @@ swi_handler:
         jsr     read_memory_byte
         cmp     #$83
         beq     _adjust_swi_stack
-        bset    5, map_switch
+        bset    map_step_brk_bit, map_switch
 
 _breaks_ready:
-        brclr   4, map_switch, _restore_trace
+        brclr   map_step_armed_bit, map_switch, _restore_trace
         ldx     #$0c
         lda     #$0a
         jsr     restore_break_range
         ldx     #$0a
         jsr     clear_addr_slots
-        bclr    3, map_switch
+        bclr    map_brk_armed_bit, map_switch
 
 _restore_trace:
-        brclr   3, map_switch, _restore_user_pc
+        brclr   map_brk_armed_bit, map_switch, _restore_user_pc
         jsr     restore_breaks
 
 _restore_user_pc:
         jsr     write_stack_pc
         jsr     restore_addr
-        brset   5, map_switch, _step_break
+        brset   map_step_brk_bit, map_switch, _step_break
         clr     map_switch
-        bset    2, map_switch
+        bset    map_mon_bit, map_switch
         jsr     find_br_slot
         bne     _trace_break
         lda     proceed_cnt
