@@ -1696,6 +1696,7 @@ reg_display_cmd:
         inc     scratch+$01
         bra     $137d
 
+        .module modify_value
 modify_value:
         jsr     write_eq_value
         jsr     read_command_line
@@ -1703,11 +1704,12 @@ modify_value:
         dec     scratch+$2e
         beq     step_modify
         clrx
-        lda     memory_modify_chars,x
-        beq     $13c4
+_scan_chars:
+        lda     _modify_chars,x
+        beq     _bad_cmd
         incx
         cmp     scratch+$32
-        bne     $1392
+        bne     _scan_chars
         lda     scratch+$2d
         jsr     write_memory_byte
         tst     scratch+$31
@@ -1721,35 +1723,41 @@ step_modify:
         ldx     scratch+$2f
         lda     scratch+$32
         cmp     #$3d
-        beq     $13de
+        beq     _eq_addr
         cmp     #$5e
-        beq     $13c9
+        beq     _prev_addr
         cmp     #$0d
-        beq     $13d3
+        beq     _next_addr
         cmp     #$2e
-        beq     $13c6
+        beq     _return_char
+_bad_cmd:
         inc     scratch+$01
+_return_char:
         lda     scratch+$32
         rts
+_prev_addr:
         jsr     decrement_address
         decx
-        bpl     $13c6
+        bpl     _return_char
         ldx     #$04
-        bra     $13c6
+        bra     _return_char
+_next_addr:
         jsr     increment_address
         incx
         cpx     #$04
-        bls     $13c6
+        bls     _return_char
         clrx
-        bra     $13c6
+        bra     _return_char
+_eq_addr:
         tst     scratch+$31
-        beq     $13c6
+        beq     _return_char
         jsr     decrement_address
-        bra     $13c6
+        bra     _return_char
 
-memory_modify_chars:
+_modify_chars:
         .byte   "^=.",$0d,$00
 
+        .module mem_modify_cmd
 mem_modify_cmd:
         dec     scratch+$02
         bne     $1451
