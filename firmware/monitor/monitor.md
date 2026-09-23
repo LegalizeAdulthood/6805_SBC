@@ -8,10 +8,11 @@ terminal, cursor positioning, ANSI scrolling regions, and a terminal that
 retains display state until the monitor redraws it.
 
 The base monitor is intended to fit in the fixed monitor ROM. It should
-provide the core debugger functions directly and avoid larger tools such
-as a keyboard assembler or symbolic disassembler. If the hardware later
-supports ROM bank switching, larger optional tools can live in an
-extension bank without burdening the base monitor.
+provide the core debugger functions directly, including non-symbolic
+disassembly and keyboard assembly, while avoiding larger symbolic tools
+such as label-aware assembly or symbolic disassembly. If the hardware later
+supports ROM bank switching, larger optional tools can live in an extension
+bank without burdening the base monitor.
 
 The normal display is 80 columns by 24 rows. The mockup below uses plain
 ASCII separator lines; the implementation may use VT100 line drawing if it
@@ -308,14 +309,16 @@ disassembly addresses should have explicit storage with known upper bounds.
 
 ## Extension Bank Features
 
-The base monitor does not include a keyboard assembler. If ROM bank
-switching is added later, an extension bank may provide larger optional
-tools that are useful but not essential to the core debugger.
+The base monitor includes the non-symbolic disassembler and keyboard
+assembler. Both should share the compact mnemonic, operand-class, and opcode
+construction implementation recovered in the reconstituted EVSBUG12 source.
+If ROM bank switching is added later, an extension bank may provide larger
+optional tools that are useful but not essential to the core debugger.
 
 Candidate extension-bank features:
 
-- Keyboard assembler.
 - Symbolic disassembly using a loaded or built-in symbol table.
+- Symbolic assembly using labels, expressions, or a loaded symbol table.
 - More capable search, compare, move, and checksum operations.
 - Larger help screens or command reference text.
 
@@ -326,6 +329,7 @@ The following details still need concrete key bindings and command syntax:
 - Breakpoint set, clear, list, display markers, and continue-from-breakpoint
   behavior.
 - User break behavior while a program is running.
+- Keyboard assembler command entry, operand syntax, and error reporting.
 - Whether any non-return SWI monitor services are needed, and if so the
   exact command codes passed in the accumulator.
 - Error handling for S-record checksum failures and partial loads.
@@ -378,18 +382,19 @@ MAME directory or on any caller working directory.
 
 Planned implementation slices follow in dependency order.
 
-The disassembler slices are organized by addressing mode to keep tests and
-reviews focused. The implementation should not mirror that structure with
-a long opcode compare chain. To keep ROM size low, decode using the 6805
-opcode bit organization wherever practical: mask and shift opcode fields,
-share operand emitters, use compact mnemonic tables for the irregular
-cases, and fall through to `fcb $nn` for gaps or invalid opcodes.
-Disassembled source text follows local assembly style: mnemonics,
-directives, pseudo-ops, operands, labels, and symbols are lower-case, while
-hexadecimal digits remain uppercase.
-The committed EVSbug ROM dump at `docs/evsbug12.bin` is the local
-reference for a compact 6805 monitor disassembler. Useful regions in that
-ROM include:
+The disassembler and keyboard assembler slices should now directly take the
+proven EVSBUG12 disassembler and assembler from the reconstituted assembly
+source, then adapt their I/O boundaries to the monitor's full-screen
+presentation and command-input model. This is not a from-scratch
+EVSBUG12-inspired variation. After the integration, keep adding
+monitor-context coverage until every 6805 opcode and addressing mode is
+validated. Disassembled source text follows local assembly style:
+mnemonics, directives, pseudo-ops, operands, labels, and symbols are
+lower-case, while hexadecimal digits remain uppercase.
+
+Use `firmware/evsbug12/evsbug12.asm` as the source-level reference for the
+compact decoder, mnemonic metadata, and assembler opcode construction paths.
+Useful original EVSBUG12 address regions include:
 
 - `$0d14-$0e60`: disassemble-one-line renderer.
 - `$0aa6-$0bdf`: opcode classifier using opcode ranges, low-nibble tests,
@@ -402,8 +407,9 @@ ROM include:
   carry operand/parser class information.
 - `$11dd-$1221`: assembler-side opcode construction and validation tables.
 
-Steal EVSbug's disassembler ideas where they reduce ROM size without
-making tests opaque:
+Directly carry over EVSBUG12's disassembler and assembler structure, data
+encoding, and shared metadata, adapting only the surrounding I/O and monitor
+integration where needed:
 
 - Classify opcodes by high nibble and low nibble first, then use tiny
   family tables only for irregular holes or mnemonic selection.
@@ -413,160 +419,157 @@ making tests opaque:
   raw offsets.
 - Emit canonical mnemonics for aliases; for example, display carry
   branches as `bcc` and `bcs` rather than preserving source aliases.
-- Consider EVSbug's high-bit string terminator, prefix/suffix mnemonic
-  compression, and metadata-carries-operand-class trick during the
-  compaction pass. The current fixed-width four-character mnemonic records
-  are acceptable while they keep the decoder simple, but they are not a
-  permanent constraint if EVSbug-style packing saves more bytes after full
-  opcode coverage exists.
+- Use EVSBUG12's high-bit string terminator, prefix/suffix mnemonic
+  compression, and metadata-carries-operand-class trick when they save ROM.
+- Prefer shared metadata for disassembly and assembly so opcode coverage,
+  operand classification, and alias handling do not drift between the two
+  tools.
 
-### 9.2.1. Disassembler Output Helper Refactor
+### 9.2.1. EVSBUG12 Disassembler Harness
 
-Failing test: the existing disassembler fixture is extended with explicit
-checks for mnemonic column, operand column, invalid-opcode fallback, and
-intentional spaces after three-character inherent mnemonics. The test fails
-until those formatting rules are satisfied by decoding into a fixed RAM
-disassembly row buffer and then emitting that buffer through shared output
-helpers.
+Failing test: the monitor disassembler fixture is extended with rows that
+exercise EVSBUG12-style output paths for inherent, relative, immediate,
+direct, extended, indexed, bit-operation, and invalid-opcode examples. The
+test fails until the monitor test harness can compare decoded monitor rows
+against the required panel format while still running in the monitor
+context.
 
-End state: existing disassembler code is refactored before adding more
-opcodes. Decoding one instruction fills one fixed-size RAM row buffer with
-the row prefix, machine-byte field, mnemonic field, operand text, and the
-position of the last meaningful character. A separate generic emitter
-copies that buffer to the console or test output. Existing supported
-opcodes produce byte-for-byte identical fixture output. No opcode-specific
-path writes directly to the console, hand-emits row spacing, or duplicates
-hex formatting code.
+End state: the fixture infrastructure can validate one decoded monitor row
+at a time with explicit checks for the address field, machine-byte field,
+mnemonic column, operand column, invalid-opcode fallback, and truncated
+instruction behavior. The existing supported opcodes still produce
+byte-for-byte identical output. This slice adds test reach, not the full
+EVSBUG12 decoder.
 
-### 9.2.2. Disassembler Opcode Classifier Refactor
+### 9.2.2. EVSBUG12 Tables and Metadata Lift
 
-Failing test: the current inherent and invalid-opcode fixture rows fail
-until they decode correctly without using a linear opcode/address table.
+Failing test: a table audit fails until the monitor contains named,
+reviewable equivalents of the EVSBUG12 mnemonic text, opcode-family
+metadata, operand-class metadata, and assembler construction metadata needed
+by both the disassembler and keyboard assembler.
 
-End state: the existing inherent instruction support is decoded by opcode
-bit structure and small low-nibble tables. The paired `<opcode>,<address>`
-lookup table is removed for opcodes whose family can be decoded from the
-opcode bits. Irregular opcodes such as `mul`, `rti`, `rts`, `swi`, `stop`,
-`wait`, and the `$90-$9f` inherent group may still use compact special-case
-logic or tiny tables. Existing tests remain green and the generated monitor
-binary is no larger than before the refactor.
+End state: EVSBUG12-derived tables are translated into monitor source with
+local labels and comments that tie them back to the reconstituted
+`evsbug12.asm` routines. The tables are not opaque byte blobs. Existing
+monitor tests remain green, and unused assembler metadata may be present
+only when it is clearly destined for later assembler slices.
 
-### 9.2.3. Disassembler Addressing-Mode Dispatch Skeleton
+### 9.2.3. Replace the Monitor Disassembler Core
 
-Failing test: a decode-class fixture fails until the decoder routes current
-supported rows through explicit addressing-mode handlers and routes
-unsupported rows through `fcb $nn`.
+Failing test: the disassembler fixture fails until the existing monitor
+decoder is replaced by the EVSBUG12-style opcode classifier, mnemonic
+expander, operand formatter, and invalid-opcode fallback.
 
-End state: the decoder has one dispatch point that identifies the
-addressing mode or invalid fallback before rendering operands. Handlers
-exist for inherent/no-operand and invalid opcodes now, with empty or
-fallback-safe stubs for relative, immediate, direct, extended, indexed, and
-bit-operation forms. Later opcode slices fill these handlers rather than
-adding parallel opcode-specific render paths.
+End state: the monitor disassembly panel uses the lifted decoder for all
+currently covered rows. The panel format remains unchanged, invalid or
+unimplemented opcodes still display as `fcb $nn`, relative operands display
+resolved absolute targets, and the decoder does not read past addressable
+memory for truncated instructions.
 
 ### 9.2.4. Disassembler Size Baseline
 
 Failing test: a build-time size check fails until the monitor build records
-the disassembler-related ROM size or total monitor ROM endpoint in a form
-the tests can compare.
+the EVSBUG12-derived disassembler and shared-table ROM cost, or the total
+monitor ROM endpoint, in a form the tests can compare.
 
 End state: the test suite has a size guard for the monitor binary or
-`rom_code_end` symbol. The guard is intentionally simple: it prevents
-disassembler refactors and new opcode slices from growing the ROM
-silently. When a later slice grows the monitor for a justified feature, the
-slice must update the expected size and explain the tradeoff in the plan or
-commit message.
+`rom_code_end` symbol. The guard is intentionally simple: it prevents the
+EVSBUG12 lift, shared table growth, disassembler coverage, and assembler
+coverage from growing the ROM silently. When a later slice grows the monitor
+for a justified feature, the slice must update the expected size and
+explain the tradeoff in the plan or commit message.
 
-### 9.3. Disassembler Relative Instructions
+### 9.3. Disassembler Inherent, Relative, and Bit Coverage
 
-Failing test: the disassembler fixture is extended with every relative
-branch row in `TASM05.TAB`, including `BSR`, and fails until each row
-decodes to the expected text.
+Failing test: the disassembler fixture is extended with every inherent,
+relative branch, bit-test, and bit-manipulation row in `TASM05.TAB`, and
+fails until each row decodes to the expected monitor text.
 
-End state: all one-byte relative offsets decode to resolved absolute target
-addresses using uppercase hexadecimal. The fixture includes at least one
-forward branch, one backward branch, and one target crossing a page
-boundary. Relative rows emit no labels or symbolic operands.
+End state: all inherent instructions, all one-byte relative branches
+including `BSR`, all `BSET`/`BCLR` rows, and all `BRSET`/`BRCLR` rows are
+covered in the monitor fixture. Branch operands display resolved absolute
+targets using uppercase hexadecimal. Bit rows display the bit number,
+literal direct-page address, and branch target where applicable. Rows emit
+no labels or symbolic operands.
 
-### 9.4. Disassembler Immediate Instructions
+### 9.4. Disassembler Immediate, Direct, and Extended Coverage
 
-Failing test: the disassembler fixture is extended with every immediate
-operand row in `TASM05.TAB`, and fails until each row decodes to the
-expected text.
+Failing test: the disassembler fixture is extended with every immediate,
+direct, and extended operand row in `TASM05.TAB`, and fails until each row
+decodes to the expected monitor text.
 
-End state: all immediate arithmetic, logic, load, compare, and indexed
-compare forms decode with operands formatted as `#$nn`. Fixture rows cover
-each immediate mnemonic accepted by `TASM05.TAB`, including opcodes shared
-by aliases such as `CMPX` and `CPX`; shared opcodes use the monitor's
-canonical mnemonic.
+End state: immediate operands display as `#$nn`, direct operands display as
+`$nn`, and extended operands display as `$nnnn`. Arithmetic, logic,
+load/store, compare, unary memory, `JMP`, and `JSR` rows are covered for
+all valid immediate, direct, and extended encodings. Alias opcodes such as
+`CMPX` and `CPX` use the monitor's canonical mnemonic.
 
-### 9.5. Disassembler Direct and Extended Instructions
+### 9.5. Disassembler Indexed and Full Coverage Audit
 
-Failing test: the disassembler fixture is extended with every direct and
-extended operand row in `TASM05.TAB`, and fails until each row decodes to
-the expected text.
-
-End state: direct operands display as `$nn`, extended operands display as
-`$nnnn`, and all direct/extended arithmetic, logic, load/store, compare,
-unary memory, `JMP`, and `JSR` forms decode with the expected byte count.
-Rows using `MZERO` table behavior have fixtures for both short direct-page
-operands and full extended operands where both encodings are valid machine
-code.
-
-### 9.6. Disassembler Indexed Instructions
-
-Failing test: the disassembler fixture is extended with every indexed
-operand row in `TASM05.TAB`, and fails until each row decodes to the
-expected text.
+Failing test: the disassembler fixture is extended with every indexed row
+in `TASM05.TAB`, and a fixture coverage audit fails until every opcode row
+and addressing mode accepted by `TASM05.TAB` is represented.
 
 End state: no-offset indexed operands display as `,X`. Offset-indexed
 operands display the literal numeric offset and `,X`, using `$nn,X` for
 one-byte offsets and `$nnnn,X` where the opcode encoding carries a full
-extended address. Indexed arithmetic, logic, load/store, compare, unary
-memory, `JMP`, and `JSR` forms decode with the expected byte count and
-canonical mnemonic.
+extended address. The disassembler fixture covers every opcode row in
+`TASM05.TAB`, plus invalid opcodes and truncated instructions near `$FFFF`.
+The coverage check names any missing table row by mnemonic, operand form,
+addressing mode, and opcode byte.
 
-### 9.7. Disassembler Bit Operations
+### 9.6. Keyboard Assembler Command Skeleton
 
-Failing test: the disassembler fixture is extended with every bit-test and
-bit-manipulation row in `TASM05.TAB`, and fails until each row decodes to
-the expected text.
+Failing test: a command-dispatch fixture feeds one simple keyboard
+assembler command and fails until the monitor can parse the command,
+collect one source line, report success or failure, and return to
+`monitor_idle` without corrupting saved CPU state.
 
-End state: `BSET` and `BCLR` rows display the bit number and literal
-direct-page address. `BRSET` and `BRCLR` rows display the bit number,
-literal direct-page address, and resolved absolute branch target. Fixture
-rows cover at least bit 0, bit 7, a forward branch, and a backward branch.
+End state: the base monitor has a keyboard assembler entry point, input
+buffer ownership, success/error reporting path, and address-selection
+behavior. This slice may accept only a tiny subset of instructions, but it
+establishes the command flow that later EVSBUG12 parser and opcode
+construction slices fill in.
 
-### 9.8. Disassembler Coverage and Truncation
+### 9.7. EVSBUG12 Assembler Parser and Opcode Construction
 
-Failing test: a fixture coverage audit fails until every opcode row in
-`TASM05.TAB` is represented by at least one disassembler fixture, and
-truncated end-of-memory cases fail until the decoder handles them without
-reading beyond addressable memory.
+Failing test: assembler fixtures for representative inherent, immediate,
+direct, extended, indexed, relative, and bit-operation source lines fail
+until the monitor uses EVSBUG12-style mnemonic lookup, operand parsing, and
+opcode construction.
 
-End state: the disassembler fixture covers every opcode row in
-`TASM05.TAB`, plus at least one invalid opcode. The coverage check names
-any missing table row by mnemonic, operand form, and opcode byte. Truncated
-instructions near `$FFFF` display only bytes that can be read and still
-produce a deterministic `fcb $nn` fallback or decoded mnemonic text. The
-decoder emits no labels, symbol names, expressions, comments, or
-source-level information in any fixture row.
+End state: the keyboard assembler shares the EVSBUG12-derived mnemonic and
+operand metadata with the disassembler where practical. It emits bytes for
+the representative addressing modes, rejects invalid operand forms without
+modifying memory, resolves relative branch offsets, and reports range errors
+deterministically.
 
-### 9.9. Disassembler EVSbug-Style Compaction
+### 9.8. Assembler Opcode and Addressing-Mode Coverage
+
+Failing test: a generated assembler coverage audit built from `TASM05.TAB`
+fails until every mnemonic, opcode byte, and addressing mode accepted by
+the monitor assembler has a fixture whose emitted bytes match TASM's
+encoding.
+
+End state: the keyboard assembler covers every 6805 opcode and addressing
+mode that the base monitor intends to support, including alias spellings,
+direct-versus-extended selection, indexed offset widths, relative branch
+ranges, and bit-operation operands. Unsupported symbolic features such as
+labels and expressions are rejected cleanly. The coverage audit reports any
+missing row by mnemonic, operand form, addressing mode, and opcode byte.
+
+### 9.9. Shared Table Compaction and Monitor Integration
 
 Failing test: a size-regression test fails until the completed
-non-symbolic disassembler is smaller than the straightforward
-addressing-mode implementation by a documented amount while preserving all
-coverage fixtures.
+disassembler and keyboard assembler share EVSBUG12-derived metadata and fit
+within the documented ROM-size budget while preserving all disassembler and
+assembler coverage fixtures.
 
-End state: after full opcode coverage exists, revisit the decoder using
-the committed EVSbug ROM as the model. Replace remaining broad tables with
-high-nibble and low-nibble family decoding where practical. Evaluate
-whether high-bit-terminated mnemonic text, prefix/suffix mnemonic packing,
-or metadata bytes that carry operand class information save more ROM than
-the current fixed-width four-character records. Keep the option that gives
-the smallest tested monitor binary without making the decoder too obscure
-to maintain.
+End state: duplicate mnemonic strings, operand-class tables, and opcode
+family tables are merged where that reduces ROM size without making tests
+opaque. The disassembly panel, keyboard assembler command path, and shared
+coverage audits all pass in the monitor context. The final result keeps the
+smallest tested monitor binary that remains maintainable.
 
 ### 10. SWI Monitor Entry
 
