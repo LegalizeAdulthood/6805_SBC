@@ -123,13 +123,15 @@ _serial_event:
         jmp     cmd_loop
 
         .module write_hex_byte
+_save_a         .equ    scratch+$33   ; saved byte for output
+
 write_hex_byte:
-        sta     scratch+$33
+        sta     _save_a
         add     checksum
         sta     checksum
-        lda     scratch+$33
+        lda     _save_a
         bsr     write_hi_nibl
-        lda     scratch+$33
+        lda     _save_a
         and     #$0f
         bra     write_lo_nibl
 
@@ -142,8 +144,10 @@ write_hi_nibl:
 write_lo_nibl:
         add     #$30
         cmp     #$39
-        bls     $0877
+        bls     _emit
         add     #$07
+
+_emit:
         jsr     write_console_char
         rts
 
@@ -155,6 +159,7 @@ write_hex_word_at_73:
         jsr     write_hex_byte
         rts
 
+        .module write_eq_value
 write_eq_value:
         lda     #$3d
         jsr     write_console_char
