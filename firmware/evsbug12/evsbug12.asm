@@ -552,7 +552,7 @@ _decode_b0_up:
         beq     _read_ext_addr
         cmp     #$e0
         beq     _op_from_code
-        bsr     is_jmp_jsr
+        bsr     _is_jmp_jsr
         bne     _len1_addr
         ldx     #$03
         jsr     read_stack_byte
@@ -584,7 +584,7 @@ _load_stack_x:
         jsr     load_stack_addr
         bra     _save_target_addr
 
-is_jmp_jsr:
+_is_jmp_jsr:
         cpx     #$0c
         beq     _done
         cpx     #$0d
@@ -595,7 +595,7 @@ _done:
 _read_ext_addr:
         inc     scratch+$57
         inc     scratch+$57
-        bsr     is_jmp_jsr
+        bsr     _is_jmp_jsr
         beq     _read_cur_ext
         lda     #$03
 
@@ -631,7 +631,7 @@ _restore_saved_addr:
 
 _op_from_code:
         inc     scratch+$57
-        bsr     is_jmp_jsr
+        bsr     _is_jmp_jsr
         bne     _len2_addr
         cmp     #$a0
         beq     _set_len1
@@ -1218,7 +1218,7 @@ _mode_table:
         jmp     _bad_mode
         jmp     _read_comma
         jmp     _imm_or_comma
-        bsr     parse_bit_num
+        bsr     _parse_bit_num
         jsr     parse_hex_word
         tst     scratch+$2c
         bne     _need_comma
@@ -1276,10 +1276,10 @@ _store_operand:
         jmp     _check_end
 
 _bit_then_abs:
-        bsr     parse_bit_num
+        bsr     _parse_bit_num
         jmp     _parse_zp
 
-parse_bit_num:
+_parse_bit_num:
         jsr     parse_hex_word
         lda     scratch+$2d
         and     #$0f
@@ -1610,31 +1610,36 @@ trace_cmd:
         incx
         bra     $12e0
 
+        .module mem_display_cmd
 mem_display_cmd:
         ldx     scratch+$02
         decx
-        bmi     $1349
+        bmi     _bad_cmd
         decx
-        beq     $12f7
-        bpl     $1349
+        beq     _display_loop
+        bpl     _bad_cmd
         jsr     save_addr
+_display_loop:
         jsr     address_in_range
-        beq     $134b
+        beq     _done
         clr     scratch+$2e
         clr     scratch+$2f
         jsr     write_crlf
         jsr     write_hex_word_at_73
         ldx     #msg_sp4
         jsr     write_string
-        bsr     check_display_pause
+_byte_loop:
+        bsr     _check_pause
         jsr     read_memory_byte
         tsta
-        bmi     $131b
+        bmi     _dot_char
         cmp     #$20
-        bcs     $131b
+        bcs     _dot_char
         cmp     #$7f
-        bcs     $131d
+        bcs     _save_char
+_dot_char:
         lda     #$2e
+_save_char:
         ldx     scratch+$2e
         jsr     app_char
         jsr     read_memory_byte
@@ -1643,39 +1648,46 @@ mem_display_cmd:
         jsr     write_console_char
         jsr     increment_address
         inc     scratch+$2f
-        brclr   4, scratch+$2f, $130b
+        brclr   4, scratch+$2f, _byte_loop
         ldx     #msg_sp3
         jsr     write_string
         clrx
-        bsr     check_display_pause
+_ascii_loop:
+        bsr     _check_pause
         lda     scratch+$03,x
         jsr     write_console_char
         incx
         cpx     #$0f
-        bls     $133b
-        bra     $12f7
+        bls     _ascii_loop
+        bra     _display_loop
+_bad_cmd:
         inc     scratch+$01
+_done:
         jmp     cmd_loop
 
-check_display_pause:
+_check_pause:
         jsr     sub_0800
         tst     scratch+$5c
-        beq     $1374
+        beq     _return
         clr     scratch+$5c
         lda     $ffe3
         and     #$7f
         cmp     #$13
-        bne     $1370
+        bne     _check_cancel
+_wait_resume:
         jsr     sub_0800
         ldx     $ffe0
         stx     scratch+$60
-        brclr   0, scratch+$60, $1360
+        brclr   0, scratch+$60, _wait_resume
         lda     $ffe3
         and     #$7f
+_check_cancel:
         cmp     #$18
         beq     $137d
+_return:
         rts
 
+        .module reg_display_cmd
 reg_display_cmd:
         jsr     write_crlf
         ldx     #$20
@@ -1829,18 +1841,18 @@ _s9_record:
 
 _read_record:
         clr     scratch+$56
-        bsr     read_srec_byte
+        bsr     _read_srec_byte
         sub     #$03
         sta     scratch+$2f
-        bsr     read_srec_byte
+        bsr     _read_srec_byte
         sta     scratch+$22
-        bsr     read_srec_byte
+        bsr     _read_srec_byte
         sta     scratch+$23
 
 _data_loop:
         dec     scratch+$2f
         bmi     _checksum
-        bsr     read_srec_byte
+        bsr     _read_srec_byte
         jsr     write_memory_byte
         jsr     increment_address
         bra     _data_loop
@@ -1848,7 +1860,7 @@ _data_loop:
 _checksum:
         ldx     scratch+$56
         stx     scratch+$2f
-        bsr     read_srec_byte
+        bsr     _read_srec_byte
         tst     scratch+$57
         bne     _done
         coma
@@ -1862,16 +1874,16 @@ _done:
         clr     scratch+$52
         jmp     cmd_loop
 
-read_srec_byte:
+_read_srec_byte:
         clr     scratch+$2d
-        bsr     read_srec_nibl
-        bsr     read_srec_nibl
+        bsr     _read_srec_nibl
+        bsr     _read_srec_nibl
         add     scratch+$56
         sta     scratch+$56
         lda     scratch+$2d
         rts
 
-read_srec_nibl:
+_read_srec_nibl:
         jsr     read_console_char_echo
         jsr     parse_hex_digit
         tst     scratch+$59
