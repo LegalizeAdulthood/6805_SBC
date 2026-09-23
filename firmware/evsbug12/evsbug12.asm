@@ -1878,6 +1878,8 @@ _def_trace:
         bra     _set_trace
 
         .module mem_display_cmd
+_col            .equ    scratch+$2f     ; display column count
+
 mem_display_cmd:
         ldx     cmd_args
         decx
@@ -1891,7 +1893,7 @@ _display_loop:
         jsr     address_in_range
         beq     _done
         clr     line_pos
-        clr     scratch+$2f
+        clr     _col
         jsr     write_crlf
         jsr     write_hex_word_at_73
         ldx     #msg_sp4
@@ -1918,8 +1920,8 @@ _save_char:
         lda     #$20
         jsr     write_console_char
         jsr     increment_address
-        inc     scratch+$2f
-        brclr   4, scratch+$2f, _byte_loop
+        inc     _col
+        brclr   4, _col, _byte_loop
         ldx     #msg_sp3
         jsr     write_string
         clrx
