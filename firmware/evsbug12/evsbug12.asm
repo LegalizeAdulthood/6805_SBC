@@ -177,10 +177,10 @@ write_hi_nibl:
         lsra
 
 write_lo_nibl:
-        add     #$30
-        cmp     #$39
+        add     #'0'
+        cmp     #'9'
         bls     _emit
-        add     #$07
+        add     #('A' - ('9' + 1))
 
 _emit:
         jsr     write_console_char
@@ -196,7 +196,7 @@ write_hex_word_at_73:
 
         .module write_values
 write_eq_value:
-        lda     #$3d
+        lda     #'='
         jsr     write_console_char
         jsr     read_memory_byte
         tst     mod_len
@@ -246,9 +246,9 @@ _next_reg:
         bra     _next_reg
 
 write_sp:
-        lda     #$53
+        lda     #'S'
         jsr     write_console_char
-        lda     #$3d
+        lda     #'='
         jsr     write_console_char
         lda     addr_lo
         add     #$05
@@ -283,23 +283,23 @@ select_reg_addr:
         lda     user_sp
         clr     _cnt
         clr     addr_hi
-        cpx     #$50
+        cpx     #'P'
         bne     _check_x
         inc     _cnt
         add     #$04
 
 _check_x:
-        cpx     #$58
+        cpx     #'X'
         bne     _check_a
         add     #$03
 
 _check_a:
-        cpx     #$41
+        cpx     #'A'
         bne     _check_cc
         add     #$02
 
 _check_cc:
-        cpx     #$43
+        cpx     #'C'
         bne     _store_addr
         add     #$01
 
@@ -324,7 +324,7 @@ display_cc:
 
 _flag_loop:
         incx
-        lda     #$2e
+        lda     #'.'
         asl     _tmp
         bcc     _write_flag
         lda     condition_bits,x
@@ -900,7 +900,7 @@ parse_hex_word:
         clr     parse_hi
         clr     parse_lo
         jsr     read_command_char
-        cmp     #$24
+        cmp     #'$'
         bne     parse_hex_digit
 
 _next_digit:
@@ -910,11 +910,11 @@ parse_hex_digit:
         jsr     uppercase_command_char
         clr     hex_digit
         dec     hex_digit
-        sub     #$30
+        sub     #'0'
         bmi     _finish
         cmp     #$09
         bls     _valid_digit
-        sub     #$07
+        sub     #('A' - ('9' + 1))
         cmp     #$09
         bls     _finish
         cmp     #$0f
@@ -1209,11 +1209,11 @@ _prev_ch:
 _append_reg:
         brset   df_reg_a_bit, decode_flags, _reg_a
         brclr   df_reg_bit, decode_flags, _op_pos
-        lda     #$58
+        lda     #'X'
         bra     _store_reg
 
 _reg_a:
-        lda     #$41
+        lda     #'A'
 
 _store_reg:
         sta     _reg_ch
@@ -1222,7 +1222,7 @@ _op_pos:
         ldx     #$12
         stx     line_pos
         brclr   df_imm_bit, decode_flags, _operand
-        lda     #$23
+        lda     #'#'
         bsr     app_char
 
 _operand:
@@ -1243,9 +1243,9 @@ _op_byte:
 
 _append_index:
         brclr   df_idx_bit, decode_flags, _write_line
-        lda     #$2c
+        lda     #','
         bsr     app_char
-        lda     #$58
+        lda     #'X'
         bsr     app_char
 
 _write_line:
@@ -1290,8 +1290,8 @@ app_hi_nibl:
         lsra
 
 nibl_ascii:
-        add     #$30
-        cmp     #$39
+        add     #'0'
+        cmp     #'9'
         bls     app_char
         add     #$07
 
@@ -1302,11 +1302,11 @@ app_char:
         rts
 
 app_comma_dol:
-        lda     #$2c
+        lda     #','
         bsr     app_char
 
 app_dol:
-        lda     #$24
+        lda     #'$'
         bsr     app_char
         rts
 
@@ -1364,7 +1364,7 @@ _next_line:
         bra     _show_line
 
 _parse_mnem:
-        cmp     #$2e
+        cmp     #'.'
         beq     _exit_cmd
         dec     line_pos
         clr     _mpos
@@ -1422,9 +1422,9 @@ _set_mode:
         bne     _read_suffix
         jsr     read_command_char
         jsr     uppercase_command_char
-        cmp     #$41
+        cmp     #'A'
         beq     _reg_a
-        cmp     #$58
+        cmp     #'X'
         bne     _check_suffix
         lda     #$20
         bra     _add_reg
@@ -1442,7 +1442,7 @@ _read_suffix:
         jsr     read_command_char
 
 _check_suffix:
-        cmp     #$2e
+        cmp     #'.'
         beq     _finish_no_arg
         cmp     #$0d
         bne     _need_space
@@ -1478,7 +1478,7 @@ _mode_table:
         tst     parse_hi
         bne     _need_comma
         lda     cmd_char
-        cmp     #$2c
+        cmp     #','
 
 _need_comma:
         bne     _bad_jump
@@ -1546,13 +1546,13 @@ _parse_bit_num:
         add     _op
         sta     _op
         lda     cmd_char
-        cmp     #$2c
+        cmp     #','
         bne     _bad_to_entry
         rts
 
 _parse_index:
         jsr     read_command_char
-        cmp     #$2c
+        cmp     #','
         bne     _parse_offset
         clra
         bra     _store_mode
@@ -1573,11 +1573,11 @@ _read_comma:
 
 _imm_or_comma:
         jsr     read_command_char
-        cmp     #$23
+        cmp     #'#'
         beq     _parse_zp
 
 _check_comma:
-        cmp     #$2c
+        cmp     #','
         beq     _set_mode10
         inc     op_len
         dec     line_pos
@@ -1598,11 +1598,11 @@ _set_mode10:
 _store_mode:
         sta     _mode
         lda     cmd_char
-        cmp     #$2c
+        cmp     #','
         bne     _check_end
         jsr     read_command_char
         jsr     uppercase_command_char
-        cmp     #$58
+        cmp     #'X'
         bne     _bad_to_entry
         lda     _mode
         brset   1, op_len, _finish_opcode
@@ -1625,7 +1625,7 @@ _check_end:
         lda     cmd_char
         cmp     #$0d
         beq     _write_bytes
-        cmp     #$2e
+        cmp     #'.'
         beq     _dot_suffix
 
 _bad_to_entry:
@@ -1789,9 +1789,9 @@ _show_brks:
         jsr     write_crlf
         ldx     #msg_brkpt
         jsr     write_string
-        lda     #$73
+        lda     #'s'
         jsr     write_console_char
-        lda     #$3d
+        lda     #'='
         jsr     write_console_char
         clr     brk_idx
 
@@ -1934,7 +1934,7 @@ _byte_loop:
         bcs     _save_char
 
 _dot_char:
-        lda     #$2e
+        lda     #'.'
 
 _save_char:
         ldx     line_pos
@@ -2030,13 +2030,13 @@ _scan_chars:
 step_modify:
         ldx     mod_idx
         lda     cmd_char
-        cmp     #$3d
+        cmp     #'='
         beq     _eq_addr
-        cmp     #$5e
+        cmp     #'^'
         beq     _prev_addr
         cmp     #$0d
         beq     _next_addr
-        cmp     #$2e
+        cmp     #'.'
         beq     _return_char
 
 _bad_cmd:
@@ -2084,7 +2084,7 @@ _mem_loop:
         bsr     modify_value
         tst     cmd_err
         bne     _cmd_exit
-        cmp     #$2e
+        cmp     #'.'
         bne     _mem_loop
         bra     _cmd_exit
 
@@ -2117,7 +2117,7 @@ _save_reg_len:
         jsr     modify_value
         tst     cmd_err
         bne     _cmd_exit
-        cmp     #$2e
+        cmp     #'.'
         bne     _reg_loop
         bra     _cmd_exit
 
@@ -2158,7 +2158,7 @@ load_cmd:
         bne     _bad_cmd
         jsr     read_command_char
         jsr     uppercase_command_char
-        cmp     #$54
+        cmp     #'T'
         bne     _bad_cmd
         bset    0, mon_flags
         bra     _init_srec
@@ -2168,12 +2168,12 @@ _init_srec:
 
 _wait_srec:
         jsr     read_console_char_echo
-        cmp     #$53
+        cmp     #'S'
         bne     _wait_srec
         jsr     read_console_char_echo
-        cmp     #$39
+        cmp     #'9'
         beq     _s9_record
-        cmp     #$31
+        cmp     #'1'
         bne     _wait_srec
         bra     _read_record
 
