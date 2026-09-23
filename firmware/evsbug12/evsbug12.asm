@@ -34,6 +34,7 @@ int_vecs        .equ    $1ff0
 
 cmd_err         .equ    scratch+$01   ; command error flag
 cmd_args        .equ    scratch+$02   ; command argument count
+disasm_op_len   .equ    scratch+$02   ; disasm operand byte count
 line_buf        .equ    scratch+$03   ; command line buffer
 cmd_arg_hi      .equ    scratch+$20   ; command arg table high
 cmd_arg_lo      .equ    scratch+$21   ; command arg table low
@@ -1017,7 +1018,6 @@ cmd_handlers:
 
         .module disassemble_line
 _mnem           .equ    scratch       ; mnemonic index
-_ret_len        .equ    scratch+$02   ; operand count result
 _reg_ch         .equ    scratch+$12   ; A/X suffix slot
 _mode           .equ    scratch+$2f   ; mode/index temp
 _mnem_x         .equ    scratch+$31   ; mnemonic scan index
@@ -1039,7 +1039,7 @@ _clear_line:
         jsr     load_line_addr
         lda     op_len
         sta     _tmp
-        sta     _ret_len
+        sta     disasm_op_len
         ldx     #$02
         stx     line_pos
 
@@ -1336,7 +1336,7 @@ _again:
         bne     _parse_mnem
 
 _next_line:
-        lda     scratch+$02
+        lda     disasm_op_len
         inca
         jsr     add_a_to_address
         bra     _show_line
