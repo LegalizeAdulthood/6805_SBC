@@ -75,6 +75,10 @@ saved_addr_lo   .equ    scratch+$55   ; saved address low
 checksum        .equ    scratch+$56   ; checksum accumulator
 op_len          .equ    scratch+$57   ; operand byte count
 decode_flags    .equ    scratch+$58   ; decode attribute flags
+df_reg_a_bit    .equ    0             ; emit A register suffix
+df_reg_bit      .equ    1             ; emit register suffix
+df_imm_bit      .equ    2             ; emit immediate marker
+df_idx_bit      .equ    3             ; emit indexed suffix
 hex_digit       .equ    scratch+$59   ; parsed hex digit
 asm_once        .equ    scratch+$5a   ; assembler one-shot flag
 serial_ctl      .equ    scratch+$5b   ; serial control bits
@@ -641,16 +645,16 @@ _decode_30_up:
         beq     _set_flag0
         cmp     #$50
         beq     _set_flag1
-        bset    3, decode_flags
+        bset    df_idx_bit, decode_flags
         cmp     #$60
         beq     _operand_byte
         bra     _len1_addr
 
 _set_flag0:
-        bset    0, decode_flags
+        bset    df_reg_a_bit, decode_flags
 
 _set_flag1:
-        bset    1, decode_flags
+        bset    df_reg_bit, decode_flags
         bra     _len1_addr
 
 _decode_80_up:
@@ -678,7 +682,7 @@ _decode_a0_up:
         beq     _bad_opcode
         cpx     #$0f
         beq     _bad_opcode
-        bset    2, decode_flags
+        bset    df_imm_bit, decode_flags
 
 _operand_byte:
         bra     _op_from_code
@@ -688,7 +692,7 @@ _decode_b0_up:
         beq     _op_from_code
         cmp     #$c0
         beq     _read_ext_addr
-        bset    3, decode_flags
+        bset    df_idx_bit, decode_flags
         cmp     #$d0
         beq     _read_ext_addr
         cmp     #$e0
@@ -1196,8 +1200,8 @@ _prev_ch:
         bra     _emit_mnem
 
 _append_reg:
-        brset   0, decode_flags, _reg_a
-        brclr   1, decode_flags, _op_pos
+        brset   df_reg_a_bit, decode_flags, _reg_a
+        brclr   df_reg_bit, decode_flags, _op_pos
         lda     #$58
         bra     _store_reg
 
@@ -1210,7 +1214,7 @@ _store_reg:
 _op_pos:
         ldx     #$12
         stx     line_pos
-        brclr   2, decode_flags, _operand
+        brclr   df_imm_bit, decode_flags, _operand
         lda     #$23
         bsr     app_char
 
@@ -1231,7 +1235,7 @@ _op_byte:
         bra     _operand_loop
 
 _append_index:
-        brclr   3, decode_flags, _write_line
+        brclr   df_idx_bit, decode_flags, _write_line
         lda     #$2c
         bsr     app_char
         lda     #$58
