@@ -574,14 +574,17 @@ _next_restore:
         rts
 
         .module decode_inst
+_op             .equ    scratch+$33     ; opcode byte
+_addr_adj       .equ    scratch+$32     ; target address adjust
+
 decode_inst:
         clr     op_len
         clr     decode_flags
         jsr     read_memory_byte
-        sta     scratch+$33
+        sta     _op
         and     #$0f
         tax
-        lda     scratch+$33
+        lda     _op
         and     #$f0
         bne     _nonzero_op
         jmp     _set_len2
@@ -748,9 +751,9 @@ _stack_or_zero:
         jsr     read_stack_byte
 
 _restore_saved_addr:
-        sta     scratch+$32
+        sta     _addr_adj
         jsr     restore_addr
-        lda     scratch+$32
+        lda     _addr_adj
         bra     _add_to_addr
 
 _op_from_code:
