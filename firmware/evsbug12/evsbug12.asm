@@ -66,6 +66,9 @@ op_jmp          .equ    $cc
         .byte   $00
         .org    $0800
 
+        .module console_io
+_save_x         .equ    scratch+$59   ; saved X index
+
 sub_0800:
         sta     tmp_a
         lda     #$00
@@ -74,41 +77,52 @@ sub_0800:
         rts
 
 read_console_char_echo:
-        stx     scratch+$59
+        stx     _save_x
+
+_read_poll:
         jsr     sub_0800
         ldx     $ffe1
         stx     io_stat
-        brset   2, io_stat, $0850
+        brset   2, io_stat, _serial_event
         ldx     $ffe0
         stx     io_stat
-        brclr   0, io_stat, $080c
+        brclr   0, io_stat, _read_poll
         lda     $ffe3
         and     #$7f
-        bra     $0834
+        bra     _write_char
 
 write_console_char:
-        stx     scratch+$59
+        stx     _save_x
         ldx     $ffe0
         stx     io_stat
-        brclr   0, io_stat, $0834
+        brclr   0, io_stat, _write_char
         ldx     #$ff
         stx     poll_flag
+
+_write_char:
         sta     $ffe3
-        brset   1, scratch+$52, $084d
+        brset   1, scratch+$52, _return
+
+_tx_poll:
         jsr     sub_0800
         ldx     $ffe0
         stx     io_stat
-        brclr   6, io_stat, $083a
+        brclr   6, io_stat, _tx_poll
         ldx     $ffe1
         stx     io_stat
-        brset   2, io_stat, $0850
-        ldx     scratch+$59
+        brset   2, io_stat, _serial_event
+
+_return:
+        ldx     _save_x
         rts
+
+_serial_event:
         lda     $ffe3
         jsr     init_serial_or_timer
         clr     scratch+$52
         jmp     cmd_loop
 
+        .module write_hex_byte
 write_hex_byte:
         sta     scratch+$33
         add     checksum
