@@ -1238,6 +1238,8 @@ _write_loop:
         clr     cmd_err
 
         .module load_line_addr
+_hex_byte       .equ    scratch+$32     ; byte for hex output
+
 load_line_addr:
         ldx     #saved_addr_hi
         jsr     load_address_pair
@@ -1251,9 +1253,9 @@ app_hex_byte:
 
 app_hex_a:
         ldx     line_pos
-        sta     scratch+$32
+        sta     _hex_byte
         bsr     app_hi_nibl
-        lda     scratch+$32
+        lda     _hex_byte
         and     #$0f
         bra     nibl_ascii
 
