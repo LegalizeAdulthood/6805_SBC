@@ -680,60 +680,70 @@ parse_hex_digit:
         bra     $c39
         inc     scratch+$02
         rts
+
+        .module cmd_loop
+_bad_cmd:
         inc     scratch+$01
 cmd_loop:
         rsp
         jsr     write_crlf
         tst     scratch+$01
-        beq     $c89
+        beq     _read_line
         ldx     #msg_bad_entry
         jsr     write_string
         jsr     write_crlf
         clr     scratch+$01
+_read_line:
         jsr     read_command_line
         clr     scratch+$02
         clr     scratch
         ldx     #$ff
+_scan_char:
         jsr     read_command_char
         cmp     #$0d
         beq     cmd_loop
         jsr     uppercase_command_char
         incx
         lda     cmd_tokens,x
-        beq     $c75
+        beq     _bad_cmd
         and     #$7f
         cmp     scratch+$32
-        beq     $cb4
+        beq     _match_char
+_no_match:
         clr     scratch+$2e
         inc     scratch
+_skip_token:
         lda     cmd_tokens,x
-        bmi     $c92
+        bmi     _scan_char
         incx
-        bra     $cac
+        bra     _skip_token
+_match_char:
         lda     cmd_tokens,x
-        bpl     $c92
+        bpl     _scan_char
         jsr     read_command_char
         cmp     #$0d
-        beq     $ce6
+        beq     _dispatch
         cmp     #$20
-        bne     $ca8
+        bne     _no_match
         lda     scratch
         cmp     #$04
-        beq     $ce6
+        beq     _dispatch
+_parse_arg:
         jsr     parse_hex_word
         ldx     scratch+$02
         aslx
         cpx     #$0a
-        bhi     $c75
+        bhi     _bad_cmd
         lda     scratch+$2c
         sta     scratch+$20,x
         lda     scratch+$2d
         sta     scratch+$21,x
         lda     scratch+$32
         cmp     #$20
-        beq     $cca
+        beq     _parse_arg
         cmp     #$0d
-        bne     $c75
+        bne     _bad_cmd
+_dispatch:
         lda     scratch
         asla
         tax
@@ -746,6 +756,7 @@ cmd_loop:
         jmp     cmd_thunk
 
 ; command handler table
+        .module cmd_handlers
 cmd_handlers:
         .dw     asm_cmd,block_fill_cmd,breakpoint_cmd,go_cmd
         .dw     load_cmd,mem_display_cmd,mem_modify_cmd,nobr_cmd
