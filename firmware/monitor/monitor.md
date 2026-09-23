@@ -287,7 +287,7 @@ Operand formatting requirements:
 - Relative branch operands display the resolved absolute target address.
 - Bit-test and bit-manipulation operands display the bit number and literal
   direct-page address.
-- Invalid or unimplemented opcodes display as data, using `FCB $nn`, and
+- Invalid or unimplemented opcodes display as data, using `fcb $nn`, and
   consume one byte.
 - The decoder must tolerate truncated instructions at the end of addressable
   memory and display the bytes that can be read.
@@ -381,7 +381,10 @@ reviews focused. The implementation should not mirror that structure with
 a long opcode compare chain. To keep ROM size low, decode using the 6805
 opcode bit organization wherever practical: mask and shift opcode fields,
 share operand emitters, use compact mnemonic tables for the irregular
-cases, and fall through to `FCB $nn` for gaps or invalid opcodes.
+cases, and fall through to `fcb $nn` for gaps or invalid opcodes.
+Disassembled source text follows local assembly style: mnemonics,
+directives, pseudo-ops, operands, labels, and symbols are lower-case, while
+hexadecimal digits remain uppercase.
 
 ### 9.3. Disassembler Relative Instructions
 
@@ -454,7 +457,7 @@ End state: the disassembler fixture covers every opcode row in
 `TASM05.TAB`, plus at least one invalid opcode. The coverage check names
 any missing table row by mnemonic, operand form, and opcode byte. Truncated
 instructions near `$FFFF` display only bytes that can be read and still
-produce a deterministic `FCB $nn` fallback or decoded mnemonic text. The
+produce a deterministic `fcb $nn` fallback or decoded mnemonic text. The
 decoder emits no labels, symbol names, expressions, comments, or
 source-level information in any fixture row.
 
