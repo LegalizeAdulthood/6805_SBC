@@ -1616,19 +1616,30 @@ opcode_table:
         .byte   $30,$9d,$aa,$00,$39,$36,$9c,$80,$81,$a2,$99,$9b,$a7,$8e,$af,$a0
         .byte   $83,$97,$3d,$9f,$8f
 
+        .module exec_cmds
+_argc           .equ    scratch+$02   ; command arg count
+_save_lo        .equ    scratch+$25   ; saved addr low byte
+_brk_idx        .equ    scratch+$31   ; breakpoint slot index
+_brk_lo         .equ    scratch+$35   ; breakpoint low bytes
+_proc_addr      .equ    scratch+$54   ; proceed resume address
+
 breakpoint_cmd:
-        dec     scratch+$02
-        bmi     $1238
+        dec     _argc
+        bmi     _show_brks
         jsr     clear_breakpoints
         clrx
+
+_save_brk:
         lda     addr_hi,x
         sta     brk_addrs,x
         lda     addr_lo,x
-        sta     scratch+$35,x
+        sta     _brk_lo,x
         incx
         incx
-        dec     scratch+$02
-        bpl     $122a
+        dec     _argc
+        bpl     _save_brk
+
+_show_brks:
         jsr     write_crlf
         ldx     #msg_brkpt
         jsr     write_string
@@ -1636,41 +1647,53 @@ breakpoint_cmd:
         jsr     write_console_char
         lda     #$3d
         jsr     write_console_char
-        clr     scratch+$31
+        clr     _brk_idx
+
+_disp_brk:
         jsr     load_breakpoint_address
-        beq     $1259
+        beq     _next_brk
         jsr     write_hex_word_at_73
         ldx     #msg_sp4
         jsr     write_string
-        ldx     scratch+$31
+
+_next_brk:
+        ldx     _brk_idx
         cpx     #$08
-        bls     $124c
+        bls     _disp_brk
+
+_cmd_loop:
         jmp     cmd_loop
+
+_bad_brk:
         inc     cmd_err
-        bra     $125f
+        bra     _cmd_loop
 
 nobr_cmd:
-        dec     scratch+$02
-        bmi     $1277
-        bne     $1262
+        dec     _argc
+        bmi     _clear_brks
+        bne     _bad_brk
         jsr     find_br_slot
-        bne     $1262
+        bne     _bad_brk
         clr     brk_addrs,x
-        clr     scratch+$35,x
-        bra     $1238
+        clr     _brk_lo,x
+        bra     _show_brks
+
+_clear_brks:
         jsr     clear_breakpoints
-        bra     $1238
+        bra     _show_brks
 
 go_cmd:
-        dec     scratch+$02
-        bmi     $1292
-        bne     $12cc
+        dec     _argc
+        bmi     _go_saved_pc
+        bne     _bad_run
         jsr     save_addr
         ldx     #$04
         jsr     write_stack_byte
         jsr     increment_address
-        lda     scratch+$25
+        lda     _save_lo
         jsr     write_memory_byte
+
+_go_saved_pc:
         jsr     load_stack_pc
         jsr     find_br_slot
         beq     step_over_brk
@@ -1684,43 +1707,53 @@ arm_step_breaks:
         jsr     load_stack_pc
         jsr     decode_inst
         tst     cmd_err
-        bne     $12cc
+        bne     _bad_run
         ldx     #$0a
         lda     #$0c
         jmp     arm_break_range
 
 proceed_cmd:
-        ldx     scratch+$02
+        ldx     _argc
         decx
-        bmi     $12d3
-        bne     $12cc
+        bmi     _def_proceed
+        bne     _bad_run
         ldx     addr_lo
+
+_set_proceed:
         stx     proceed_cnt
-        beq     $12cc
+        beq     _bad_run
         jsr     load_stack_pc
-        ldx     #scratch+$54
+        ldx     #_proc_addr
         jsr     store_address_pair
         jsr     find_br_slot
         beq     step_over_brk
+
+_bad_run:
         inc     cmd_err
         clr     proceed_cnt
         jmp     cmd_loop
+
+_def_proceed:
         incx
         incx
-        bra     $12bb
+        bra     _set_proceed
 
 trace_cmd:
-        ldx     scratch+$02
+        ldx     _argc
         decx
-        bmi     $12e6
-        bne     $12cc
+        bmi     _def_trace
+        bne     _bad_run
         ldx     addr_lo
+
+_set_trace:
         stx     trace_cnt
-        beq     $12cc
+        beq     _bad_run
         bra     arm_step_breaks
+
+_def_trace:
         incx
         incx
-        bra     $12e0
+        bra     _set_trace
 
         .module mem_display_cmd
 mem_display_cmd:
