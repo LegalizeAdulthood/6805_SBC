@@ -7,24 +7,25 @@
 ;
         .msfirst
 
-acia_isra       .equ    $20
-acia_iera       .equ    acia_isra
-acia_csra       .equ    $21
-acia_cra        .equ    acia_csra
-acia_fra        .equ    acia_csra
-acia_cdra       .equ    $22
-acia_acra       .equ    acia_cdra
-acia_rdra       .equ    $23
-acia_tdra       .equ    acia_rdra
-acia_isrb       .equ    $24
-acia_ierb       .equ    acia_isrb
-acia_csrb       .equ    $25
-acia_crb        .equ    acia_csrb
-acia_frb        .equ    acia_csrb
-acia_cdrb       .equ    $26
-acia_acrb       .equ    acia_cdrb
-acia_rdrb       .equ    $27
-acia_tdrb       .equ    acia_rdrb
+acia_base       .equ    $ffe0
+acia_isra       .equ    acia_base + $00
+acia_iera       .equ    acia_base + $00
+acia_csra       .equ    acia_base + $01
+acia_cra        .equ    acia_base + $01
+acia_fra        .equ    acia_base + $01
+acia_cdra       .equ    acia_base + $02
+acia_acra       .equ    acia_base + $02
+acia_rdra       .equ    acia_base + $03
+acia_tdra       .equ    acia_base + $03
+acia_isrb       .equ    acia_base + $04
+acia_ierb       .equ    acia_base + $04
+acia_csrb       .equ    acia_base + $05
+acia_crb        .equ    acia_base + $05
+acia_frb        .equ    acia_base + $05
+acia_cdrb       .equ    acia_base + $06
+acia_acrb       .equ    acia_base + $06
+acia_rdrb       .equ    acia_base + $07
+acia_tdrb       .equ    acia_base + $07
 map_switch      .equ    $50
 scratch         .equ    $51
 cmd_thunk       .equ    $9c
@@ -91,34 +92,34 @@ read_console_char_echo:
 
 _read_poll:
         jsr     sub_0800
-        ldx     $ffe1
+        ldx     acia_csra
         stx     io_stat
         brset   2, io_stat, _serial_event
-        ldx     $ffe0
+        ldx     acia_isra
         stx     io_stat
         brclr   0, io_stat, _read_poll
-        lda     $ffe3
+        lda     acia_rdra
         and     #$7f
         bra     _write_char
 
 write_console_char:
         stx     _save_x
-        ldx     $ffe0
+        ldx     acia_isra
         stx     io_stat
         brclr   0, io_stat, _write_char
         ldx     #$ff
         stx     poll_flag
 
 _write_char:
-        sta     $ffe3
+        sta     acia_tdra
         brset   1, mon_flags, _return
 
 _tx_poll:
         jsr     sub_0800
-        ldx     $ffe0
+        ldx     acia_isra
         stx     io_stat
         brclr   6, io_stat, _tx_poll
-        ldx     $ffe1
+        ldx     acia_csra
         stx     io_stat
         brset   2, io_stat, _serial_event
 
@@ -127,7 +128,7 @@ _return:
         rts
 
 _serial_event:
-        lda     $ffe3
+        lda     acia_rdra
         jsr     init_serial_or_timer
         clr     mon_flags
         jmp     cmd_loop
@@ -1946,17 +1947,17 @@ _check_pause:
         tst     poll_flag
         beq     _return
         clr     poll_flag
-        lda     $ffe3
+        lda     acia_rdra
         and     #$7f
         cmp     #$13
         bne     _check_cancel
 
 _wait_resume:
         jsr     sub_0800
-        ldx     $ffe0
+        ldx     acia_isra
         stx     io_stat
         brclr   0, io_stat, _wait_resume
-        lda     $ffe3
+        lda     acia_rdra
         and     #$7f
 
 _check_cancel:
@@ -2274,18 +2275,18 @@ enter_monitor:
         jmp     show_msg_regs
 
 init_serial_or_timer:
-        lda     $ffe1
+        lda     acia_csra
         ora     #$80
-        sta     $ffe1
+        sta     acia_cra
         lda     #$e0
-        sta     $ffe1
-        lda     $ffe1
+        sta     acia_fra
+        lda     acia_csra
         and     #$7f
-        sta     $ffe1
+        sta     acia_cra
         lda     #$40
         tax
         ora     serial_ctl
-        sta     $ffe1
+        sta     acia_cra
         rts
 
         .module swi_handler
@@ -2294,7 +2295,7 @@ _stk_idx        .equ    scratch+$31     ; stack copy index
 swi_handler:
         bclr    0, map_switch
         brset   7, map_switch, resume_from_swi
-        lda     $ffe4
+        lda     acia_isrb
         deca
         sta     user_sp
         rsp
