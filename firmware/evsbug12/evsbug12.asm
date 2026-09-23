@@ -2348,39 +2348,59 @@ help_cmd:
         clrx
         jsr     write_crlf
         jsr     write_crlf
+
+_intro_loop:
         lda     help_intro,x
-        beq     $1633
+        beq     _brk
         jsr     write_console_char
         incx
-        bra     $1628
+        bra     _intro_loop
+
+_brk:
         clrx
         jsr     write_crlf
+
+_brk_loop:
         lda     help_breakpoint,x
-        beq     $1642
+        beq     _go_load_md
         jsr     write_console_char
         incx
-        bra     $1637
+        bra     _brk_loop
+
+_go_load_md:
         clrx
         jsr     write_crlf
+
+_go_load_md_loop:
         lda     help_go_load_md,x
-        beq     $1651
+        beq     _mod_nobr_proc
         jsr     write_console_char
         incx
-        bra     $1646
+        bra     _go_load_md_loop
+
+_mod_nobr_proc:
         clrx
         jsr     write_crlf
+
+_mod_nobr_proc_loop:
         lda     help_modify_nobr_proceed,x
-        beq     $1660
+        beq     _reg_trace
         jsr     write_console_char
         incx
-        bra     $1655
+        bra     _mod_nobr_proc_loop
+
+_reg_trace:
         clrx
         jsr     write_crlf
+
+_reg_trace_loop:
         lda     help_register_trace,x
-        beq     $166f
+        beq     _done
         jsr     write_console_char
         incx
-        bra     $1664
+        bra     _reg_trace_loop
+
+_done:
         jmp     cmd_loop
 
 ; command token table; high bit marks token end
