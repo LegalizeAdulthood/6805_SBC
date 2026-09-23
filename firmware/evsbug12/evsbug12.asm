@@ -11,7 +11,7 @@ sub_0800:
         sta     $fff0
         lda     $ae
         rts
-sub_080a:
+read_console_char_echo:
         stx     $aa
         jsr     sub_0800
         ldx     $ffe1
@@ -23,7 +23,7 @@ sub_080a:
         lda     $ffe3
         and     #$7f
         bra     $834
-sub_0826:
+write_console_char:
         stx     $aa
         ldx     $ffe0
         stx     $b1
@@ -42,10 +42,10 @@ sub_0826:
         ldx     $aa
         rts
         lda     $ffe3
-        jsr     sub_153a
+        jsr     init_serial_or_timer
         clr     $a3
         jmp     $0c77
-sub_085b:
+write_hex_byte:
         sta     $84
         add     $a7
         sta     $a7
@@ -62,37 +62,37 @@ sub_085b:
         cmp     #$39
         bls     $877
         add     #$07
-        jsr     sub_0826
+        jsr     write_console_char
         rts
-sub_087b:
+write_hex_word_at_73:
         lda     $73
         and     #$ff
-        jsr     sub_085b
+        jsr     write_hex_byte
         lda     $74
-        jsr     sub_085b
+        jsr     write_hex_byte
         rts
 sub_0888:
         lda     #$3d
-        jsr     sub_0826
-        jsr     sub_0965
+        jsr     write_console_char
+        jsr     read_memory_byte
         tst     $82
         beq     $89f
         and     #$ff
-        jsr     sub_085b
-        jsr     sub_098b
-        jsr     sub_0965
-        jsr     sub_085b
+        jsr     write_hex_byte
+        jsr     increment_address
+        jsr     read_memory_byte
+        jsr     write_hex_byte
         rts
-sub_08a3:
+write_string:
         lda     $1691,x
         beq     $8a2
-        jsr     sub_0826
+        jsr     write_console_char
         incx
         bra     $8a3
 sub_08ae:
-        jsr     sub_08a3
+        jsr     write_string
 sub_08b1:
-        jsr     sub_08ee
+        jsr     write_crlf
         clrx
         jsr     sub_09bb
         clr     $82
@@ -100,31 +100,31 @@ sub_08b1:
         incx
         stx     $84
         ldx     #$41
-        jsr     sub_08a3
+        jsr     write_string
         ldx     $84
         lda     $08e8,x
         beq     $932
         bsr     $909
-        jsr     sub_0826
+        jsr     write_console_char
         jsr     sub_0888
         bra     $8bd
 sub_08d6:
         lda     #$53
-        jsr     sub_0826
+        jsr     write_console_char
         lda     #$3d
-        jsr     sub_0826
+        jsr     write_console_char
         lda     $74
         add     #$05
-        jsr     sub_085b
+        jsr     write_hex_byte
         rts
 
 ; register display field table
         .byte   "SPAXC",$00
-sub_08ee:
+write_crlf:
         lda     #$0d
-        jsr     sub_0826
+        jsr     write_console_char
         lda     #$0a
-        jsr     sub_0826
+        jsr     write_console_char
         rts
 
 ; condition-code display table
@@ -154,12 +154,12 @@ sub_0909:
         ldx     $84
         rts
         ldx     #$41
-        jsr     sub_08a3
+        jsr     write_string
         lda     $a4
         add     #$01
         sta     $74
         clr     $73
-        jsr     sub_0965
+        jsr     read_memory_byte
         sta     $84
         ldx     #$ff
         lda     #$08
@@ -169,16 +169,16 @@ sub_0909:
         asl     $84
         bcc     $954
         lda     $0901,x
-        jsr     sub_0826
+        jsr     write_console_char
         dec     $82
         bne     $94a
         rts
-sub_095c:
+write_memory_byte:
         sta     $84
         jsr     sub_0800
         lda     #$c7
         bra     $96a
-sub_0965:
+read_memory_byte:
         lda     #$c6
         jsr     sub_0800
         bclr    2, $50
@@ -198,18 +198,18 @@ sub_0965:
         bclr    1, $50
         bset    2, $50
         rts
-sub_098b:
+increment_address:
         lda     #$01
-sub_098d:
+add_a_to_address:
         add     $74
         sta     $74
         clra
         adc     $73
         sta     $73
         rts
-sub_0997:
+decrement_address:
         lda     #$01
-sub_0999:
+subtract_a_from_address:
         sta     $84
         lda     $74
         sub     $84
@@ -217,7 +217,7 @@ sub_0999:
         lda     $73
         sbc     #$00
         bra     $994
-sub_09a7:
+address_in_range:
         lda     $75
         cmp     $73
         bcs     $9b8
@@ -234,16 +234,16 @@ sub_09bb:
         lda     $a4
         sta     $74
         txa
-        jsr     sub_098d
+        jsr     add_a_to_address
         rts
         jsr     sub_09bb
 sub_09c9:
-        jsr     sub_0965
+        jsr     read_memory_byte
         and     #$ff
         sta     $75
 sub_09d0:
-        jsr     sub_098b
-        jsr     sub_0965
+        jsr     increment_address
+        jsr     read_memory_byte
         sta     $76
         rts
 sub_09d9:
@@ -256,19 +256,19 @@ sub_09d9:
         bsr     $9db
         bsr     $a2b
         ldx     #$91
-        jsr     sub_0a21
+        jsr     store_address_pair
         lda     #$fa
         bsr     $9db
         bsr     $a2b
         rts
 sub_09f5:
         jsr     sub_09bb
-        jsr     sub_0965
+        jsr     read_memory_byte
         rts
 sub_09fc:
         jsr     sub_09bb
         lda     $75
-        jsr     sub_095c
+        jsr     write_memory_byte
         rts
 sub_0a05:
         ldx     #$04
@@ -280,14 +280,14 @@ sub_0a0c:
         ldx     #$04
         jsr     sub_09bb
         lda     $75
-        jsr     sub_095c
-        jsr     sub_098b
+        jsr     write_memory_byte
+        jsr     increment_address
         lda     $76
-        jsr     sub_095c
+        jsr     write_memory_byte
         rts
 sub_0a1f:
         ldx     #$75
-sub_0a21:
+store_address_pair:
         lda     $73
         and     #$ff
         sta     ,x
@@ -296,13 +296,13 @@ sub_0a21:
         rts
 sub_0a2b:
         ldx     #$75
-sub_0a2d:
+load_address_pair:
         lda     ,x
         sta     $73
         lda     $01,x
         sta     $74
         rts
-sub_0a35:
+clear_breakpoints:
         clrx
 sub_0a36:
         clr     $85,x
@@ -310,7 +310,7 @@ sub_0a36:
         cpx     #$0d
         bls     $a36
         rts
-sub_0a3e:
+load_breakpoint_address:
         ldx     $82
         inc     $82
         inc     $82
@@ -323,7 +323,7 @@ sub_0a3e:
         rts
 sub_0a51:
         lda     #$08
-sub_0a53:
+find_address_slot:
         sta     $83
         clrx
         lda     $73
@@ -344,11 +344,11 @@ sub_0a53:
         bsr     $a3e
         beq     $a81
         bset    3, $50
-        jsr     sub_0965
+        jsr     read_memory_byte
         lsrx
         sta     $93,x
         lda     #$83
-        jsr     sub_095c
+        jsr     write_memory_byte
         ldx     $82
         cpx     $83
         bls     $a70
@@ -363,7 +363,7 @@ sub_0a8d:
         beq     $a9b
         lsrx
         lda     $93,x
-        jsr     sub_095c
+        jsr     write_memory_byte
         lda     $82
         sub     #$04
         sta     $82
@@ -373,7 +373,7 @@ sub_0a8d:
 sub_0aa6:
         clr     $a8
         clr     $a9
-        jsr     sub_0965
+        jsr     read_memory_byte
         sta     $84
         and     #$0f
         tax
@@ -478,15 +478,15 @@ sub_0aa6:
         bsr     $b6b
         beq     $b85
         lda     #$03
-        jsr     sub_098d
+        jsr     add_a_to_address
         ldx     #$8f
-        jsr     sub_0a21
+        jsr     store_address_pair
         rts
         clrx
         cmp     #$c0
         beq     $b8c
         ldx     #$03
-        jsr     sub_098b
+        jsr     increment_address
         jsr     sub_09c9
         clra
         tstx
@@ -519,24 +519,24 @@ sub_0aa6:
         lda     #$02
         sta     $a8
         inca
-        jsr     sub_098d
+        jsr     add_a_to_address
         ldx     #$91
-        jsr     sub_0a21
-        jsr     sub_0997
-        jsr     sub_0965
+        jsr     store_address_pair
+        jsr     decrement_address
+        jsr     read_memory_byte
         tax
-        jsr     sub_098b
+        jsr     increment_address
         txa
         tsta
         bpl     $b7c
         dec     $73
         bra     $b7c
-        jsr     sub_08ee
-sub_0bee:
+        jsr     write_crlf
+read_command_line:
         lda     #$3e
-        jsr     sub_0826
+        jsr     write_console_char
         clrx
-        jsr     sub_080a
+        jsr     read_console_char_echo
         cmp     #$18
         beq     $beb
         cmp     #$08
@@ -555,7 +555,7 @@ sub_0bee:
         sta     $54,x
         clr     $7f
         rts
-sub_0c18:
+read_command_char:
         stx     $84
         ldx     $7f
         lda     $54,x
@@ -563,21 +563,21 @@ sub_0c18:
         ldx     $84
         sta     $83
         rts
-sub_0c25:
+uppercase_command_char:
         cmp     #$60
         bls     $c2d
         sub     #$20
         sta     $83
         rts
-sub_0c2e:
+parse_hex_word:
         clr     $7d
         clr     $7e
-        jsr     sub_0c18
+        jsr     read_command_char
         cmp     #$24
         bne     $c3c
-        jsr     sub_0c18
-sub_0c3c:
-        jsr     sub_0c25
+        jsr     read_command_char
+parse_hex_digit:
+        jsr     uppercase_command_char
         clr     $aa
         dec     $aa
         sub     #$30
@@ -612,21 +612,21 @@ sub_0c3c:
         rts
         inc     $52
         rsp
-        jsr     sub_08ee
+        jsr     write_crlf
         tst     $52
         beq     $c89
         ldx     #$26
-        jsr     sub_08a3
-        jsr     sub_08ee
+        jsr     write_string
+        jsr     write_crlf
         clr     $52
-        jsr     sub_0bee
+        jsr     read_command_line
         clr     $53
         clr     $51
         ldx     #$ff
-        jsr     sub_0c18
+        jsr     read_command_char
         cmp     #$0d
         beq     $c77
-        jsr     sub_0c25
+        jsr     uppercase_command_char
         incx
         lda     $1672,x
         beq     $c75
@@ -641,7 +641,7 @@ sub_0c3c:
         bra     $cac
         lda     $1672,x
         bpl     $c92
-        jsr     sub_0c18
+        jsr     read_command_char
         cmp     #$0d
         beq     $ce6
         cmp     #$20
@@ -649,7 +649,7 @@ sub_0c3c:
         lda     $51
         cmp     #$04
         beq     $ce6
-        jsr     sub_0c2e
+        jsr     parse_hex_word
         ldx     $53
         aslx
         cpx     #$0a
@@ -686,11 +686,11 @@ sub_0c3c:
         bset    2, $04
         bset    1, $d7
         bset    3, $21
-sub_0d14:
+disassemble_line:
         ldx     #$a5
-        jsr     sub_0a21
-        jsr     sub_08ee
-        jsr     sub_087b
+        jsr     store_address_pair
+        jsr     write_crlf
+        jsr     write_hex_word_at_73
         lda     #$20
         ldx     #$1d
         sta     $54,x
@@ -705,27 +705,27 @@ sub_0d14:
         stx     $7f
         jsr     sub_0e64
         inc     $7f
-        jsr     sub_098b
+        jsr     increment_address
         dec     $84
         bpl     $d38
         jsr     sub_0e5b
         tst     $52
         beq     $d54
-        jsr     sub_0997
+        jsr     decrement_address
         inc     $a8
         ldx     #$26
         bra     $d8c
-        jsr     sub_0965
+        jsr     read_memory_byte
         and     #$0f
         tax
-        jsr     sub_0965
+        jsr     read_memory_byte
         cmp     #$0f
         bhi     $d8e
         sta     $84
         ldx     #$17
         stx     $7f
-        jsr     sub_0e85
-        jsr     sub_0e90
+        jsr     append_comma_dollar
+        jsr     append_hex_word
         clrx
         stx     $80
         ldx     #$12
@@ -734,8 +734,8 @@ sub_0d14:
         brclr   0, $84, $d7b
         inc     $80
         lsra
-        jsr     sub_0e77
-        jsr     sub_0e85
+        jsr     hex_nibble_to_ascii
+        jsr     append_comma_dollar
         jsr     sub_0e61
         clr     $a8
         ldx     $80
@@ -833,7 +833,7 @@ sub_0d14:
         bsr     $e7f
         clrx
         lda     $54,x
-        jsr     sub_0826
+        jsr     write_console_char
         incx
         cpx     #$1d
         bls     $e4a
@@ -842,12 +842,12 @@ sub_0d14:
         clr     $52
 sub_0e5b:
         ldx     #$a5
-        jsr     sub_0a2d
+        jsr     load_address_pair
         rts
 sub_0e61:
-        jsr     sub_098b
+        jsr     increment_address
 sub_0e64:
-        jsr     sub_0965
+        jsr     read_memory_byte
         ldx     $7f
         sta     $83
         bsr     $e73
@@ -858,17 +858,17 @@ sub_0e64:
         lsra
         lsra
         lsra
-sub_0e77:
+hex_nibble_to_ascii:
         add     #$30
         cmp     #$39
         bls     $e7f
         add     #$07
-sub_0e7f:
+append_disasm_char:
         sta     $54,x
         incx
         stx     $7f
         rts
-sub_0e85:
+append_comma_dollar:
         lda     #$2c
         bsr     $e7f
         lda     #$24
@@ -876,7 +876,7 @@ sub_0e85:
         rts
 sub_0e8e:
         bsr     $e89
-sub_0e90:
+append_hex_word:
         lda     $8f
         and     #$ff
         bsr     $e67
@@ -890,15 +890,15 @@ sub_0e90:
         .byte   $1a,$18,$1b,$06,$1c,$17,$19,$0b,$11,$05,$07,$15,$08,$09,$0a,$16
         .byte   $13,$12,$14,$0e,$0d,$37,$38,$44,$40,$00,$00,$00,$41,$1d,$3a,$1e
         .byte   $3b,$36,$31,$3d,$43,$3a,$53,$26,$3d,$3f,$ab
-        jsr     sub_0d14
+        jsr     disassemble_line
         clr     $a8
-        jsr     sub_0bee
-        jsr     sub_0c18
+        jsr     read_command_line
+        jsr     read_command_char
         cmp     #$0d
         bne     $efd
         lda     $53
         inca
-        jsr     sub_098d
+        jsr     add_a_to_address
         bra     $ee6
         cmp     #$2e
         beq     $f23
@@ -906,8 +906,8 @@ sub_0e90:
         clr     $80
         clr     $51
         ldx     #$ff
-        jsr     sub_0c18
-        jsr     sub_0c25
+        jsr     read_command_char
+        jsr     uppercase_command_char
         incx
         lda     $1155,x
         cmp     #$0f
@@ -942,8 +942,8 @@ sub_0e90:
         lda     $82
         cmp     #$04
         bne     $f6f
-        jsr     sub_0c18
-        jsr     sub_0c25
+        jsr     read_command_char
+        jsr     uppercase_command_char
         cmp     #$41
         beq     $f65
         cmp     #$58
@@ -955,7 +955,7 @@ sub_0e90:
         sta     $51
         lda     #$01
         sta     $82
-        jsr     sub_0c18
+        jsr     read_command_char
         cmp     #$2e
         beq     $f7a
         cmp     #$0d
@@ -980,7 +980,7 @@ sub_0e90:
         jmp     $1039
         jmp     $103e
         bsr     $1007
-        jsr     sub_0c2e
+        jsr     parse_hex_word
         tst     $7d
         bne     $fb2
         lda     $83
@@ -992,18 +992,18 @@ sub_0e90:
         bra     $fbe
         lda     #$01
         sta     $a8
-        jsr     sub_0c2e
+        jsr     parse_hex_word
         lda     $a8
         inca
-        jsr     sub_098d
+        jsr     add_a_to_address
         lda     $7d
         sta     $75
         lda     $7e
         sta     $76
-        jsr     sub_09a7
+        jsr     address_in_range
         bne     $fe9
         lda     $76
-        jsr     sub_0999
+        jsr     subtract_a_from_address
         lda     $75
         sub     $73
         bne     $fe6
@@ -1025,7 +1025,7 @@ sub_0e90:
         jmp     $1089
         bsr     $1007
         jmp     $10c0
-        jsr     sub_0c2e
+        jsr     parse_hex_word
         lda     $7e
         and     #$0f
         cmp     #$00
@@ -1039,27 +1039,27 @@ sub_0e90:
         cmp     #$2c
         bne     $1093
         rts
-        jsr     sub_0c18
+        jsr     read_command_char
         cmp     #$2c
         bne     $102c
         clra
         bra     $1060
         inc     $a8
         dec     $7f
-        jsr     sub_0c2e
+        jsr     parse_hex_word
         tst     $7d
         beq     $105e
         bra     $1093
-        jsr     sub_0c18
+        jsr     read_command_char
         bra     $1045
-        jsr     sub_0c18
+        jsr     read_command_char
         cmp     #$23
         beq     $10c0
         cmp     #$2c
         beq     $105e
         inc     $a8
         dec     $7f
-        jsr     sub_0c2e
+        jsr     parse_hex_word
         lda     #$10
         tst     $7d
         beq     $105a
@@ -1072,8 +1072,8 @@ sub_0e90:
         lda     $83
         cmp     #$2c
         bne     $1089
-        jsr     sub_0c18
-        jsr     sub_0c25
+        jsr     read_command_char
+        jsr     uppercase_command_char
         cmp     #$58
         bne     $1093
         lda     $82
@@ -1085,7 +1085,7 @@ sub_0e90:
         sta     $51
         bra     $1086
         dec     $ab
-        jsr     sub_0c18
+        jsr     read_command_char
         lda     $83
         cmp     #$0d
         beq     $1096
@@ -1094,8 +1094,8 @@ sub_0e90:
         jmp     $0f21
         jsr     sub_0e5b
         lda     $51
-        jsr     sub_095c
-        jsr     sub_098b
+        jsr     write_memory_byte
+        jsr     increment_address
         dec     $a8
         bmi     $10ae
         clrx
@@ -1104,13 +1104,13 @@ sub_0e90:
         lda     $7d,x
         bra     $109b
         jsr     sub_0e5b
-        jsr     sub_0d14
+        jsr     disassemble_line
         tst     $ab
         bne     $10bb
         jmp     $0ef5
         jmp     $0c77
         bra     $1093
-        jsr     sub_0c2e
+        jsr     parse_hex_word
         tst     $7d
         bne     $1093
         dec     $7f
@@ -1208,7 +1208,7 @@ sub_0e90:
         .byte   $83,$97,$3d,$9f,$8f
         dec     $53
         bmi     $1238
-        jsr     sub_0a35
+        jsr     clear_breakpoints
         clrx
         lda     $73,x
         sta     $85,x
@@ -1218,19 +1218,19 @@ sub_0e90:
         incx
         dec     $53
         bpl     $122a
-        jsr     sub_08ee
+        jsr     write_crlf
         ldx     #$14
-        jsr     sub_08a3
+        jsr     write_string
         lda     #$73
-        jsr     sub_0826
+        jsr     write_console_char
         lda     #$3d
-        jsr     sub_0826
+        jsr     write_console_char
         clr     $82
-        jsr     sub_0a3e
+        jsr     load_breakpoint_address
         beq     $1259
-        jsr     sub_087b
+        jsr     write_hex_word_at_73
         ldx     #$41
-        jsr     sub_08a3
+        jsr     write_string
         ldx     $82
         cpx     #$08
         bls     $124c
@@ -1245,7 +1245,7 @@ sub_0e90:
         clr     $85,x
         clr     $86,x
         bra     $1238
-        jsr     sub_0a35
+        jsr     clear_breakpoints
         bra     $1238
         dec     $53
         bmi     $1292
@@ -1253,9 +1253,9 @@ sub_0e90:
         jsr     sub_0a1f
         ldx     #$04
         jsr     sub_09fc
-        jsr     sub_098b
+        jsr     increment_address
         lda     $76
-        jsr     sub_095c
+        jsr     write_memory_byte
         jsr     sub_0a05
         jsr     sub_0a51
         beq     $129d
@@ -1278,7 +1278,7 @@ sub_0e90:
         beq     $12cc
         jsr     sub_0a05
         ldx     #$a5
-        jsr     sub_0a21
+        jsr     store_address_pair
         jsr     sub_0a51
         beq     $129d
         inc     $52
@@ -1305,16 +1305,16 @@ sub_0e90:
         beq     $12f7
         bpl     $1349
         jsr     sub_0a1f
-        jsr     sub_09a7
+        jsr     address_in_range
         beq     $134b
         clr     $7f
         clr     $80
-        jsr     sub_08ee
-        jsr     sub_087b
+        jsr     write_crlf
+        jsr     write_hex_word_at_73
         ldx     #$41
-        jsr     sub_08a3
+        jsr     write_string
         bsr     $134e
-        jsr     sub_0965
+        jsr     read_memory_byte
         tsta
         bmi     $131b
         cmp     #$20
@@ -1323,20 +1323,20 @@ sub_0e90:
         bcs     $131d
         lda     #$2e
         ldx     $7f
-        jsr     sub_0e7f
-        jsr     sub_0965
-        jsr     sub_085b
+        jsr     append_disasm_char
+        jsr     read_memory_byte
+        jsr     write_hex_byte
         lda     #$20
-        jsr     sub_0826
-        jsr     sub_098b
+        jsr     write_console_char
+        jsr     increment_address
         inc     $80
         brclr   4, $80, $130b
         ldx     #$42
-        jsr     sub_08a3
+        jsr     write_string
         clrx
         bsr     $134e
         lda     $54,x
-        jsr     sub_0826
+        jsr     write_console_char
         incx
         cpx     #$0f
         bls     $133b
@@ -1360,7 +1360,7 @@ sub_0e90:
         cmp     #$18
         beq     $137d
         rts
-        jsr     sub_08ee
+        jsr     write_crlf
         ldx     #$20
         jsr     sub_08ae
         jmp     $0c77
@@ -1368,8 +1368,8 @@ sub_0e90:
         bra     $137d
 sub_1384:
         jsr     sub_0888
-        jsr     sub_0bee
-        jsr     sub_0c2e
+        jsr     read_command_line
+        jsr     parse_hex_word
         dec     $7f
         beq     $13b0
         clrx
@@ -1379,13 +1379,13 @@ sub_1384:
         cmp     $83
         bne     $1392
         lda     $7e
-        jsr     sub_095c
+        jsr     write_memory_byte
         tst     $82
         beq     $13b0
-        jsr     sub_0997
+        jsr     decrement_address
         lda     $7d
-        jsr     sub_095c
-        jsr     sub_098b
+        jsr     write_memory_byte
+        jsr     increment_address
         ldx     $80
         lda     $83
         cmp     #$3d
@@ -1399,12 +1399,12 @@ sub_1384:
         inc     $52
         lda     $83
         rts
-        jsr     sub_0997
+        jsr     decrement_address
         decx
         bpl     $13c6
         ldx     #$04
         bra     $13c6
-        jsr     sub_098b
+        jsr     increment_address
         incx
         cpx     #$04
         bls     $13c6
@@ -1412,7 +1412,7 @@ sub_1384:
         bra     $13c6
         tst     $82
         beq     $13c6
-        jsr     sub_0997
+        jsr     decrement_address
         bra     $13c6
         .byte   $5e
         tst     $2e
@@ -1420,8 +1420,8 @@ sub_1384:
         comx
         bne     $1451
         clr     $82
-        jsr     sub_08ee
-        jsr     sub_087b
+        jsr     write_crlf
+        jsr     write_hex_word_at_73
         bsr     $1384
         tst     $52
         bne     $1453
@@ -1434,7 +1434,7 @@ sub_1384:
         jsr     sub_09bb
         tstx
         bne     $141a
-        jsr     sub_08ee
+        jsr     write_crlf
         jsr     sub_08d6
         bsr     $13b0
         bra     $1408
@@ -1442,11 +1442,11 @@ sub_1384:
         beq     $141f
         clrx
         stx     $82
-        jsr     sub_08ee
+        jsr     write_crlf
         ldx     $80
         lda     $08e8,x
         jsr     sub_0909
-        jsr     sub_0826
+        jsr     write_console_char
         jsr     sub_1384
         tst     $52
         bne     $1453
@@ -1456,33 +1456,33 @@ sub_1384:
         ldx     $53
         cpx     #$03
         bne     $1451
-        jsr     sub_09a7
+        jsr     address_in_range
         beq     $1453
         lda     $78
-        jsr     sub_095c
-        jsr     sub_098b
+        jsr     write_memory_byte
+        jsr     increment_address
         bra     $1442
         inc     $52
         jmp     $0c77
         inc     $52
         jmp     $0c77
-        jsr     sub_08ee
+        jsr     write_crlf
         lda     $83
         cmp     #$0d
         beq     $1456
         cmp     #$20
         bne     $1456
-        jsr     sub_0c18
-        jsr     sub_0c25
+        jsr     read_command_char
+        jsr     uppercase_command_char
         cmp     #$54
         bne     $1456
         bset    0, $a3
         bra     $1476
         clr     $a8
-        jsr     sub_080a
+        jsr     read_console_char_echo
         cmp     #$53
         bne     $1478
-        jsr     sub_080a
+        jsr     read_console_char_echo
         cmp     #$39
         beq     $148c
         cmp     #$31
@@ -1500,8 +1500,8 @@ sub_1384:
         dec     $80
         bmi     $14ac
         bsr     $14c2
-        jsr     sub_095c
-        jsr     sub_098b
+        jsr     write_memory_byte
+        jsr     increment_address
         bra     $149e
         ldx     $a7
         stx     $80
@@ -1521,8 +1521,8 @@ sub_1384:
         sta     $a7
         lda     $7e
         rts
-        jsr     sub_080a
-        jsr     sub_0c3c
+        jsr     read_console_char_echo
+        jsr     parse_hex_digit
         tst     $aa
         bmi     $14bb
         rts
@@ -1554,18 +1554,18 @@ reset_handler:
         add     #$01
         sta     $74
         lda     #$e8
-        jsr     sub_095c
+        jsr     write_memory_byte
         clr     $a3
         clr     $ad
-        jsr     sub_0a35
+        jsr     clear_breakpoints
         lda     #$ff
         deca
         bne     $151b
         lda     #$0c
         sta     $ac
-        jsr     sub_153a
+        jsr     init_serial_or_timer
         clrx
-        jsr     sub_08ee
+        jsr     write_crlf
         bclr    1, $a3
         clr     $9b
         clr     $52
@@ -1574,7 +1574,7 @@ reset_handler:
         clr     $50
         bset    2, $50
         jmp     $137a
-sub_153a:
+init_serial_or_timer:
         lda     $ffe1
         ora     #$80
         sta     $ffe1
@@ -1596,12 +1596,12 @@ swi_handler:
         sta     $a4
         rsp
         jsr     sub_0a05
-        jsr     sub_0997
+        jsr     decrement_address
         jsr     sub_0a1f
         lda     #$0c
-        jsr     sub_0a53
+        jsr     find_address_slot
         beq     $157d
-        jsr     sub_0965
+        jsr     read_memory_byte
         cmp     #$83
         beq     $15f6
         bset    5, $50
@@ -1634,7 +1634,7 @@ swi_handler:
         tst     $9b
         bne     $15e9
         ldx     #$14
-        jsr     sub_08ee
+        jsr     write_crlf
         jmp     $1529
         tst     $a2
         bne     $15d9
@@ -1642,18 +1642,18 @@ swi_handler:
         sub     #$01
         bcs     $15d2
         bne     $15de
-        jsr     sub_0d14
+        jsr     disassemble_line
         ldx     #$13
         bra     $15c3
         clr     $a2
         jmp     $0a69
         dec     $9a
-        jsr     sub_0d14
+        jsr     disassemble_line
         jsr     sub_08b1
         jmp     $129f
         jmp     $129d
-        jsr     sub_153a
-        jsr     sub_08ee
+        jsr     init_serial_or_timer
+        jsr     write_crlf
         ldx     #$1a
         bra     $15c3
         lda     $a4
@@ -1677,39 +1677,39 @@ swi_handler:
         inc     $52
         jmp     $0c77
         clrx
-        jsr     sub_08ee
-        jsr     sub_08ee
+        jsr     write_crlf
+        jsr     write_crlf
         lda     $16d7,x
         beq     $1633
-        jsr     sub_0826
+        jsr     write_console_char
         incx
         bra     $1628
         clrx
-        jsr     sub_08ee
+        jsr     write_crlf
         lda     $1785,x
         beq     $1642
-        jsr     sub_0826
+        jsr     write_console_char
         incx
         bra     $1637
         clrx
-        jsr     sub_08ee
+        jsr     write_crlf
         lda     $17b2,x
         beq     $1651
-        jsr     sub_0826
+        jsr     write_console_char
         incx
         bra     $1646
         clrx
-        jsr     sub_08ee
+        jsr     write_crlf
         lda     $182e,x
         beq     $1660
-        jsr     sub_0826
+        jsr     write_console_char
         incx
         bra     $1655
         clrx
-        jsr     sub_08ee
+        jsr     write_crlf
         lda     $18c2,x
         beq     $166f
-        jsr     sub_0826
+        jsr     write_console_char
         incx
         bra     $1664
         jmp     $0c77
