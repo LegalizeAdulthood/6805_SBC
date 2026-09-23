@@ -2289,6 +2289,8 @@ init_serial_or_timer:
         rts
 
         .module swi_handler
+_stk_idx        .equ    scratch+$31     ; stack copy index
+
 swi_handler:
         bclr    0, map_switch
         brset   7, map_switch, resume_from_swi
@@ -2389,14 +2391,14 @@ _adjust_swi_stack:
         ldx     #$06
 
 _copy_stack_byte:
-        stx     scratch+$31
+        stx     _stk_idx
         jsr     read_stack_byte
         sta     word_hi
         txa
         sub     #$05
         tax
         jsr     write_stack_byte
-        ldx     scratch+$31
+        ldx     _stk_idx
         incx
         cpx     #$08
         bls     _copy_stack_byte
