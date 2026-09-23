@@ -963,49 +963,62 @@ branch_bit_index:
 opcode_80_9f_index:
         .byte   $37,$38,$44,$40,$00,$00,$00,$41,$1d,$3a,$1e
         .byte   $3b,$36,$31,$3d,$43
+
+        .module asm_cmd
 asm_cmd:
         dec     scratch+$02
-        bne     $0f21
+        bne     _bad_entry
         clr     scratch+$5a
+_show_line:
         jsr     disassemble_line
+_again:
         clr     scratch+$57
         jsr     read_command_line
         jsr     read_command_char
         cmp     #$0d
-        bne     $efd
+        bne     _parse_mnem
+_next_line:
         lda     scratch+$02
         inca
         jsr     add_a_to_address
-        bra     $ee6
+        bra     _show_line
+_parse_mnem:
         cmp     #$2e
-        beq     $f23
+        beq     _exit_cmd
         dec     scratch+$2e
         clr     scratch+$2f
         clr     scratch
         ldx     #$ff
+_mnem_loop:
         jsr     read_command_char
         jsr     uppercase_command_char
+_next_mnem:
         incx
         lda     mnemonic_modes,x
         cmp     #$0f
-        bls     $f1b
+        bls     _check_mode
         and     #$0f
         inc     scratch
+_check_mode:
         cmp     scratch+$2f
-        beq     $f26
-        bhi     $f0f
+        beq     _got_mnem
+        bhi     _next_mnem
+_bad_entry:
         inc     scratch+$01
+_exit_cmd:
         jmp     cmd_loop
+_got_mnem:
         lda     mnemonics,x
-        beq     $f21
+        beq     _bad_entry
         and     #$7f
         cmp     scratch+$32
-        bhi     $f21
-        bne     $f0f
+        bhi     _bad_entry
+        bne     _next_mnem
         lda     mnemonics,x
-        bmi     $f3c
+        bmi     _set_mode
         inc     scratch+$2f
-        bra     $f09
+        bra     _mnem_loop
+_set_mode:
         lda     mnemonic_modes,x
         lsra
         lsra
@@ -1018,56 +1031,67 @@ asm_cmd:
         sta     scratch
         lda     scratch+$31
         cmp     #$04
-        bne     $f6f
+        bne     _read_suffix
         jsr     read_command_char
         jsr     uppercase_command_char
         cmp     #$41
-        beq     $f65
+        beq     _reg_a
         cmp     #$58
-        bne     $f72
+        bne     _check_suffix
         lda     #$20
-        bra     $f67
+        bra     _add_reg
+_reg_a:
         lda     #$10
+_add_reg:
         add     scratch
         sta     scratch
         lda     #$01
         sta     scratch+$31
+_read_suffix:
         jsr     read_command_char
+_check_suffix:
         cmp     #$2e
-        beq     $f7a
+        beq     _finish_no_arg
         cmp     #$0d
-        bne     $f83
+        bne     _need_space
+_finish_no_arg:
         lda     scratch+$31
         deca
-        bne     $f21
+        bne     _bad_entry
         dec     scratch+$2e
-        bra     $f87
+        bra     _mode_jump
+_need_space:
         cmp     #$20
-        bne     $f21
+        bne     _bad_entry
+_mode_jump:
         lda     scratch+$31
         asla
         add     scratch+$31
         tax
-        jmp     $0f8d,x
-        jmp     $1086
-        jmp     $1002
-        jmp     $0fbc
-        jmp     $1022
-        jmp     $10be
-        jmp     $1039
-        jmp     $103e
+_mode_table:
+        jmp     _mode_table,x
+        jmp     _read_next_char
+        jmp     _bit_then_abs
+        jmp     _rel_mode
+        jmp     _parse_index
+        jmp     _bad_mode
+        jmp     _read_comma
+        jmp     _imm_or_comma
         bsr     parse_bit_num
         jsr     parse_hex_word
         tst     scratch+$2c
-        bne     $fb2
+        bne     _need_comma
         lda     scratch+$32
         cmp     #$2c
-        bne     $fe6
+_need_comma:
+        bne     _bad_jump
         lda     scratch+$2d
         sta     scratch+$31
         lda     #$02
-        bra     $fbe
+        bra     _parse_operand
+_rel_mode:
         lda     #$01
+_parse_operand:
         sta     scratch+$57
         jsr     parse_hex_word
         lda     scratch+$57
@@ -1078,124 +1102,150 @@ asm_cmd:
         lda     scratch+$2d
         sta     scratch+$25
         jsr     address_in_range
-        bne     $fe9
+        bne     _calc_rel
         lda     scratch+$25
         jsr     subtract_a_from_address
         lda     scratch+$24
         sub     scratch+$22
-        bne     $fe6
+        bne     _bad_jump
         lda     scratch+$23
         nega
-        bmi     $ff9
-        jmp     $0f21
+        bmi     _store_operand
+_bad_jump:
+        jmp     _bad_entry
+_calc_rel:
         lda     scratch+$25
         sub     scratch+$23
         sta     scratch+$23
         lda     scratch+$24
         sbc     scratch+$22
-        bne     $fe6
+        bne     _bad_jump
         lda     scratch+$23
-        bmi     $fe6
+        bmi     _bad_jump
+_store_operand:
         sta     scratch+$2d
         lda     scratch+$31
         sta     scratch+$2c
-        jmp     $1089
+        jmp     _check_end
+_bit_then_abs:
         bsr     parse_bit_num
-        jmp     $10c0
+        jmp     _parse_zp
 parse_bit_num:
         jsr     parse_hex_word
         lda     scratch+$2d
         and     #$0f
         cmp     #$00
-        bcs     $1037
+        bcs     _bad_branch
         cmp     #$07
-        bhi     $1037
+        bhi     _bad_branch
         asla
         add     scratch
         sta     scratch
         lda     scratch+$32
         cmp     #$2c
-        bne     $1093
+        bne     _bad_to_entry
         rts
+_parse_index:
         jsr     read_command_char
         cmp     #$2c
-        bne     $102c
+        bne     _parse_offset
         clra
-        bra     $1060
+        bra     _store_mode
+_parse_offset:
         inc     scratch+$57
         dec     scratch+$2e
         jsr     parse_hex_word
         tst     scratch+$2c
-        beq     $105e
-        bra     $1093
+        beq     _set_mode10
+_bad_branch:
+        bra     _bad_to_entry
+_read_comma:
         jsr     read_command_char
-        bra     $1045
+        bra     _check_comma
+_imm_or_comma:
         jsr     read_command_char
         cmp     #$23
-        beq     $10c0
+        beq     _parse_zp
+_check_comma:
         cmp     #$2c
-        beq     $105e
+        beq     _set_mode10
         inc     scratch+$57
         dec     scratch+$2e
         jsr     parse_hex_word
         lda     #$10
         tst     scratch+$2c
-        beq     $105a
+        beq     _add_opcode
         inc     scratch+$57
         add     #$10
+_add_opcode:
         add     scratch
         sta     scratch
+_set_mode10:
         lda     #$10
+_store_mode:
         sta     scratch+$31
         lda     scratch+$32
         cmp     #$2c
-        bne     $1089
+        bne     _check_end
         jsr     read_command_char
         jsr     uppercase_command_char
         cmp     #$58
-        bne     $1093
+        bne     _bad_to_entry
         lda     scratch+$31
-        brset   1, scratch+$57, $107e
+        brset   1, scratch+$57, _finish_opcode
         add     #$20
-        brset   0, scratch+$57, $107e
+        brset   0, scratch+$57, _finish_opcode
         add     #$20
+_finish_opcode:
         add     scratch
         sta     scratch
-        bra     $1086
+        bra     _read_next_char
+_dot_suffix:
         dec     scratch+$5a
+_read_next_char:
         jsr     read_command_char
+_check_end:
         lda     scratch+$32
         cmp     #$0d
-        beq     $1096
+        beq     _write_bytes
         cmp     #$2e
-        beq     $1084
-        jmp     $0f21
+        beq     _dot_suffix
+_bad_to_entry:
+        jmp     _bad_entry
+_write_bytes:
         jsr     load_line_addr
         lda     scratch
+_write_loop:
         jsr     write_memory_byte
         jsr     increment_address
         dec     scratch+$57
-        bmi     $10ae
+        bmi     _redisasm
         clrx
-        brset   0, scratch+$57, $10aa
+        brset   0, scratch+$57, _load_operand
         incx
+_load_operand:
         lda     scratch+$2c,x
-        bra     $109b
+        bra     _write_loop
+_redisasm:
         jsr     load_line_addr
         jsr     disassemble_line
         tst     scratch+$5a
-        bne     $10bb
-        jmp     $0ef5
+        bne     _cmd_loop
+        jmp     _next_line
+_cmd_loop:
         jmp     cmd_loop
-        bra     $1093
+_bad_mode:
+        bra     _bad_to_entry
+_parse_zp:
         jsr     parse_hex_word
         tst     scratch+$2c
-        bne     $1093
+        bne     _bad_to_entry
         dec     scratch+$2e
         inc     scratch+$57
-        bra     $1086
+        bra     _read_next_char
 
 ; mnemonic text table; high bit marks token end
+        .module mnemonics
 mnemonics:
         .byte   "AD",('C' | $80)
         .byte   ('D' | $80)
