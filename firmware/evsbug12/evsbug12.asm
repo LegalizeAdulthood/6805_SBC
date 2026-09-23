@@ -1617,32 +1617,39 @@ block_fill_cmd:
         bra     $1442
         inc     scratch+$01
         jmp     cmd_loop
+
+        .module load_cmd
+_bad_cmd:
         inc     scratch+$01
         jmp     cmd_loop
 load_cmd:
         jsr     write_crlf
         lda     scratch+$32
         cmp     #$0d
-        beq     $1456
+        beq     _bad_cmd
         cmp     #$20
-        bne     $1456
+        bne     _bad_cmd
         jsr     read_command_char
         jsr     uppercase_command_char
         cmp     #$54
-        bne     $1456
+        bne     _bad_cmd
         bset    0, scratch+$52
-        bra     $1476
+        bra     _init_srec
+_init_srec:
         clr     scratch+$57
+_wait_srec:
         jsr     read_console_char_echo
         cmp     #$53
-        bne     $1478
+        bne     _wait_srec
         jsr     read_console_char_echo
         cmp     #$39
-        beq     $148c
+        beq     _s9_record
         cmp     #$31
-        bne     $1478
-        bra     $148e
+        bne     _wait_srec
+        bra     _read_record
+_s9_record:
         inc     scratch+$57
+_read_record:
         clr     scratch+$56
         bsr     read_srec_byte
         sub     #$03
@@ -1651,21 +1658,25 @@ load_cmd:
         sta     scratch+$22
         bsr     read_srec_byte
         sta     scratch+$23
+_data_loop:
         dec     scratch+$2f
-        bmi     $14ac
+        bmi     _checksum
         bsr     read_srec_byte
         jsr     write_memory_byte
         jsr     increment_address
-        bra     $149e
+        bra     _data_loop
+_checksum:
         ldx     scratch+$56
         stx     scratch+$2f
         bsr     read_srec_byte
         tst     scratch+$57
-        bne     $14bd
+        bne     _done
         coma
         cmp     scratch+$2f
-        beq     $1478
+        beq     _wait_srec
+_bad_srec:
         inc     scratch+$01
+_done:
         clr     scratch+$52
         jmp     cmd_loop
 read_srec_byte:
@@ -1680,8 +1691,10 @@ read_srec_nibl:
         jsr     read_console_char_echo
         jsr     parse_hex_digit
         tst     scratch+$59
-        bmi     $14bb
+        bmi     _bad_srec
         rts
+
+        .module resume_user
 resume_user:
         lda     scratch+$53
         bclr    7, map_switch
