@@ -38,7 +38,8 @@ addr_lo         .equ    scratch+$23   ; active address low
 parse_hi        .equ    scratch+$2c   ; parsed word high
 parse_lo        .equ    scratch+$2d   ; parsed word low
 line_pos        .equ    scratch+$2e   ; line buffer index
-brk_addrs       .equ    scratch+$34   ; breakpoint address table
+brk_addr_hi     .equ    scratch+$34   ; breakpoint table: high first
+brk_addr_lo     .equ    scratch+$35   ; breakpoint table: low next
 inst_target     .equ    scratch+$3e   ; decoded target address
 inst_next       .equ    scratch+$40   ; decoded next address
 brk_ops         .equ    scratch+$42   ; saved breakpoint opcodes
@@ -426,40 +427,50 @@ clear_breakpoints:
         clrx
 
 clear_addr_slots:
-        clr     brk_addrs,x
+        clr     brk_addr_hi,x
         incx
         cpx     #$0d
         bls     clear_addr_slots
         rts
 
+        .module brk_helpers
+_idx            .equ    scratch+$31   ; breakpoint slot index
+_end            .equ    scratch+$32   ; breakpoint range limit
+
 load_breakpoint_address:
-        ldx     scratch+$31
-        inc     scratch+$31
-        inc     scratch+$31
-        lda     scratch+$35,x
+        ldx     _idx
+        inc     _idx
+        inc     _idx
+        lda     brk_addr_lo,x
         sta     addr_lo
-        lda     brk_addrs,x
+        lda     brk_addr_hi,x
         sta     addr_hi
-        bne     $0a50
-        lda     scratch+$35,x
+        bne     _return
+        lda     brk_addr_lo,x
+
+_return:
         rts
 
 find_br_slot:
         lda     #$08
 
 find_address_slot:
-        sta     scratch+$32
+        sta     _end
         clrx
+
+_find_slot:
         lda     addr_hi
-        cmp     brk_addrs,x
-        bne     $0a62
+        cmp     brk_addr_hi,x
+        bne     _next_slot
         lda     addr_lo
-        cmp     scratch+$35,x
-        beq     $0a50
+        cmp     brk_addr_lo,x
+        beq     _return
+
+_next_slot:
         incx
         incx
-        cpx     scratch+$32
-        bls     $0a56
+        cpx     _end
+        bls     _find_slot
         rts
 
 arm_breaks:
@@ -467,19 +478,23 @@ arm_breaks:
         lda     #$08
 
 arm_break_range:
-        sta     scratch+$32
-        stx     scratch+$31
+        sta     _end
+        stx     _idx
+
+_arm_slot:
         bsr     load_breakpoint_address
-        beq     $0a81
+        beq     _next_arm
         bset    3, map_switch
         jsr     read_memory_byte
         lsrx
         sta     brk_ops,x
         lda     #$83
         jsr     write_memory_byte
-        ldx     scratch+$31
-        cpx     scratch+$32
-        bls     $0a70
+
+_next_arm:
+        ldx     _idx
+        cpx     _end
+        bls     _arm_slot
         jmp     resume_user
 
 restore_breaks:
@@ -487,18 +502,22 @@ restore_breaks:
         clra
 
 restore_break_range:
-        stx     scratch+$31
-        sta     scratch+$32
+        stx     _idx
+        sta     _end
+
+_restore_slot:
         bsr     load_breakpoint_address
-        beq     $0a9b
+        beq     _next_restore
         lsrx
         lda     brk_ops,x
         jsr     write_memory_byte
-        lda     scratch+$31
+
+_next_restore:
+        lda     _idx
         sub     #$04
-        sta     scratch+$31
-        cmp     scratch+$32
-        bpl     $0a91
+        sta     _idx
+        cmp     _end
+        bpl     _restore_slot
         rts
 
         .module decode_inst
@@ -1650,7 +1669,6 @@ opcode_table:
         .module exec_cmds
 _save_lo        .equ    scratch+$25   ; saved addr low byte
 _brk_idx        .equ    scratch+$31   ; breakpoint slot index
-_brk_lo         .equ    scratch+$35   ; breakpoint low bytes
 _proc_addr      .equ    scratch+$54   ; proceed resume address
 
 breakpoint_cmd:
@@ -1661,9 +1679,9 @@ breakpoint_cmd:
 
 _save_brk:
         lda     addr_hi,x
-        sta     brk_addrs,x
+        sta     brk_addr_hi,x
         lda     addr_lo,x
-        sta     _brk_lo,x
+        sta     brk_addr_lo,x
         incx
         incx
         dec     cmd_args
@@ -1704,8 +1722,8 @@ nobr_cmd:
         bne     _bad_brk
         jsr     find_br_slot
         bne     _bad_brk
-        clr     brk_addrs,x
-        clr     _brk_lo,x
+        clr     brk_addr_hi,x
+        clr     brk_addr_lo,x
         bra     _show_brks
 
 _clear_brks:
