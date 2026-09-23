@@ -332,6 +332,9 @@ _access_user:
         bset    2, map_switch
         rts
 
+        .module address_math
+_delta          .equ    scratch+$33     ; address delta byte
+
 increment_address:
         lda     #$01
 
@@ -340,6 +343,8 @@ add_a_to_address:
         sta     addr_lo
         clra
         adc     addr_hi
+
+_store_hi:
         sta     addr_hi
         rts
 
@@ -347,13 +352,13 @@ decrement_address:
         lda     #$01
 
 subtract_a_from_address:
-        sta     scratch+$33
+        sta     _delta
         lda     addr_lo
-        sub     scratch+$33
+        sub     _delta
         sta     addr_lo
         lda     addr_hi
         sbc     #$00
-        bra     $0994
+        bra     _store_hi
 
 address_in_range:
         lda     scratch+$24
