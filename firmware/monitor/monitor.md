@@ -385,9 +385,95 @@ cases, and fall through to `fcb $nn` for gaps or invalid opcodes.
 Disassembled source text follows local assembly style: mnemonics,
 directives, pseudo-ops, operands, labels, and symbols are lower-case, while
 hexadecimal digits remain uppercase.
-Mnemonic text tables should use fixed-width four-character records padded
-with spaces, not null-terminated strings. The renderer emits all four
-characters, then emits a fixed number of spaces before any operands.
+The committed EVSbug ROM dump at `docs/evsbug12.bin` is the local
+reference for a compact 6805 monitor disassembler. Useful regions in that
+ROM include:
+
+- `$0d14-$0e60`: disassemble-one-line renderer.
+- `$0aa6-$0bdf`: opcode classifier using opcode ranges, low-nibble tests,
+  and tiny family tables instead of a 256-entry opcode table.
+- `$0dd1-$0e0f`: mnemonic expansion into an output buffer.
+- `$0e9b-$0edf`: compact opcode-family tables for unary, ALU, branch, bit,
+  and inherent instruction groups.
+- `$10cd-$1153`: compressed mnemonic text.
+- `$1155-$11db`: parallel mnemonic metadata; terminal metadata bytes also
+  carry operand/parser class information.
+- `$11dd-$1221`: assembler-side opcode construction and validation tables.
+
+Steal EVSbug's disassembler ideas where they reduce ROM size without
+making tests opaque:
+
+- Classify opcodes by high nibble and low nibble first, then use tiny
+  family tables only for irregular holes or mnemonic selection.
+- Share one operand-format path per addressing mode and one invalid-opcode
+  path that emits `fcb $nn`.
+- Treat branch operands as resolved target addresses in the display, not as
+  raw offsets.
+- Emit canonical mnemonics for aliases; for example, display carry
+  branches as `bcc` and `bcs` rather than preserving source aliases.
+- Consider EVSbug's high-bit string terminator, prefix/suffix mnemonic
+  compression, and metadata-carries-operand-class trick during the
+  compaction pass. The current fixed-width four-character mnemonic records
+  are acceptable while they keep the decoder simple, but they are not a
+  permanent constraint if EVSbug-style packing saves more bytes after full
+  opcode coverage exists.
+
+### 9.2.1. Disassembler Output Helper Refactor
+
+Failing test: the existing disassembler fixture is extended with explicit
+checks for mnemonic column, operand column, invalid-opcode fallback, and
+intentional spaces after three-character inherent mnemonics. The test fails
+until those formatting rules are satisfied by decoding into a fixed RAM
+disassembly row buffer and then emitting that buffer through shared output
+helpers.
+
+End state: existing disassembler code is refactored before adding more
+opcodes. Decoding one instruction fills one fixed-size RAM row buffer with
+the row prefix, machine-byte field, mnemonic field, operand text, and the
+position of the last meaningful character. A separate generic emitter
+copies that buffer to the console or test output. Existing supported
+opcodes produce byte-for-byte identical fixture output. No opcode-specific
+path writes directly to the console, hand-emits row spacing, or duplicates
+hex formatting code.
+
+### 9.2.2. Disassembler Opcode Classifier Refactor
+
+Failing test: the current inherent and invalid-opcode fixture rows fail
+until they decode correctly without using a linear opcode/address table.
+
+End state: the existing inherent instruction support is decoded by opcode
+bit structure and small low-nibble tables. The paired `<opcode>,<address>`
+lookup table is removed for opcodes whose family can be decoded from the
+opcode bits. Irregular opcodes such as `mul`, `rti`, `rts`, `swi`, `stop`,
+`wait`, and the `$90-$9f` inherent group may still use compact special-case
+logic or tiny tables. Existing tests remain green and the generated monitor
+binary is no larger than before the refactor.
+
+### 9.2.3. Disassembler Addressing-Mode Dispatch Skeleton
+
+Failing test: a decode-class fixture fails until the decoder routes current
+supported rows through explicit addressing-mode handlers and routes
+unsupported rows through `fcb $nn`.
+
+End state: the decoder has one dispatch point that identifies the
+addressing mode or invalid fallback before rendering operands. Handlers
+exist for inherent/no-operand and invalid opcodes now, with empty or
+fallback-safe stubs for relative, immediate, direct, extended, indexed, and
+bit-operation forms. Later opcode slices fill these handlers rather than
+adding parallel opcode-specific render paths.
+
+### 9.2.4. Disassembler Size Baseline
+
+Failing test: a build-time size check fails until the monitor build records
+the disassembler-related ROM size or total monitor ROM endpoint in a form
+the tests can compare.
+
+End state: the test suite has a size guard for the monitor binary or
+`rom_code_end` symbol. The guard is intentionally simple: it prevents
+disassembler refactors and new opcode slices from growing the ROM
+silently. When a later slice grows the monitor for a justified feature, the
+slice must update the expected size and explain the tradeoff in the plan or
+commit message.
 
 ### 9.3. Disassembler Relative Instructions
 
@@ -463,6 +549,22 @@ instructions near `$FFFF` display only bytes that can be read and still
 produce a deterministic `fcb $nn` fallback or decoded mnemonic text. The
 decoder emits no labels, symbol names, expressions, comments, or
 source-level information in any fixture row.
+
+### 9.9. Disassembler EVSbug-Style Compaction
+
+Failing test: a size-regression test fails until the completed
+non-symbolic disassembler is smaller than the straightforward
+addressing-mode implementation by a documented amount while preserving all
+coverage fixtures.
+
+End state: after full opcode coverage exists, revisit the decoder using
+the committed EVSbug ROM as the model. Replace remaining broad tables with
+high-nibble and low-nibble family decoding where practical. Evaluate
+whether high-bit-terminated mnemonic text, prefix/suffix mnemonic packing,
+or metadata bytes that carry operand class information save more ROM than
+the current fixed-width four-character records. Keep the option that gives
+the smallest tested monitor binary without making the decoder too obscure
+to maintain.
 
 ### 10. SWI Monitor Entry
 
