@@ -20,6 +20,15 @@ add_test(
         "${CMAKE_CURRENT_SOURCE_DIR}/check_monitor_source_structure.cmake"
 )
 
+add_test(
+    NAME monitor.identifier_style
+    COMMAND
+        "${CMAKE_COMMAND}"
+        "-DMONITOR_SOURCE=${MONITOR_SOURCE}"
+        "-P"
+        "${CMAKE_CURRENT_SOURCE_DIR}/check_monitor_identifier_style.cmake"
+)
+
 if(MAME_EXECUTABLE)
 add_test(
     NAME monitor.mame.reset_vector

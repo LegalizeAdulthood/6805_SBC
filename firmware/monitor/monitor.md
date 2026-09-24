@@ -554,28 +554,6 @@ integration where needed:
 
 ## Implementation Slices
 
-### 9.1.2. Local Label and Equate Refactor
-
-Failing test: a source-style audit fails until labels and equates used only
-inside one module use short local names, common assembly abbreviations, and
-declaration comments for non-obvious abbreviations. The audit enforces the
-identifier length penalties from the top-level style rules: `<= 8`
-characters is preferred, `9-16` characters requires justification, and
-`> 16` characters fails unless explicitly justified as an exported entry
-point, hardware register, persistent monitor state, or shared data table.
-
-End state: long prototype names such as temporary counters, loop labels,
-and local phase variables are shortened and moved into their owning module.
-Common abbreviations such as `msg`, `cmd`, `buf`, `ptr`, `idx`, `cnt`,
-`len`, `tmp`, `addr`, `vec`, and `op` are used where they are clear.
-Abbreviations generally drop vowels, keep recognizable consonants, and
-avoid duplicated consonants.
-Externally meaningful names remain descriptive but are still challenged by
-the eight-character warning and sixteen-character failure thresholds. Local
-labels use the module-local naming convention established by EVSBUG12, and
-no source change weakens the existing lowercase assembly style. Existing
-tests remain green.
-
 ### 9.1.3. Running Commentary Alignment
 
 Failing test: a source-style audit fails until comments added or touched in

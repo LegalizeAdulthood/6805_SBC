@@ -176,14 +176,14 @@ chrout:
 draw_boot_screen:
         ldx     #0
 
-draw_boot_screen_loop:
+_loop:
         lda     boot_screen_text,x
-        beq     draw_boot_screen_done
+        beq     _done
         jsr     chrout
         inx
-        bra     draw_boot_screen_loop
+        bra     _loop
 
-draw_boot_screen_done:
+_done:
         jmp     draw_cpu_row
 
         .module draw_cpu_row
@@ -225,12 +225,12 @@ draw_cpu_row:
 
 emit_cpu_row_text:
         lda     cpu_row_text,x
-        beq     emit_cpu_row_text_done
+        beq     _done
         jsr     chrout
         inx
         bra     emit_cpu_row_text
 
-emit_cpu_row_text_done:
+_done:
         rts
 
         .module screen_output
@@ -238,10 +238,10 @@ emit_cpu_row_text_done:
 emit_spaces:
         lda     #$20
 
-emit_spaces_loop:
+_loop:
         jsr     chrout
         decx
-        bne     emit_spaces_loop
+        bne     _loop
         rts
 
         .module disasm_output
@@ -249,16 +249,16 @@ emit_spaces_loop:
 emit_disasm_mnemonic:
         clrx
 
-emit_disasm_inherent_loop:
+_scan:
         lda     disasm_inherent_table,x
         beq     emit_disasm_fcb
         cmp     disasm_opcode
-        beq     emit_disasm_inherent_found
+        beq     _found
         inx
         inx
-        bra     emit_disasm_inherent_loop
+        bra     _scan
 
-emit_disasm_inherent_found:
+_found:
         inx
         lda     disasm_inherent_table,x
         tax
@@ -280,12 +280,12 @@ emit_disasm_text:
         lda     #$04
         sta     hex_value
 
-emit_disasm_text_loop:
+_loop:
         lda     disasm_text,x
         jsr     chrout
         inx
         dec     hex_value
-        bne     emit_disasm_text_loop
+        bne     _loop
         rts
 
         .module hex_output
@@ -310,82 +310,82 @@ emit_hex_nibble:
         rts
 
 emit_flag_h:
-        brset   cc_h_bit,saved_cc,emit_flag_h_set
+        brset   cc_h_bit,saved_cc,_h_set
         lda     #$20
-        bra     emit_flag_h_write
+        bra     _h_wr
 
-emit_flag_h_set:
+_h_set:
         lda     #$48
 
-emit_flag_h_write:
+_h_wr:
         jsr     chrout
         rts
 
 emit_flag_i:
-        brset   cc_i_bit,saved_cc,emit_flag_i_set
+        brset   cc_i_bit,saved_cc,_i_set
         lda     #$20
-        bra     emit_flag_i_write
+        bra     _i_wr
 
-emit_flag_i_set:
+_i_set:
         lda     #$49
 
-emit_flag_i_write:
+_i_wr:
         jsr     chrout
         rts
 
 emit_flag_n:
-        brset   cc_n_bit,saved_cc,emit_flag_n_set
+        brset   cc_n_bit,saved_cc,_n_set
         lda     #$20
-        bra     emit_flag_n_write
+        bra     _n_wr
 
-emit_flag_n_set:
+_n_set:
         lda     #$4e
 
-emit_flag_n_write:
+_n_wr:
         jsr     chrout
         rts
 
 emit_flag_z:
-        brset   cc_z_bit,saved_cc,emit_flag_z_set
+        brset   cc_z_bit,saved_cc,_z_set
         lda     #$20
-        bra     emit_flag_z_write
+        bra     _z_wr
 
-emit_flag_z_set:
+_z_set:
         lda     #$5a
 
-emit_flag_z_write:
+_z_wr:
         jsr     chrout
         rts
 
 emit_flag_c:
-        brset   cc_c_bit,saved_cc,emit_flag_c_set
+        brset   cc_c_bit,saved_cc,_c_set
         lda     #$20
-        bra     emit_flag_c_write
+        bra     _c_wr
 
-emit_flag_c_set:
+_c_set:
         lda     #$43
 
-emit_flag_c_write:
+_c_wr:
         jsr     chrout
         rts
 
 emit_stop_reason:
         lda     stop_reason
         cmp     #stop_reset
-        beq     emit_stop_reason_reset
+        beq     _reset
         cmp     #stop_test
-        beq     emit_stop_reason_test
+        beq     _test
         ldx     #stop_unknown_text-cpu_row_text
-        bra     emit_stop_reason_write
+        bra     _write
 
-emit_stop_reason_reset:
+_reset:
         ldx     #stop_reset_text-cpu_row_text
-        bra     emit_stop_reason_write
+        bra     _write
 
-emit_stop_reason_test:
+_test:
         ldx     #stop_test_text-cpu_row_text
 
-emit_stop_reason_write:
+_write:
         jsr     emit_cpu_row_text
         rts
 
@@ -403,7 +403,7 @@ draw_memory_row:
         clrx
         stx     memory_row_index
 
-draw_memory_row_hex_loop:
+_hexlp:
         ldx     memory_row_index
         jsr     memory_read_opcode
         jsr     emit_hex_byte
@@ -413,17 +413,17 @@ draw_memory_row_hex_loop:
         inx
         stx     memory_row_index
         cpx     #$10
-        bne     draw_memory_row_hex_loop
+        bne     _hexlp
         lda     #$20
         jsr     chrout
         clrx
 
-draw_memory_row_ascii_loop:
+_asclp:
         jsr     memory_read_opcode
         jsr     emit_memory_ascii
         inx
         cpx     #$10
-        bne     draw_memory_row_ascii_loop
+        bne     _asclp
         ldx     #cpu_row_crlf_text-cpu_row_text
         jsr     emit_cpu_row_text
         rts
@@ -449,28 +449,28 @@ draw_disassembly_row:
         jsr     emit_spaces
         jsr     emit_disasm_mnemonic
 
-draw_disassembly_done:
+_done:
         ldx     #cpu_row_crlf_text-cpu_row_text
         jsr     emit_cpu_row_text
         inc     disasm_pc_lo
-        bne     draw_disassembly_return
+        bne     _return
         inc     disasm_pc_hi
 
-draw_disassembly_return:
+_return:
         rts
 
         .module memory_ascii
 
 emit_memory_ascii:
         cmp     #$20
-        blo     emit_memory_ascii_dot
+        blo     _dot
         cmp     #$7f
-        blo     emit_memory_ascii_write
+        blo     _write
 
-emit_memory_ascii_dot:
+_dot:
         lda     #$2e
 
-emit_memory_ascii_write:
+_write:
         jsr     chrout
         rts
 
@@ -490,35 +490,35 @@ init_memory_panel:
         .module memory_editing
 
 memory_key_input:
-        jsr     handle_memory_key
+        jsr     _key
         jmp     monitor_idle
 
-handle_memory_key:
+_key:
         sta     hex_value
         cmp     #key_tab
-        beq     memory_key_tab
+        beq     _tab
         cmp     #key_ctrl_n
-        beq     memory_key_next_page
+        beq     _next
         cmp     #key_ctrl_p
-        beq     memory_key_prev_page
+        beq     _prev
         cmp     #key_left
-        beq     memory_key_left
+        beq     _left
         cmp     #key_right
-        beq     memory_key_right
+        beq     _right
         cmp     #key_up
-        beq     memory_key_up
+        beq     _up
         cmp     #key_down
-        beq     memory_key_down
+        beq     _down
         lda     memory_focus
-        beq     memory_key_hex_dispatch
+        beq     _hexgo
         lda     hex_value
-        jmp     memory_key_ascii
+        jmp     _ascii
 
-memory_key_hex_dispatch:
+_hexgo:
         lda     hex_value
-        jmp     memory_key_hex
+        jmp     _hex
 
-memory_key_tab:
+_tab:
         lda     memory_focus
         eor     #memory_focus_ascii
         sta     memory_focus
@@ -526,73 +526,73 @@ memory_key_tab:
         sta     memory_hex_phase
         rts
 
-memory_key_next_page:
+_next:
         inc     memory_page_hi
         inc     memory_cursor_hi
         jmp     memory_cursor_done
 
-memory_key_prev_page:
+_prev:
         dec     memory_page_hi
         dec     memory_cursor_hi
         jmp     memory_cursor_done
 
-memory_key_left:
+_left:
         jsr     memory_cursor_left
         rts
 
-memory_key_right:
+_right:
         jsr     memory_cursor_right
         rts
 
-memory_key_up:
+_up:
         jsr     memory_cursor_up
         rts
 
-memory_key_down:
+_down:
         jsr     memory_cursor_down
         rts
 
-memory_key_ascii:
+_ascii:
         cmp     #$20
-        blo     memory_key_done
+        blo     _done
         cmp     #$7f
-        bhs     memory_key_done
+        bhs     _done
         jsr     memory_write_cursor
         jsr     memory_cursor_right
 
-memory_key_done:
+_done:
         rts
 
-memory_key_hex:
+_hex:
         cmp     #$30
-        blo     memory_key_done
+        blo     _done
         cmp     #$3a
-        blo     memory_hex_digit
+        blo     _digit
         cmp     #$41
-        blo     memory_key_done
+        blo     _done
         cmp     #$47
-        blo     memory_hex_upper
+        blo     _upper
         cmp     #$61
-        blo     memory_key_done
+        blo     _done
         cmp     #$67
-        blo     memory_hex_lower
+        blo     _lower
         rts
 
-memory_hex_digit:
+_digit:
         sub     #$30
-        bra     memory_hex_nibble
+        bra     _nibl
 
-memory_hex_upper:
+_upper:
         sub     #$37
-        bra     memory_hex_nibble
+        bra     _nibl
 
-memory_hex_lower:
+_lower:
         sub     #$57
 
-memory_hex_nibble:
+_nibl:
         sta     hex_value
         lda     memory_hex_phase
-        bne     memory_hex_low
+        bne     _low
         lda     hex_value
         lsla
         lsla
@@ -603,7 +603,7 @@ memory_hex_nibble:
         sta     memory_hex_phase
         rts
 
-memory_hex_low:
+_low:
         jsr     memory_read_cursor
         and     #$f0
         sta     memory_row_index
@@ -641,10 +641,10 @@ memory_write_cursor:
 
 memory_cursor_left:
         lda     memory_cursor_lo
-        bne     memory_cursor_left_dec
+        bne     _dec
         dec     memory_cursor_hi
 
-memory_cursor_left_dec:
+_dec:
         dec     memory_cursor_lo
         bra     memory_cursor_done
 
@@ -721,10 +721,10 @@ test_disassembler_output:
         lda     #$29
         sta     disasm_test_count
 
-test_disassembler_output_loop:
+_loop:
         jsr     draw_disassembly_row
         dec     disasm_test_count
-        bne     test_disassembler_output_loop
+        bne     _loop
         bra     monitor_idle
 
         .module monitor_idle
