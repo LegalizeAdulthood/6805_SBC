@@ -554,19 +554,6 @@ integration where needed:
 
 ## Implementation Slices
 
-### 9.1.5. Zero-Page Allocation Audit
-
-Failing test: a zero-page budget test fails until the build records the
-monitor's zero-page allocations and classifies each byte as hardware,
-permanent monitor state, generated-code thunk, or scratch.
-
-End state: zero-page RAM use is explicit and justified. Values stay in
-zero page only when they are persistent state, are required by the hardware
-or generated thunk mechanism, or save enough ROM bytes through direct
-addressing to be worth the allocation. Anything that can move out of zero
-page without growing the ROM or breaking the machine model is moved or
-deferred to non-zero-page RAM. Existing tests remain green.
-
 ### 9.1.6. Existing Table Encoding Refactor
 
 Failing test: a size and table-shape audit fails until the existing monitor

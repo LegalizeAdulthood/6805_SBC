@@ -1,0 +1,121 @@
+if(NOT DEFINED MONITOR_SOURCE)
+    message(FATAL_ERROR "MONITOR_SOURCE is required")
+endif()
+
+if(NOT EXISTS "${MONITOR_SOURCE}")
+    message(FATAL_ERROR "monitor source does not exist: ${MONITOR_SOURCE}")
+endif()
+
+set(zero_page_budget 37)
+set(valid_categories hardware state thunk scratch)
+set(errors "")
+
+file(STRINGS "${MONITOR_SOURCE}" source_lines)
+
+function(_hex_byte _out_var _value)
+    set(_hex_digits 0 1 2 3 4 5 6 7 8 9 A B C D E F)
+    math(EXPR _hi "${_value} / 16")
+    math(EXPR _lo "${_value} % 16")
+    list(GET _hex_digits ${_hi} _hi_digit)
+    list(GET _hex_digits ${_lo} _lo_digit)
+    set(_formatted "${_hi_digit}${_lo_digit}")
+    set(${_out_var} "${_formatted}" PARENT_SCOPE)
+endfunction()
+
+function(_record_zpage _category _address _line_no)
+    _hex_byte(_key "${_address}")
+    if(DEFINED zpage_${_key})
+        list(APPEND errors
+            "zero-page address $${_key} is classified twice (${zpage_${_key}} and ${_category})"
+        )
+        set(errors "${errors}" PARENT_SCOPE)
+        return()
+    endif()
+    set("zpage_${_key}" "${_category}" PARENT_SCOPE)
+    set("zpage_line_${_key}" "${_line_no}" PARENT_SCOPE)
+    set(_classified "${classified_addresses}")
+    list(APPEND _classified "${_key}")
+    set(classified_addresses "${_classified}" PARENT_SCOPE)
+endfunction()
+
+function(_require_zpage _address _category)
+    _hex_byte(_key "${_address}")
+    if(NOT DEFINED zpage_${_key})
+        list(APPEND errors "zero-page address $${_key} is not classified")
+    elseif(NOT "${zpage_${_key}}" STREQUAL "${_category}")
+        list(APPEND errors
+            "zero-page address $${_key} is classified as ${zpage_${_key}}, expected ${_category}"
+        )
+    endif()
+    set(errors "${errors}" PARENT_SCOPE)
+endfunction()
+
+function(_require_range _start _end _category)
+    math(EXPR _start_dec "${_start}")
+    math(EXPR _end_dec "${_end}")
+    foreach(_address RANGE ${_start_dec} ${_end_dec})
+        _require_zpage(${_address} "${_category}")
+    endforeach()
+    set(errors "${errors}" PARENT_SCOPE)
+endfunction()
+
+set(classified_addresses "")
+set(line_no 0)
+
+foreach(line IN LISTS source_lines)
+    math(EXPR line_no "${line_no} + 1")
+
+    if(NOT line MATCHES "^; zpage +(hardware|state|thunk|scratch) +[$]([0-9A-Fa-f][0-9A-Fa-f])(-[$]([0-9A-Fa-f][0-9A-Fa-f]))? +- +(.+[^ ])$")
+        continue()
+    endif()
+
+    set(category "${CMAKE_MATCH_1}")
+    set(start_hex "${CMAKE_MATCH_2}")
+    set(end_hex "${CMAKE_MATCH_4}")
+    set(justification "${CMAKE_MATCH_5}")
+    math(EXPR start_address "0x${start_hex}")
+    if(end_hex STREQUAL "")
+        set(end_address "${start_address}")
+    else()
+        math(EXPR end_address "0x${end_hex}")
+    endif()
+
+    if(end_address LESS start_address)
+        list(APPEND errors "zero-page range at line ${line_no} has descending addresses")
+        continue()
+    endif()
+
+    string(STRIP "${justification}" justification)
+    string(LENGTH "${justification}" justification_length)
+    if(justification_length LESS 12)
+        list(APPEND errors "zero-page range at line ${line_no} needs a useful justification")
+    endif()
+
+    foreach(address RANGE ${start_address} ${end_address})
+        _record_zpage("${category}" "${address}" "${line_no}")
+    endforeach()
+endforeach()
+
+list(LENGTH classified_addresses classified_count)
+if(classified_count EQUAL 0)
+    list(APPEND errors "monitor.asm must record zero-page allocations with zpage comments")
+elseif(classified_count GREATER zero_page_budget)
+    list(APPEND errors
+        "zero-page map classifies ${classified_count} bytes, exceeding budget ${zero_page_budget}"
+    )
+endif()
+
+_require_range(0x06 0x07 hardware)
+_require_range(0x10 0x1c state)
+_require_range(0x1d 0x1f thunk)
+_require_range(0x20 0x22 scratch)
+_require_range(0x23 0x24 state)
+_require_range(0x25 0x28 thunk)
+_require_range(0x29 0x2c state)
+_require_range(0x2d 0x30 thunk)
+_require_range(0x31 0x32 state)
+
+if(errors)
+    list(JOIN errors "\n  - " error_text)
+    message(FATAL_ERROR "monitor.asm zero-page allocation audit failed:\n  - ${error_text}")
+endif()

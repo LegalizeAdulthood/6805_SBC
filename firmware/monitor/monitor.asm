@@ -78,6 +78,20 @@ lda_extended_indexed   .equ    $d6
 sta_extended_indexed   .equ    $d7
 rts_instruction        .equ    $81
 
+; Zero Page Usage
+;
+; Address   Role    Description
+; $06-$07   hw      ACIA control, status, and data registers.
+; $10-$16   state   saved user CPU frame and monitor stop reason.
+; $17-$1c   state   RAM interrupt vectors initialized by reset.
+; $1d-$1f   thunk   generated interrupt jump target.
+; $20-$22   scratch shared scratch window for non-overlapping lifetimes.
+; $23-$24   state   memory panel page address.
+; $25-$28   thunk   generated indexed memory read routine.
+; $29-$2c   state   memory cursor address, focus, and edit phase.
+; $2d-$30   thunk   generated indexed memory write routine.
+; $31-$32   state   disassembly panel start address.
+
         .org    $1000
 
         .module reset_entry

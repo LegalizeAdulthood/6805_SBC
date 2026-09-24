@@ -47,6 +47,15 @@ add_test(
         "${CMAKE_CURRENT_SOURCE_DIR}/check_monitor_ram_map.cmake"
 )
 
+add_test(
+    NAME monitor.zero_page_allocations
+    COMMAND
+        "${CMAKE_COMMAND}"
+        "-DMONITOR_SOURCE=${MONITOR_SOURCE}"
+        "-P"
+        "${CMAKE_CURRENT_SOURCE_DIR}/check_monitor_zero_page.cmake"
+)
+
 if(MAME_EXECUTABLE)
 add_test(
     NAME monitor.mame.reset_vector
