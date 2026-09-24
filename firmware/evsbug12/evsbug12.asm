@@ -92,6 +92,8 @@ trace_cnt       .equ    scratch + $49   ; trace instruction count
 proceed_cnt     .equ    scratch + $4a   ; proceed breakpoint count
 step_flag       .equ    scratch + $51   ; step-over pending flag
 mon_flags       .equ    scratch + $52   ; monitor control flags
+one_nibl_bit    .equ    0               ; parse one hex nibl
+nowait_tx_bit   .equ    1               ; skip tx-ready wait
 user_sp         .equ    scratch + $53   ; captured user SP
 saved_addr_hi   .equ    scratch + $54   ; saved address high
 saved_addr_lo   .equ    scratch + $55   ; saved address low
@@ -294,7 +296,7 @@ write_console_char:
 
 _write_char:
         sta     acia_tdra
-        brset   1, mon_flags, _return
+        brset   nowait_tx_bit, mon_flags, _return
 
 _tx_poll:
         jsr     service_cop
@@ -2343,7 +2345,7 @@ load_cmd:
         jsr     uppercase_command_char
         cmp     #'T'
         bne     _bad_cmd
-        bset    0, mon_flags
+        bset    one_nibl_bit, mon_flags
         bra     _init_srec
 
 _init_srec:
@@ -2471,7 +2473,7 @@ _reset_delay:
         jsr     write_crlf
 
 enter_monitor:
-        bclr    1, mon_flags
+        bclr    nowait_tx_bit, mon_flags
         clr     proceed_cnt
         clr     cmd_err
         clr     trace_cnt
