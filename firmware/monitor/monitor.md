@@ -31,14 +31,6 @@ the start, but the functional implementation slices should render panel
 content without depending on border glyphs. Drawing borders around the
 panels is deferred to the final polish slice.
 
-Monitor assembly sources use lowercase for directives, opcodes, operands,
-labels, and symbols. Hexadecimal operands also use lowercase hex digits
-where letters appear. User-facing display strings may use whatever casing
-the screen text requires. Labels should be preceded by a blank line,
-unless the previous line is a module operation; in that case, the blank
-line should precede the module operation. A blank line should separate
-module-local equates from the global entry point for the module.
-
 ```text
 | SP 00F8  PC E000  A 00  X 00  FLAGS 111HINZC  STOPPED: RESET                 |
 --------------------------------------------------------------------------------
@@ -76,6 +68,78 @@ The layout is vertically fixed:
 
 TAB moves focus between editable panels and subpanels. Ctrl+L clears and
 redraws the whole screen from the monitor's current state.
+
+## Assembly Style and Resource Rules
+
+These rules apply to all subsequent monitor implementation. They are not
+only notes about EVSBUG12; EVSBUG12 is the worked example that exposed the
+style and resource constraints we want for the monitor.
+
+Monitor assembly sources use lowercase for directives, opcodes, operands,
+labels, and symbols. Hexadecimal operands also use lowercase hex digits
+where letters appear. User-facing display strings may use whatever casing
+the screen text requires.
+
+Use `.module` to define each global entry point or closely related group of
+global entry points. A module owns the local labels and local equates used
+only to implement that global entry point. Module-local names should not
+leak into unrelated code.
+
+Identifiers should be terse without becoming cryptic. Assembly idioms such
+as `msg` for message, `cmd` for command, `buf` for buffer, `ptr` for
+pointer, `idx` for index, `cnt` for count, `len` for length, `tmp` for
+temporary, `addr` for address, `vec` for vector, `op` for opcode, and
+`hi`/`lo` for byte halves are preferred over long-form words.
+
+When abbreviating, start by dropping vowels while keeping enough consonants
+to preserve recognition, and avoid duplicated consonants. Prefer
+established short forms such as `msg` and `cmd` over mechanical spellings
+such as `mssg` or `cmmd`.
+
+Use module scope to remove repetitive prefixes instead of encoding the
+whole subsystem name into every local identifier. Where an identifier is
+declared, use the running-commentary column to give the long-form meaning
+when the abbreviation is not completely obvious.
+
+Identifier length penalties are explicit:
+
+- `<= 8` characters: preferred.
+- `9-16` characters: allowed only when the extra length clearly improves
+  review; otherwise shorten the identifier.
+- `> 16` characters: aggressively penalized. Replace with a shorter
+  module-local name plus a declaration comment unless the name is an
+  explicitly justified exported entry point, hardware register, persistent
+  monitor state, or shared data table.
+
+Labels should be preceded by a blank line, unless the previous line is a
+module operation; in that case, the blank line should precede the module
+operation. A blank line should separate module-local equates from the
+global entry point for the module.
+
+Comments that describe implementation details should form a running
+commentary starting in one-based column 41 where practical. Comments should
+explain intent, lifetime, hardware meaning, table encoding, or non-obvious
+control flow rather than narrating self-evident instructions.
+
+The monitor is constrained by a 4K ROM budget. Optimize for binary size
+over speed unless a specific behavior requires otherwise. Factor out
+duplication aggressively, prefer shared routines and shared metadata, and
+avoid wider encodings that only make the source look simpler.
+
+Data tables should be encoded as tightly as the implementation can
+reasonably support. Prefer shared base tables, high-bit terminators,
+indexed metadata, symbolic constants, and packed fields when they reduce
+ROM size while remaining reviewable.
+
+RAM is more precious than ROM. Separate permanent monitor state from
+scratch storage, and reuse scratch bytes for routines whose lifetimes do
+not overlap. Do not allocate a permanent RAM byte for a temporary value
+unless that value must survive across monitor operations.
+
+Zero-page RAM is more precious than ordinary RAM because it enables shorter
+direct-addressed instructions. Use zero page deliberately for hardware,
+persistent debugger state, generated-code thunks, or scratch values whose
+direct addressing saves enough ROM to justify the allocation.
 
 ## Control Model
 
@@ -383,6 +447,13 @@ MAME directory or on any caller working directory.
 
 Planned implementation slices follow in dependency order.
 
+The current `firmware/monitor/monitor.asm` is still structured like an
+early prototype: long global equate names, no module scopes, permanent
+zero-page allocations for values that are often temporary, sparse running
+commentary, and simple data tables that favor readability over ROM density.
+Before adding more monitor behavior, refactor the source to obey the
+top-level assembly style and resource rules.
+
 The disassembler and keyboard assembler slices should now directly take the
 proven EVSBUG12 disassembler and assembler from the reconstituted assembly
 source, then adapt their I/O boundaries to the monitor's full-screen
@@ -480,6 +551,99 @@ integration where needed:
 - Treat EVSBUG12's temporary-breakpoint trace mechanism as reference
   material for control-flow edge cases. Do not replace the monitor's
   ASSIST05-style timer-step requirement with RAM/ROM patching.
+
+## Implementation Slices
+
+### 9.1.1. Module Boundary Refactor
+
+Failing test: a source-structure audit fails until `monitor.asm` has
+`.module` directives before the existing global entry-point groups and no
+unscoped implementation labels that are only used inside one routine group.
+
+End state: `monitor.asm` is organized into module scopes for reset and
+monitor entry, interrupt dispatch, console I/O, screen drawing, hex output,
+CPU row rendering, memory row rendering, disassembly row rendering, memory
+editing, cursor movement, test hooks, monitor idle, data tables, and
+vectors. The refactor does not intentionally change generated bytes or
+observable behavior except for harmless symbol names in listings. All
+existing monitor tests remain green, and each module can be reviewed as a
+small implementation unit with clear global entry points.
+
+### 9.1.2. Local Label and Equate Refactor
+
+Failing test: a source-style audit fails until labels and equates used only
+inside one module use short local names, common assembly abbreviations, and
+declaration comments for non-obvious abbreviations. The audit enforces the
+identifier length penalties from the top-level style rules: `<= 8`
+characters is preferred, `9-16` characters requires justification, and
+`> 16` characters fails unless explicitly justified as an exported entry
+point, hardware register, persistent monitor state, or shared data table.
+
+End state: long prototype names such as temporary counters, loop labels,
+and local phase variables are shortened and moved into their owning module.
+Common abbreviations such as `msg`, `cmd`, `buf`, `ptr`, `idx`, `cnt`,
+`len`, `tmp`, `addr`, `vec`, and `op` are used where they are clear.
+Abbreviations generally drop vowels, keep recognizable consonants, and
+avoid duplicated consonants.
+Externally meaningful names remain descriptive but are still challenged by
+the eight-character warning and sixteen-character failure thresholds. Local
+labels use the module-local naming convention established by EVSBUG12, and
+no source change weakens the existing lowercase assembly style. Existing
+tests remain green.
+
+### 9.1.3. Running Commentary Alignment
+
+Failing test: a source-style audit fails until comments added or touched in
+`monitor.asm` begin in one-based column 41 where practical, matching the
+running-commentary style used in the reconstituted EVSBUG12 source.
+
+End state: hardware equates, RAM-map equates, data tables, generated-code
+thunks, interrupt vectors, and non-obvious control-flow blocks have concise
+comments aligned in the running-commentary column. Comments explain intent,
+lifetime, hardware meaning, or encoding tricks; they do not narrate
+self-evident instructions. Existing tests remain green.
+
+### 9.1.4. Scratch RAM Lifetime Refactor
+
+Failing test: a RAM-map audit fails until `monitor.asm` distinguishes
+permanent monitor state from scratch bytes and documents which module owns
+each scratch alias.
+
+End state: saved CPU state, editable panel state, RAM interrupt vectors,
+and other values that persist across monitor operations remain in named
+permanent storage. Short-lived temporaries used by output formatting,
+memory editing, disassembly, keyboard parsing, and tests are moved into a
+shared scratch area with module-local aliases whose lifetimes do not
+coexist. The refactor reduces or preserves total RAM use, preserves all
+behavior, and leaves the source ready for later debugger state without
+claiming one permanent byte per temporary value.
+
+### 9.1.5. Zero-Page Allocation Audit
+
+Failing test: a zero-page budget test fails until the build records the
+monitor's zero-page allocations and classifies each byte as hardware,
+permanent monitor state, generated-code thunk, or scratch.
+
+End state: zero-page RAM use is explicit and justified. Values stay in
+zero page only when they are persistent state, are required by the hardware
+or generated thunk mechanism, or save enough ROM bytes through direct
+addressing to be worth the allocation. Anything that can move out of zero
+page without growing the ROM or breaking the machine model is moved or
+deferred to non-zero-page RAM. Existing tests remain green.
+
+### 9.1.6. Existing Table Encoding Refactor
+
+Failing test: a size and table-shape audit fails until the existing monitor
+tables are named, tightly encoded, and no larger than the current table
+representations for the behavior they support.
+
+End state: current strings, CPU/status text, boot escape sequences,
+disassembly mnemonic text, and opcode lookup data use compact encodings
+that match the EVSBUG12 lessons: shared base tables, symbolic constants,
+high-bit terminators where they save bytes, and no duplicate fixed-width
+text unless the fixed width is measurably smaller. This slice preserves the
+current limited behavior and does not attempt full opcode coverage; it
+prepares the source for the later EVSBUG-derived table lift.
 
 ### 9.2.1. EVSBUG12 Disassembler Harness
 
