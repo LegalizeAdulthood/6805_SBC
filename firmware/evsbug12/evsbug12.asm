@@ -56,6 +56,13 @@ map_resume_swi_bit .equ 7               ; monitor resume SWI
 scratch         .equ    $51
 cmd_thunk       .equ    $9c
 int_vecs        .equ    $1ff0
+stk_cc          .equ    $01             ; stacked condition codes
+stk_a           .equ    $02             ; stacked A register
+stk_x           .equ    $03             ; stacked X register
+stk_pc          .equ    $04             ; stacked PC high byte
+stk_len         .equ    $05             ; saved register byte count
+stk_swi_src     .equ    $06             ; SWI copy source offset
+stk_swi_end     .equ    $08             ; SWI copy limit offset
 
 cmd_err         .equ    scratch + $01   ; command error flag
 cmd_args        .equ    scratch + $02   ; command argument count
@@ -401,7 +408,7 @@ write_sp:
         lda     #'='
         jsr     write_console_char
         lda     addr_lo
-        add     #$05
+        add     #stk_len
         jsr     write_hex_byte
         rts
 
@@ -436,22 +443,22 @@ select_reg_addr:
         cpx     #'P'
         bne     _check_x
         inc     _cnt
-        add     #$04
+        add     #stk_pc
 
 _check_x:
         cpx     #'X'
         bne     _check_a
-        add     #$03
+        add     #stk_x
 
 _check_a:
         cpx     #'A'
         bne     _check_cc
-        add     #$02
+        add     #stk_a
 
 _check_cc:
         cpx     #'C'
         bne     _store_addr
-        add     #$01
+        add     #stk_cc
 
 _store_addr:
         sta     addr_lo
@@ -463,7 +470,7 @@ display_cc:
         ldx     #msg_sp4
         jsr     write_string
         lda     user_sp
-        add     #$01
+        add     #stk_cc
         sta     addr_lo
         clr     addr_hi
         jsr     read_memory_byte
@@ -614,7 +621,7 @@ write_stack_byte:
         rts
 
 load_stack_pc:
-        ldx     #$04
+        ldx     #stk_pc
 
 load_stack_addr:
         bsr     read_stack_word
@@ -622,7 +629,7 @@ load_stack_addr:
         rts
 
 write_stack_pc:
-        ldx     #$04
+        ldx     #stk_pc
         jsr     stack_addr
         lda     word_hi
         jsr     write_memory_byte
@@ -2008,7 +2015,7 @@ go_cmd:
         bmi     _go_saved_pc
         bne     _bad_run
         jsr     save_addr
-        ldx     #$04
+        ldx     #stk_pc
         jsr     write_stack_byte
         jsr     increment_address
         lda     _save_lo
@@ -2585,21 +2592,21 @@ _step_break:
 
 _adjust_swi_stack:
         lda     user_sp
-        sub     #$05
+        sub     #stk_len
         sta     user_sp
-        ldx     #$06
+        ldx     #stk_swi_src
 
 _copy_stack_byte:
         stx     _stk_idx
         jsr     read_stack_byte
         sta     word_hi
         txa
-        sub     #$05
+        sub     #stk_len
         tax
         jsr     write_stack_byte
         ldx     _stk_idx
         incx
-        cpx     #$08
+        cpx     #stk_swi_end
         bls     _copy_stack_byte
         jsr     read_swi_vector
         jsr     write_stack_pc
