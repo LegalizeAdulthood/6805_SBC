@@ -6,6 +6,8 @@ LF              .equ    $0a             ; line feed
 CR              .equ    $0d             ; carriage return
 ESC             .equ    $1b             ; escape
 SP              .equ    $20             ; space
+DEL             .equ    $7f             ; delete
+char_mask       .equ    $7f             ; strip char high bit
 msg_end         .equ    $80             ; high-bit string terminator
 
 stack_top       .equ    $7f
@@ -247,7 +249,7 @@ emit_cpu_txt:
         bra     emit_cpu_txt
 
 _last:
-        and     #$7f
+        and     #char_mask
         jsr     chrout
         rts
 
@@ -546,7 +548,7 @@ _mcopy:
         cmp     _mpos
         bhi     _mprev
         lda     mnemonics,x
-        and     #$7f
+        and     #char_mask
         stx     _mctr
         ldx     _mpos
         sta     dline_buf,x
@@ -753,7 +755,7 @@ flag_h:
         bra     _h_wr
 
 _h_set:
-        lda     #$48
+        lda     #'H'
 
 _h_wr:
         jsr     chrout
@@ -765,7 +767,7 @@ flag_i:
         bra     _i_wr
 
 _i_set:
-        lda     #$49
+        lda     #'I'
 
 _i_wr:
         jsr     chrout
@@ -777,7 +779,7 @@ flag_n:
         bra     _n_wr
 
 _n_set:
-        lda     #$4e
+        lda     #'N'
 
 _n_wr:
         jsr     chrout
@@ -789,7 +791,7 @@ flag_z:
         bra     _z_wr
 
 _z_set:
-        lda     #$5a
+        lda     #'Z'
 
 _z_wr:
         jsr     chrout
@@ -801,7 +803,7 @@ flag_c:
         bra     _c_wr
 
 _c_set:
-        lda     #$43
+        lda     #'C'
 
 _c_wr:
         jsr     chrout
@@ -947,7 +949,7 @@ emit_mem_asc:
         blo     _write
 
 _dot:
-        lda     #$2e
+        lda     #'.'
 
 _write:
         jsr     chrout
@@ -1040,7 +1042,7 @@ _down:
 _ascii:
         cmp     #SP                     ; ASCII editing accepts printable bytes only
         blo     _done
-        cmp     #$7f
+        cmp     #DEL
         bhs     _done
         bsr     mem_wr_cur
         bsr     mem_cur_rgt
@@ -1049,30 +1051,30 @@ _done:
         rts
 
 _hex:
-        cmp     #$30                    ; Hex editing converts ASCII digits into nibbles
+        cmp     #'0'                    ; Hex editing converts ASCII digits into nibbles
         blo     _done
-        cmp     #$3a
+        cmp     #':'
         blo     _digit
-        cmp     #$41
+        cmp     #'A'
         blo     _done
-        cmp     #$47
+        cmp     #'G'
         blo     _upper
-        cmp     #$61
+        cmp     #'a'
         blo     _done
-        cmp     #$67
+        cmp     #'g'
         blo     _lower
         rts
 
 _digit:
-        sub     #$30
+        sub     #'0'
         bra     _nibl
 
 _upper:
-        sub     #$37
+        sub     #('A' - 10)
         bra     _nibl
 
 _lower:
-        sub     #$57
+        sub     #('a' - 10)
 
 _nibl:
         sta     _nib                    ; The first hex digit writes the high nibble and waits
@@ -1170,9 +1172,9 @@ _cnt    .equ    saved_a                 ; test loop count while renderer owns sc
 
 ; MAME test hooks expose stable ROM entry points for focused checks.
 test_con_out:
-        lda     #$4f                    ; Hooks stop by branching to idle after emitting fixture data
+        lda     #'O'                    ; Hooks stop by branching to idle after emitting fixture data
         jsr     chrout
-        lda     #$4b
+        lda     #'K'
         jsr     chrout
         lda     #CR
         jsr     chrout
