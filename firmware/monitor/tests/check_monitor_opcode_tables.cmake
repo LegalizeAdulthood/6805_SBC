@@ -146,5 +146,5 @@ require_block_regex(
 
 if(errors)
     list(JOIN errors "\n  - " error_text)
-    message(FATAL_ERROR "monitor EVSBUG12 table audit failed:\n  - ${error_text}")
+    message(FATAL_ERROR "monitor opcode table audit failed:\n  - ${error_text}")
 endif()

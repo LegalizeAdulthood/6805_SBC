@@ -67,12 +67,12 @@ add_test(
 )
 
 add_test(
-    NAME monitor.evsbug12_tables
+    NAME monitor.opcode_tables
     COMMAND
         "${CMAKE_COMMAND}"
         "-DMONITOR_SOURCE=${MONITOR_SOURCE}"
         "-P"
-        "${CMAKE_CURRENT_SOURCE_DIR}/check_monitor_evsbug12_tables.cmake"
+        "${CMAKE_CURRENT_SOURCE_DIR}/check_monitor_opcode_tables.cmake"
 )
 
 if(MAME_EXECUTABLE)
