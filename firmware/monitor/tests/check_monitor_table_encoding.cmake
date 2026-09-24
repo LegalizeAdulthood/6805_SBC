@@ -1,4 +1,4 @@
-foreach(required_var IN ITEMS MONITOR_SOURCE MONITOR_SYMBOLS)
+foreach(required_var IN ITEMS MONITOR_SOURCE)
     if(NOT DEFINED ${required_var} OR "${${required_var}}" STREQUAL "")
         message(FATAL_ERROR "${required_var} is required")
     endif()
@@ -8,28 +8,7 @@ if(NOT EXISTS "${MONITOR_SOURCE}")
     message(FATAL_ERROR "monitor source does not exist: ${MONITOR_SOURCE}")
 endif()
 
-if(NOT EXISTS "${MONITOR_SYMBOLS}")
-    message(FATAL_ERROR "monitor symbols do not exist: ${MONITOR_SYMBOLS}")
-endif()
-
-set(max_rom_end 0x1854)
 set(errors "")
-
-file(STRINGS "${MONITOR_SYMBOLS}" symbol_lines)
-foreach(line IN LISTS symbol_lines)
-    if(line MATCHES "^rom_end[ \t]+([0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f])")
-        set(rom_end_hex "${CMAKE_MATCH_1}")
-    endif()
-endforeach()
-
-if(NOT DEFINED rom_end_hex)
-    list(APPEND errors "missing rom_end symbol")
-else()
-    math(EXPR rom_end_value "0x${rom_end_hex}")
-    if(rom_end_value GREATER max_rom_end)
-        list(APPEND errors "rom_end ${rom_end_hex} exceeds current monitor budget 1854")
-    endif()
-endif()
 
 file(STRINGS "${MONITOR_SOURCE}" source_lines)
 

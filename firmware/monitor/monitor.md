@@ -554,19 +554,6 @@ integration where needed:
 
 ## Implementation Slices
 
-### 9.2.4. Disassembler Size Baseline
-
-Failing test: a build-time size check fails until the monitor build records
-the EVSBUG12-derived disassembler and shared-table ROM cost, or the total
-monitor ROM endpoint, in a form the tests can compare.
-
-End state: the test suite has a size guard for the monitor binary or
-`rom_code_end` symbol. The guard is intentionally simple: it prevents the
-EVSBUG12 lift, shared table growth, disassembler coverage, and assembler
-coverage from growing the ROM silently. When a later slice grows the monitor
-for a justified feature, the slice must update the expected size and
-explain the tradeoff in the plan or commit message.
-
 ### 9.3. Disassembler Inherent, Relative, and Bit Coverage
 
 Failing test: the disassembler fixture is extended with every inherent,

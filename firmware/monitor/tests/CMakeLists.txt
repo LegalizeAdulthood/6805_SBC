@@ -12,6 +12,16 @@ add_test(
 )
 
 add_test(
+    NAME monitor.size_baseline
+    COMMAND
+        "${CMAKE_COMMAND}"
+        "-DMONITOR_SYMBOLS=${MONITOR_SYMBOLS}"
+        "-DEXPECTED_ROM_END=${MONITOR_EXPECTED_ROM_END}"
+        "-P"
+        "${CMAKE_CURRENT_SOURCE_DIR}/check_monitor_size_baseline.cmake"
+)
+
+add_test(
     NAME monitor.source_structure
     COMMAND
         "${CMAKE_COMMAND}"
@@ -62,7 +72,6 @@ add_test(
     COMMAND
         "${CMAKE_COMMAND}"
         "-DMONITOR_SOURCE=${MONITOR_SOURCE}"
-        "-DMONITOR_SYMBOLS=${MONITOR_SYMBOLS}"
         "-P"
         "${CMAKE_CURRENT_SOURCE_DIR}/check_monitor_table_encoding.cmake"
 )
