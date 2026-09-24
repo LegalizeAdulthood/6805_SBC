@@ -79,6 +79,7 @@ rts_instruction        .equ    $81
 
         .module reset_entry
 
+; Reset entry initializes the monitor-owned machine image.
 reset_entry:
         rsp
         lda     #monitor_stack_top
@@ -92,11 +93,11 @@ reset_entry:
         clrx
         stx     saved_x
         lda     #reset_cc
-        sta     saved_cc
+        sta     saved_cc                ; Saved registers are a monitor snapshot, not live CPU state
         lda     #stop_reset
         sta     stop_reason
         lda     #timer_wait_default_handler/100h
-        sta     timer_wait_vector_hi
+        sta     timer_wait_vector_hi    ; IRQ RAM vectors default to ROM handlers after reset
         lda     #timer_wait_default_handler-(timer_wait_default_handler/100h*100h)
         sta     timer_wait_vector_lo
         lda     #timer_default_handler/100h
@@ -107,13 +108,13 @@ reset_entry:
         sta     external_vector_hi
         lda     #external_default_handler-(external_default_handler/100h*100h)
         sta     external_vector_lo
-        lda     #jmp_extended
+        lda     #jmp_extended           ; Shared IRQ thunk holds an absolute jump target
         sta     int_jump_opcode
-        lda     #lda_extended_indexed
+        lda     #lda_extended_indexed   ; Read thunk opcode is fixed; callers patch address bytes
         sta     memory_read_opcode
         lda     #rts_instruction
         sta     memory_read_rts
-        lda     #sta_extended_indexed
+        lda     #sta_extended_indexed   ; Write thunk opcode is fixed; cursor state patches address bytes
         sta     memory_write_opcode
         lda     #rts_instruction
         sta     memory_write_rts
@@ -125,11 +126,12 @@ reset_entry:
         .module interrupt_dispatch
 
 swi_entry:
-        jmp     monitor_idle
+        jmp     monitor_idle            ; SWI is the current user-code return path
 
+; Interrupt dispatch vectors through RAM so user code can intercept IRQs.
 timer_wait_dispatch:
         lda     timer_wait_vector_hi
-        sta     int_jump_hi
+        sta     int_jump_hi             ; Dispatcher copies the chosen RAM vector into the shared thunk
         lda     timer_wait_vector_lo
         sta     int_jump_lo
         jmp     int_jump_opcode
@@ -159,22 +161,25 @@ external_default_handler:
 
         .module console_io
 
+; Console I/O owns the ACIA setup and byte-at-a-time transmit path.
 init_console:
-        lda     #acia_master_reset
+        lda     #acia_master_reset      ; ACIA reset and mode bytes are separate writes
         sta     acia_control
         lda     #acia_default_control
         sta     acia_control
         rts
 
 chrout:
+                                        ; Polling keeps the early ROM serial path small
         brclr   acia_tdre_bit,acia_status,chrout
         sta     acia_data
         rts
 
         .module draw_boot_screen
 
+; Boot drawing positions the terminal with compact ANSI text.
 draw_boot_screen:
-        ldx     #0
+        ldx     #0                      ; Boot text leans on terminal state instead of filling rows
 
 _loop:
         lda     boot_screen_text,x
@@ -188,7 +193,9 @@ _done:
 
         .module draw_cpu_row
 
+; CPU status rendering formats the saved user context as one row.
 draw_cpu_row:
+                                        ; Text fragments keep labels local while sharing one emitter
         ldx     #cpu_row_sp_text-cpu_row_text
         jsr     emit_cpu_row_text
         clra
@@ -211,14 +218,14 @@ draw_cpu_row:
         jsr     emit_hex_byte
         ldx     #cpu_row_flags_text-cpu_row_text
         jsr     emit_cpu_row_text
-        jsr     emit_flag_h
+        jsr     emit_flag_h             ; Unset flags become blanks so set flags stand out
         jsr     emit_flag_i
         jsr     emit_flag_n
         jsr     emit_flag_z
         jsr     emit_flag_c
         ldx     #cpu_row_stopped_text-cpu_row_text
         jsr     emit_cpu_row_text
-        jsr     emit_stop_reason
+        jsr     emit_stop_reason        ; Stop reason maps internal causes to display text
         ldx     #cpu_row_crlf_text-cpu_row_text
         jsr     emit_cpu_row_text
         rts
@@ -246,8 +253,9 @@ _loop:
 
         .module disasm_output
 
+; Disassembler output decodes one opcode into local assembly style.
 emit_disasm_mnemonic:
-        clrx
+        clrx                            ; Table scan stops at a zero opcode sentinel
 
 _scan:
         lda     disasm_inherent_table,x
@@ -266,6 +274,7 @@ _found:
         rts
 
 emit_disasm_fcb:
+                                        ; Unknown opcodes are emitted as fcb with literal byte
         ldx     #disasm_fcb_text-disasm_text
         jsr     emit_disasm_text
         ldx     #$04
@@ -277,7 +286,7 @@ emit_disasm_fcb:
         rts
 
 emit_disasm_text:
-        lda     #$04
+        lda     #$04                    ; Each mnemonic is fixed at four characters
         sta     hex_value
 
 _loop:
@@ -391,8 +400,9 @@ _write:
 
         .module draw_memory_row
 
+; Memory row rendering uses the generated read thunk for addressable RAM.
 draw_memory_row:
-        lda     memory_row_hi
+        lda     memory_row_hi           ; The row address patches the read thunk before output
         sta     memory_read_hi
         jsr     emit_hex_byte
         lda     memory_row_lo
@@ -419,7 +429,7 @@ _hexlp:
         clrx
 
 _asclp:
-        jsr     memory_read_opcode
+        jsr     memory_read_opcode      ; The ASCII pass rereads the same row from byte zero
         jsr     emit_memory_ascii
         inx
         cpx     #$10
@@ -430,8 +440,9 @@ _asclp:
 
         .module draw_disassembly_row
 
+; Disassembly row rendering advances a separate PC from the memory panel.
 draw_disassembly_row:
-        lda     #$20
+        lda     #$20                    ; Disassembly has its own PC so rows need not align
         jsr     chrout
         lda     disasm_pc_hi
         sta     memory_read_hi
@@ -462,7 +473,7 @@ _return:
         .module memory_ascii
 
 emit_memory_ascii:
-        cmp     #$20
+        cmp     #$20                    ; Control and high-bit bytes collapse to dot for scanability
         blo     _dot
         cmp     #$7f
         blo     _write
@@ -476,8 +487,9 @@ _write:
 
         .module memory_panel
 
+; Memory panel state starts on the first RAM page with hex focus.
 init_memory_panel:
-        clra
+        clra                            ; Page and cursor track the same window at initialization
         sta     memory_page_hi
         sta     memory_cursor_hi
         sta     memory_focus
@@ -489,6 +501,7 @@ init_memory_panel:
 
         .module memory_editing
 
+; Memory key handling updates panel state without redrawing here.
 memory_key_input:
         jsr     _key
         jmp     monitor_idle
@@ -519,7 +532,7 @@ _hexgo:
         jmp     _hex
 
 _tab:
-        lda     memory_focus
+        lda     memory_focus            ; Tab changes which view accepts edits
         eor     #memory_focus_ascii
         sta     memory_focus
         clra
@@ -527,7 +540,7 @@ _tab:
         rts
 
 _next:
-        inc     memory_page_hi
+        inc     memory_page_hi          ; Page motion keeps cursor and page together
         inc     memory_cursor_hi
         jmp     memory_cursor_done
 
@@ -553,7 +566,7 @@ _down:
         rts
 
 _ascii:
-        cmp     #$20
+        cmp     #$20                    ; ASCII editing accepts printable bytes only
         blo     _done
         cmp     #$7f
         bhs     _done
@@ -564,7 +577,7 @@ _done:
         rts
 
 _hex:
-        cmp     #$30
+        cmp     #$30                    ; Hex editing converts ASCII digits into nibbles
         blo     _done
         cmp     #$3a
         blo     _digit
@@ -590,7 +603,7 @@ _lower:
         sub     #$57
 
 _nibl:
-        sta     hex_value
+        sta     hex_value               ; The first hex digit writes the high nibble and waits
         lda     memory_hex_phase
         bne     _low
         lda     hex_value
@@ -604,7 +617,7 @@ _nibl:
         rts
 
 _low:
-        jsr     memory_read_cursor
+        jsr     memory_read_cursor      ; The second hex digit merges with the saved high nibble
         and     #$f0
         sta     memory_row_index
         lda     hex_value
@@ -617,8 +630,9 @@ _low:
 
         .module memory_cursor
 
+; Cursor helpers patch generated access thunks around the current address.
 memory_select_cursor:
-        lda     memory_cursor_hi
+        lda     memory_cursor_hi        ; Cursor selection patches both thunks from one address
         sta     memory_read_hi
         sta     memory_write_hi
         lda     memory_cursor_lo
@@ -670,14 +684,15 @@ memory_cursor_down:
         inc     memory_cursor_hi
 
 memory_cursor_done:
-        clra
+        clra                            ; Cursor movement clears the pending nibble after navigation
         sta     memory_hex_phase
         rts
 
         .module test_hooks
 
+; MAME test hooks expose stable ROM entry points for focused checks.
 test_console_output:
-        lda     #$4f
+        lda     #$4f                    ; Hooks stop by branching to monitor_idle after emitting fixture data
         jsr     chrout
         lda     #$4b
         jsr     chrout
@@ -896,6 +911,7 @@ disasm_fcb_text:
         .text   "fcb "
 
 disasm_inherent_table:
+                                        ; The table stores opcode then text offset for each match
         .byte   $40,disasm_nega_text-disasm_text
         .byte   $42,disasm_mul_text-disasm_text
         .byte   $43,disasm_coma_text-disasm_text
@@ -935,7 +951,7 @@ disasm_inherent_table:
         .byte   $00
 
 boot_screen_text:
-        .byte   $1b
+        .byte   $1b                     ; Boot text emits escape sequences instead of blank-filled rows
         .text   "[2J"
         .byte   $1b
         .text   "[1;68H"
@@ -948,11 +964,11 @@ rom_code_end:
 
         .module interrupt_vectors
 
-        .org    $1ff6
-        .dw     timer_wait_dispatch   ; Timer from wait state
-        .dw     timer_dispatch        ; Timer
-        .dw     external_dispatch     ; External interrupt
-        .dw     swi_entry       ; Software interrupt
-        .dw     reset_entry     ; Reset
+        .org    $1ff6                   ; Vectors remain at the CPU hardware locations
+        .dw     timer_wait_dispatch     ; Timer from wait state
+        .dw     timer_dispatch          ; Timer
+        .dw     external_dispatch       ; External interrupt
+        .dw     swi_entry               ; Software interrupt
+        .dw     reset_entry             ; Reset
 
         .end

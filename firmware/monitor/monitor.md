@@ -554,30 +554,6 @@ integration where needed:
 
 ## Implementation Slices
 
-### 9.1.3. Running Commentary Alignment
-
-Failing test: a source-style audit fails until `monitor.asm` has running
-commentary for the non-obvious algorithms, not merely aligned comments.
-The audit checks that commentary is present for reset-time monitor state
-initialization, RAM interrupt-vector dispatch, generated RAM thunks used
-for memory read/write, ANSI screen drawing choices, CPU status rendering,
-memory-page and cursor movement state, hex-edit high/low-nibble phase
-handling, disassembler table scan/output formatting, and test hook entry
-points. Comments added or touched by this slice begin in one-based column
-41 where practical, matching the running-commentary style used in the
-reconstituted EVSBUG12 source.
-
-End state: each non-obvious routine or data declaration has concise
-commentary that adds information the instruction stream does not already
-provide: intent, invariants, lifetime, hardware meaning, state-machine
-phase, or compact encoding tricks. Comments should help the reader
-understand why the code is shaped this way and where state crosses module
-boundaries. Avoid instruction paraphrases and mechanical comments that
-merely restate the opcode effect; the commentary should not say that an
-index register is incremented, a byte is stored, or a subroutine returns
-unless that action matters to the larger algorithm. Existing tests remain
-green.
-
 ### 9.1.4. Scratch RAM Lifetime Refactor
 
 Failing test: a RAM-map audit fails until `monitor.asm` distinguishes
