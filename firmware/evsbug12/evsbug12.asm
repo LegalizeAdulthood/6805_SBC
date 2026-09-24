@@ -1219,6 +1219,11 @@ _reg_ch         .equ    scratch + $12   ; A/X suffix slot
 _mode           .equ    scratch + $2f   ; mode/index temp
 _mnem_x         .equ    scratch + $31   ; mnemonic scan index
 _tmp            .equ    scratch + $33   ; shared temp byte
+_line_last      .equ    $1d             ; output line limit
+_bytes_col      .equ    $02             ; opcode byte column
+_operand_col    .equ    $12             ; operand column
+_target_col     .equ    $17             ; target addr column
+_mnem_col       .equ    $0c             ; mnemonic column base
 
 disassemble_line:
         ldx     #saved_addr_hi
@@ -1226,7 +1231,7 @@ disassemble_line:
         jsr     write_crlf
         jsr     write_hex_word_at_73
         lda     #SP
-        ldx     #$1d
+        ldx     #_line_last
 
 _clear_line:
         sta     line_buf,x
@@ -1237,7 +1242,7 @@ _clear_line:
         lda     op_len
         sta     _tmp
         sta     disasm_op_len
-        ldx     #$02
+        ldx     #_bytes_col
         stx     line_pos
 
 _byte_loop:
@@ -1251,7 +1256,7 @@ _byte_loop:
         beq     _class_op
         jsr     decrement_address
         inc     op_len
-        ldx     #$26
+        ldx     #op_fcb_idx
         bra     _to_mnem
 
 _class_op:
@@ -1262,7 +1267,7 @@ _class_op:
         cmp     #$0f
         bhi     _chk_10
         sta     _tmp
-        ldx     #$17
+        ldx     #_target_col
         stx     line_pos
         jsr     app_comma_dol
         jsr     app_hex_word
@@ -1270,7 +1275,7 @@ _class_op:
 
 _set_bit:
         stx     _mode
-        ldx     #$12
+        ldx     #_operand_col
         stx     line_pos
         lda     _tmp
         brclr   0, _tmp, _bit_arg
@@ -1328,7 +1333,7 @@ _chk_a0:
 
 _set_mode:
         sta     _mode
-        ldx     #$12
+        ldx     #_operand_col
         stx     line_pos
         jsr     app_dol_word
         bra     _br_idx
@@ -1369,7 +1374,7 @@ _emit_mnem:
         stx     _mnem_x
         sta     _tmp
         lda     _mode
-        add     #$0c
+        add     #_mnem_col
         tax
         lda     _tmp
         sta     line_buf,x
@@ -1394,7 +1399,7 @@ _store_reg:
         sta     _reg_ch
 
 _op_pos:
-        ldx     #$12
+        ldx     #_operand_col
         stx     line_pos
         brclr   df_imm_bit, decode_flags, _operand
         lda     #'#'
@@ -1430,7 +1435,7 @@ _write_loop:
         lda     line_buf,x
         jsr     write_console_char
         incx
-        cpx     #$1d
+        cpx     #_line_last
         bls     _write_loop
         ldx     #$0a
         jsr     clear_addr_slots
