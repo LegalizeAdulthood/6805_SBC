@@ -59,7 +59,9 @@ foreach(_line IN LISTS _symbol_lines)
 endforeach()
 
 _require_symbol("idle")
-_require_symbol("test_mem_out")
+_require_symbol("draw_mem_row")
+_require_symbol("mem_page_hi")
+_require_symbol("mem_page_lo")
 
 file(READ "${_memory_row_expected}" _expected_bytes HEX)
 string(TOUPPER "${_expected_bytes}" _expected_bytes)
@@ -88,13 +90,21 @@ file(WRITE "${_stage_dir}/cfg/m6805sbc.cfg"
 set(_memory_row_script "${_stage_dir}/memory_row.lua")
 file(WRITE "${_memory_row_script}"
     "local idle = 0x${SYM_idle}\r\n"
-    "local entry = 0x${SYM_test_mem_out}\r\n"
+    "local entry = 0x${SYM_draw_mem_row}\r\n"
+    "local mem_page_hi = 0x${SYM_mem_page_hi}\r\n"
+    "local mem_page_lo = 0x${SYM_mem_page_lo}\r\n"
     "local expected = ${_expected_count}\r\n"
     "local bytes = {}\r\n"
     "local phase = \"wait_reset\"\r\n"
     "local frames = 0\r\n"
     "local cpu = manager.machine.devices[\":maincpu\"]\r\n"
     "local mem = cpu.spaces[\"program\"]\r\n"
+    "local function call_entry(addr)\r\n"
+    "    cpu.state[\"S\"].value = 0x7d\r\n"
+    "    mem:write_u8(0x007e, (idle >> 8) & 0xff)\r\n"
+    "    mem:write_u8(0x007f, idle & 0xff)\r\n"
+    "    cpu.state[\"PC\"].value = addr\r\n"
+    "end\r\n"
     "mem:install_write_tap(${ACIA_DATA}, ${ACIA_DATA}, \"memory_row_acia_data\", function(offset, data, mask)\r\n"
     "    table.insert(bytes, data & 0xff)\r\n"
     "end)\r\n"
@@ -112,8 +122,10 @@ file(WRITE "${_memory_row_script}"
     "        mem:write_u8(${ACIA_CONTROL}, 0x03)\r\n"
     "        mem:write_u8(${ACIA_CONTROL}, 0x15)\r\n"
     "        for i = 0, 15 do mem:write_u8(0x0080 + i, 0x20 + i) end\r\n"
+    "        mem:write_u8(mem_page_hi, 0x00)\r\n"
+    "        mem:write_u8(mem_page_lo, 0x80)\r\n"
     "        bytes = {}\r\n"
-    "        cpu.state[\"PC\"].value = entry\r\n"
+    "        call_entry(entry)\r\n"
     "        phase = \"wait_output\"\r\n"
     "        return\r\n"
     "    end\r\n"

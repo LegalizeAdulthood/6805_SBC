@@ -60,7 +60,9 @@ foreach(_line IN LISTS _symbol_lines)
 endforeach()
 
 _require_symbol("idle")
-_require_symbol("test_dasm_out")
+_require_symbol("draw_dasm_row")
+_require_symbol("disasm_pc_hi")
+_require_symbol("disasm_pc_lo")
 
 file(READ "${_disassembly_expected}" _expected_bytes HEX)
 string(TOUPPER "${_expected_bytes}" _expected_bytes)
@@ -68,6 +70,7 @@ string(LENGTH "${_expected_bytes}" _expected_hex_length)
 math(EXPR _expected_count "${_expected_hex_length} / 2")
 
 file(STRINGS "${_disassembly_expected}" _expected_lines)
+list(LENGTH _expected_lines _row_count)
 set(_row_keys "")
 
 foreach(_line IN LISTS _expected_lines)
@@ -156,13 +159,24 @@ file(WRITE "${_stage_dir}/cfg/m6805sbc.cfg"
 set(_disassembler_script "${_stage_dir}/disassembler.lua")
 file(WRITE "${_disassembler_script}"
     "local idle = 0x${SYM_idle}\r\n"
-    "local entry = 0x${SYM_test_dasm_out}\r\n"
+    "local entry = 0x${SYM_draw_dasm_row}\r\n"
+    "local disasm_pc_hi = 0x${SYM_disasm_pc_hi}\r\n"
+    "local disasm_pc_lo = 0x${SYM_disasm_pc_lo}\r\n"
     "local expected = ${_expected_count}\r\n"
+    "local rows = ${_row_count}\r\n"
     "local bytes = {}\r\n"
     "local phase = \"wait_reset\"\r\n"
     "local frames = 0\r\n"
+    "local row_frames = 0\r\n"
+    "local row = 0\r\n"
     "local cpu = manager.machine.devices[\":maincpu\"]\r\n"
     "local mem = cpu.spaces[\"program\"]\r\n"
+    "local function call_entry(addr)\r\n"
+    "    cpu.state[\"S\"].value = 0x7d\r\n"
+    "    mem:write_u8(0x007e, (idle >> 8) & 0xff)\r\n"
+    "    mem:write_u8(0x007f, idle & 0xff)\r\n"
+    "    cpu.state[\"PC\"].value = addr\r\n"
+    "end\r\n"
     "mem:install_write_tap(${ACIA_DATA}, ${ACIA_DATA}, \"disassembler_acia_data\", function(offset, data, mask)\r\n"
     "    table.insert(bytes, data & 0xff)\r\n"
     "end)\r\n"
@@ -190,13 +204,29 @@ file(WRITE "${_disassembler_script}"
     "            0x02, 0x20, 0x00, 0xa6, 0x5a, 0x3f, 0x44, 0xc6,\r\n"
     "            0x12, 0x34, 0xf6, 0x10, 0x44 }\r\n"
     "        for index, byte in ipairs(fixture) do mem:write_u8(0x007f + index, byte) end\r\n"
+    "        mem:write_u8(disasm_pc_hi, 0x00)\r\n"
+    "        mem:write_u8(disasm_pc_lo, 0x80)\r\n"
     "        bytes = {}\r\n"
-    "        cpu.state[\"PC\"].value = entry\r\n"
+    "        row = 0\r\n"
+    "        row_frames = 0\r\n"
+    "        call_entry(entry)\r\n"
+    "        phase = \"wait_row\"\r\n"
+    "        return\r\n"
+    "    end\r\n"
+    "    if phase == \"wait_row\" then\r\n"
+    "        row_frames = row_frames + 1\r\n"
+    "        if cpu.state[\"PC\"].value ~= idle and row_frames < 60 then return end\r\n"
+    "        row = row + 1\r\n"
+    "        if row < rows then\r\n"
+    "            row_frames = 0\r\n"
+    "            call_entry(entry)\r\n"
+    "            return\r\n"
+    "        end\r\n"
     "        phase = \"wait_output\"\r\n"
     "        return\r\n"
     "    end\r\n"
     "    if phase == \"wait_output\" then\r\n"
-    "        if #bytes < expected and frames < 120 then return end\r\n"
+    "        if #bytes < expected and frames < 240 then return end\r\n"
     "        print(string.format(\"DISASSEMBLY COUNT=%d BYTES=%s\", #bytes, hex_bytes()))\r\n"
     "        manager.machine:exit()\r\n"
     "        return\r\n"

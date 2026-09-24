@@ -59,7 +59,14 @@ foreach(_line IN LISTS _symbol_lines)
 endforeach()
 
 _require_symbol("idle")
-_require_symbol("test_cpu_out")
+_require_symbol("draw_cpu")
+_require_symbol("saved_sp")
+_require_symbol("saved_pc_hi")
+_require_symbol("saved_pc_lo")
+_require_symbol("saved_a")
+_require_symbol("saved_x")
+_require_symbol("saved_cc")
+_require_symbol("stop_rsn")
 
 file(READ "${_cpu_row_expected}" _expected_bytes HEX)
 string(TOUPPER "${_expected_bytes}" _expected_bytes)
@@ -88,13 +95,26 @@ file(WRITE "${_stage_dir}/cfg/m6805sbc.cfg"
 set(_cpu_row_script "${_stage_dir}/cpu_row.lua")
 file(WRITE "${_cpu_row_script}"
     "local idle = 0x${SYM_idle}\r\n"
-    "local entry = 0x${SYM_test_cpu_out}\r\n"
+    "local entry = 0x${SYM_draw_cpu}\r\n"
+    "local saved_sp = 0x${SYM_saved_sp}\r\n"
+    "local saved_pc_hi = 0x${SYM_saved_pc_hi}\r\n"
+    "local saved_pc_lo = 0x${SYM_saved_pc_lo}\r\n"
+    "local saved_a = 0x${SYM_saved_a}\r\n"
+    "local saved_x = 0x${SYM_saved_x}\r\n"
+    "local saved_cc = 0x${SYM_saved_cc}\r\n"
+    "local stop_rsn = 0x${SYM_stop_rsn}\r\n"
     "local expected = ${_expected_count}\r\n"
     "local bytes = {}\r\n"
     "local phase = \"wait_reset\"\r\n"
     "local frames = 0\r\n"
     "local cpu = manager.machine.devices[\":maincpu\"]\r\n"
     "local mem = cpu.spaces[\"program\"]\r\n"
+    "local function call_entry(addr)\r\n"
+    "    cpu.state[\"S\"].value = 0x7d\r\n"
+    "    mem:write_u8(0x007e, (idle >> 8) & 0xff)\r\n"
+    "    mem:write_u8(0x007f, idle & 0xff)\r\n"
+    "    cpu.state[\"PC\"].value = addr\r\n"
+    "end\r\n"
     "mem:install_write_tap(${ACIA_DATA}, ${ACIA_DATA}, \"cpu_row_acia_data\", function(offset, data, mask)\r\n"
     "    table.insert(bytes, data & 0xff)\r\n"
     "end)\r\n"
@@ -111,8 +131,15 @@ file(WRITE "${_cpu_row_script}"
     "        if cpu.state[\"PC\"].value ~= idle and frames < 60 then return end\r\n"
     "        mem:write_u8(${ACIA_CONTROL}, 0x03)\r\n"
     "        mem:write_u8(${ACIA_CONTROL}, 0x15)\r\n"
+    "        mem:write_u8(saved_sp, 0x7f)\r\n"
+    "        mem:write_u8(saved_pc_hi, 0x12)\r\n"
+    "        mem:write_u8(saved_pc_lo, 0x34)\r\n"
+    "        mem:write_u8(saved_a, 0xa5)\r\n"
+    "        mem:write_u8(saved_x, 0x5a)\r\n"
+    "        mem:write_u8(saved_cc, 0x1f)\r\n"
+    "        mem:write_u8(stop_rsn, 0x02)\r\n"
     "        bytes = {}\r\n"
-    "        cpu.state[\"PC\"].value = entry\r\n"
+    "        call_entry(entry)\r\n"
     "        phase = \"wait_output\"\r\n"
     "        return\r\n"
     "    end\r\n"

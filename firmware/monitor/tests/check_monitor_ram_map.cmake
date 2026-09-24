@@ -133,17 +133,6 @@ require_module_scratch("mem_edit" "_nib")
 require_module_scratch("mem_edit" "_tmp")
 require_module_scratch("mem_cur" "_byte")
 
-list(FIND module_equates "test_hooks:_cnt" test_count_index)
-if(test_count_index EQUAL -1)
-    list(APPEND errors "missing test hook loop counter alias '_cnt'")
-elseif(NOT "${module_expr_test_hooks__cnt}" STREQUAL "saved_a")
-    list(APPEND errors
-        "test hook loop counter must use saved_a because disassembly rendering owns the full scratch window"
-    )
-elseif("${module_comment_test_hooks__cnt}" STREQUAL "")
-    list(APPEND errors "test hook loop counter needs an ownership/lifetime comment")
-endif()
-
 if(errors)
     list(JOIN errors "\n  - " error_text)
     message(FATAL_ERROR "monitor.asm RAM lifetime map failed:\n  - ${error_text}")

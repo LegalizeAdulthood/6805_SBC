@@ -1161,62 +1161,6 @@ mem_cur_done:
         sta     mem_hex_phs
         rts
 
-        .module test_hooks
-
-_cnt    .equ    saved_a                 ; test loop count while renderer owns scratch
-
-; MAME test hooks expose stable ROM entry points for focused checks.
-test_con_out:
-        lda     #'O'                    ; Hooks stop by branching to idle after emitting fixture data
-        jsr     chrout
-        lda     #'K'
-        jsr     chrout
-        lda     #CR
-        jsr     chrout
-        lda     #LF
-        jsr     chrout
-        bra     idle
-
-test_cpu_out:
-        lda     #$7f
-        sta     saved_sp
-        lda     #$12
-        sta     saved_pc_hi
-        lda     #$34
-        sta     saved_pc_lo
-        lda     #$a5
-        sta     saved_a
-        lda     #$5a
-        sta     saved_x
-        lda     #$1f
-        sta     saved_cc
-        lda     #stop_tst
-        sta     stop_rsn
-        jsr     draw_cpu
-        bra     idle
-
-test_mem_out:
-        clra
-        sta     mem_page_hi
-        lda     #$80
-        sta     mem_page_lo
-        jsr     draw_mem_row
-        bra     idle
-
-test_dasm_out:
-        clra
-        sta     disasm_pc_hi
-        lda     #$80
-        sta     disasm_pc_lo
-        lda     #$2f
-        sta     _cnt
-
-_loop:
-        jsr     draw_dasm_row
-        dec     _cnt
-        bne     _loop
-        bra     idle
-
         .module idle
 
 idle:

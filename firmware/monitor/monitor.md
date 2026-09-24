@@ -554,22 +554,6 @@ integration where needed:
 
 ## Implementation Slices
 
-### 9.2.3. Remove Production Test Hooks
-
-Failing test: the monitor symbol audit fails while any production ROM symbol
-or module exposes test-only entry points such as `test_hooks`, `test_con_out`,
-`test_cpu_out`, `test_mem_out`, or `test_dasm_out`. The existing MAME tests
-that currently enter those hooks must fail until they are rewritten to drive
-the real monitor through emulator-controlled CPU state, RAM contents, vectors,
-serial devices, and reset/interrupt execution.
-
-End state: `monitor.asm` contains no test-only routines, labels, modules, or
-vectors in the production ROM. MAME tests stage memory, registers, vectors,
-serial files, and current directories from the host test harness, then execute
-real monitor entry paths and observe externally visible state. Console,
-CPU-row, memory-row, and disassembly coverage remains, but no test depends on
-calling a ROM helper that would not exist on hardware.
-
 ### 9.2.4. Disassembler Size Baseline
 
 Failing test: a build-time size check fails until the monitor build records
