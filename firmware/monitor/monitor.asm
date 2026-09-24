@@ -1,5 +1,11 @@
         .msfirst
 
+NUL                    .equ    $00             ; null character
+TAB                    .equ    $09             ; horizontal tab
+LF                     .equ    $0a             ; line feed
+CR                     .equ    $0d             ; carriage return
+ESC                    .equ    $1b             ; escape
+
 monitor_stack_top      .equ    $7f
 reset_cc               .equ    $08
 
@@ -9,7 +15,7 @@ stop_test              .equ    $02
 memory_focus_hex       .equ    $00
 memory_focus_ascii     .equ    $01
 
-key_tab                .equ    $09
+key_tab                .equ    TAB
 key_ctrl_n             .equ    $0e
 key_ctrl_p             .equ    $10
 key_left               .equ    $80
@@ -696,9 +702,9 @@ test_console_output:
         jsr     chrout
         lda     #$4b
         jsr     chrout
-        lda     #$0d
+        lda     #CR
         jsr     chrout
-        lda     #$0a
+        lda     #LF
         jsr     chrout
         bra     monitor_idle
 
@@ -756,46 +762,46 @@ cpu_row_text:
 
 cpu_row_sp_text:
         .text   "SP "
-        .byte   $00
+        .byte   NUL
 
 cpu_row_pc_text:
         .text   "  PC "
-        .byte   $00
+        .byte   NUL
 
 cpu_row_a_text:
         .text   "  A "
-        .byte   $00
+        .byte   NUL
 
 cpu_row_x_text:
         .text   "  X "
-        .byte   $00
+        .byte   NUL
 
 cpu_row_flags_text:
         .text   "  FLAGS 111"
-        .byte   $00
+        .byte   NUL
 
 cpu_row_stopped_text:
         .text   "  STOPPED: "
-        .byte   $00
+        .byte   NUL
 
 stop_reset_text:
         .text   "RESET"
-        .byte   $00
+        .byte   NUL
 
 stop_test_text:
         .text   "TEST"
-        .byte   $00
+        .byte   NUL
 
 stop_unknown_text:
         .text   "UNKNOWN"
-        .byte   $00
+        .byte   NUL
 
 memory_row_address_suffix_text:
         .text   ": "
-        .byte   $00
+        .byte   NUL
 
 cpu_row_crlf_text:
-        .byte   $0d,$0a,$00
+        .byte   CR,LF,NUL
 
 disasm_text:
 
@@ -951,14 +957,14 @@ disasm_inherent_table:
         .byte   $00
 
 boot_screen_text:
-        .byte   $1b                     ; Boot text emits escape sequences instead of blank-filled rows
+        .byte   ESC                     ; Boot text emits escape sequences instead of blank-filled rows
         .text   "[2J"
-        .byte   $1b
+        .byte   ESC
         .text   "[1;68H"
 #include "monitor_version.inc"
-        .byte   $1b
+        .byte   ESC
         .text   "[H"
-        .byte   $00
+        .byte   NUL
 
 rom_code_end:
 
