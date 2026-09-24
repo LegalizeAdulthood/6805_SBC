@@ -5,6 +5,7 @@ TAB             .equ    $09             ; horizontal tab
 LF              .equ    $0a             ; line feed
 CR              .equ    $0d             ; carriage return
 ESC             .equ    $1b             ; escape
+SP              .equ    $20             ; space
 msg_end         .equ    $80             ; high-bit string terminator
 
 stack_top       .equ    $7f
@@ -256,7 +257,7 @@ _save   .equ    scratch                 ; saved A across spacing output
 
 emit_spcs:
         sta     _save
-        lda     #$20
+        lda     #SP
 
 _loop:
         jsr     chrout
@@ -513,7 +514,7 @@ _nf0:
         jmp     _idxop
 
 _mnem4:
-        lda     #$20
+        lda     #SP
         sta     dline_buf
         sta     dline_buf+$01
         sta     dline_buf+$02
@@ -671,13 +672,13 @@ _relhx:
         jmp     _line
 
 _gap:
-        lda     #$20
+        lda     #SP
         jsr     _app
-        lda     #$20
+        lda     #SP
         jsr     _app
-        lda     #$20
+        lda     #SP
         jsr     _app
-        lda     #$20
+        lda     #SP
         jsr     _app
         rts
 
@@ -748,7 +749,7 @@ hex_nib:
 
 flag_h:
         brset   cc_h_bit,saved_cc,_h_set
-        lda     #$20
+        lda     #SP
         bra     _h_wr
 
 _h_set:
@@ -760,7 +761,7 @@ _h_wr:
 
 flag_i:
         brset   cc_i_bit,saved_cc,_i_set
-        lda     #$20
+        lda     #SP
         bra     _i_wr
 
 _i_set:
@@ -772,7 +773,7 @@ _i_wr:
 
 flag_n:
         brset   cc_n_bit,saved_cc,_n_set
-        lda     #$20
+        lda     #SP
         bra     _n_wr
 
 _n_set:
@@ -784,7 +785,7 @@ _n_wr:
 
 flag_z:
         brset   cc_z_bit,saved_cc,_z_set
-        lda     #$20
+        lda     #SP
         bra     _z_wr
 
 _z_set:
@@ -796,7 +797,7 @@ _z_wr:
 
 flag_c:
         brset   cc_c_bit,saved_cc,_c_set
-        lda     #$20
+        lda     #SP
         bra     _c_wr
 
 _c_set:
@@ -847,14 +848,14 @@ _hexlp:
         ldx     _idx
         jsr     mem_thunk_read
         jsr     hex_byte
-        lda     #$20
+        lda     #SP
         jsr     chrout
         ldx     _idx
         inx
         stx     _idx
         cpx     #$10
         bne     _hexlp
-        lda     #$20
+        lda     #SP
         jsr     chrout
         clrx
 
@@ -874,7 +875,7 @@ _len    .equ    scratch + $01           ; decoded instruction byte count
 
 ; Disassembly row rendering advances a separate PC from the memory panel.
 draw_dasm_row:
-        lda     #$20                    ; Disassembly has its own PC so rows need not align
+        lda     #SP                     ; Disassembly has its own PC so rows need not align
         jsr     chrout
         lda     disasm_pc_hi
         sta     mem_thunk_hi
@@ -895,7 +896,7 @@ _bytes:
         lda     _len
         cmp     #$01
         beq     _spc10
-        lda     #$20
+        lda     #SP
         jsr     chrout
         ldx     #$01
         jsr     mem_thunk_read
@@ -903,7 +904,7 @@ _bytes:
         lda     _len
         cmp     #$02
         beq     _spc7
-        lda     #$20
+        lda     #SP
         jsr     chrout
         ldx     #$02
         jsr     mem_thunk_read
@@ -940,7 +941,7 @@ _return:
         .module mem_asc
 
 emit_mem_asc:
-        cmp     #$20                    ; Control and high-bit bytes collapse to dot for scanability
+        cmp     #SP                     ; Control and high-bit bytes collapse to dot for scanability
         blo     _dot
         cmp     #$7f
         blo     _write
@@ -1037,7 +1038,7 @@ _down:
         rts
 
 _ascii:
-        cmp     #$20                    ; ASCII editing accepts printable bytes only
+        cmp     #SP                     ; ASCII editing accepts printable bytes only
         blo     _done
         cmp     #$7f
         bhs     _done
