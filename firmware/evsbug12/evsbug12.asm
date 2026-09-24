@@ -1120,6 +1120,8 @@ _cmd_idx        .equ    scratch         ; command handler index
 _handler_op     .equ    cmd_thunk       ; handler jump opcode
 _handler_hi     .equ    cmd_thunk + $01 ; handler address high
 _handler_lo     .equ    cmd_thunk + $02 ; handler address low
+_load_cmd_idx   .equ    $04             ; LOAD command index
+_max_arg_off    .equ    $0a             ; max arg table offset
 
 _bad_cmd:
         inc     cmd_err
@@ -1171,14 +1173,14 @@ _match_char:
         cmp     #SP
         bne     _no_match
         lda     _cmd_idx
-        cmp     #$04
+        cmp     #_load_cmd_idx
         beq     _dispatch
 
 _parse_arg:
         jsr     parse_hex_word
         ldx     cmd_args
         aslx
-        cpx     #$0a
+        cpx     #_max_arg_off
         bhi     _bad_cmd
         lda     parse_hi
         sta     cmd_arg_hi,x
