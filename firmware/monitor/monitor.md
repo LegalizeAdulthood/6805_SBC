@@ -394,19 +394,65 @@ mnemonics, directives, pseudo-ops, operands, labels, and symbols are
 lower-case, while hexadecimal digits remain uppercase.
 
 Use `firmware/evsbug12/evsbug12.asm` as the source-level reference for the
-compact decoder, mnemonic metadata, and assembler opcode construction paths.
-Useful original EVSBUG12 address regions include:
+compact decoder, mnemonic metadata, assembler opcode construction paths, and
+small monitor support routines. The source has been reconstituted with
+labels, modules, symbolic equates, and named data tables; prefer those names
+over raw ROM addresses when planning or porting behavior.
 
-- `$0d14-$0e60`: disassemble-one-line renderer.
-- `$0aa6-$0bdf`: opcode classifier using opcode ranges, low-nibble tests,
-  and tiny family tables instead of a 256-entry opcode table.
-- `$0dd1-$0e0f`: mnemonic expansion into an output buffer.
-- `$0e9b-$0edf`: compact opcode-family tables for unary, ALU, branch, bit,
-  and inherent instruction groups.
-- `$10cd-$1153`: compressed mnemonic text.
-- `$1155-$11db`: parallel mnemonic metadata; terminal metadata bytes also
-  carry operand/parser class information.
-- `$11dd-$1221`: assembler-side opcode construction and validation tables.
+Useful EVSBUG12 source artifacts include:
+
+- `decode_inst`: opcode classifier and control-flow decoder. It uses high
+  nibble and low nibble structure first, falls back to small family tables
+  only where needed, records operand length in `op_len`, flags operand
+  details in `decode_flags`, and computes both `inst_next` and
+  `inst_target_*` for branches, jumps, subroutine calls, and return-like
+  instructions.
+- `disassemble_line`: one-line disassembly renderer. It decodes into
+  `line_buf` first, then writes the completed line. Its column constants and
+  output shape are teletype-oriented, but the decode-to-buffer structure is
+  the model for adapting output to the visual monitor panel.
+- `load_line_addr`, `app_hex_byte`, `app_hex_word`, `app_char`, and related
+  helpers: reusable text-buffer append routines shared by the disassembler
+  and display formatting.
+- `opcode_30_7f_index`, `opcode_a0_af_index`, `branch_bit_index`, and
+  `opcode_80_9f_index`: compact irregular-family lookup tables used after
+  the primary bit-structured opcode classification.
+- `mnemonics`: compressed mnemonic text using `msg_end` as the high-bit
+  token terminator.
+- `mnemonic_modes`: parallel mnemonic metadata. The high nibble carries the
+  parser or operand class and the low nibble carries the mnemonic character
+  position/count information.
+- `opcode_table`: assembler-side base opcode table, using named `op_*`
+  equates rather than anonymous bytes.
+- `asm_cmd`: keyboard assembler parser and opcode construction path. It
+  reuses `mnemonics`, `mnemonic_modes`, `opcode_table`, `parse_hex_word`,
+  and the memory write path, then redisassembles the newly written
+  instruction for feedback.
+- `cmd_tokens`, `cmd_handlers`, and `cmd_loop`: high-bit-terminated command
+  token matching and compact command dispatch.
+- `message_text`, `help_intro`, `help_breakpoint`, `help_go_load_md`,
+  `help_modify_nobr_proceed`, and `help_register_trace`: examples of
+  reviewable ASCII data regions split by purpose rather than left as
+  anonymous bytes.
+- `read_memory_byte`, `write_memory_byte`, and `cmd_thunk`: mapped user
+  memory access through a generated STA/LDA thunk.
+- `arm_breaks`, `arm_break_range`, `restore_breaks`, and
+  `restore_break_range`: fixed-slot breakpoint table handling, including
+  separate user, step, and temporary breakpoint slots.
+- `go_cmd`, `proceed_cmd`, `trace_cmd`, `swi_handler`, and `resume_user`:
+  execution-control reference code. EVSBUG12 uses decoded next/target
+  addresses plus temporary breakpoints for step and trace; the visual
+  monitor still plans to use timer-driven stepping for ROM safety, but these
+  routines are useful references for breakpoint bookkeeping, SWI stack
+  adjustment, and continue/proceed state.
+- `load_cmd`: S-record load implementation for `LOAD T`, including S1/S9
+  handling, checksum accumulation, and byte-at-a-time writes through the
+  memory access abstraction.
+- `register_fields`, `condition_bits`, `display_regs`, `select_reg_addr`,
+  and `display_cc`: compact saved-register display/edit support.
+- `cmd_tokens`, `message_text`, and the help text tables show the preferred
+  source style for ROM data: named labels, visible ASCII, and symbolic
+  constants such as `NUL`, `CR`, `LF`, and `msg_end`.
 
 Directly carry over EVSBUG12's disassembler and assembler structure, data
 encoding, and shared metadata, adapting only the surrounding I/O and monitor
@@ -414,6 +460,9 @@ integration where needed:
 
 - Classify opcodes by high nibble and low nibble first, then use tiny
   family tables only for irregular holes or mnemonic selection.
+- Decode to a small text buffer, then copy that buffer to the active output
+  path. The monitor panel renderer may use different column constants than
+  EVSBUG12's teletype line, but it should keep the same staged-output shape.
 - Share one operand-format path per addressing mode and one invalid-opcode
   path that emits `fcb $nn`.
 - Treat branch operands as resolved target addresses in the display, not as
@@ -425,6 +474,12 @@ integration where needed:
 - Prefer shared metadata for disassembly and assembly so opcode coverage,
   operand classification, and alias handling do not drift between the two
   tools.
+- Use named opcode equates and named data tables when lifting EVSBUG12
+  logic. The monitor source should be compact, but it should not return to
+  anonymous byte blobs now that the EVSBUG12 source has reviewable labels.
+- Treat EVSBUG12's temporary-breakpoint trace mechanism as reference
+  material for control-flow edge cases. Do not replace the monitor's
+  ASSIST05-style timer-step requirement with RAM/ROM patching.
 
 ### 9.2.1. EVSBUG12 Disassembler Harness
 
@@ -451,7 +506,9 @@ by both the disassembler and keyboard assembler.
 
 End state: EVSBUG12-derived tables are translated into monitor source with
 local labels and comments that tie them back to the reconstituted
-`evsbug12.asm` routines. The tables are not opaque byte blobs. Existing
+`evsbug12.asm` labels: `mnemonics`, `mnemonic_modes`, `opcode_table`,
+`opcode_30_7f_index`, `opcode_a0_af_index`, `branch_bit_index`, and
+`opcode_80_9f_index`. The tables are not opaque byte blobs. Existing
 monitor tests remain green, and unused assembler metadata may be present
 only when it is clearly destined for later assembler slices.
 
@@ -461,11 +518,12 @@ Failing test: the disassembler fixture fails until the existing monitor
 decoder is replaced by the EVSBUG12-style opcode classifier, mnemonic
 expander, operand formatter, and invalid-opcode fallback.
 
-End state: the monitor disassembly panel uses the lifted decoder for all
-currently covered rows. The panel format remains unchanged, invalid or
-unimplemented opcodes still display as `fcb $nn`, relative operands display
-resolved absolute targets, and the decoder does not read past addressable
-memory for truncated instructions.
+End state: the monitor disassembly panel uses the lifted `decode_inst`
+classifier and `disassemble_line` text-buffer strategy for all currently
+covered rows. The panel format remains unchanged, invalid or unimplemented
+opcodes still display as `fcb $nn`, relative operands display resolved
+absolute targets, and the decoder does not read past addressable memory for
+truncated instructions.
 
 ### 9.2.4. Disassembler Size Baseline
 
@@ -528,9 +586,12 @@ collect one source line, report success or failure, and return to
 
 End state: the base monitor has a keyboard assembler entry point, input
 buffer ownership, success/error reporting path, and address-selection
-behavior. This slice may accept only a tiny subset of instructions, but it
-establishes the command flow that later EVSBUG12 parser and opcode
-construction slices fill in.
+behavior. The command flow should be shaped so the later `asm_cmd` lift can
+read a line, either advance on a blank line or parse one source statement,
+write the generated bytes, and redisassemble the result for feedback. This
+slice may accept only a tiny subset of instructions, but it establishes the
+command flow that later EVSBUG12 parser and opcode construction slices fill
+in.
 
 ### 9.7. EVSBUG12 Assembler Parser and Opcode Construction
 
@@ -539,11 +600,11 @@ direct, extended, indexed, relative, and bit-operation source lines fail
 until the monitor uses EVSBUG12-style mnemonic lookup, operand parsing, and
 opcode construction.
 
-End state: the keyboard assembler shares the EVSBUG12-derived mnemonic and
-operand metadata with the disassembler where practical. It emits bytes for
-the representative addressing modes, rejects invalid operand forms without
-modifying memory, resolves relative branch offsets, and reports range errors
-deterministically.
+End state: the keyboard assembler shares the EVSBUG12-derived `mnemonics`,
+`mnemonic_modes`, and `opcode_table` metadata with the disassembler where
+practical. It emits bytes for the representative addressing modes, rejects
+invalid operand forms without modifying memory, resolves relative branch
+offsets, and reports range errors deterministically.
 
 ### 9.8. Assembler Opcode and Addressing-Mode Coverage
 
