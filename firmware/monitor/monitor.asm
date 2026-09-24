@@ -1,10 +1,10 @@
         .msfirst
 
-NUL                    .equ    $00             ; null character
-TAB                    .equ    $09             ; horizontal tab
-LF                     .equ    $0a             ; line feed
-CR                     .equ    $0d             ; carriage return
-ESC                    .equ    $1b             ; escape
+NUL                    .equ    $00      ; null character
+TAB                    .equ    $09      ; horizontal tab
+LF                     .equ    $0a      ; line feed
+CR                     .equ    $0d      ; carriage return
+ESC                    .equ    $1b      ; escape
 
 monitor_stack_top      .equ    $7f
 reset_cc               .equ    $08
@@ -245,7 +245,7 @@ _done:
 
         .module screen_output
 
-_save                  .equ    scratch         ; saved A across spacing output
+_save   .equ    scratch                 ; saved A across spacing output
 
 emit_spaces:
         sta     _save
@@ -260,8 +260,8 @@ _loop:
 
         .module disasm_output
 
-_cnt                   .equ    scratch         ; mnemonic character count
-_op                    .equ    scratch + $01  ; opcode being decoded
+_cnt    .equ    scratch                 ; mnemonic character count
+_op     .equ    scratch + $01           ; opcode being decoded
 
 ; Disassembler output decodes one opcode into local assembly style.
 emit_disasm_mnemonic:
@@ -310,7 +310,7 @@ _loop:
 
         .module hex_output
 
-_byte                  .equ    scratch         ; byte being formatted as hex
+_byte   .equ    scratch                 ; byte being formatted as hex
 
 emit_hex_byte:
         sta     _byte
@@ -414,7 +414,7 @@ _write:
 
         .module draw_memory_row
 
-_idx                   .equ    scratch + $01  ; memory row byte offset
+_idx    .equ    scratch + $01           ; memory row byte offset
 
 ; Memory row rendering uses the generated read thunk for addressable RAM.
 draw_memory_row:
@@ -516,9 +516,9 @@ init_memory_panel:
 
         .module memory_editing
 
-_ch                    .equ    scratch         ; key byte during dispatch
-_nib                   .equ    scratch         ; parsed hex nibble
-_tmp                   .equ    scratch + $01  ; preserved high nibble
+_ch     .equ    scratch                 ; key byte during dispatch
+_nib    .equ    scratch                 ; parsed hex nibble
+_tmp    .equ    scratch + $01           ; preserved high nibble
 
 ; Memory key handling updates panel state without redrawing here.
 memory_key_input:
@@ -649,7 +649,7 @@ _low:
 
         .module memory_cursor
 
-_byte                  .equ    scratch         ; byte held while patching write thunk
+_byte   .equ    scratch                 ; byte held while patching write thunk
 
 ; Cursor helpers patch generated access thunks around the current address.
 memory_select_cursor:
@@ -711,7 +711,7 @@ memory_cursor_done:
 
         .module test_hooks
 
-_cnt                   .equ    scratch + $02  ; test loop count across callee scratch use
+_cnt    .equ    scratch + $02           ; test loop count across callee scratch use
 
 ; MAME test hooks expose stable ROM entry points for focused checks.
 test_console_output:
