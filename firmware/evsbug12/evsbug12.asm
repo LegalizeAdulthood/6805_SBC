@@ -1016,7 +1016,7 @@ _restart:
         jsr     write_crlf
 
 read_command_line:
-        lda     #$3e
+        lda     #'>'
         jsr     write_console_char
         clrx
 
