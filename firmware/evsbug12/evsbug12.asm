@@ -15,6 +15,7 @@ DC3             .equ    $13             ; control-S
 CAN             .equ    $18             ; cancel
 SP              .equ    $20             ; space
 msg_end         .equ    $80             ; string high-bit terminator
+char_mask       .equ    $7f             ; strip char high bit
 lo_nibl_mask    .equ    $0f             ; low nibble mask
 hi_nibl_mask    .equ    $f0             ; high nibble mask
 
@@ -289,7 +290,7 @@ _read_poll:
         stx     io_stat
         brclr   acia_isr_rdrf_bit, io_stat, _read_poll
         lda     acia_rdra
-        and     #$7f
+        and     #char_mask
         bra     _write_char
 
 write_console_char:
@@ -1152,7 +1153,7 @@ _scan_char:
         incx
         lda     cmd_tokens,x
         beq     _bad_cmd
-        and     #$7f
+        and     #char_mask
         cmp     cmd_char
         beq     _match_char
 
@@ -1372,7 +1373,7 @@ _emit_mnem:
         cmp     _mode
         bhi     _prev_ch
         lda     mnemonics,x
-        and     #$7f
+        and     #char_mask
         stx     _mnem_x
         sta     _tmp
         lda     _mode
@@ -1591,7 +1592,7 @@ _exit_cmd:
 _got_mnem:
         lda     mnemonics,x
         beq     _bad_entry
-        and     #$7f
+        and     #char_mask
         cmp     cmd_char
         bhi     _bad_entry
         bne     _next_mnem
@@ -2214,7 +2215,7 @@ _check_pause:
         beq     _return
         clr     poll_flag
         lda     acia_rdra
-        and     #$7f
+        and     #char_mask
         cmp     #DC3
         bne     _check_cancel
 
@@ -2224,7 +2225,7 @@ _wait_resume:
         stx     io_stat
         brclr   acia_isr_rdrf_bit, io_stat, _wait_resume
         lda     acia_rdra
-        and     #$7f
+        and     #char_mask
 
 _check_cancel:
         cmp     #CAN
