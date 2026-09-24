@@ -1918,19 +1918,55 @@ mnemonics:
 
 ; mnemonic addressing-mode table
 
+        .module mnemonic_modes
+_inh            .equ    $10             ; inherent/no operand
+_bit_dir        .equ    $20             ; bit + direct addr
+_rel            .equ    $30             ; relative target
+_idx            .equ    $40             ; indexed/A/X suffix
+_bad            .equ    $50             ; invalid/reserved mode
+_mem            .equ    $60             ; memory operand
+_imm_mem        .equ    $70             ; immediate/memory operand
+_bit_rel        .equ    $80             ; bit + branch target
+
 mnemonic_modes:
-        .byte   $00,$01,$72,$72,$01,$72,$01,$42,$42,$00,$01,$32,$02,$23,$32,$01
-        .byte   $32,$01,$02,$33,$33,$32,$32,$01,$32,$32,$72,$01,$32,$32,$01,$32
-        .byte   $32,$32,$01,$32,$01,$32,$01,$32,$02,$03,$84,$32,$02,$03,$84,$01
-        .byte   $02,$23,$32,$00,$01,$12,$12,$42,$01,$72,$01,$42,$01,$72,$00,$01
-        .byte   $42,$12,$00,$01,$72,$00,$01,$52,$00,$01,$42,$12,$00,$01,$62,$01
-        .byte   $62,$00,$01,$72,$72,$01,$42,$42,$00,$01,$12,$00,$01,$42,$01,$12
-        .byte   $00,$01,$72,$52,$00,$01,$42,$42,$01,$12,$01,$12,$12,$00,$01,$72
-        .byte   $01,$12,$12,$01,$62,$02,$13,$62,$01,$72,$01,$12,$00,$01,$12,$01
-        .byte   $42,$01,$12,$00,$01,$02,$13,$00
+        .byte   $00,                  $01,                  _imm_mem | $02,       _imm_mem | $02
+        .byte   $01,                  _imm_mem | $02,       $01,                  _idx | $02
+        .byte   _idx | $02,           $00,                  $01,                  _rel | $02
+        .byte   $02,                  _bit_dir | $03,       _rel | $02,           $01
+        .byte   _rel | $02,           $01,                  $02,                  _rel | $03
+        .byte   _rel | $03,           _rel | $02,           _rel | $02,           $01
+        .byte   _rel | $02,           _rel | $02,           _imm_mem | $02,       $01
+        .byte   _rel | $02,           _rel | $02,           $01,                  _rel | $02
+        .byte   _rel | $02,           _rel | $02,           $01,                  _rel | $02
+        .byte   $01,                  _rel | $02,           $01,                  _rel | $02
+        .byte   $02,                  $03,                  _bit_rel | $04,       _rel | $02
+        .byte   $02,                  $03,                  _bit_rel | $04,       $01
+        .byte   $02,                  _bit_dir | $03,       _rel | $02,           $00
+        .byte   $01,                  _inh | $02,           _inh | $02,           _idx | $02
+        .byte   $01,                  _imm_mem | $02,       $01,                  _idx | $02
+        .byte   $01,                  _imm_mem | $02,       $00,                  $01
+        .byte   _idx | $02,           _inh | $02,           $00,                  $01
+        .byte   _imm_mem | $02,       $00,                  $01,                  _bad | $02
+        .byte   $00,                  $01,                  _idx | $02,           _inh | $02
+        .byte   $00,                  $01,                  _mem | $02,           $01
+        .byte   _mem | $02,           $00,                  $01,                  _imm_mem | $02
+        .byte   _imm_mem | $02,       $01,                  _idx | $02,           _idx | $02
+        .byte   $00,                  $01,                  _inh | $02,           $00
+        .byte   $01,                  _idx | $02,           $01,                  _inh | $02
+        .byte   $00,                  $01,                  _imm_mem | $02,       _bad | $02
+        .byte   $00,                  $01,                  _idx | $02,           _idx | $02
+        .byte   $01,                  _inh | $02,           $01,                  _inh | $02
+        .byte   _inh | $02,           $00,                  $01,                  _imm_mem | $02
+        .byte   $01,                  _inh | $02,           _inh | $02,           $01
+        .byte   _mem | $02,           $02,                  _inh | $03,           _mem | $02
+        .byte   $01,                  _imm_mem | $02,       $01,                  _inh | $02
+        .byte   $00,                  $01,                  _inh | $02,           $01
+        .byte   _idx | $02,           $01,                  _inh | $02,           $00
+        .byte   $01,                  $02,                  _inh | $03,           $00
 
 ; opcode table
 
+        .module opcode_table
 opcode_table:
         .byte   op_adc_imm,     op_add_imm,     op_and_imm,     op_asl_dir
         .byte   op_asr_dir,     op_bcc,         op_bclr0,       op_bcs
