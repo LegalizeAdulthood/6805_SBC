@@ -501,6 +501,12 @@ _write_flag:
 
         .module write_memory_byte
 _byte           .equ    scratch + $33   ; memory write byte
+_map_op         .equ    cmd_thunk       ; map-switch opcode
+_map_addr       .equ    cmd_thunk + $01 ; map-switch operand
+_mem_op         .equ    cmd_thunk + $02 ; memory access opcode
+_mem_addr_hi    .equ    cmd_thunk + $03 ; target address high
+_mem_addr_lo    .equ    cmd_thunk + $04 ; target address low
+_return_op      .equ    cmd_thunk + $05 ; return opcode
 
 write_memory_byte:
         sta     _byte
@@ -514,17 +520,17 @@ read_memory_byte:
 
 _access_user:
         bclr    map_mon_bit, map_switch
-        sta     cmd_thunk+$02
+        sta     _mem_op
         lda     #op_bset1
-        sta     cmd_thunk
+        sta     _map_op
         lda     #map_switch
-        sta     cmd_thunk+$01
+        sta     _map_addr
         lda     addr_hi
-        sta     cmd_thunk+$03
+        sta     _mem_addr_hi
         lda     addr_lo
-        sta     cmd_thunk+$04
+        sta     _mem_addr_lo
         lda     #op_rts
-        sta     cmd_thunk+$05
+        sta     _return_op
         lda     _byte
         jsr     cmd_thunk
         bclr    map_user_bit, map_switch
@@ -1111,6 +1117,9 @@ _finish:
 
         .module cmd_loop
 _cmd_idx        .equ    scratch         ; command handler index
+_handler_op     .equ    cmd_thunk       ; handler jump opcode
+_handler_hi     .equ    cmd_thunk + $01 ; handler address high
+_handler_lo     .equ    cmd_thunk + $02 ; handler address low
 
 _bad_cmd:
         inc     cmd_err
@@ -1186,11 +1195,11 @@ _dispatch:
         asla
         tax
         lda     #op_jmp_ext
-        sta     cmd_thunk
+        sta     _handler_op
         lda     cmd_handlers,x
-        sta     cmd_thunk+$01
+        sta     _handler_hi
         lda     cmd_handlers+1,x
-        sta     cmd_thunk+$02
+        sta     _handler_lo
         jmp     cmd_thunk
 
 ; command handler table
