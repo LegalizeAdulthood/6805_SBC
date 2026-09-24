@@ -77,6 +77,8 @@ rts_instruction        .equ    $81
 
         .org    $1000
 
+        .module reset_entry
+
 reset_entry:
         rsp
         lda     #monitor_stack_top
@@ -120,6 +122,8 @@ reset_entry:
         jsr     draw_boot_screen
         jmp     monitor_idle
 
+        .module interrupt_dispatch
+
 swi_entry:
         jmp     monitor_idle
 
@@ -153,6 +157,8 @@ timer_default_handler:
 external_default_handler:
         jmp     monitor_idle
 
+        .module console_io
+
 init_console:
         lda     #acia_master_reset
         sta     acia_control
@@ -164,6 +170,8 @@ chrout:
         brclr   acia_tdre_bit,acia_status,chrout
         sta     acia_data
         rts
+
+        .module draw_boot_screen
 
 draw_boot_screen:
         ldx     #0
@@ -177,6 +185,8 @@ draw_boot_screen_loop:
 
 draw_boot_screen_done:
         jmp     draw_cpu_row
+
+        .module draw_cpu_row
 
 draw_cpu_row:
         ldx     #cpu_row_sp_text-cpu_row_text
@@ -223,6 +233,8 @@ emit_cpu_row_text:
 emit_cpu_row_text_done:
         rts
 
+        .module screen_output
+
 emit_spaces:
         lda     #$20
 
@@ -231,6 +243,8 @@ emit_spaces_loop:
         decx
         bne     emit_spaces_loop
         rts
+
+        .module disasm_output
 
 emit_disasm_mnemonic:
         clrx
@@ -273,6 +287,8 @@ emit_disasm_text_loop:
         dec     hex_value
         bne     emit_disasm_text_loop
         rts
+
+        .module hex_output
 
 emit_hex_byte:
         sta     hex_value
@@ -373,6 +389,8 @@ emit_stop_reason_write:
         jsr     emit_cpu_row_text
         rts
 
+        .module draw_memory_row
+
 draw_memory_row:
         lda     memory_row_hi
         sta     memory_read_hi
@@ -410,6 +428,8 @@ draw_memory_row_ascii_loop:
         jsr     emit_cpu_row_text
         rts
 
+        .module draw_disassembly_row
+
 draw_disassembly_row:
         lda     #$20
         jsr     chrout
@@ -439,6 +459,8 @@ draw_disassembly_done:
 draw_disassembly_return:
         rts
 
+        .module memory_ascii
+
 emit_memory_ascii:
         cmp     #$20
         blo     emit_memory_ascii_dot
@@ -452,6 +474,8 @@ emit_memory_ascii_write:
         jsr     chrout
         rts
 
+        .module memory_panel
+
 init_memory_panel:
         clra
         sta     memory_page_hi
@@ -462,6 +486,8 @@ init_memory_panel:
         sta     memory_page_lo
         sta     memory_cursor_lo
         rts
+
+        .module memory_editing
 
 memory_key_input:
         jsr     handle_memory_key
@@ -589,6 +615,8 @@ memory_hex_low:
         jsr     memory_cursor_right
         rts
 
+        .module memory_cursor
+
 memory_select_cursor:
         lda     memory_cursor_hi
         sta     memory_read_hi
@@ -646,6 +674,8 @@ memory_cursor_done:
         sta     memory_hex_phase
         rts
 
+        .module test_hooks
+
 test_console_output:
         lda     #$4f
         jsr     chrout
@@ -697,8 +727,12 @@ test_disassembler_output_loop:
         bne     test_disassembler_output_loop
         bra     monitor_idle
 
+        .module monitor_idle
+
 monitor_idle:
         bra     monitor_idle
+
+        .module data_tables
 
 hex_digits:
         .text   "0123456789ABCDEF"
@@ -911,6 +945,8 @@ boot_screen_text:
         .byte   $00
 
 rom_code_end:
+
+        .module interrupt_vectors
 
         .org    $1ff6
         .dw     timer_wait_dispatch   ; Timer from wait state

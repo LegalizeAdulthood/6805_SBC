@@ -11,6 +11,15 @@ add_test(
         "${CMAKE_CURRENT_SOURCE_DIR}/check_monitor_rom.cmake"
 )
 
+add_test(
+    NAME monitor.source_structure
+    COMMAND
+        "${CMAKE_COMMAND}"
+        "-DMONITOR_SOURCE=${MONITOR_SOURCE}"
+        "-P"
+        "${CMAKE_CURRENT_SOURCE_DIR}/check_monitor_source_structure.cmake"
+)
+
 if(MAME_EXECUTABLE)
 add_test(
     NAME monitor.mame.reset_vector
