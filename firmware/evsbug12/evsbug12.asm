@@ -13,6 +13,7 @@ LF              .equ    $0a             ; line feed
 CR              .equ    $0d             ; carriage return
 DC3             .equ    $13             ; control-S
 CAN             .equ    $18             ; cancel
+SP              .equ    $20             ; space
 msg_end         .equ    $80             ; string high-bit terminator
 
 acia_base       .equ    $ffe0
@@ -415,7 +416,7 @@ write_sp:
 ; register display field table
 
 register_fields:
-        .byte   "SPAXC",NUL
+        .byte   "SPAXC", NUL
 
 write_crlf:
         lda     #CR
@@ -1152,7 +1153,7 @@ _match_char:
         jsr     read_command_char
         cmp     #CR
         beq     _dispatch
-        cmp     #$20
+        cmp     #SP
         bne     _no_match
         lda     _cmd_idx
         cmp     #$04
@@ -1169,7 +1170,7 @@ _parse_arg:
         lda     parse_lo
         sta     cmd_arg_lo,x
         lda     cmd_char
-        cmp     #$20
+        cmp     #SP
         beq     _parse_arg
         cmp     #CR
         bne     _bad_cmd
@@ -1207,7 +1208,7 @@ disassemble_line:
         jsr     store_address_pair
         jsr     write_crlf
         jsr     write_hex_word_at_73
-        lda     #$20
+        lda     #SP
         ldx     #$1d
 
 _clear_line:
@@ -1624,7 +1625,7 @@ _finish_no_arg:
         bra     _mode_jump
 
 _need_space:
-        cmp     #$20
+        cmp     #SP
         bne     _bad_entry
 
 _mode_jump:
@@ -2110,7 +2111,7 @@ _byte_loop:
         jsr     read_memory_byte
         tsta
         bmi     _dot_char
-        cmp     #$20
+        cmp     #SP
         bcs     _dot_char
         cmp     #$7f
         bcs     _save_char
@@ -2123,7 +2124,7 @@ _save_char:
         jsr     app_char
         jsr     read_memory_byte
         jsr     write_hex_byte
-        lda     #$20
+        lda     #SP
         jsr     write_console_char
         jsr     increment_address
         inc     _col
@@ -2250,7 +2251,7 @@ _eq_addr:
         bra     _return_char
 
 _modify_chars:
-        .byte   "^=.",CR,NUL
+        .byte   "^=.", CR, NUL
 
         .module mem_modify_cmd
 _fill_byte      .equ    scratch + $27   ; fill byte argument
@@ -2336,7 +2337,7 @@ load_cmd:
         lda     cmd_char
         cmp     #CR
         beq     _bad_cmd
-        cmp     #$20
+        cmp     #SP
         bne     _bad_cmd
         jsr     read_command_char
         jsr     uppercase_command_char
@@ -2677,64 +2678,64 @@ _done:
 ; command token table; high bit marks token end
 
 cmd_tokens:
-        .byte   "AS",('M' | msg_end)
-        .byte   "B",('F' | msg_end)
-        .byte   "B",('R' | msg_end)
-        .byte   ('G' | msg_end)
-        .byte   "LOA",('D' | msg_end)
-        .byte   "M",('D' | msg_end)
-        .byte   "M",('M' | msg_end)
-        .byte   "NOB",('R' | msg_end)
-        .byte   ('P' | msg_end)
-        .byte   "R",('D' | msg_end)
-        .byte   "R",('M' | msg_end)
-        .byte   ('T' | msg_end)
-        .byte   "HEL",('P' | msg_end)
+        .byte   "AS",  ('M' | msg_end)
+        .byte   "B",   ('F' | msg_end)
+        .byte   "B",   ('R' | msg_end)
+        .byte          ('G' | msg_end)
+        .byte   "LOA", ('D' | msg_end)
+        .byte   "M",   ('D' | msg_end)
+        .byte   "M",   ('M' | msg_end)
+        .byte   "NOB", ('R' | msg_end)
+        .byte          ('P' | msg_end)
+        .byte   "R",   ('D' | msg_end)
+        .byte   "R",   ('M' | msg_end)
+        .byte          ('T' | msg_end)
+        .byte   "HEL", ('P' | msg_end)
         .byte   NUL
 
 ; banner text
 
 message_text:
-msg_banner  .equ    ($ - message_text)
-        .byte   "EVSbug-HC05 REV 1.2",NUL
-msg_brkpt  .equ    ($ - message_text)
-        .byte   "Brkpt",NUL
-msg_abort  .equ    ($ - message_text)
-        .byte   "Abort",NUL
-msg_regs  .equ    ($ - message_text)
-        .byte   "Regs ",NUL
-msg_bad_entry  .equ    ($ - message_text)
-        .byte   "ILLEGAL/INSUFFICIENT ENTRY",NUL
-msg_sp4  .equ    ($ - message_text)
-        .byte   " "
-msg_sp3  .equ    ($ - message_text)
-        .byte   "   ",NUL
+msg_banner      .equ    ($ - message_text)
+        .byte   "EVSbug-HC05 REV 1.2", NUL
+msg_brkpt       .equ    ($ - message_text)
+        .byte   "Brkpt", NUL
+msg_abort       .equ    ($ - message_text)
+        .byte   "Abort", NUL
+msg_regs        .equ    ($ - message_text)
+        .byte   "Regs ", NUL
+msg_bad_entry   .equ    ($ - message_text)
+        .byte   "ILLEGAL/INSUFFICIENT ENTRY", NUL
+msg_sp4         .equ    ($ - message_text)
+        .byte   SP
+msg_sp3         .equ    ($ - message_text)
+        .byte   SP, SP, SP, NUL
 
 ; help text
 
 help_intro:
-        .byte   "BREAK = Abort command, ",CR,LF
-        .byte   "CTRL-S = Freeze screen, CTRL-X = Cancel command line",CR,LF
-        .byte   "ASM <START ADDR>- Assembler/disassembler",CR,LF
-        .byte   "BF <START ADDR> <END ADDR> <DATA>- Block fill memory",NUL
+        .byte   "BREAK = Abort command, ", CR, LF
+        .byte   "CTRL-S = Freeze screen, CTRL-X = Cancel command line", CR, LF
+        .byte   "ASM <START ADDR>- Assembler/disassembler", CR, LF
+        .byte   "BF <START ADDR> <END ADDR> <DATA>- Block fill memory", NUL
 
 help_breakpoint:
-        .byte   "BR [<ADDR1 - ADDR5>]- Set 1 to 5 breakpoints",NUL
+        .byte   "BR [<ADDR1 - ADDR5>]- Set 1 to 5 breakpoints", NUL
 
 help_go_load_md:
-        .byte   "G [<START ADDR>]- Execute user program",CR,LF
-        .byte   "LOAD T - Download from port to memory",CR,LF
-        .byte   "MD <START ADDR> [<END ADDR>]- Display memory",NUL
+        .byte   "G [<START ADDR>]- Execute user program", CR, LF
+        .byte   "LOAD T - Download from port to memory", CR, LF
+        .byte   "MD <START ADDR> [<END ADDR>]- Display memory", NUL
 
 help_modify_nobr_proceed:
-        .byte   "MM <ADDRESS>- Modify memory",CR,LF
-        .byte   "NOBR [<ADDR1 - ADDR5>]- Remove breakpoints",CR,LF
-        .byte   "P [<COUNT>]- Proceed 1-FF times through a breakpoint",CR,LF
-        .byte   "RD- Register display",NUL
+        .byte   "MM <ADDRESS>- Modify memory", CR, LF
+        .byte   "NOBR [<ADDR1 - ADDR5>]- Remove breakpoints", CR, LF
+        .byte   "P [<COUNT>]- Proceed 1-FF times through a breakpoint", CR, LF
+        .byte   "RD- Register display", NUL
 
 help_register_trace:
-        .byte   "RM- Register modify",CR,LF
-        .byte   "T [<COUNT>]- Trace 1-FF instructions",NUL
+        .byte   "RM- Register modify", CR, LF
+        .byte   "T [<COUNT>]- Trace 1-FF instructions", NUL
 
 ; padding and interrupt vectors
         .dw     (int_vecs - $)
