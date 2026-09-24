@@ -161,14 +161,9 @@ ext_disp:
         sta     int_jmp_lo
         jmp     int_jmp_op
 
-tmr_wt_def_hdlr:
-        jmp     idle
-
-tmr_def_hdlr:
-        jmp     idle
-
-ext_def_hdlr:
-        jmp     idle
+tmr_wt_def_hdlr .equ    swi
+tmr_def_hdlr    .equ    swi
+ext_def_hdlr    .equ    swi
 
         .module con_io
 
