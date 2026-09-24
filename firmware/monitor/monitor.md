@@ -554,22 +554,6 @@ integration where needed:
 
 ## Implementation Slices
 
-### 9.2.1. EVSBUG12 Disassembler Harness
-
-Failing test: the monitor disassembler fixture is extended with rows that
-exercise EVSBUG12-style output paths for inherent, relative, immediate,
-direct, extended, indexed, bit-operation, and invalid-opcode examples. The
-test fails until the monitor test harness can compare decoded monitor rows
-against the required panel format while still running in the monitor
-context.
-
-End state: the fixture infrastructure can validate one decoded monitor row
-at a time with explicit checks for the address field, machine-byte field,
-mnemonic column, operand column, invalid-opcode fallback, and truncated
-instruction behavior. The existing supported opcodes still produce
-byte-for-byte identical output. This slice adds test reach, not the full
-EVSBUG12 decoder.
-
 ### 9.2.2. EVSBUG12 Tables and Metadata Lift
 
 Failing test: a table audit fails until the monitor contains named,

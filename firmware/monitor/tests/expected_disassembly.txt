@@ -39,3 +39,9 @@
  00A6: 9F          txa 
  00A7: 8F          wait
  00A8: 02          fcb     $02
+ 00A9: 20 00       bra     $00AB
+ 00AB: A6 5A       lda     #$5A
+ 00AD: 3F 44       clr     $44
+ 00AF: C6 12 34    lda     $1234
+ 00B2: F6          lda     ,x
+ 00B3: 10 44       bset    0,$44

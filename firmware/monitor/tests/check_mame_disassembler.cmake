@@ -67,6 +67,73 @@ string(TOUPPER "${_expected_bytes}" _expected_bytes)
 string(LENGTH "${_expected_bytes}" _expected_hex_length)
 math(EXPR _expected_count "${_expected_hex_length} / 2")
 
+file(STRINGS "${_disassembly_expected}" _expected_lines)
+set(_row_keys "")
+
+foreach(_line IN LISTS _expected_lines)
+    string(LENGTH "${_line}" _line_length)
+    if(_line_length LESS 23)
+        message(FATAL_ERROR "Expected disassembly row is too short: '${_line}'")
+    endif()
+
+    string(SUBSTRING "${_line}" 0 1 _row_mark)
+    string(SUBSTRING "${_line}" 1 4 _row_addr)
+    string(SUBSTRING "${_line}" 5 2 _row_addr_suffix)
+    string(SUBSTRING "${_line}" 7 12 _row_bytes_field)
+    string(SUBSTRING "${_line}" 19 4 _row_mnemonic)
+    string(STRIP "${_row_bytes_field}" _row_bytes)
+
+    if(NOT _row_mark STREQUAL " ")
+        message(FATAL_ERROR "Disassembly row must reserve column 1 for current-PC marker: '${_line}'")
+    endif()
+
+    if(NOT _row_addr MATCHES "^[0-9A-F][0-9A-F][0-9A-F][0-9A-F]$")
+        message(FATAL_ERROR "Disassembly row has invalid address field: '${_line}'")
+    endif()
+
+    if(NOT _row_addr_suffix STREQUAL ": ")
+        message(FATAL_ERROR "Disassembly row address field must end with ': ': '${_line}'")
+    endif()
+
+    if(NOT _row_bytes MATCHES "^([0-9A-F][0-9A-F]|[0-9A-F][0-9A-F] [0-9A-F][0-9A-F]|[0-9A-F][0-9A-F] [0-9A-F][0-9A-F] [0-9A-F][0-9A-F])$")
+        message(FATAL_ERROR "Disassembly row has invalid machine-byte field: '${_line}'")
+    endif()
+
+    if(NOT _row_mnemonic MATCHES "^[a-z][a-z0-9 ][a-z0-9 ][a-z0-9 ]$")
+        message(FATAL_ERROR "Disassembly row has invalid mnemonic field: '${_line}'")
+    endif()
+
+    if(_line_length GREATER 27)
+        string(SUBSTRING "${_line}" 23 4 _operand_gap)
+        string(SUBSTRING "${_line}" 27 -1 _row_operand)
+        string(STRIP "${_row_operand}" _row_operand)
+        if(NOT _operand_gap STREQUAL "    ")
+            message(FATAL_ERROR "Disassembly row operand must begin in column 28: '${_line}'")
+        endif()
+    else()
+        set(_row_operand "")
+    endif()
+
+    list(APPEND _row_keys "${_row_addr}|${_row_bytes}|${_row_mnemonic}|${_row_operand}")
+endforeach()
+
+function(_require_row _addr _bytes _mnemonic _operand _description)
+    set(_key "${_addr}|${_bytes}|${_mnemonic}|${_operand}")
+    list(FIND _row_keys "${_key}" _row_index)
+    if(_row_index EQUAL -1)
+        message(FATAL_ERROR "Missing ${_description} disassembly fixture row: ${_key}")
+    endif()
+endfunction()
+
+_require_row("0080" "48" "asla" "" "inherent")
+_require_row("00A8" "02" "fcb " "$02" "invalid-opcode")
+_require_row("00A9" "20 00" "bra " "$00AB" "relative")
+_require_row("00AB" "A6 5A" "lda " "#$5A" "immediate")
+_require_row("00AD" "3F 44" "clr " "$44" "direct")
+_require_row("00AF" "C6 12 34" "lda " "$1234" "extended")
+_require_row("00B2" "F6" "lda " ",x" "indexed")
+_require_row("00B3" "10 44" "bset" "0,$44" "bit-operation")
+
 file(REMOVE_RECURSE "${_stage_dir}")
 file(MAKE_DIRECTORY
     "${_stage_dir}/roms/m6805sbc"
@@ -120,7 +187,8 @@ file(WRITE "${_disassembler_script}"
     "            0x48, 0x58, 0x44, 0x54, 0x42, 0x40, 0x50, 0x9d,\r\n"
     "            0x49, 0x59, 0x46, 0x56, 0x9c, 0x80, 0x81, 0x99,\r\n"
     "            0x9b, 0x8e, 0x83, 0x97, 0x4d, 0x5d, 0x9f, 0x8f,\r\n"
-    "            0x02 }\r\n"
+    "            0x02, 0x20, 0x00, 0xa6, 0x5a, 0x3f, 0x44, 0xc6,\r\n"
+    "            0x12, 0x34, 0xf6, 0x10, 0x44 }\r\n"
     "        for index, byte in ipairs(fixture) do mem:write_u8(0x007f + index, byte) end\r\n"
     "        bytes = {}\r\n"
     "        cpu.state[\"PC\"].value = entry\r\n"
@@ -128,7 +196,7 @@ file(WRITE "${_disassembler_script}"
     "        return\r\n"
     "    end\r\n"
     "    if phase == \"wait_output\" then\r\n"
-    "        if #bytes < expected and frames < 240 then return end\r\n"
+    "        if #bytes < expected and frames < 120 then return end\r\n"
     "        print(string.format(\"DISASSEMBLY COUNT=%d BYTES=%s\", #bytes, hex_bytes()))\r\n"
     "        manager.machine:exit()\r\n"
     "        return\r\n"

@@ -279,26 +279,141 @@ _loop:
 
 _cnt    .equ    scratch                 ; mnemonic character count
 _op     .equ    scratch + $01           ; opcode being decoded
+_len    .equ    scratch + $02           ; decoded instruction byte count
 
 ; Disassembler output decodes one opcode into local assembly style.
 emit_disasm_mnemonic:
         sta     _op
+        cmp     #$20
+        bne     _cmpa6
+        jmp     _bra
+
+_cmpa6:
+        cmp     #$a6
+        bne     _cmp3f
+        jmp     _imm
+
+_cmp3f:
+        cmp     #$3f
+        bne     _cmpc6
+        jmp     _dir
+
+_cmpc6:
+        cmp     #$c6
+        bne     _cmpf6
+        jmp     _ext
+
+_cmpf6:
+        cmp     #$f6
+        bne     _cmp10
+        jmp     _idx
+
+_cmp10:
+        cmp     #$10
+        bne     _tbl
+        jmp     _bit
+
+_tbl:
         clrx                            ; Table scan stops at a zero opcode sentinel
 
 _scan:
         lda     disasm_inherent_table,x
-        beq     emit_disasm_fcb
+        beq     _fcbgo
         cmp     _op
         beq     _found
         inx
         inx
         bra     _scan
 
+_fcbgo:
+        jmp     emit_disasm_fcb
+
 _found:
         inx
         lda     disasm_inherent_table,x
         tax
         jsr     emit_disasm_text
+        rts
+
+_bra:
+        ldx     #disasm_bra_text-disasm_text
+        jsr     emit_disasm_text
+        jsr     _opsp
+        jsr     _dol
+        lda     disasm_pc_hi
+        jsr     emit_hex_byte
+        lda     disasm_pc_lo
+        add     #$02
+        jsr     emit_hex_byte
+        rts
+
+_imm:
+        ldx     #disasm_lda_text-disasm_text
+        jsr     emit_disasm_text
+        jsr     _opsp
+        lda     #$23
+        jsr     chrout
+        jsr     _dol
+        ldx     #$01
+        jsr     memory_read_opcode
+        jsr     emit_hex_byte
+        rts
+
+_dir:
+        ldx     #disasm_clr_text-disasm_text
+        jsr     emit_disasm_text
+        jsr     _opsp
+        jsr     _dol
+        ldx     #$01
+        jsr     memory_read_opcode
+        jsr     emit_hex_byte
+        rts
+
+_ext:
+        ldx     #disasm_lda_text-disasm_text
+        jsr     emit_disasm_text
+        jsr     _opsp
+        jsr     _dol
+        ldx     #$01
+        jsr     memory_read_opcode
+        jsr     emit_hex_byte
+        ldx     #$02
+        jsr     memory_read_opcode
+        jsr     emit_hex_byte
+        rts
+
+_idx:
+        ldx     #disasm_lda_text-disasm_text
+        jsr     emit_disasm_text
+        jsr     _opsp
+        lda     #$2c
+        jsr     chrout
+        lda     #$78
+        jsr     chrout
+        rts
+
+_bit:
+        ldx     #disasm_bset_text-disasm_text
+        jsr     emit_disasm_text
+        jsr     _opsp
+        lda     #$30
+        jsr     chrout
+        lda     #$2c
+        jsr     chrout
+        jsr     _dol
+        ldx     #$01
+        jsr     memory_read_opcode
+        jsr     emit_hex_byte
+        rts
+
+_opsp:
+        ldx     #$04
+        jsr     emit_spaces
+        rts
+
+_dol:
+        lda     #$24
+        jsr     chrout
         rts
 
 emit_disasm_fcb:
@@ -473,6 +588,9 @@ _asclp:
 
         .module draw_disassembly_row
 
+_op     .equ    scratch + $01           ; opcode byte while drawing bytes field
+_len    .equ    scratch + $02           ; decoded instruction byte count
+
 ; Disassembly row rendering advances a separate PC from the memory panel.
 draw_disassembly_row:
         lda     #$20                    ; Disassembly has its own PC so rows need not align
@@ -487,15 +605,72 @@ draw_disassembly_row:
         jsr     emit_cpu_row_text
         clrx
         jsr     memory_read_opcode
+        sta     _op
+        lda     #$01
+        sta     _len
+        lda     _op
+        cmp     #$20
+        beq     _len2
+        cmp     #$a6
+        beq     _len2
+        cmp     #$3f
+        beq     _len2
+        cmp     #$10
+        beq     _len2
+        cmp     #$c6
+        beq     _len3
+        bra     _bytes
+
+_len2:
+        lda     #$02
+        sta     _len
+        bra     _bytes
+
+_len3:
+        lda     #$03
+        sta     _len
+
+_bytes:
+        clrx
+        jsr     memory_read_opcode
         jsr     emit_hex_byte
+        lda     _len
+        cmp     #$01
+        beq     _spc10
+        lda     #$20
+        jsr     chrout
+        ldx     #$01
+        jsr     memory_read_opcode
+        jsr     emit_hex_byte
+        lda     _len
+        cmp     #$02
+        beq     _spc7
+        lda     #$20
+        jsr     chrout
+        ldx     #$02
+        jsr     memory_read_opcode
+        jsr     emit_hex_byte
+        ldx     #$04
+        bra     _spc
+
+_spc10:
         ldx     #$0a
+        bra     _spc
+
+_spc7:
+        ldx     #$07
+
+_spc:
         jsr     emit_spaces
+        lda     _op
         jsr     emit_disasm_mnemonic
 
 _done:
         ldx     #cpu_row_crlf_text-cpu_row_text
         jsr     emit_cpu_row_text
-        inc     disasm_pc_lo
+        lda     disasm_pc_lo
+        add     _len
+        sta     disasm_pc_lo
         bne     _return
         inc     disasm_pc_hi
 
@@ -728,7 +903,7 @@ memory_cursor_done:
 
         .module test_hooks
 
-_cnt    .equ    scratch + $02           ; test loop count across callee scratch use
+_cnt    .equ    saved_a                 ; test loop count while renderer owns scratch
 
 ; MAME test hooks expose stable ROM entry points for focused checks.
 test_console_output:
@@ -773,7 +948,7 @@ test_disassembler_output:
         sta     disasm_pc_hi
         lda     #$80
         sta     disasm_pc_lo
-        lda     #$29
+        lda     #$2f
         sta     _cnt
 
 _loop:
@@ -851,6 +1026,12 @@ disasm_asra_text:
 disasm_asrx_text:
         .text   "asrx"
 
+disasm_bra_text:
+        .text   "bra "
+
+disasm_bset_text:
+        .text   "bset"
+
 disasm_clc_text:
         .text   "clc "
 
@@ -862,6 +1043,9 @@ disasm_clra_text:
 
 disasm_clrx_text:
         .text   "clrx"
+
+disasm_clr_text:
+        .text   "clr "
 
 disasm_coma_text:
         .text   "coma"
@@ -880,6 +1064,9 @@ disasm_inca_text:
 
 disasm_incx_text:
         .text   "incx"
+
+disasm_lda_text:
+        .text   "lda "
 
 disasm_lsra_text:
         .text   "lsra"
