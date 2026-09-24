@@ -1,0 +1,76 @@
+if(NOT DEFINED MONITOR_SOURCE)
+    message(FATAL_ERROR "MONITOR_SOURCE is required")
+endif()
+
+if(NOT EXISTS "${MONITOR_SOURCE}")
+    message(FATAL_ERROR "monitor source does not exist: ${MONITOR_SOURCE}")
+endif()
+
+file(STRINGS "${MONITOR_SOURCE}" source_lines)
+file(READ "${MONITOR_SOURCE}" source_text)
+
+set(errors "")
+set(required_labels
+    "decode_inst"
+    "disassemble_line"
+)
+set(decode_inst_block "")
+set(disassemble_line_block "")
+set(section "")
+
+foreach(line IN LISTS source_lines)
+    if(line MATCHES "^([A-Za-z][A-Za-z0-9_]*):")
+        set(label "${CMAKE_MATCH_1}")
+        list(FIND required_labels "${label}" label_index)
+        if(NOT label_index EQUAL -1)
+            set(section "${label}")
+            set(seen_${label} TRUE)
+        elseif(NOT section STREQUAL "")
+            set(section "")
+        endif()
+    endif()
+
+    if(section STREQUAL "decode_inst")
+        set(decode_inst_block "${decode_inst_block}${line}\n")
+    elseif(section STREQUAL "disassemble_line")
+        set(disassemble_line_block "${disassemble_line_block}${line}\n")
+    endif()
+endforeach()
+
+foreach(label IN LISTS required_labels)
+    if(NOT seen_${label})
+        list(APPEND errors "missing disassembler core label '${label}'")
+    endif()
+endforeach()
+
+foreach(label IN ITEMS "_cmpa6" "_cmp3f" "_cmpc6" "_cmpf6" "_cmp10")
+    if(source_text MATCHES "(^|\n)${label}:")
+        list(APPEND errors "temporary compare label '${label}' should be removed")
+    endif()
+endforeach()
+
+foreach(label IN ITEMS "emit_disasm_mnemonic" "emit_disasm_fcb" "emit_disasm_text" "disasm_text" "disasm_inherent_table")
+    if(source_text MATCHES "(^|\n)${label}:")
+        list(APPEND errors "old disassembler label '${label}' should be removed")
+    endif()
+endforeach()
+
+function(require_block block_name block_text needle)
+    if(NOT "${block_text}" MATCHES "${needle}")
+        list(APPEND errors "${block_name} should reference '${needle}'")
+        set(errors "${errors}" PARENT_SCOPE)
+    endif()
+endfunction()
+
+require_block("decode_inst" "${decode_inst_block}" "opcode_30_7f_index")
+require_block("decode_inst" "${decode_inst_block}" "opcode_a0_af_index")
+require_block("decode_inst" "${decode_inst_block}" "branch_bit_index")
+require_block("decode_inst" "${decode_inst_block}" "opcode_80_9f_index")
+require_block("disassemble_line" "${disassemble_line_block}" "mnemonic_modes")
+require_block("disassemble_line" "${disassemble_line_block}" "mnemonics")
+require_block("disassemble_line" "${disassemble_line_block}" "dline_buf")
+
+if(errors)
+    list(JOIN errors "\n  - " error_text)
+    message(FATAL_ERROR "monitor disassembler core audit failed:\n  - ${error_text}")
+endif()

@@ -38,8 +38,22 @@ saved_x                .equ    $14
 saved_cc               .equ    $15
 stop_reason            .equ    $16
 
-scratch                .equ    $20
-scratch_end            .equ    scratch + $03
+memory_page_hi         .equ    $20
+memory_page_lo         .equ    $21
+mem_thunk_opcode       .equ    $22
+mem_thunk_hi           .equ    $23
+mem_thunk_lo           .equ    $24
+mem_thunk_rts          .equ    $25
+memory_cursor_hi       .equ    $26
+memory_cursor_lo       .equ    $27
+memory_focus           .equ    $28
+memory_hex_phase       .equ    $29
+disasm_pc_hi           .equ    $2a
+disasm_pc_lo           .equ    $2b
+scratch                .equ    $2c
+dline_buf              .equ    scratch + $03
+dline_tmp              .equ    dline_buf + $0e
+scratch_end            .equ    scratch + $13
 
 timer_wait_vector_hi   .equ    $17
 timer_wait_vector_lo   .equ    $18
@@ -50,22 +64,6 @@ external_vector_lo     .equ    $1c
 int_jump_opcode        .equ    $1d
 int_jump_hi            .equ    $1e
 int_jump_lo            .equ    $1f
-memory_page_hi         .equ    $23
-memory_page_lo         .equ    $24
-memory_read_opcode     .equ    $25
-memory_read_hi         .equ    $26
-memory_read_lo         .equ    $27
-memory_read_rts        .equ    $28
-memory_cursor_hi       .equ    $29
-memory_cursor_lo       .equ    $2a
-memory_focus           .equ    $2b
-memory_hex_phase       .equ    $2c
-memory_write_opcode    .equ    $2d
-memory_write_hi        .equ    $2e
-memory_write_lo        .equ    $2f
-memory_write_rts       .equ    $30
-disasm_pc_hi           .equ    $31
-disasm_pc_lo           .equ    $32
 
 acia_status            .equ    $06
 acia_control           .equ    $06
@@ -86,12 +84,11 @@ rts_instruction        .equ    $81
 ; $10-$16   state   saved user CPU frame and monitor stop reason.
 ; $17-$1c   state   RAM interrupt vectors initialized by reset.
 ; $1d-$1f   thunk   generated interrupt jump target.
-; $20-$22   scratch shared scratch window for non-overlapping lifetimes.
-; $23-$24   state   memory panel page address.
-; $25-$28   thunk   generated indexed memory read routine.
-; $29-$2c   state   memory cursor address, focus, and edit phase.
-; $2d-$30   thunk   generated indexed memory write routine.
-; $31-$32   state   disassembly panel start address.
+; $20-$21   state   memory panel page address.
+; $22-$25   thunk   generated indexed memory access routine.
+; $26-$29   state   memory cursor address, focus, and edit phase.
+; $2a-$2b   state   disassembly panel start address.
+; $2c-$3e   scratch shared temps, disassembly text buffer, and target temps.
 
         .org    $1000
 
@@ -128,14 +125,10 @@ reset_entry:
         sta     external_vector_lo
         lda     #jmp_extended           ; Shared IRQ thunk holds an absolute jump target
         sta     int_jump_opcode
-        lda     #lda_extended_indexed   ; Read thunk opcode is fixed; callers patch address bytes
-        sta     memory_read_opcode
+        lda     #lda_extended_indexed   ; Memory access thunk opcode is patched by callers
+        sta     mem_thunk_opcode
         lda     #rts_instruction
-        sta     memory_read_rts
-        lda     #sta_extended_indexed   ; Write thunk opcode is fixed; cursor state patches address bytes
-        sta     memory_write_opcode
-        lda     #rts_instruction
-        sta     memory_write_rts
+        sta     mem_thunk_rts
         jsr     init_memory_panel
         jsr     init_console
         jsr     draw_boot_screen
@@ -277,167 +270,459 @@ _loop:
 
         .module disasm_output
 
-_cnt    .equ    scratch                 ; mnemonic character count
-_op     .equ    scratch + $01           ; opcode being decoded
-_len    .equ    scratch + $02           ; decoded instruction byte count
+_op     .equ    scratch                 ; opcode byte being decoded
+_hex    .equ    scratch                 ; byte being formatted as buffered hex
+_len    .equ    scratch + $01           ; decoded instruction byte count
+_mnem   .equ    scratch + $02           ; mnemonic table index
+_pos    .equ    scratch + $02           ; text buffer write offset after decode
+_mctr   .equ    dline_tmp               ; mnemonic scan count or saved X
+_mpos   .equ    dline_tmp + $01         ; mnemonic copy offset
+_rhi    .equ    dline_tmp               ; relative target high byte
+_rlo    .equ    dline_tmp + $01         ; relative target low byte
 
-; Disassembler output decodes one opcode into local assembly style.
-emit_disasm_mnemonic:
+; Disassembly first classifies the opcode, then renders buffered text.
+decode_inst:
         sta     _op
-        cmp     #$20
-        bne     _cmpa6
-        jmp     _bra
-
-_cmpa6:
-        cmp     #$a6
-        bne     _cmp3f
-        jmp     _imm
-
-_cmp3f:
-        cmp     #$3f
-        bne     _cmpc6
-        jmp     _dir
-
-_cmpc6:
-        cmp     #$c6
-        bne     _cmpf6
-        jmp     _ext
-
-_cmpf6:
-        cmp     #$f6
-        bne     _cmp10
-        jmp     _idx
-
-_cmp10:
+        lda     #$01
+        sta     _len
+        lda     #op_fcb_idx
+        sta     _mnem
+        lda     _op
         cmp     #$10
-        bne     _tbl
-        jmp     _bit
+        bhs     _chk20
+        jmp     _done
 
-_tbl:
-        clrx                            ; Table scan stops at a zero opcode sentinel
+_chk20:
+        cmp     #$20
+        blo     _bit
+        cmp     #$30
+        blo     _br
+        cmp     #$80
+        blo     _uop
+        cmp     #$a0
+        blo     _inh
+        cmp     #op_bsr
+        beq     _bsr
+        cmp     #$b0
+        blo     _imm
+        cmp     #$c0
+        blo     _dir
+        cmp     #$d0
+        blo     _ext
+        cmp     #$e0
+        blo     _xext
+        cmp     #$f0
+        blo     _xdir
+        jmp     _x0
 
-_scan:
-        lda     disasm_inherent_table,x
-        beq     _fcbgo
-        cmp     _op
-        beq     _found
-        inx
-        inx
-        bra     _scan
-
-_fcbgo:
-        jmp     emit_disasm_fcb
-
-_found:
-        inx
-        lda     disasm_inherent_table,x
+_bit:
+        lda     #$02
+        sta     _len
+        lda     _op
+        and     #$01
+        add     #$02
         tax
-        jsr     emit_disasm_text
+        lda     branch_bit_index,x
+        sta     _mnem
         rts
 
-_bra:
-        ldx     #disasm_bra_text-disasm_text
-        jsr     emit_disasm_text
-        jsr     _opsp
-        jsr     _dol
-        lda     disasm_pc_hi
-        jsr     emit_hex_byte
-        lda     disasm_pc_lo
-        add     #$02
-        jsr     emit_hex_byte
+_br:
+        lda     #$02
+        sta     _len
+        lda     _op
+        and     #$0f
+        add     #$05
+        tax
+        lda     branch_bit_index,x
+        sta     _mnem
+        rts
+
+_uop:
+        lda     _op
+        and     #$0f
+        tax
+        lda     opcode_30_7f_index,x
+        beq     _bad
+        cmp     #op_lsl_idx
+        bne     _ustor
+        lda     #op_asl_idx
+
+_ustor:
+        sta     _mnem
+        lda     _op
+        cmp     #$40
+        blo     _len2
+        cmp     #$60
+        blo     _done
+        cmp     #$70
+        blo     _len2
+        rts
+
+_inh:
+        lda     _op
+        cmp     #op_wait
+        bne     _inhx
+        ldx     #$02
+        bra     _inhop
+
+_inhx:
+        lda     _op
+        and     #$0f
+        tax
+
+_inhop:
+        lda     opcode_80_9f_index,x
+        beq     _bad
+        sta     _mnem
+        rts
+
+_bsr:
+        lda     #$02
+        sta     _len
+        lda     #op_bsr_idx
+        sta     _mnem
         rts
 
 _imm:
-        ldx     #disasm_lda_text-disasm_text
-        jsr     emit_disasm_text
-        jsr     _opsp
-        lda     #$23
-        jsr     chrout
-        jsr     _dol
-        ldx     #$01
-        jsr     memory_read_opcode
-        jsr     emit_hex_byte
-        rts
+        lda     #$02
+        sta     _len
+        bra     _alu
 
 _dir:
-        ldx     #disasm_clr_text-disasm_text
-        jsr     emit_disasm_text
-        jsr     _opsp
-        jsr     _dol
-        ldx     #$01
-        jsr     memory_read_opcode
-        jsr     emit_hex_byte
-        rts
+        lda     #$02
+        sta     _len
+        bra     _alu
 
 _ext:
-        ldx     #disasm_lda_text-disasm_text
-        jsr     emit_disasm_text
-        jsr     _opsp
+        lda     #$03
+        sta     _len
+        bra     _alu
+
+_xext:
+        lda     #$03
+        sta     _len
+        bra     _alu
+
+_xdir:
+        lda     #$02
+        sta     _len
+        bra     _alu
+
+_x0:
+        bra     _alu
+
+_len2:
+        lda     #$02
+        sta     _len
+        rts
+
+_alu:
+        lda     _op
+        and     #$0f
+        tax
+        lda     opcode_a0_af_index,x
+        sta     _mnem
+        rts
+
+_bad:
+        lda     #$01
+        sta     _len
+        lda     #op_fcb_idx
+        sta     _mnem
+
+_done:
+        rts
+
+disassemble_line:
+        lda     _mnem
+        cmp     #op_fcb_idx
+        bne     _nfcb
+        jsr     _mnem4
+        jmp     _fcb
+
+_nfcb:
+        jsr     _mnem4
+        lda     _op
+        cmp     #op_bsr
+        bne     _nbsr
+        jmp     _relop
+
+_nbsr:
+        cmp     #$10
+        bhs     _n10
+        jmp     _line
+
+_n10:
+        cmp     #$20
+        bhs     _n20
+        jmp     _bitop
+
+_n20:
+        cmp     #$30
+        bhs     _n30
+        jmp     _relop
+
+_n30:
+        cmp     #$40
+        bhs     _n40
+        jmp     _dirop
+
+_n40:
+        cmp     #$60
+        bhs     _n60
+        jmp     _line
+
+_n60:
+        cmp     #$70
+        bhs     _n70
+        jmp     _dirop
+
+_n70:
+        cmp     #$80
+        bhs     _n80
+        jmp     _idxop
+
+_n80:
+        cmp     #$a0
+        bhs     _na0
+        jmp     _line
+
+_na0:
+        cmp     #$b0
+        bhs     _nb0
+        jmp     _immop
+
+_nb0:
+        cmp     #$c0
+        bhs     _nc0
+        jmp     _dirop
+
+_nc0:
+        cmp     #$d0
+        bhs     _nd0
+        jmp     _extop
+
+_nd0:
+        cmp     #$e0
+        bhs     _ne0
+        jmp     _extop
+
+_ne0:
+        cmp     #$f0
+        bhs     _nf0
+        jmp     _dirop
+
+_nf0:
+        jmp     _idxop
+
+_mnem4:
+        lda     #$20
+        sta     dline_buf
+        sta     dline_buf+$01
+        sta     dline_buf+$02
+        sta     dline_buf+$03
+        clr     _mctr
+        clrx
+
+_mscan:
+        lda     mnemonic_modes,x
+        cmp     #$0f
+        bls     _mnext
+        lda     _mctr
+        cmp     _mnem
+        beq     _mgot
+        inc     _mctr
+
+_mnext:
+        incx
+        bra     _mscan
+
+_mgot:
+        lda     mnemonic_modes,x
+        and     #$0f
+        sta     _mpos
+
+_mcopy:
+        lda     mnemonic_modes,x
+        and     #$0f
+        cmp     _mpos
+        bhi     _mprev
+        lda     mnemonics,x
+        and     #$7f
+        stx     _mctr
+        ldx     _mpos
+        sta     dline_buf,x
+        ldx     _mctr
+        dec     _mpos
+        bmi     _reg
+
+_mprev:
+        decx
+        bra     _mcopy
+
+_reg:
+        lda     _op
+        cmp     #$40
+        blo     _mterm
+        cmp     #$60
+        bhs     _mterm
+        lda     _mnem
+        cmp     #op_mul_idx
+        beq     _mterm
+        lda     _op
+        cmp     #$50
+        bhs     _regx
+        lda     #'a'
+        bra     _streg
+
+_regx:
+        lda     #'x'
+
+_streg:
+        sta     dline_buf+$03
+
+_mterm:
+        lda     #$04
+        sta     _pos
+        rts
+
+_fcb:
+        jsr     _gap
+        jsr     _dol
+        lda     _op
+        jsr     _apphx
+        jmp     _line
+
+_immop:
+        jsr     _gap
+        lda     #'#'
+        jsr     _app
         jsr     _dol
         ldx     #$01
-        jsr     memory_read_opcode
-        jsr     emit_hex_byte
+        jsr     mem_thunk_read
+        jsr     _apphx
+        jmp     _line
+
+_dirop:
+        jsr     _gap
+        jsr     _dol
+        ldx     #$01
+        jsr     mem_thunk_read
+        jsr     _apphx
+        jmp     _line
+
+_extop:
+        jsr     _gap
+        jsr     _dol
+        ldx     #$01
+        jsr     mem_thunk_read
+        jsr     _apphx
         ldx     #$02
-        jsr     memory_read_opcode
-        jsr     emit_hex_byte
-        rts
+        jsr     mem_thunk_read
+        jsr     _apphx
+        jmp     _line
 
-_idx:
-        ldx     #disasm_lda_text-disasm_text
-        jsr     emit_disasm_text
-        jsr     _opsp
-        lda     #$2c
-        jsr     chrout
-        lda     #$78
-        jsr     chrout
-        rts
+_idxop:
+        jsr     _gap
+        lda     #','
+        jsr     _app
+        lda     #'x'
+        jsr     _app
+        jmp     _line
 
-_bit:
-        ldx     #disasm_bset_text-disasm_text
-        jsr     emit_disasm_text
-        jsr     _opsp
-        lda     #$30
-        jsr     chrout
-        lda     #$2c
-        jsr     chrout
+_bitop:
+        jsr     _gap
+        lda     _op
+        and     #$0e
+        lsra
+        add     #'0'
+        jsr     _app
+        lda     #','
+        jsr     _app
         jsr     _dol
         ldx     #$01
-        jsr     memory_read_opcode
-        jsr     emit_hex_byte
-        rts
+        jsr     mem_thunk_read
+        jsr     _apphx
+        jmp     _line
 
-_opsp:
-        ldx     #$04
-        jsr     emit_spaces
+_relop:
+        jsr     _gap
+        jsr     _dol
+        lda     disasm_pc_lo
+        add     #$02
+        sta     _rlo
+        lda     disasm_pc_hi
+        adc     #$00
+        sta     _rhi
+        ldx     #$01
+        jsr     mem_thunk_read
+        sta     _hex
+        add     _rlo
+        sta     _rlo
+        lda     _rhi
+        adc     #$00
+        sta     _rhi
+        lda     _hex
+        bpl     _relhx
+        dec     _rhi
+
+_relhx:
+        lda     _rhi
+        jsr     _apphx
+        lda     _rlo
+        jsr     _apphx
+        jmp     _line
+
+_gap:
+        lda     #$20
+        jsr     _app
+        lda     #$20
+        jsr     _app
+        lda     #$20
+        jsr     _app
+        lda     #$20
+        jsr     _app
         rts
 
 _dol:
-        lda     #$24
-        jsr     chrout
+        lda     #'$'
+        jmp     _app
+
+_apphx:
+        sta     _hex
+        lsra
+        lsra
+        lsra
+        lsra
+        tax
+        lda     hex_digits,x
+        jsr     _app
+        lda     _hex
+        and     #$0f
+        tax
+        lda     hex_digits,x
+        jmp     _app
+
+_app:
+        ldx     _pos
+        sta     dline_buf,x
+        inc     _pos
         rts
 
-emit_disasm_fcb:
-                                        ; Unknown opcodes are emitted as fcb with literal byte
-        ldx     #disasm_fcb_text-disasm_text
-        jsr     emit_disasm_text
-        ldx     #$04
-        jsr     emit_spaces
-        lda     #$24
-        jsr     chrout
-        lda     _op
-        jsr     emit_hex_byte
-        rts
+_line:
+        clra
+        ldx     _pos
+        sta     dline_buf,x
+        clrx
 
-emit_disasm_text:
-        lda     #$04                    ; Each mnemonic is fixed at four characters
-        sta     _cnt
-
-_loop:
-        lda     disasm_text,x
+_olp:
+        lda     dline_buf,x
+        beq     _ret
         jsr     chrout
-        inx
-        dec     _cnt
-        bne     _loop
+        incx
+        bra     _olp
+
+_ret:
         rts
 
         .module hex_output
@@ -548,13 +833,13 @@ _write:
 
 _idx    .equ    scratch + $01           ; memory row byte offset
 
-; Memory row rendering uses the generated read thunk for addressable RAM.
+; Memory row rendering uses the generated access thunk for addressable RAM.
 draw_memory_row:
-        lda     memory_page_hi          ; The row address patches the read thunk before output
-        sta     memory_read_hi
+        lda     memory_page_hi          ; The row address patches the shared thunk before output
+        sta     mem_thunk_hi
         jsr     emit_hex_byte
         lda     memory_page_lo
-        sta     memory_read_lo
+        sta     mem_thunk_lo
         jsr     emit_hex_byte
         ldx     #memory_row_address_suffix_text-cpu_row_text
         jsr     emit_cpu_row_text
@@ -563,7 +848,7 @@ draw_memory_row:
 
 _hexlp:
         ldx     _idx
-        jsr     memory_read_opcode
+        jsr     mem_thunk_read
         jsr     emit_hex_byte
         lda     #$20
         jsr     chrout
@@ -577,7 +862,7 @@ _hexlp:
         clrx
 
 _asclp:
-        jsr     memory_read_opcode      ; The ASCII pass rereads the same row from byte zero
+        jsr     mem_thunk_read          ; The ASCII pass rereads the same row from byte zero
         jsr     emit_memory_ascii
         inx
         cpx     #$10
@@ -588,51 +873,27 @@ _asclp:
 
         .module draw_disassembly_row
 
-_op     .equ    scratch + $01           ; opcode byte while drawing bytes field
-_len    .equ    scratch + $02           ; decoded instruction byte count
+_len    .equ    scratch + $01           ; decoded instruction byte count
 
 ; Disassembly row rendering advances a separate PC from the memory panel.
 draw_disassembly_row:
         lda     #$20                    ; Disassembly has its own PC so rows need not align
         jsr     chrout
         lda     disasm_pc_hi
-        sta     memory_read_hi
+        sta     mem_thunk_hi
         jsr     emit_hex_byte
         lda     disasm_pc_lo
-        sta     memory_read_lo
+        sta     mem_thunk_lo
         jsr     emit_hex_byte
         ldx     #memory_row_address_suffix_text-cpu_row_text
         jsr     emit_cpu_row_text
         clrx
-        jsr     memory_read_opcode
-        sta     _op
-        lda     #$01
-        sta     _len
-        lda     _op
-        cmp     #$20
-        beq     _len2
-        cmp     #$a6
-        beq     _len2
-        cmp     #$3f
-        beq     _len2
-        cmp     #$10
-        beq     _len2
-        cmp     #$c6
-        beq     _len3
-        bra     _bytes
-
-_len2:
-        lda     #$02
-        sta     _len
-        bra     _bytes
-
-_len3:
-        lda     #$03
-        sta     _len
+        jsr     mem_thunk_read
+        jsr     decode_inst
 
 _bytes:
         clrx
-        jsr     memory_read_opcode
+        jsr     mem_thunk_read
         jsr     emit_hex_byte
         lda     _len
         cmp     #$01
@@ -640,7 +901,7 @@ _bytes:
         lda     #$20
         jsr     chrout
         ldx     #$01
-        jsr     memory_read_opcode
+        jsr     mem_thunk_read
         jsr     emit_hex_byte
         lda     _len
         cmp     #$02
@@ -648,7 +909,7 @@ _bytes:
         lda     #$20
         jsr     chrout
         ldx     #$02
-        jsr     memory_read_opcode
+        jsr     mem_thunk_read
         jsr     emit_hex_byte
         ldx     #$04
         bra     _spc
@@ -662,8 +923,10 @@ _spc7:
 
 _spc:
         jsr     emit_spaces
-        lda     _op
-        jsr     emit_disasm_mnemonic
+        clrx
+        jsr     mem_thunk_read
+        jsr     decode_inst
+        jsr     disassemble_line
 
 _done:
         ldx     #cpu_row_crlf_text-cpu_row_text
@@ -781,8 +1044,8 @@ _ascii:
         blo     _done
         cmp     #$7f
         bhs     _done
-        jsr     memory_write_cursor
-        jsr     memory_cursor_right
+        bsr     memory_write_cursor
+        bsr     memory_cursor_right
 
 _done:
         rts
@@ -822,49 +1085,51 @@ _nibl:
         lsla
         lsla
         lsla
-        jsr     memory_write_cursor
+        bsr     memory_write_cursor
         lda     #$01
         sta     memory_hex_phase
         rts
 
 _low:
-        jsr     memory_read_cursor      ; The second hex digit merges with the saved high nibble
+        bsr     memory_read_cursor      ; The second hex digit merges with the saved high nibble
         and     #$f0
         sta     _tmp
         lda     _nib
         ora     _tmp
-        jsr     memory_write_cursor
+        bsr     memory_write_cursor
         clra
         sta     memory_hex_phase
-        jsr     memory_cursor_right
+        bsr     memory_cursor_right
         rts
 
         .module memory_cursor
 
 _byte   .equ    scratch                 ; byte held while patching write thunk
 
-; Cursor helpers patch generated access thunks around the current address.
+; Memory helpers patch one generated access thunk around the current address.
 memory_select_cursor:
-        lda     memory_cursor_hi        ; Cursor selection patches both thunks from one address
-        sta     memory_read_hi
-        sta     memory_write_hi
+        lda     memory_cursor_hi        ; Cursor selection patches the shared memory thunk
+        sta     mem_thunk_hi
         lda     memory_cursor_lo
-        sta     memory_read_lo
-        sta     memory_write_lo
+        sta     mem_thunk_lo
         clrx
         rts
 
 memory_read_cursor:
-        jsr     memory_select_cursor
-        jsr     memory_read_opcode
-        rts
+        bsr     memory_select_cursor
+
+mem_thunk_read:
+        bclr    0,mem_thunk_opcode      ; LDA/STA indexed differ only in opcode bit 0
+        jmp     mem_thunk_opcode
 
 memory_write_cursor:
         sta     _byte
-        jsr     memory_select_cursor
+        bsr     memory_select_cursor
         lda     _byte
-        jsr     memory_write_opcode
-        rts
+
+mem_thunk_write:
+        bset    0,mem_thunk_opcode
+        jmp     mem_thunk_opcode
 
 memory_cursor_left:
         lda     memory_cursor_lo
@@ -1011,171 +1276,6 @@ memory_row_address_suffix_text:
 
 cpu_row_crlf_text:
         .byte   CR,(LF | msg_end)
-
-disasm_text:
-
-disasm_asla_text:
-        .text   "asla"
-
-disasm_aslx_text:
-        .text   "aslx"
-
-disasm_asra_text:
-        .text   "asra"
-
-disasm_asrx_text:
-        .text   "asrx"
-
-disasm_bra_text:
-        .text   "bra "
-
-disasm_bset_text:
-        .text   "bset"
-
-disasm_clc_text:
-        .text   "clc "
-
-disasm_cli_text:
-        .text   "cli "
-
-disasm_clra_text:
-        .text   "clra"
-
-disasm_clrx_text:
-        .text   "clrx"
-
-disasm_clr_text:
-        .text   "clr "
-
-disasm_coma_text:
-        .text   "coma"
-
-disasm_comx_text:
-        .text   "comx"
-
-disasm_deca_text:
-        .text   "deca"
-
-disasm_decx_text:
-        .text   "decx"
-
-disasm_inca_text:
-        .text   "inca"
-
-disasm_incx_text:
-        .text   "incx"
-
-disasm_lda_text:
-        .text   "lda "
-
-disasm_lsra_text:
-        .text   "lsra"
-
-disasm_lsrx_text:
-        .text   "lsrx"
-
-disasm_mul_text:
-        .text   "mul "
-
-disasm_nega_text:
-        .text   "nega"
-
-disasm_negx_text:
-        .text   "negx"
-
-disasm_nop_text:
-        .text   "nop "
-
-disasm_rola_text:
-        .text   "rola"
-
-disasm_rolx_text:
-        .text   "rolx"
-
-disasm_rora_text:
-        .text   "rora"
-
-disasm_rorx_text:
-        .text   "rorx"
-
-disasm_rsp_text:
-        .text   "rsp "
-
-disasm_rti_text:
-        .text   "rti "
-
-disasm_rts_text:
-        .text   "rts "
-
-disasm_sec_text:
-        .text   "sec "
-
-disasm_sei_text:
-        .text   "sei "
-
-disasm_stop_text:
-        .text   "stop"
-
-disasm_swi_text:
-        .text   "swi "
-
-disasm_tax_text:
-        .text   "tax "
-
-disasm_tsta_text:
-        .text   "tsta"
-
-disasm_tstx_text:
-        .text   "tstx"
-
-disasm_txa_text:
-        .text   "txa "
-
-disasm_wait_text:
-        .text   "wait"
-
-disasm_fcb_text:
-        .text   "fcb "
-
-disasm_inherent_table:
-                                        ; The table stores opcode then text offset for each match
-        .byte   $40,disasm_nega_text-disasm_text
-        .byte   $42,disasm_mul_text-disasm_text
-        .byte   $43,disasm_coma_text-disasm_text
-        .byte   $44,disasm_lsra_text-disasm_text
-        .byte   $46,disasm_rora_text-disasm_text
-        .byte   $47,disasm_asra_text-disasm_text
-        .byte   $48,disasm_asla_text-disasm_text
-        .byte   $49,disasm_rola_text-disasm_text
-        .byte   $4a,disasm_deca_text-disasm_text
-        .byte   $4c,disasm_inca_text-disasm_text
-        .byte   $4d,disasm_tsta_text-disasm_text
-        .byte   $4f,disasm_clra_text-disasm_text
-        .byte   $50,disasm_negx_text-disasm_text
-        .byte   $53,disasm_comx_text-disasm_text
-        .byte   $54,disasm_lsrx_text-disasm_text
-        .byte   $56,disasm_rorx_text-disasm_text
-        .byte   $57,disasm_asrx_text-disasm_text
-        .byte   $58,disasm_aslx_text-disasm_text
-        .byte   $59,disasm_rolx_text-disasm_text
-        .byte   $5a,disasm_decx_text-disasm_text
-        .byte   $5c,disasm_incx_text-disasm_text
-        .byte   $5d,disasm_tstx_text-disasm_text
-        .byte   $5f,disasm_clrx_text-disasm_text
-        .byte   $80,disasm_rti_text-disasm_text
-        .byte   $81,disasm_rts_text-disasm_text
-        .byte   $83,disasm_swi_text-disasm_text
-        .byte   $8e,disasm_stop_text-disasm_text
-        .byte   $8f,disasm_wait_text-disasm_text
-        .byte   $97,disasm_tax_text-disasm_text
-        .byte   $98,disasm_clc_text-disasm_text
-        .byte   $99,disasm_sec_text-disasm_text
-        .byte   $9a,disasm_cli_text-disasm_text
-        .byte   $9b,disasm_sei_text-disasm_text
-        .byte   $9c,disasm_rsp_text-disasm_text
-        .byte   $9d,disasm_nop_text-disasm_text
-        .byte   $9f,disasm_txa_text-disasm_text
-        .byte   $00
 
 op_adc_imm      .equ    $a9
 op_add_imm      .equ    $ab

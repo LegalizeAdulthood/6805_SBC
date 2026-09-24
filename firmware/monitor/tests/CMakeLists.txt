@@ -75,6 +75,15 @@ add_test(
         "${CMAKE_CURRENT_SOURCE_DIR}/check_monitor_opcode_tables.cmake"
 )
 
+add_test(
+    NAME monitor.disassembler_core
+    COMMAND
+        "${CMAKE_COMMAND}"
+        "-DMONITOR_SOURCE=${MONITOR_SOURCE}"
+        "-P"
+        "${CMAKE_CURRENT_SOURCE_DIR}/check_monitor_disassembler_core.cmake"
+)
+
 if(MAME_EXECUTABLE)
 add_test(
     NAME monitor.mame.reset_vector

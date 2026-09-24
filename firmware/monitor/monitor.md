@@ -554,19 +554,6 @@ integration where needed:
 
 ## Implementation Slices
 
-### 9.2.3. Replace the Monitor Disassembler Core
-
-Failing test: the disassembler fixture fails until the existing monitor
-decoder is replaced by the EVSBUG12-style opcode classifier, mnemonic
-expander, operand formatter, and invalid-opcode fallback.
-
-End state: the monitor disassembly panel uses the lifted `decode_inst`
-classifier and `disassemble_line` text-buffer strategy for all currently
-covered rows. The panel format remains unchanged, invalid or unimplemented
-opcodes still display as `fcb $nn`, relative operands display resolved
-absolute targets, and the decoder does not read past addressable memory for
-truncated instructions.
-
 ### 9.2.4. Disassembler Size Baseline
 
 Failing test: a build-time size check fails until the monitor build records

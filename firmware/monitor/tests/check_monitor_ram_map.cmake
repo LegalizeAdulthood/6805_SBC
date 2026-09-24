@@ -71,9 +71,17 @@ endmacro()
 
 require_global("scratch")
 require_global("scratch_end")
-if(DEFINED global_expr_scratch_end AND NOT "${global_expr_scratch_end}" STREQUAL "scratch + $03")
-    list(APPEND errors "scratch_end must document the three-byte shared scratch window")
+if(DEFINED global_expr_dline_buf AND NOT "${global_expr_dline_buf}" STREQUAL "scratch + $03")
+    list(APPEND errors "dline_buf must reclaim the original scratch bytes before the line buffer")
 endif()
+if(DEFINED global_expr_dline_tmp AND NOT "${global_expr_dline_tmp}" STREQUAL "dline_buf + $0e")
+    list(APPEND errors "dline_tmp must be inside the contiguous scratch window")
+endif()
+if(DEFINED global_expr_scratch_end AND NOT "${global_expr_scratch_end}" STREQUAL "scratch + $13")
+    list(APPEND errors "scratch_end must document the single contiguous scratch window")
+endif()
+require_global("dline_buf")
+require_global("dline_tmp")
 
 foreach(name
         hex_value
@@ -102,20 +110,16 @@ foreach(name
         int_jump_opcode
         int_jump_hi
         int_jump_lo
-        memory_read_opcode
-        memory_read_hi
-        memory_read_lo
-        memory_read_rts
+        mem_thunk_opcode
+        mem_thunk_hi
+        mem_thunk_lo
+        mem_thunk_rts
         memory_page_hi
         memory_page_lo
         memory_cursor_hi
         memory_cursor_lo
         memory_focus
         memory_hex_phase
-        memory_write_opcode
-        memory_write_hi
-        memory_write_lo
-        memory_write_rts
         disasm_pc_hi
         disasm_pc_lo)
     require_global("${name}")
@@ -123,7 +127,9 @@ endforeach()
 
 require_module_scratch("screen_output" "_save")
 require_module_scratch("disasm_output" "_op")
-require_module_scratch("disasm_output" "_cnt")
+require_module_scratch("disasm_output" "_len")
+require_module_scratch("disasm_output" "_mnem")
+require_module_scratch("disasm_output" "_pos")
 require_module_scratch("hex_output" "_byte")
 require_module_scratch("draw_memory_row" "_idx")
 require_module_scratch("memory_editing" "_ch")
