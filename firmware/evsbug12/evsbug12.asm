@@ -2214,7 +2214,7 @@ _return:
         .module reg_display_cmd
 reg_display_cmd:
         jsr     write_crlf
-        ldx     #$20
+        ldx     #msg_regs
 
 show_msg_regs:
         jsr     display_regs_msg
@@ -2591,7 +2591,7 @@ _check_break_count:
         bne     _resume_display
 
 _show_break:
-        ldx     #$14
+        ldx     #msg_brkpt
         jsr     write_crlf
 
 _reset_msg:
@@ -2607,7 +2607,7 @@ _trace_break:
 
 _show_trace:
         jsr     disassemble_line
-        ldx     #$13
+        ldx     #msg_empty
         bra     _reset_msg
 
 _run_armed_breaks:
@@ -2626,7 +2626,7 @@ _resume_display:
 _step_break:
         jsr     init_serial_or_timer
         jsr     write_crlf
-        ldx     #$1a
+        ldx     #msg_abort
         bra     _reset_msg
 
 _adjust_swi_stack:
@@ -2736,6 +2736,7 @@ cmd_tokens:
 message_text:
 msg_banner      .equ    ($ - message_text)
         .byte   "EVSbug-HC05 REV 1.2", NUL
+msg_empty       .equ    ($ - message_text) - 1
 msg_brkpt       .equ    ($ - message_text)
         .byte   "Brkpt", NUL
 msg_abort       .equ    ($ - message_text)
