@@ -15,6 +15,8 @@ DC3             .equ    $13             ; control-S
 CAN             .equ    $18             ; cancel
 SP              .equ    $20             ; space
 msg_end         .equ    $80             ; string high-bit terminator
+lo_nibl_mask    .equ    $0f             ; low nibble mask
+hi_nibl_mask    .equ    $f0             ; high nibble mask
 
 acia_base       .equ    $ffe0
 acia_isra       .equ    acia_base + $00
@@ -331,7 +333,7 @@ write_hex_byte:
         lda     _save_a
         bsr     write_hi_nibl
         lda     _save_a
-        and     #$0f
+        and     #lo_nibl_mask
         bra     write_lo_nibl
 
 write_hi_nibl:
@@ -777,10 +779,10 @@ decode_inst:
         clr     decode_flags
         jsr     read_memory_byte
         sta     _op
-        and     #$0f
+        and     #lo_nibl_mask
         tax
         lda     _op
-        and     #$f0
+        and     #hi_nibl_mask
         bne     _nonzero_op
         jmp     _set_len2
 
@@ -1261,7 +1263,7 @@ _byte_loop:
 
 _class_op:
         jsr     read_memory_byte
-        and     #$0f
+        and     #lo_nibl_mask
         tax
         jsr     read_memory_byte
         cmp     #$0f
@@ -1356,7 +1358,7 @@ _next_mode:
         bra     _scan_mode
 
 _chk_mnem:
-        and     #$0f
+        and     #lo_nibl_mask
         sta     _mode
         lda     _tmp
         cmp     _mnem
@@ -1366,7 +1368,7 @@ _chk_mnem:
 
 _emit_mnem:
         lda     mnemonic_modes,x
-        and     #$0f
+        and     #lo_nibl_mask
         cmp     _mode
         bhi     _prev_ch
         lda     mnemonics,x
@@ -1460,7 +1462,7 @@ app_hex_a:
         sta     _hex_byte
         bsr     app_hi_nibl
         lda     _hex_byte
-        and     #$0f
+        and     #lo_nibl_mask
         bra     nibl_ascii
 
 app_hi_nibl:
@@ -1572,7 +1574,7 @@ _next_mnem:
         lda     mnemonic_modes,x
         cmp     #$0f
         bls     _check_mode
-        and     #$0f
+        and     #lo_nibl_mask
         inc     _op
 
 _check_mode:
@@ -1729,7 +1731,7 @@ _bit_then_abs:
 _parse_bit_num:
         jsr     parse_hex_word
         lda     parse_lo
-        and     #$0f
+        and     #lo_nibl_mask
         cmp     #$00
         bcs     _bad_branch
         cmp     #$07
