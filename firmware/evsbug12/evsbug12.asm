@@ -88,6 +88,10 @@ inst_target_hi  .equ    scratch + $3e   ; decoded target high
 inst_target_lo  .equ    scratch + $3f   ; decoded target low
 inst_next       .equ    scratch + $40   ; decoded next address
 brk_ops         .equ    scratch + $42   ; saved breakpoint opcodes
+brk_user_last   .equ    $08             ; last user brk slot
+brk_step_slot   .equ    $0a             ; step brk slot
+brk_temp_slot   .equ    $0c             ; temp brk slot
+brk_table_last  .equ    $0d             ; last brk table byte
 trace_cnt       .equ    scratch + $49   ; trace instruction count
 proceed_cnt     .equ    scratch + $4a   ; proceed breakpoint count
 step_flag       .equ    scratch + $51   ; step-over pending flag
@@ -668,7 +672,7 @@ clear_breakpoints:
 clear_addr_slots:
         clr     brk_addr_hi,x
         incx
-        cpx     #$0d
+        cpx     #brk_table_last
         bls     clear_addr_slots
         rts
 
@@ -690,7 +694,7 @@ _return:
         rts
 
 find_br_slot:
-        lda     #$08
+        lda     #brk_user_last
 
 find_address_slot:
         sta     _end
@@ -713,7 +717,7 @@ _next_slot:
 
 arm_breaks:
         clrx
-        lda     #$08
+        lda     #brk_user_last
 
 arm_break_range:
         sta     _end
@@ -736,7 +740,7 @@ _next_arm:
         jmp     resume_user
 
 restore_breaks:
-        ldx     #$08
+        ldx     #brk_user_last
         clra
 
 restore_break_range:
@@ -2025,7 +2029,7 @@ _disp_brk:
 
 _next_brk:
         ldx     brk_idx
-        cpx     #$08
+        cpx     #brk_user_last
         bls     _disp_brk
 
 _cmd_loop:
@@ -2075,8 +2079,8 @@ arm_step_breaks:
         jsr     decode_inst
         tst     cmd_err
         bne     _bad_run
-        ldx     #$0a
-        lda     #$0c
+        ldx     #brk_step_slot
+        lda     #brk_temp_slot
         jmp     arm_break_range
 
 proceed_cmd:
@@ -2546,7 +2550,7 @@ swi_handler:
         jsr     load_stack_pc
         jsr     decrement_address
         jsr     save_addr
-        lda     #$0c
+        lda     #brk_temp_slot
         jsr     find_address_slot
         beq     _breaks_ready
         jsr     read_memory_byte
@@ -2556,10 +2560,10 @@ swi_handler:
 
 _breaks_ready:
         brclr   map_step_armed_bit, map_switch, _restore_trace
-        ldx     #$0c
-        lda     #$0a
+        ldx     #brk_temp_slot
+        lda     #brk_step_slot
         jsr     restore_break_range
-        ldx     #$0a
+        ldx     #brk_step_slot
         jsr     clear_addr_slots
         bclr    map_brk_armed_bit, map_switch
 
