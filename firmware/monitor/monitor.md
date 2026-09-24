@@ -554,21 +554,6 @@ integration where needed:
 
 ## Implementation Slices
 
-### 9.2.2. EVSBUG12 Tables and Metadata Lift
-
-Failing test: a table audit fails until the monitor contains named,
-reviewable equivalents of the EVSBUG12 mnemonic text, opcode-family
-metadata, operand-class metadata, and assembler construction metadata needed
-by both the disassembler and keyboard assembler.
-
-End state: EVSBUG12-derived tables are translated into monitor source with
-local labels and comments that tie them back to the reconstituted
-`evsbug12.asm` labels: `mnemonics`, `mnemonic_modes`, `opcode_table`,
-`opcode_30_7f_index`, `opcode_a0_af_index`, `branch_bit_index`, and
-`opcode_80_9f_index`. The tables are not opaque byte blobs. Existing
-monitor tests remain green, and unused assembler metadata may be present
-only when it is clearly destined for later assembler slices.
-
 ### 9.2.3. Replace the Monitor Disassembler Core
 
 Failing test: the disassembler fixture fails until the existing monitor

@@ -1177,6 +1177,321 @@ disasm_inherent_table:
         .byte   $9f,disasm_txa_text-disasm_text
         .byte   $00
 
+op_adc_imm      .equ    $a9
+op_add_imm      .equ    $ab
+op_and_imm      .equ    $a4
+op_asl_dir      .equ    $38
+op_asr_dir      .equ    $37
+op_bcc          .equ    $24
+op_bclr0        .equ    $11
+op_bcs          .equ    $25
+op_beq          .equ    $27
+op_bhcc         .equ    $28
+op_bhcs         .equ    $29
+op_bih          .equ    $2f
+op_bil          .equ    $2e
+op_bit_imm      .equ    $a5
+op_bhi          .equ    $22
+op_bhs          .equ    $24
+op_blo          .equ    $25
+op_bls          .equ    $23
+op_bmc          .equ    $2c
+op_bmi          .equ    $2b
+op_bms          .equ    $2d
+op_bne          .equ    $26
+op_bpl          .equ    $2a
+op_bra          .equ    $20
+op_brclr0       .equ    $01
+op_brn          .equ    $21
+op_brset0       .equ    $00
+op_bset0        .equ    $10
+op_bset1        .equ    $12
+op_bsr          .equ    $ad
+op_clc          .equ    $98
+op_cli          .equ    $9a
+op_clr_dir      .equ    $3f
+op_cmp_imm      .equ    $a1
+op_com_dir      .equ    $33
+op_cpx_imm      .equ    $a3
+op_dec_dir      .equ    $3a
+op_dex          .equ    $5a
+op_eor_imm      .equ    $a8
+op_fcb          .equ    $01
+op_inc_dir      .equ    $3c
+op_inx          .equ    $5c
+op_jmp_base     .equ    $ac
+op_jmp_ext      .equ    $cc
+op_jsr_base     .equ    $ad
+op_lda_ext      .equ    $c6
+op_lda_imm      .equ    $a6
+op_ldx_imm      .equ    $ae
+op_lsl_dir      .equ    $38
+op_lsr_dir      .equ    $34
+op_mul          .equ    $42
+op_neg_dir      .equ    $30
+op_nop          .equ    $9d
+op_ora_imm      .equ    $aa
+op_org          .equ    $00
+op_rol_dir      .equ    $39
+op_ror_dir      .equ    $36
+op_rsp          .equ    $9c
+op_rti          .equ    $80
+op_rts          .equ    $81
+op_sbc_imm      .equ    $a2
+op_sec          .equ    $99
+op_sei          .equ    $9b
+op_sta_base     .equ    $a7
+op_sta_ext      .equ    $c7
+op_stop         .equ    $8e
+op_stx_base     .equ    $af
+op_sub_imm      .equ    $a0
+op_swi          .equ    $83
+op_tax          .equ    $97
+op_tst_dir      .equ    $3d
+op_txa          .equ    $9f
+op_wait         .equ    $8f
+
+op_adc_idx      .equ    $00
+op_add_idx      .equ    $01
+op_and_idx      .equ    $02
+op_asl_idx      .equ    $03
+op_asr_idx      .equ    $04
+op_bcc_idx      .equ    $05
+op_bclr_idx     .equ    $06
+op_bcs_idx      .equ    $07
+op_beq_idx      .equ    $08
+op_bhcc_idx     .equ    $09
+op_bhcs_idx     .equ    $0a
+op_bhi_idx      .equ    $0b
+op_bhs_idx      .equ    $0c
+op_bih_idx      .equ    $0d
+op_bil_idx      .equ    $0e
+op_bit_idx      .equ    $0f
+op_blo_idx      .equ    $10
+op_bls_idx      .equ    $11
+op_bmc_idx      .equ    $12
+op_bmi_idx      .equ    $13
+op_bms_idx      .equ    $14
+op_bne_idx      .equ    $15
+op_bpl_idx      .equ    $16
+op_bra_idx      .equ    $17
+op_brclr_idx    .equ    $18
+op_brn_idx      .equ    $19
+op_brset_idx    .equ    $1a
+op_bset_idx     .equ    $1b
+op_bsr_idx      .equ    $1c
+op_clc_idx      .equ    $1d
+op_cli_idx      .equ    $1e
+op_clr_idx      .equ    $1f
+op_cmp_idx      .equ    $20
+op_com_idx      .equ    $21
+op_cpx_idx      .equ    $22
+op_dec_idx      .equ    $23
+op_dex_idx      .equ    $24
+op_eor_idx      .equ    $25
+op_fcb_idx      .equ    $26
+op_inc_idx      .equ    $27
+op_inx_idx      .equ    $28
+op_jmp_idx      .equ    $29
+op_jsr_idx      .equ    $2a
+op_lda_idx      .equ    $2b
+op_ldx_idx      .equ    $2c
+op_lsl_idx      .equ    $2d
+op_lsr_idx      .equ    $2e
+op_mul_idx      .equ    $2f
+op_neg_idx      .equ    $30
+op_nop_idx      .equ    $31
+op_ora_idx      .equ    $32
+op_org_idx      .equ    $33
+op_rol_idx      .equ    $34
+op_ror_idx      .equ    $35
+op_rsp_idx      .equ    $36
+op_rti_idx      .equ    $37
+op_rts_idx      .equ    $38
+op_sbc_idx      .equ    $39
+op_sec_idx      .equ    $3a
+op_sei_idx      .equ    $3b
+op_sta_idx      .equ    $3c
+op_stop_idx     .equ    $3d
+op_stx_idx      .equ    $3e
+op_sub_idx      .equ    $3f
+op_swi_idx      .equ    $40
+op_tax_idx      .equ    $41
+op_tst_idx      .equ    $42
+op_txa_idx      .equ    $43
+op_wait_idx     .equ    $44
+op_unused_idx   .equ    $00
+
+; opcode_30_7f_index maps low nibbles to mnemonic indices.
+opcode_30_7f_index:
+        .byte   op_neg_idx,     op_unused_idx,  op_mul_idx,     op_com_idx
+        .byte   op_lsr_idx,     op_unused_idx,  op_ror_idx,     op_asr_idx
+        .byte   op_lsl_idx,     op_rol_idx,     op_dec_idx,     op_unused_idx
+        .byte   op_inc_idx,     op_tst_idx,     op_unused_idx,  op_clr_idx
+
+; opcode_a0_af_index maps ALU/load/store opcode low nibbles.
+opcode_a0_af_index:
+        .byte   op_sub_idx,     op_cmp_idx,     op_sbc_idx,     op_cpx_idx
+        .byte   op_and_idx,     op_bit_idx,     op_lda_idx,     op_sta_idx
+        .byte   op_eor_idx,     op_adc_idx,     op_ora_idx,     op_add_idx
+        .byte   op_jmp_idx,     op_jsr_idx,     op_ldx_idx,     op_stx_idx
+
+; branch_bit_index folds branch and bit-operation decoding.
+branch_bit_index:
+        .byte   op_brset_idx,   op_brclr_idx,   op_bset_idx,    op_bclr_idx
+        .byte   op_bsr_idx,     op_bra_idx,     op_brn_idx,     op_bhi_idx
+        .byte   op_bls_idx,     op_bcc_idx,     op_bcs_idx,     op_bne_idx
+        .byte   op_beq_idx,     op_bhcc_idx,    op_bhcs_idx,    op_bpl_idx
+        .byte   op_bmi_idx,     op_bmc_idx,     op_bms_idx,     op_bil_idx
+        .byte   op_bih_idx
+
+; opcode_80_9f_index maps inherent opcodes by low nibble.
+opcode_80_9f_index:
+        .byte   op_rti_idx,     op_rts_idx,     op_wait_idx,    op_swi_idx
+        .byte   op_unused_idx,  op_unused_idx,  op_unused_idx,  op_tax_idx
+        .byte   op_clc_idx,     op_sec_idx,     op_cli_idx,     op_sei_idx
+        .byte   op_rsp_idx,     op_nop_idx,     op_stop_idx,    op_txa_idx
+
+; mnemonics compresses adjacent spelling with high-bit ends.
+mnemonics:
+        .byte   "ad", ('c' | msg_end)
+        .byte         ('d' | msg_end)
+        .byte   "n",  ('d' | msg_end)
+        .byte   "s",  ('l' | msg_end)
+        .byte         ('r' | msg_end)
+        .byte   "bc", ('c' | msg_end)
+        .byte   "l",  ('r' | msg_end)
+        .byte         ('s' | msg_end)
+        .byte   "e",  ('q' | msg_end)
+        .byte   "hc", ('c' | msg_end)
+        .byte         ('s' | msg_end)
+        .byte         ('i' | msg_end)
+        .byte         ('s' | msg_end)
+        .byte   "i",  ('h' | msg_end)
+        .byte         ('l' | msg_end)
+        .byte         ('t' | msg_end)
+        .byte   "l",  ('o' | msg_end)
+        .byte         ('s' | msg_end)
+        .byte   "m",  ('c' | msg_end)
+        .byte         ('i' | msg_end)
+        .byte         ('s' | msg_end)
+        .byte   "n",  ('e' | msg_end)
+        .byte   "p",  ('l' | msg_end)
+        .byte   "r",  ('a' | msg_end)
+        .byte   "cl", ('r' | msg_end)
+        .byte         ('n' | msg_end)
+        .byte   "se", ('t' | msg_end)
+        .byte   "se", ('t' | msg_end)
+        .byte         ('r' | msg_end)
+        .byte   "cl", ('c' | msg_end)
+        .byte         ('i' | msg_end)
+        .byte         ('r' | msg_end)
+        .byte   "m",  ('p' | msg_end)
+        .byte   "o",  ('m' | msg_end)
+        .byte   "p",  ('x' | msg_end)
+        .byte   "de", ('c' | msg_end)
+        .byte         ('x' | msg_end)
+        .byte   "eo", ('r' | msg_end)
+        .byte   "fc", ('b' | msg_end)
+        .byte   "in", ('c' | msg_end)
+        .byte         ('x' | msg_end)
+        .byte   "jm", ('p' | msg_end)
+        .byte   "s",  ('r' | msg_end)
+        .byte   "ld", ('a' | msg_end)
+        .byte         ('x' | msg_end)
+        .byte   "s",  ('l' | msg_end)
+        .byte         ('r' | msg_end)
+        .byte   "mu", ('l' | msg_end)
+        .byte   "ne", ('g' | msg_end)
+        .byte   "o",  ('p' | msg_end)
+        .byte   "or", ('a' | msg_end)
+        .byte         ('g' | msg_end)
+        .byte   "ro", ('l' | msg_end)
+        .byte         ('r' | msg_end)
+        .byte   "s",  ('p' | msg_end)
+        .byte   "t",  ('i' | msg_end)
+        .byte         ('s' | msg_end)
+        .byte   "sb", ('c' | msg_end)
+        .byte   "e",  ('c' | msg_end)
+        .byte         ('i' | msg_end)
+        .byte   "t",  ('a' | msg_end)
+        .byte   "o",  ('p' | msg_end)
+        .byte         ('x' | msg_end)
+        .byte   "u",  ('b' | msg_end)
+        .byte   "w",  ('i' | msg_end)
+        .byte   "ta", ('x' | msg_end)
+        .byte   "s",  ('t' | msg_end)
+        .byte   "x",  ('a' | msg_end)
+        .byte   "wai",('t' | msg_end)
+        .byte   NUL
+
+_inh            .equ    $10
+_bit_dir        .equ    $20
+_rel            .equ    $30
+_idx            .equ    $40
+_bad            .equ    $50
+_mem            .equ    $60
+_imm_mem        .equ    $70
+_bit_rel        .equ    $80
+
+; mnemonic_modes carries operand class and mnemonic length.
+mnemonic_modes:
+        .byte   $00,               $01,                 _imm_mem | $02,     _imm_mem | $02
+        .byte   $01,               _imm_mem | $02,      $01,                _idx | $02
+        .byte   _idx | $02,        $00,                 $01,                _rel | $02
+        .byte   $02,               _bit_dir | $03,      _rel | $02,         $01
+        .byte   _rel | $02,        $01,                 $02,                _rel | $03
+        .byte   _rel | $03,        _rel | $02,          _rel | $02,         $01
+        .byte   _rel | $02,        _rel | $02,          _imm_mem | $02,     $01
+        .byte   _rel | $02,        _rel | $02,          $01,                _rel | $02
+        .byte   _rel | $02,        _rel | $02,          $01,                _rel | $02
+        .byte   $01,               _rel | $02,          $01,                _rel | $02
+        .byte   $02,               $03,                 _bit_rel | $04,     _rel | $02
+        .byte   $02,               $03,                 _bit_rel | $04,     $01
+        .byte   $02,               _bit_dir | $03,      _rel | $02,         $00
+        .byte   $01,               _inh | $02,          _inh | $02,         _idx | $02
+        .byte   $01,               _imm_mem | $02,      $01,                _idx | $02
+        .byte   $01,               _imm_mem | $02,      $00,                $01
+        .byte   _idx | $02,        _inh | $02,          $00,                $01
+        .byte   _imm_mem | $02,     $00,                 $01,               _bad | $02
+        .byte   $00,               $01,                 _idx | $02,         _inh | $02
+        .byte   $00,               $01,                 _mem | $02,         $01
+        .byte   _mem | $02,        $00,                 $01,                _imm_mem | $02
+        .byte   _imm_mem | $02,    $01,                 _idx | $02,         _idx | $02
+        .byte   $00,               $01,                 _inh | $02,         $00
+        .byte   $01,               _idx | $02,          $01,                _inh | $02
+        .byte   $00,               $01,                 _imm_mem | $02,     _bad | $02
+        .byte   $00,               $01,                 _idx | $02,         _idx | $02
+        .byte   $01,               _inh | $02,          $01,                _inh | $02
+        .byte   _inh | $02,        $00,                 $01,                _imm_mem | $02
+        .byte   $01,               _inh | $02,          _inh | $02,         $01
+        .byte   _mem | $02,        $02,                 _inh | $03,         _mem | $02
+        .byte   $01,               _imm_mem | $02,      $01,                _inh | $02
+        .byte   $00,               $01,                 _inh | $02,         $01
+        .byte   _idx | $02,        $01,                 _inh | $02,         $00
+        .byte   $01,               $02,                 _inh | $03,         $00
+
+; opcode_table maps mnemonic index to representative opcode.
+opcode_table:
+        .byte   op_adc_imm,     op_add_imm,     op_and_imm,     op_asl_dir
+        .byte   op_asr_dir,     op_bcc,         op_bclr0,       op_bcs
+        .byte   op_beq,         op_bhcc,        op_bhcs,        op_bhi
+        .byte   op_bhs,         op_bih,         op_bil,         op_bit_imm
+        .byte   op_blo,         op_bls,         op_bmc,         op_bmi
+        .byte   op_bms,         op_bne,         op_bpl,         op_bra
+        .byte   op_brclr0,      op_brn,         op_brset0,      op_bset0
+        .byte   op_bsr,         op_clc,         op_cli,         op_clr_dir
+        .byte   op_cmp_imm,     op_com_dir,     op_cpx_imm,     op_dec_dir
+        .byte   op_dex,         op_eor_imm,     op_fcb,         op_inc_dir
+        .byte   op_inx,         op_jmp_base,    op_jsr_base,    op_lda_imm
+        .byte   op_ldx_imm,     op_lsl_dir,     op_lsr_dir,     op_mul
+        .byte   op_neg_dir,     op_nop,         op_ora_imm,     op_org
+        .byte   op_rol_dir,     op_ror_dir,     op_rsp,         op_rti
+        .byte   op_rts,         op_sbc_imm,     op_sec,         op_sei
+        .byte   op_sta_base,    op_stop,        op_stx_base,    op_sub_imm
+        .byte   op_swi,         op_tax,         op_tst_dir,     op_txa
+        .byte   op_wait
+
 boot_screen_text:
         .byte   ESC                     ; Boot text emits escape sequences instead of blank-filled rows
         .text   "[H"

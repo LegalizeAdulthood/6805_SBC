@@ -12,7 +12,7 @@ if(NOT EXISTS "${MONITOR_SYMBOLS}")
     message(FATAL_ERROR "monitor symbols do not exist: ${MONITOR_SYMBOLS}")
 endif()
 
-set(max_rom_code_end 0x161e)
+set(max_rom_code_end 0x17b8)
 set(errors "")
 
 file(STRINGS "${MONITOR_SYMBOLS}" symbol_lines)
@@ -27,7 +27,7 @@ if(NOT DEFINED rom_code_end_hex)
 else()
     math(EXPR rom_code_end_value "0x${rom_code_end_hex}")
     if(rom_code_end_value GREATER max_rom_code_end)
-        list(APPEND errors "rom_code_end ${rom_code_end_hex} exceeds current monitor budget 161e")
+        list(APPEND errors "rom_code_end ${rom_code_end_hex} exceeds current monitor budget 17b8")
     endif()
 endif()
 
