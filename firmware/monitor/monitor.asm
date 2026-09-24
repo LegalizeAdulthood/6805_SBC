@@ -37,6 +37,9 @@ saved_x                .equ    $14
 saved_cc               .equ    $15
 stop_reason            .equ    $16
 
+scratch                .equ    $20
+scratch_end            .equ    scratch + $03
+
 timer_wait_vector_hi   .equ    $17
 timer_wait_vector_lo   .equ    $18
 timer_vector_hi        .equ    $19
@@ -46,28 +49,22 @@ external_vector_lo     .equ    $1c
 int_jump_opcode        .equ    $1d
 int_jump_hi            .equ    $1e
 int_jump_lo            .equ    $1f
-hex_value              .equ    $20
-memory_row_hi          .equ    $21
-memory_row_lo          .equ    $22
-memory_row_index       .equ    $23
-memory_read_opcode     .equ    $24
-memory_read_hi         .equ    $25
-memory_read_lo         .equ    $26
-memory_read_rts        .equ    $27
-memory_page_hi         .equ    $21
-memory_page_lo         .equ    $22
-memory_cursor_hi       .equ    $28
-memory_cursor_lo       .equ    $29
-memory_focus           .equ    $2a
-memory_hex_phase       .equ    $2b
-memory_write_opcode    .equ    $2c
-memory_write_hi        .equ    $2d
-memory_write_lo        .equ    $2e
-memory_write_rts       .equ    $2f
-disasm_pc_hi           .equ    $30
-disasm_pc_lo           .equ    $31
-disasm_opcode          .equ    $32
-disasm_test_count      .equ    $33
+memory_page_hi         .equ    $23
+memory_page_lo         .equ    $24
+memory_read_opcode     .equ    $25
+memory_read_hi         .equ    $26
+memory_read_lo         .equ    $27
+memory_read_rts        .equ    $28
+memory_cursor_hi       .equ    $29
+memory_cursor_lo       .equ    $2a
+memory_focus           .equ    $2b
+memory_hex_phase       .equ    $2c
+memory_write_opcode    .equ    $2d
+memory_write_hi        .equ    $2e
+memory_write_lo        .equ    $2f
+memory_write_rts       .equ    $30
+disasm_pc_hi           .equ    $31
+disasm_pc_lo           .equ    $32
 
 acia_status            .equ    $06
 acia_control           .equ    $06
@@ -248,25 +245,33 @@ _done:
 
         .module screen_output
 
+_save                  .equ    scratch         ; saved A across spacing output
+
 emit_spaces:
+        sta     _save
         lda     #$20
 
 _loop:
         jsr     chrout
         decx
         bne     _loop
+        lda     _save
         rts
 
         .module disasm_output
 
+_cnt                   .equ    scratch         ; mnemonic character count
+_op                    .equ    scratch + $01  ; opcode being decoded
+
 ; Disassembler output decodes one opcode into local assembly style.
 emit_disasm_mnemonic:
+        sta     _op
         clrx                            ; Table scan stops at a zero opcode sentinel
 
 _scan:
         lda     disasm_inherent_table,x
         beq     emit_disasm_fcb
-        cmp     disasm_opcode
+        cmp     _op
         beq     _found
         inx
         inx
@@ -287,34 +292,37 @@ emit_disasm_fcb:
         jsr     emit_spaces
         lda     #$24
         jsr     chrout
-        lda     disasm_opcode
+        lda     _op
         jsr     emit_hex_byte
         rts
 
 emit_disasm_text:
         lda     #$04                    ; Each mnemonic is fixed at four characters
-        sta     hex_value
+        sta     _cnt
 
 _loop:
         lda     disasm_text,x
         jsr     chrout
         inx
-        dec     hex_value
+        dec     _cnt
         bne     _loop
         rts
 
         .module hex_output
 
+_byte                  .equ    scratch         ; byte being formatted as hex
+
 emit_hex_byte:
-        sta     hex_value
+        sta     _byte
         lsra
         lsra
         lsra
         lsra
         jsr     emit_hex_nibble
-        lda     hex_value
+        lda     _byte
         and     #$0f
         jsr     emit_hex_nibble
+        lda     _byte
         rts
 
 emit_hex_nibble:
@@ -406,28 +414,30 @@ _write:
 
         .module draw_memory_row
 
+_idx                   .equ    scratch + $01  ; memory row byte offset
+
 ; Memory row rendering uses the generated read thunk for addressable RAM.
 draw_memory_row:
-        lda     memory_row_hi           ; The row address patches the read thunk before output
+        lda     memory_page_hi          ; The row address patches the read thunk before output
         sta     memory_read_hi
         jsr     emit_hex_byte
-        lda     memory_row_lo
+        lda     memory_page_lo
         sta     memory_read_lo
         jsr     emit_hex_byte
         ldx     #memory_row_address_suffix_text-cpu_row_text
         jsr     emit_cpu_row_text
         clrx
-        stx     memory_row_index
+        stx     _idx
 
 _hexlp:
-        ldx     memory_row_index
+        ldx     _idx
         jsr     memory_read_opcode
         jsr     emit_hex_byte
         lda     #$20
         jsr     chrout
-        ldx     memory_row_index
+        ldx     _idx
         inx
-        stx     memory_row_index
+        stx     _idx
         cpx     #$10
         bne     _hexlp
         lda     #$20
@@ -460,7 +470,6 @@ draw_disassembly_row:
         jsr     emit_cpu_row_text
         clrx
         jsr     memory_read_opcode
-        sta     disasm_opcode
         jsr     emit_hex_byte
         ldx     #$0a
         jsr     emit_spaces
@@ -507,13 +516,17 @@ init_memory_panel:
 
         .module memory_editing
 
+_ch                    .equ    scratch         ; key byte during dispatch
+_nib                   .equ    scratch         ; parsed hex nibble
+_tmp                   .equ    scratch + $01  ; preserved high nibble
+
 ; Memory key handling updates panel state without redrawing here.
 memory_key_input:
         jsr     _key
         jmp     monitor_idle
 
 _key:
-        sta     hex_value
+        sta     _ch
         cmp     #key_tab
         beq     _tab
         cmp     #key_ctrl_n
@@ -530,11 +543,11 @@ _key:
         beq     _down
         lda     memory_focus
         beq     _hexgo
-        lda     hex_value
+        lda     _ch
         jmp     _ascii
 
 _hexgo:
-        lda     hex_value
+        lda     _ch
         jmp     _hex
 
 _tab:
@@ -609,10 +622,10 @@ _lower:
         sub     #$57
 
 _nibl:
-        sta     hex_value               ; The first hex digit writes the high nibble and waits
+        sta     _nib                    ; The first hex digit writes the high nibble and waits
         lda     memory_hex_phase
         bne     _low
-        lda     hex_value
+        lda     _nib
         lsla
         lsla
         lsla
@@ -625,9 +638,9 @@ _nibl:
 _low:
         jsr     memory_read_cursor      ; The second hex digit merges with the saved high nibble
         and     #$f0
-        sta     memory_row_index
-        lda     hex_value
-        ora     memory_row_index
+        sta     _tmp
+        lda     _nib
+        ora     _tmp
         jsr     memory_write_cursor
         clra
         sta     memory_hex_phase
@@ -635,6 +648,8 @@ _low:
         rts
 
         .module memory_cursor
+
+_byte                  .equ    scratch         ; byte held while patching write thunk
 
 ; Cursor helpers patch generated access thunks around the current address.
 memory_select_cursor:
@@ -653,9 +668,9 @@ memory_read_cursor:
         rts
 
 memory_write_cursor:
-        sta     hex_value
+        sta     _byte
         jsr     memory_select_cursor
-        lda     hex_value
+        lda     _byte
         jsr     memory_write_opcode
         rts
 
@@ -696,6 +711,8 @@ memory_cursor_done:
 
         .module test_hooks
 
+_cnt                   .equ    scratch + $02  ; test loop count across callee scratch use
+
 ; MAME test hooks expose stable ROM entry points for focused checks.
 test_console_output:
         lda     #$4f                    ; Hooks stop by branching to monitor_idle after emitting fixture data
@@ -728,9 +745,9 @@ test_cpu_row_output:
 
 test_memory_row_output:
         clra
-        sta     memory_row_hi
+        sta     memory_page_hi
         lda     #$80
-        sta     memory_row_lo
+        sta     memory_page_lo
         jsr     draw_memory_row
         bra     monitor_idle
 
@@ -740,11 +757,11 @@ test_disassembler_output:
         lda     #$80
         sta     disasm_pc_lo
         lda     #$29
-        sta     disasm_test_count
+        sta     _cnt
 
 _loop:
         jsr     draw_disassembly_row
-        dec     disasm_test_count
+        dec     _cnt
         bne     _loop
         bra     monitor_idle
 

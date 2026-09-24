@@ -554,21 +554,6 @@ integration where needed:
 
 ## Implementation Slices
 
-### 9.1.4. Scratch RAM Lifetime Refactor
-
-Failing test: a RAM-map audit fails until `monitor.asm` distinguishes
-permanent monitor state from scratch bytes and documents which module owns
-each scratch alias.
-
-End state: saved CPU state, editable panel state, RAM interrupt vectors,
-and other values that persist across monitor operations remain in named
-permanent storage. Short-lived temporaries used by output formatting,
-memory editing, disassembly, keyboard parsing, and tests are moved into a
-shared scratch area with module-local aliases whose lifetimes do not
-coexist. The refactor reduces or preserves total RAM use, preserves all
-behavior, and leaves the source ready for later debugger state without
-claiming one permanent byte per temporary value.
-
 ### 9.1.5. Zero-Page Allocation Audit
 
 Failing test: a zero-page budget test fails until the build records the
