@@ -432,7 +432,7 @@ _access_user:
         sta     cmd_thunk+$02
         lda     #op_bset1
         sta     cmd_thunk
-        lda     #$50
+        lda     #map_switch
         sta     cmd_thunk+$01
         lda     addr_hi
         sta     cmd_thunk+$03
