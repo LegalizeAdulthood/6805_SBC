@@ -57,50 +57,50 @@ scratch         .equ    $51
 cmd_thunk       .equ    $9c
 int_vecs        .equ    $1ff0
 
-cmd_err         .equ    scratch+$01   ; command error flag
-cmd_args        .equ    scratch+$02   ; command argument count
-disasm_op_len   .equ    scratch+$02   ; disasm operand byte count
-line_buf        .equ    scratch+$03   ; command line buffer
-cmd_arg_hi      .equ    scratch+$20   ; command arg table high
-cmd_arg_lo      .equ    scratch+$21   ; command arg table low
-addr_hi         .equ    scratch+$22   ; active address high
-addr_lo         .equ    scratch+$23   ; active address low
-word_hi         .equ    scratch+$24   ; secondary word high
-word_lo         .equ    scratch+$25   ; secondary word low
-parse_hi        .equ    scratch+$2c   ; parsed word high
-parse_lo        .equ    scratch+$2d   ; parsed word low
-line_pos        .equ    scratch+$2e   ; line buffer index
-mod_idx         .equ    scratch+$2f   ; modify register field index
-mod_len         .equ    scratch+$31   ; modify value byte count
-brk_idx         .equ    scratch+$31   ; breakpoint slot index
-cmd_char        .equ    scratch+$32   ; command input character
-brk_addr_hi     .equ    scratch+$34   ; breakpoint table: high first
-brk_addr_lo     .equ    scratch+$35   ; breakpoint table: low next
-inst_target_hi  .equ    scratch+$3e   ; decoded target high
-inst_target_lo  .equ    scratch+$3f   ; decoded target low
-inst_next       .equ    scratch+$40   ; decoded next address
-brk_ops         .equ    scratch+$42   ; saved breakpoint opcodes
-trace_cnt       .equ    scratch+$49   ; trace instruction count
-proceed_cnt     .equ    scratch+$4a   ; proceed breakpoint count
-step_flag       .equ    scratch+$51   ; step-over pending flag
-mon_flags       .equ    scratch+$52   ; monitor control flags
-user_sp         .equ    scratch+$53   ; captured user SP
-saved_addr_hi   .equ    scratch+$54   ; saved address high
-saved_addr_lo   .equ    scratch+$55   ; saved address low
-checksum        .equ    scratch+$56   ; checksum accumulator
-op_len          .equ    scratch+$57   ; operand byte count
-decode_flags    .equ    scratch+$58   ; decode attribute flags
-df_reg_a_bit    .equ    0             ; emit A register suffix
-df_reg_bit      .equ    1             ; emit register suffix
-df_imm_bit      .equ    2             ; emit immediate marker
-df_idx_bit      .equ    3             ; emit indexed suffix
-hex_digit       .equ    scratch+$59   ; parsed hex digit
-asm_once        .equ    scratch+$5a   ; assembler one-shot flag
-serial_ctl      .equ    scratch+$5b   ; serial control bits
-poll_flag       .equ    scratch+$5c   ; pause poll pending
-tmp_a           .equ    scratch+$5d   ; temporary A save
-unknown         .equ    scratch+$5e   ; unknown scratch byte
-io_stat         .equ    scratch+$60   ; I/O status scratch
+cmd_err         .equ    scratch + $01   ; command error flag
+cmd_args        .equ    scratch + $02   ; command argument count
+disasm_op_len   .equ    scratch + $02   ; disasm operand byte count
+line_buf        .equ    scratch + $03   ; command line buffer
+cmd_arg_hi      .equ    scratch + $20   ; command arg table high
+cmd_arg_lo      .equ    scratch + $21   ; command arg table low
+addr_hi         .equ    scratch + $22   ; active address high
+addr_lo         .equ    scratch + $23   ; active address low
+word_hi         .equ    scratch + $24   ; secondary word high
+word_lo         .equ    scratch + $25   ; secondary word low
+parse_hi        .equ    scratch + $2c   ; parsed word high
+parse_lo        .equ    scratch + $2d   ; parsed word low
+line_pos        .equ    scratch + $2e   ; line buffer index
+mod_idx         .equ    scratch + $2f   ; modify register field index
+mod_len         .equ    scratch + $31   ; modify value byte count
+brk_idx         .equ    scratch + $31   ; breakpoint slot index
+cmd_char        .equ    scratch + $32   ; command input character
+brk_addr_hi     .equ    scratch + $34   ; breakpoint table: high first
+brk_addr_lo     .equ    scratch + $35   ; breakpoint table: low next
+inst_target_hi  .equ    scratch + $3e   ; decoded target high
+inst_target_lo  .equ    scratch + $3f   ; decoded target low
+inst_next       .equ    scratch + $40   ; decoded next address
+brk_ops         .equ    scratch + $42   ; saved breakpoint opcodes
+trace_cnt       .equ    scratch + $49   ; trace instruction count
+proceed_cnt     .equ    scratch + $4a   ; proceed breakpoint count
+step_flag       .equ    scratch + $51   ; step-over pending flag
+mon_flags       .equ    scratch + $52   ; monitor control flags
+user_sp         .equ    scratch + $53   ; captured user SP
+saved_addr_hi   .equ    scratch + $54   ; saved address high
+saved_addr_lo   .equ    scratch + $55   ; saved address low
+checksum        .equ    scratch + $56   ; checksum accumulator
+op_len          .equ    scratch + $57   ; operand byte count
+decode_flags    .equ    scratch + $58   ; decode attribute flags
+df_reg_a_bit    .equ    0               ; emit A register suffix
+df_reg_bit      .equ    1               ; emit register suffix
+df_imm_bit      .equ    2               ; emit immediate marker
+df_idx_bit      .equ    3               ; emit indexed suffix
+hex_digit       .equ    scratch + $59   ; parsed hex digit
+asm_once        .equ    scratch + $5a   ; assembler one-shot flag
+serial_ctl      .equ    scratch + $5b   ; serial control bits
+poll_flag       .equ    scratch + $5c   ; pause poll pending
+tmp_a           .equ    scratch + $5d   ; temporary A save
+unknown         .equ    scratch + $5e   ; unknown scratch byte
+io_stat         .equ    scratch + $60   ; I/O status scratch
 
 op_adc_imm      .equ    $a9
 op_add_imm      .equ    $ab
@@ -181,7 +181,7 @@ op_wait         .equ    $8f
         .org    $0800
 
         .module console_io
-_save_x         .equ    scratch+$59   ; saved X register
+_save_x         .equ    scratch + $59   ; saved X register
 
 service_cop:
         sta     tmp_a
@@ -237,7 +237,7 @@ _serial_event:
         jmp     cmd_loop
 
         .module write_hex_byte
-_save_a         .equ    scratch+$33   ; saved byte for output
+_save_a         .equ    scratch + $33   ; saved byte for output
 
 write_hex_byte:
         sta     _save_a
@@ -299,7 +299,7 @@ write_string:
         bra     write_string
 
         .module display_regs_msg
-_reg_idx        .equ    scratch+$33   ; register field index
+_reg_idx        .equ    scratch + $33   ; register field index
 
 display_regs_msg:
         jsr     write_string
@@ -353,8 +353,8 @@ condition_bits:
         .byte   "111HINZC"
 
         .module select_reg_addr
-_cnt            .equ    scratch+$31   ; offset/flag count
-_tmp            .equ    scratch+$33   ; X save/flags byte
+_cnt            .equ    scratch + $31   ; offset/flag count
+_tmp            .equ    scratch + $33   ; X save/flags byte
 
 select_reg_addr:
         stx     _tmp
@@ -415,7 +415,7 @@ _write_flag:
         rts
 
         .module write_memory_byte
-_byte           .equ    scratch+$33   ; memory write byte
+_byte           .equ    scratch + $33   ; memory write byte
 
 write_memory_byte:
         sta     _byte
@@ -447,7 +447,7 @@ _access_user:
         rts
 
         .module address_math
-_delta          .equ    scratch+$33     ; address delta byte
+_delta          .equ    scratch + $33   ; address delta byte
 
 increment_address:
         lda     #$01
@@ -592,7 +592,7 @@ clear_addr_slots:
         rts
 
         .module brk_helpers
-_end            .equ    scratch+$32   ; breakpoint range limit
+_end            .equ    scratch + $32   ; breakpoint range limit
 
 load_breakpoint_address:
         ldx     brk_idx
@@ -678,8 +678,8 @@ _next_restore:
         rts
 
         .module decode_inst
-_op             .equ    scratch+$33     ; opcode byte
-_addr_adj       .equ    scratch+$32     ; target address adjust
+_op             .equ    scratch + $33   ; opcode byte
+_addr_adj       .equ    scratch + $32   ; target address adjust
 
 decode_inst:
         clr     op_len
@@ -916,7 +916,7 @@ _finish_rel_addr:
         bra     _add_to_addr
 
         .module read_command_line
-_save_x         .equ    scratch+$33   ; saved X register
+_save_x         .equ    scratch + $33   ; saved X register
 
 _restart:
         jsr     write_crlf
@@ -972,8 +972,8 @@ _return:
         rts
 
         .module parse_hex_word
-_flags          .equ    mon_flags     ; parser control flags
-_save_x         .equ    scratch+$33   ; saved X register
+_flags          .equ    mon_flags       ; parser control flags
+_save_x         .equ    scratch + $33   ; saved X register
 
 parse_hex_word:
         clr     parse_hi
@@ -1025,7 +1025,7 @@ _finish:
         rts
 
         .module cmd_loop
-_cmd_idx        .equ    scratch       ; command handler index
+_cmd_idx        .equ    scratch         ; command handler index
 
 _bad_cmd:
         inc     cmd_err
@@ -1118,11 +1118,11 @@ cmd_handlers:
         .dw     help_cmd
 
         .module disassemble_line
-_mnem           .equ    scratch       ; mnemonic index
-_reg_ch         .equ    scratch+$12   ; A/X suffix slot
-_mode           .equ    scratch+$2f   ; mode/index temp
-_mnem_x         .equ    scratch+$31   ; mnemonic scan index
-_tmp            .equ    scratch+$33   ; shared temp byte
+_mnem           .equ    scratch         ; mnemonic index
+_reg_ch         .equ    scratch + $12   ; A/X suffix slot
+_mode           .equ    scratch + $2f   ; mode/index temp
+_mnem_x         .equ    scratch + $31   ; mnemonic scan index
+_tmp            .equ    scratch + $33   ; shared temp byte
 
 disassemble_line:
         ldx     #saved_addr_hi
@@ -1341,7 +1341,7 @@ _write_loop:
         clr     cmd_err
 
         .module load_line_addr
-_hex_byte       .equ    scratch+$32     ; byte for hex output
+_hex_byte       .equ    scratch + $32   ; byte for hex output
 
 load_line_addr:
         ldx     #saved_addr_hi
@@ -1418,8 +1418,8 @@ opcode_80_9f_index:
 
         .module asm_cmd
 _op             .equ    scratch         ; assembled opcode byte
-_mpos           .equ    scratch+$2f     ; mnemonic match position
-_mode           .equ    scratch+$31     ; mode/operand temp
+_mpos           .equ    scratch + $2f   ; mnemonic match position
+_mode           .equ    scratch + $31   ; mode/operand temp
 
 asm_cmd:
         dec     cmd_args
@@ -1994,7 +1994,7 @@ _def_trace:
         bra     _set_trace
 
         .module mem_display_cmd
-_col            .equ    scratch+$2f     ; display column count
+_col            .equ    scratch + $2f   ; display column count
 
 mem_display_cmd:
         ldx     cmd_args
@@ -2163,7 +2163,7 @@ _modify_chars:
         .byte   "^=.",CR,NUL
 
         .module mem_modify_cmd
-_fill_byte      .equ    scratch+$27   ; fill byte argument
+_fill_byte      .equ    scratch + $27   ; fill byte argument
 
 mem_modify_cmd:
         dec     cmd_args
@@ -2233,9 +2233,9 @@ _cmd_exit:
         jmp     cmd_loop
 
         .module load_cmd
-_s9_flag        .equ    scratch+$57     ; S9/end record flag
-_rec_cnt        .equ    scratch+$2f     ; S-record byte count
-_rec_sum        .equ    scratch+$2f     ; checksum compare save
+_s9_flag        .equ    scratch + $57   ; S9/end record flag
+_rec_cnt        .equ    scratch + $2f   ; S-record byte count
+_rec_sum        .equ    scratch + $2f   ; checksum compare save
 
 _bad_cmd:
         inc     cmd_err
@@ -2405,7 +2405,7 @@ init_serial_or_timer:
         rts
 
         .module swi_handler
-_stk_idx        .equ    scratch+$31     ; stack copy index
+_stk_idx        .equ    scratch + $31   ; stack copy index
 
 swi_handler:
         bclr    map_direct_rti_bit, map_switch
