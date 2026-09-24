@@ -1,105 +1,79 @@
-if(NOT DEFINED MONITOR_SOURCE)
-    message(FATAL_ERROR "MONITOR_SOURCE is required")
-endif()
+foreach(required_var IN ITEMS MONITOR_SOURCE MONITOR_SYMBOLS)
+    if(NOT DEFINED ${required_var} OR "${${required_var}}" STREQUAL "")
+        message(FATAL_ERROR "${required_var} is required")
+    endif()
+endforeach()
 
 if(NOT EXISTS "${MONITOR_SOURCE}")
     message(FATAL_ERROR "monitor source does not exist: ${MONITOR_SOURCE}")
 endif()
 
-set(public_labels
-    "reset_entry"
-    "swi_entry"
-    "timer_wait_dispatch"
-    "timer_dispatch"
-    "external_dispatch"
-    "timer_wait_default_handler"
-    "timer_default_handler"
-    "external_default_handler"
-    "init_console"
-    "chrout"
-    "draw_boot_screen"
-    "draw_cpu_row"
-    "emit_cpu_row_text"
-    "emit_spaces"
-    "decode_inst"
-    "disassemble_line"
-    "emit_hex_byte"
-    "emit_hex_nibble"
-    "emit_flag_h"
-    "emit_flag_i"
-    "emit_flag_n"
-    "emit_flag_z"
-    "emit_flag_c"
-    "emit_stop_reason"
-    "draw_memory_row"
-    "draw_disassembly_row"
-    "emit_memory_ascii"
-    "init_memory_panel"
-    "memory_key_input"
-    "memory_cursor_left"
-    "memory_cursor_right"
-    "memory_cursor_up"
-    "memory_cursor_down"
-    "memory_cursor_done"
-    "mem_thunk_read"
-    "mem_thunk_write"
-    "memory_read_cursor"
-    "memory_select_cursor"
-    "memory_write_cursor"
-    "test_console_output"
-    "test_cpu_row_output"
-    "test_memory_row_output"
-    "test_disassembler_output"
-    "monitor_idle"
-    "rom_code_end"
-)
+if(NOT EXISTS "${MONITOR_SYMBOLS}")
+    message(FATAL_ERROR "monitor symbols do not exist: ${MONITOR_SYMBOLS}")
+endif()
+
+set(errors "")
+
+file(STRINGS "${MONITOR_SYMBOLS}" symbol_lines)
+set(symbol_count 0)
+
+foreach(line IN LISTS symbol_lines)
+    if(NOT line MATCHES "^([^ \t]+)[ \t]+[0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f]")
+        continue()
+    endif()
+
+    set(symbol "${CMAKE_MATCH_1}")
+    math(EXPR symbol_count "${symbol_count} + 1")
+    string(REPLACE "." ";" components "${symbol}")
+    list(LENGTH components component_count)
+
+    foreach(component IN LISTS components)
+        string(LENGTH "${component}" component_length)
+        if(component_length GREATER 16)
+            list(APPEND errors
+                "symbol '${symbol}' component '${component}' is longer than 16 characters"
+            )
+        endif()
+    endforeach()
+
+    if(component_count GREATER 1)
+        math(EXPR last_component_index "${component_count} - 1")
+        foreach(component_index RANGE 1 ${last_component_index})
+            list(GET components ${component_index} local_name)
+            string(LENGTH "${local_name}" local_length)
+            if(local_length GREATER 8)
+                list(APPEND errors
+                    "local symbol '${symbol}' component '${local_name}' is longer than 8 characters"
+                )
+            endif()
+            if(NOT local_name MATCHES "^_")
+                list(APPEND errors
+                    "local symbol '${symbol}' component '${local_name}' should start with '_'"
+                )
+            endif()
+        endforeach()
+    endif()
+endforeach()
+
+if(symbol_count EQUAL 0)
+    list(APPEND errors "monitor symbol file did not contain any symbols")
+endif()
 
 file(STRINGS "${MONITOR_SOURCE}" source_lines)
-
-set(active_module "")
-set(errors "")
 set(line_no 0)
 
 foreach(line IN LISTS source_lines)
     math(EXPR line_no "${line_no} + 1")
 
-    if(line MATCHES "^[ \t]*\\.module[ \t]+([A-Za-z_][A-Za-z0-9_]*)")
-        set(active_module "${CMAKE_MATCH_1}")
-    endif()
-
-    set(kind "")
-    set(identifier "")
-    if(line MATCHES "^([A-Za-z_][A-Za-z0-9_]*):")
-        set(kind "label")
-        set(identifier "${CMAKE_MATCH_1}")
-    elseif(NOT active_module STREQUAL "" AND line MATCHES "^[ \t]*([A-Za-z_][A-Za-z0-9_]*)[ \t]+\\.equ[ \t]+")
-        set(kind "equate")
-        set(identifier "${CMAKE_MATCH_1}")
-    endif()
-
-    if(kind STREQUAL "")
+    if(NOT line MATCHES "^[ \t]*\\.module[ \t]+([A-Za-z_][A-Za-z0-9_]*)")
         continue()
     endif()
 
-    if(active_module STREQUAL "data_tables")
-        continue()
-    endif()
-
-    list(FIND public_labels "${identifier}" public_index)
-    if(NOT public_index EQUAL -1)
-        continue()
-    endif()
-
-    string(LENGTH "${identifier}" identifier_length)
-    if(identifier_length GREATER 8)
+    set(module "${CMAKE_MATCH_1}")
+    string(LENGTH "${module}" module_length)
+    if(module_length GREATER 16)
         list(APPEND errors
-            "${kind} '${identifier}' at line ${line_no} is module-local; use <= 8 characters or make it an explicitly justified public name"
-        )
-    endif()
-
-    if(kind STREQUAL "label" AND NOT identifier MATCHES "^_")
-        list(APPEND errors
-            "local label '${identifier}' at line ${line_no} should use module-local underscore spelling"
+            "module '${module}' at line ${line_no} is longer than 16 characters"
         )
     endif()
 endforeach()

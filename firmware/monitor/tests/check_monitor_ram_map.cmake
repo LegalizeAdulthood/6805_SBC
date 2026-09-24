@@ -96,42 +96,42 @@ foreach(name
         saved_a
         saved_x
         saved_cc
-        stop_reason
-        timer_wait_vector_hi
-        timer_wait_vector_lo
-        timer_vector_hi
-        timer_vector_lo
-        external_vector_hi
-        external_vector_lo
-        int_jump_opcode
-        int_jump_hi
-        int_jump_lo
-        mem_thunk_opcode
+        stop_rsn
+        tmr_wt_vec_hi
+        tmr_wt_vec_lo
+        tmr_vec_hi
+        tmr_vec_lo
+        ext_vec_hi
+        ext_vec_lo
+        int_jmp_op
+        int_jmp_hi
+        int_jmp_lo
+        mem_thunk_op
         mem_thunk_hi
         mem_thunk_lo
         mem_thunk_rts
-        memory_page_hi
-        memory_page_lo
-        memory_cursor_hi
-        memory_cursor_lo
-        memory_focus
-        memory_hex_phase
+        mem_page_hi
+        mem_page_lo
+        mem_cur_hi
+        mem_cur_lo
+        mem_focus
+        mem_hex_phs
         disasm_pc_hi
         disasm_pc_lo)
     require_global("${name}")
 endforeach()
 
-require_module_scratch("screen_output" "_save")
-require_module_scratch("disasm_output" "_op")
-require_module_scratch("disasm_output" "_len")
-require_module_scratch("disasm_output" "_mnem")
-require_module_scratch("disasm_output" "_pos")
-require_module_scratch("hex_output" "_byte")
-require_module_scratch("draw_memory_row" "_idx")
-require_module_scratch("memory_editing" "_ch")
-require_module_scratch("memory_editing" "_nib")
-require_module_scratch("memory_editing" "_tmp")
-require_module_scratch("memory_cursor" "_byte")
+require_module_scratch("scr_out" "_save")
+require_module_scratch("dasm_out" "_op")
+require_module_scratch("dasm_out" "_len")
+require_module_scratch("dasm_out" "_mnem")
+require_module_scratch("dasm_out" "_pos")
+require_module_scratch("hex_out" "_byte")
+require_module_scratch("draw_mem_row" "_idx")
+require_module_scratch("mem_edit" "_ch")
+require_module_scratch("mem_edit" "_nib")
+require_module_scratch("mem_edit" "_tmp")
+require_module_scratch("mem_cur" "_byte")
 
 list(FIND module_equates "test_hooks:_cnt" test_count_index)
 if(test_count_index EQUAL -1)

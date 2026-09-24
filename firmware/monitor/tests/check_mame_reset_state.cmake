@@ -61,8 +61,8 @@ foreach(_line IN LISTS _symbol_lines)
     endif()
 endforeach()
 
-_require_symbol("reset_entry")
-_require_symbol("monitor_idle")
+_require_symbol("reset")
+_require_symbol("idle")
 
 file(REMOVE_RECURSE "${_stage_dir}")
 file(MAKE_DIRECTORY
@@ -85,7 +85,7 @@ file(WRITE "${_stage_dir}/cfg/m6805sbc.cfg"
 
 set(_reset_script "${_stage_dir}/reset_state.lua")
 file(WRITE "${_reset_script}"
-    "local idle = 0x${SYM_monitor_idle}\r\n"
+    "local idle = 0x${SYM_idle}\r\n"
     "local frames = 0\r\n"
     "emu.register_frame_done(function()\r\n"
     "    frames = frames + 1\r\n"
@@ -155,9 +155,9 @@ set(_actual_saved_cc "0x${_actual_saved_cc_hex}")
 set(_actual_stop "0x${_actual_stop_hex}")
 
 math(EXPR _actual_pc_value "${_actual_pc}")
-math(EXPR _monitor_idle_value "0x${SYM_monitor_idle}")
-if(NOT _actual_pc_value EQUAL _monitor_idle_value)
-    message(FATAL_ERROR "Expected PC at monitor_idle ${SYM_monitor_idle}, got ${_actual_pc_hex}\n${_mame_output}")
+math(EXPR _idle_value "0x${SYM_idle}")
+if(NOT _actual_pc_value EQUAL _idle_value)
+    message(FATAL_ERROR "Expected PC at idle ${SYM_idle}, got ${_actual_pc_hex}\n${_mame_output}")
 endif()
 
 math(EXPR _actual_s_value "${_actual_s}")
@@ -170,8 +170,8 @@ if(NOT _actual_saved_sp_value EQUAL MONITOR_STACK_TOP)
     message(FATAL_ERROR "Expected saved SP ${MONITOR_STACK_TOP}, got ${_actual_saved_sp_hex}\n${_mame_output}")
 endif()
 
-if(NOT _actual_saved_pc STREQUAL "${SYM_reset_entry}")
-    message(FATAL_ERROR "Expected saved PC ${SYM_reset_entry}, got ${_actual_saved_pc}\n${_mame_output}")
+if(NOT _actual_saved_pc STREQUAL "${SYM_reset}")
+    message(FATAL_ERROR "Expected saved PC ${SYM_reset}, got ${_actual_saved_pc}\n${_mame_output}")
 endif()
 
 math(EXPR _actual_saved_a_value "${_actual_saved_a}")

@@ -50,14 +50,14 @@ foreach(_line IN LISTS _symbol_lines)
     endif()
 endforeach()
 
-_require_symbol("monitor_idle")
-_require_symbol("memory_key_input")
-_require_symbol("memory_page_hi")
-_require_symbol("memory_page_lo")
-_require_symbol("memory_cursor_hi")
-_require_symbol("memory_cursor_lo")
-_require_symbol("memory_focus")
-_require_symbol("memory_hex_phase")
+_require_symbol("idle")
+_require_symbol("mem_key_in")
+_require_symbol("mem_page_hi")
+_require_symbol("mem_page_lo")
+_require_symbol("mem_cur_hi")
+_require_symbol("mem_cur_lo")
+_require_symbol("mem_focus")
+_require_symbol("mem_hex_phs")
 
 file(REMOVE_RECURSE "${_stage_dir}")
 file(MAKE_DIRECTORY
@@ -78,16 +78,16 @@ file(WRITE "${_stage_dir}/cfg/m6805sbc.cfg"
     "</mameconfig>\r\n"
 )
 
-set(_memory_cursor_script "${_stage_dir}/memory_cursor_edit.lua")
-file(WRITE "${_memory_cursor_script}"
-    "local idle = 0x${SYM_monitor_idle}\r\n"
-    "local entry = 0x${SYM_memory_key_input}\r\n"
-    "local page_hi = 0x${SYM_memory_page_hi}\r\n"
-    "local page_lo = 0x${SYM_memory_page_lo}\r\n"
-    "local cursor_hi = 0x${SYM_memory_cursor_hi}\r\n"
-    "local cursor_lo = 0x${SYM_memory_cursor_lo}\r\n"
-    "local focus = 0x${SYM_memory_focus}\r\n"
-    "local hex_phase = 0x${SYM_memory_hex_phase}\r\n"
+set(_mem_cur_script "${_stage_dir}/mem_cur_edit.lua")
+file(WRITE "${_mem_cur_script}"
+    "local idle = 0x${SYM_idle}\r\n"
+    "local entry = 0x${SYM_mem_key_in}\r\n"
+    "local page_hi = 0x${SYM_mem_page_hi}\r\n"
+    "local page_lo = 0x${SYM_mem_page_lo}\r\n"
+    "local cursor_hi = 0x${SYM_mem_cur_hi}\r\n"
+    "local cursor_lo = 0x${SYM_mem_cur_lo}\r\n"
+    "local focus = 0x${SYM_mem_focus}\r\n"
+    "local hex_phase = 0x${SYM_mem_hex_phs}\r\n"
     "local keys = {0x34, 0x31, 0x09, 0x5a, 0x80, 0x81, 0x82, 0x83, 0x0e, 0x10}\r\n"
     "local index = 1\r\n"
     "local phase = \"wait_reset\"\r\n"
@@ -142,7 +142,7 @@ file(WRITE "${_memory_cursor_script}"
     "        phase = \"send_key\"\r\n"
     "        return\r\n"
     "    end\r\n"
-    "end, \"memory_cursor_edit\")\r\n"
+    "end, \"mem_cur_edit\")\r\n"
 )
 
 execute_process(
@@ -157,7 +157,7 @@ execute_process(
         -skip_gameinfo
         -nothrottle
         -autoboot_delay 0
-        -autoboot_script memory_cursor_edit.lua
+        -autoboot_script mem_cur_edit.lua
         -seconds_to_run 5
     WORKING_DIRECTORY "${_stage_dir}"
     RESULT_VARIABLE _mame_result

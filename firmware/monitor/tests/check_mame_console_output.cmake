@@ -54,8 +54,8 @@ foreach(_line IN LISTS _symbol_lines)
     endif()
 endforeach()
 
-_require_symbol("monitor_idle")
-_require_symbol("test_console_output")
+_require_symbol("idle")
+_require_symbol("test_con_out")
 
 file(REMOVE_RECURSE "${_stage_dir}")
 file(MAKE_DIRECTORY
@@ -78,8 +78,8 @@ file(WRITE "${_stage_dir}/cfg/m6805sbc.cfg"
 
 set(_console_script "${_stage_dir}/console_output.lua")
 file(WRITE "${_console_script}"
-    "local idle = 0x${SYM_monitor_idle}\r\n"
-    "local entry = 0x${SYM_test_console_output}\r\n"
+    "local idle = 0x${SYM_idle}\r\n"
+    "local entry = 0x${SYM_test_con_out}\r\n"
     "local bytes = {}\r\n"
     "local phase = \"wait_reset\"\r\n"
     "local frames = 0\r\n"

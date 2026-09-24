@@ -14,11 +14,11 @@ set(errors "")
 set(required_tables
     "mnemonics"
     "mnemonic_modes"
-    "opcode_table"
-    "opcode_30_7f_index"
-    "opcode_a0_af_index"
-    "branch_bit_index"
-    "opcode_80_9f_index"
+    "op_tbl"
+    "op30_idx"
+    "opa0_idx"
+    "brbit_idx"
+    "op80_idx"
 )
 
 foreach(table IN LISTS required_tables)
@@ -109,37 +109,37 @@ require_block_regex(
     "_bit_rel[ \t]*\\|"
 )
 require_block_regex(
-    "opcode_table"
+    "op_tbl"
     "opcode table should use named opcode equates"
     "op_adc_imm"
 )
 require_block_regex(
-    "opcode_table"
+    "op_tbl"
     "opcode table should include the wait opcode metadata"
     "op_wait"
 )
 require_block_regex(
-    "opcode_30_7f_index"
+    "op30_idx"
     "30-7f index table should use mnemonic index equates"
     "op_neg_idx"
 )
 require_block_regex(
-    "opcode_30_7f_index"
+    "op30_idx"
     "30-7f index table should mark unused entries symbolically"
     "op_unused_idx"
 )
 require_block_regex(
-    "opcode_a0_af_index"
+    "opa0_idx"
     "a0-af index table should use arithmetic/load/store indices"
     "op_sub_idx.*op_stx_idx"
 )
 require_block_regex(
-    "branch_bit_index"
+    "brbit_idx"
     "branch/bit index table should use branch and bit indices"
     "op_brset_idx.*op_bih_idx"
 )
 require_block_regex(
-    "opcode_80_9f_index"
+    "op80_idx"
     "80-9f index table should use inherent opcode indices"
     "op_rti_idx.*op_txa_idx"
 )

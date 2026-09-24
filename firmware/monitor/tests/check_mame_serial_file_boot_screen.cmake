@@ -50,7 +50,7 @@ foreach(_line IN LISTS _symbol_lines)
     endif()
 endforeach()
 
-_require_symbol("monitor_idle")
+_require_symbol("idle")
 
 string(ASCII 27 _esc)
 string(ASCII 13 _cr)
@@ -92,7 +92,7 @@ file(WRITE "${_serial_output_file}" "")
 
 set(_serial_script "${_stage_dir}/serial_file_boot_screen.lua")
 file(WRITE "${_serial_script}"
-    "local idle = 0x${SYM_monitor_idle}\r\n"
+    "local idle = 0x${SYM_idle}\r\n"
     "local frames = 0\r\n"
     "local idle_frames = 0\r\n"
     "local phase = \"wait_idle\"\r\n"

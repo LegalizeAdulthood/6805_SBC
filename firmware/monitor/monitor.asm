@@ -1,78 +1,78 @@
         .msfirst
 
-NUL                    .equ    $00      ; null character
-TAB                    .equ    $09      ; horizontal tab
-LF                     .equ    $0a      ; line feed
-CR                     .equ    $0d      ; carriage return
-ESC                    .equ    $1b      ; escape
-msg_end .equ    $80                     ; high-bit string terminator
+NUL             .equ    $00             ; null character
+TAB             .equ    $09             ; horizontal tab
+LF              .equ    $0a             ; line feed
+CR              .equ    $0d             ; carriage return
+ESC             .equ    $1b             ; escape
+msg_end         .equ    $80             ; high-bit string terminator
 
-monitor_stack_top      .equ    $7f
-reset_cc               .equ    $08
+stack_top       .equ    $7f
+reset_cc        .equ    $08
 
-stop_reset             .equ    $01
-stop_test              .equ    $02
+stop_rst        .equ    $01
+stop_tst        .equ    $02
 
-memory_focus_ascii     .equ    $01
+mem_focus_asc   .equ    $01
 
-key_tab                .equ    TAB
-key_ctrl_n             .equ    $0e
-key_ctrl_p             .equ    $10
-key_left               .equ    $80
-key_right              .equ    $81
-key_up                 .equ    $82
-key_down               .equ    $83
+key_tab         .equ    TAB
+key_ctrl_n      .equ    $0e
+key_ctrl_p      .equ    $10
+key_left        .equ    $80
+key_right       .equ    $81
+key_up          .equ    $82
+key_down        .equ    $83
 
-cc_c_bit               .equ    0
-cc_z_bit               .equ    1
-cc_n_bit               .equ    2
-cc_i_bit               .equ    3
-cc_h_bit               .equ    4
+cc_c_bit        .equ    0
+cc_z_bit        .equ    1
+cc_n_bit        .equ    2
+cc_i_bit        .equ    3
+cc_h_bit        .equ    4
 
-saved_sp               .equ    $10
-saved_pc_hi            .equ    $11
-saved_pc_lo            .equ    $12
-saved_a                .equ    $13
-saved_x                .equ    $14
-saved_cc               .equ    $15
-stop_reason            .equ    $16
+saved_sp        .equ    $10
+saved_pc_hi     .equ    $11
+saved_pc_lo     .equ    $12
+saved_a         .equ    $13
+saved_x         .equ    $14
+saved_cc        .equ    $15
+stop_rsn        .equ    $16
 
-memory_page_hi         .equ    $20
-memory_page_lo         .equ    $21
-mem_thunk_opcode       .equ    $22
-mem_thunk_hi           .equ    $23
-mem_thunk_lo           .equ    $24
-mem_thunk_rts          .equ    $25
-memory_cursor_hi       .equ    $26
-memory_cursor_lo       .equ    $27
-memory_focus           .equ    $28
-memory_hex_phase       .equ    $29
-disasm_pc_hi           .equ    $2a
-disasm_pc_lo           .equ    $2b
-scratch                .equ    $2c
-dline_buf              .equ    scratch + $03
-dline_tmp              .equ    dline_buf + $0e
+mem_page_hi     .equ    $20
+mem_page_lo     .equ    $21
+mem_thunk_op    .equ    $22
+mem_thunk_hi    .equ    $23
+mem_thunk_lo    .equ    $24
+mem_thunk_rts   .equ    $25
+mem_cur_hi      .equ    $26
+mem_cur_lo      .equ    $27
+mem_focus       .equ    $28
+mem_hex_phs     .equ    $29
+disasm_pc_hi    .equ    $2a
+disasm_pc_lo    .equ    $2b
+scratch         .equ    $2c
+dline_buf       .equ    scratch + $03
+dline_tmp       .equ    dline_buf + $0e
 
-timer_wait_vector_hi   .equ    $17
-timer_wait_vector_lo   .equ    $18
-timer_vector_hi        .equ    $19
-timer_vector_lo        .equ    $1a
-external_vector_hi     .equ    $1b
-external_vector_lo     .equ    $1c
-int_jump_opcode        .equ    $1d
-int_jump_hi            .equ    $1e
-int_jump_lo            .equ    $1f
+tmr_wt_vec_hi   .equ    $17
+tmr_wt_vec_lo   .equ    $18
+tmr_vec_hi      .equ    $19
+tmr_vec_lo      .equ    $1a
+ext_vec_hi      .equ    $1b
+ext_vec_lo      .equ    $1c
+int_jmp_op      .equ    $1d
+int_jmp_hi      .equ    $1e
+int_jmp_lo      .equ    $1f
 
-acia_status            .equ    $06
-acia_control           .equ    $06
-acia_data              .equ    $07
-acia_tdre_bit          .equ    1
-acia_master_reset      .equ    $03
-acia_default_control   .equ    $15
+acia_stat       .equ    $06
+acia_ctl        .equ    $06
+acia_data       .equ    $07
+acia_tdre       .equ    1
+acia_rst        .equ    $03
+acia_def_ctl    .equ    $15
 
-jmp_extended           .equ    $cc
-lda_extended_indexed   .equ    $d6
-rts_instruction        .equ    $81
+op_jmp_ext      .equ    $cc
+op_lda_ext_idx  .equ    $d6
+op_rts          .equ    $81
 
 ; Zero Page Usage
 ;
@@ -89,16 +89,16 @@ rts_instruction        .equ    $81
 
         .org    $1000
 
-        .module reset_entry
+        .module reset
 
 ; Reset entry initializes the monitor-owned machine image.
-reset_entry:
+reset:
         rsp
-        lda     #monitor_stack_top
+        lda     #stack_top
         sta     saved_sp
-        lda     #reset_entry/100h
+        lda     #reset/100h
         sta     saved_pc_hi
-        lda     #reset_entry-(reset_entry/100h*100h)
+        lda     #reset-(reset/100h*100h)
         sta     saved_pc_lo
         clra
         sta     saved_a
@@ -106,155 +106,155 @@ reset_entry:
         stx     saved_x
         lda     #reset_cc
         sta     saved_cc                ; Saved registers are a monitor snapshot, not live CPU state
-        lda     #stop_reset
-        sta     stop_reason
-        lda     #timer_wait_default_handler/100h
-        sta     timer_wait_vector_hi    ; IRQ RAM vectors default to ROM handlers after reset
-        lda     #timer_wait_default_handler-(timer_wait_default_handler/100h*100h)
-        sta     timer_wait_vector_lo
-        lda     #timer_default_handler/100h
-        sta     timer_vector_hi
-        lda     #timer_default_handler-(timer_default_handler/100h*100h)
-        sta     timer_vector_lo
-        lda     #external_default_handler/100h
-        sta     external_vector_hi
-        lda     #external_default_handler-(external_default_handler/100h*100h)
-        sta     external_vector_lo
-        lda     #jmp_extended           ; Shared IRQ thunk holds an absolute jump target
-        sta     int_jump_opcode
-        lda     #lda_extended_indexed   ; Memory access thunk opcode is patched by callers
-        sta     mem_thunk_opcode
-        lda     #rts_instruction
+        lda     #stop_rst
+        sta     stop_rsn
+        lda     #tmr_wt_def_hdlr/100h
+        sta     tmr_wt_vec_hi           ; IRQ RAM vectors default to ROM handlers after reset
+        lda     #tmr_wt_def_hdlr-(tmr_wt_def_hdlr/100h*100h)
+        sta     tmr_wt_vec_lo
+        lda     #tmr_def_hdlr/100h
+        sta     tmr_vec_hi
+        lda     #tmr_def_hdlr-(tmr_def_hdlr/100h*100h)
+        sta     tmr_vec_lo
+        lda     #ext_def_hdlr/100h
+        sta     ext_vec_hi
+        lda     #ext_def_hdlr-(ext_def_hdlr/100h*100h)
+        sta     ext_vec_lo
+        lda     #op_jmp_ext             ; Shared IRQ thunk holds an absolute jump target
+        sta     int_jmp_op
+        lda     #op_lda_ext_idx         ; Memory access thunk opcode is patched by callers
+        sta     mem_thunk_op
+        lda     #op_rts
         sta     mem_thunk_rts
-        jsr     init_memory_panel
-        jsr     init_console
-        jsr     draw_boot_screen
-        jmp     monitor_idle
+        jsr     init_mem_pnl
+        jsr     init_con
+        jsr     draw_boot
+        jmp     idle
 
-        .module interrupt_dispatch
+        .module int_disp
 
-swi_entry:
-        jmp     monitor_idle            ; SWI is the current user-code return path
+swi:
+        jmp     idle                    ; SWI is the current user-code return path
 
 ; Interrupt dispatch vectors through RAM so user code can intercept IRQs.
-timer_wait_dispatch:
-        lda     timer_wait_vector_hi
-        sta     int_jump_hi             ; Dispatcher copies the chosen RAM vector into the shared thunk
-        lda     timer_wait_vector_lo
-        sta     int_jump_lo
-        jmp     int_jump_opcode
+tmr_wt_disp:
+        lda     tmr_wt_vec_hi
+        sta     int_jmp_hi              ; Dispatcher copies the chosen RAM vector into the shared thunk
+        lda     tmr_wt_vec_lo
+        sta     int_jmp_lo
+        jmp     int_jmp_op
 
-timer_dispatch:
-        lda     timer_vector_hi
-        sta     int_jump_hi
-        lda     timer_vector_lo
-        sta     int_jump_lo
-        jmp     int_jump_opcode
+tmr_disp:
+        lda     tmr_vec_hi
+        sta     int_jmp_hi
+        lda     tmr_vec_lo
+        sta     int_jmp_lo
+        jmp     int_jmp_op
 
-external_dispatch:
-        lda     external_vector_hi
-        sta     int_jump_hi
-        lda     external_vector_lo
-        sta     int_jump_lo
-        jmp     int_jump_opcode
+ext_disp:
+        lda     ext_vec_hi
+        sta     int_jmp_hi
+        lda     ext_vec_lo
+        sta     int_jmp_lo
+        jmp     int_jmp_op
 
-timer_wait_default_handler:
-        jmp     monitor_idle
+tmr_wt_def_hdlr:
+        jmp     idle
 
-timer_default_handler:
-        jmp     monitor_idle
+tmr_def_hdlr:
+        jmp     idle
 
-external_default_handler:
-        jmp     monitor_idle
+ext_def_hdlr:
+        jmp     idle
 
-        .module console_io
+        .module con_io
 
 ; Console I/O owns the ACIA setup and byte-at-a-time transmit path.
-init_console:
-        lda     #acia_master_reset      ; ACIA reset and mode bytes are separate writes
-        sta     acia_control
-        lda     #acia_default_control
-        sta     acia_control
+init_con:
+        lda     #acia_rst               ; ACIA reset and mode bytes are separate writes
+        sta     acia_ctl
+        lda     #acia_def_ctl
+        sta     acia_ctl
         rts
 
 chrout:
                                         ; Polling keeps the early ROM serial path small
-        brclr   acia_tdre_bit,acia_status,chrout
+        brclr   acia_tdre,acia_stat,chrout
         sta     acia_data
         rts
 
-        .module draw_boot_screen
+        .module draw_boot
 
 ; Boot drawing positions the terminal with compact ANSI text.
-draw_boot_screen:
+draw_boot:
         ldx     #0                      ; Boot text leans on terminal state instead of filling rows
 
 _loop:
-        lda     boot_screen_text,x
+        lda     boot_txt,x
         beq     _done
         jsr     chrout
         inx
         bra     _loop
 
 _done:
-        jmp     draw_cpu_row
+        jmp     draw_cpu
 
-        .module draw_cpu_row
+        .module draw_cpu
 
 ; CPU status rendering formats the saved user context as one row.
-draw_cpu_row:
+draw_cpu:
                                         ; Text fragments keep labels local while sharing one emitter
-        ldx     #cpu_row_sp_text-cpu_row_text
-        jsr     emit_cpu_row_text
+        ldx     #cpu_sp_txt-cpu_txt
+        jsr     emit_cpu_txt
         clra
-        jsr     emit_hex_byte
+        jsr     hex_byte
         lda     saved_sp
-        jsr     emit_hex_byte
-        ldx     #cpu_row_pc_text-cpu_row_text
-        jsr     emit_cpu_row_text
+        jsr     hex_byte
+        ldx     #cpu_pc_txt-cpu_txt
+        jsr     emit_cpu_txt
         lda     saved_pc_hi
-        jsr     emit_hex_byte
+        jsr     hex_byte
         lda     saved_pc_lo
-        jsr     emit_hex_byte
-        ldx     #cpu_row_a_text-cpu_row_text
-        jsr     emit_cpu_row_text
+        jsr     hex_byte
+        ldx     #cpu_a_txt-cpu_txt
+        jsr     emit_cpu_txt
         lda     saved_a
-        jsr     emit_hex_byte
-        ldx     #cpu_row_x_text-cpu_row_text
-        jsr     emit_cpu_row_text
+        jsr     hex_byte
+        ldx     #cpu_x_txt-cpu_txt
+        jsr     emit_cpu_txt
         lda     saved_x
-        jsr     emit_hex_byte
-        ldx     #cpu_row_flags_text-cpu_row_text
-        jsr     emit_cpu_row_text
-        jsr     emit_flag_h             ; Unset flags become blanks so set flags stand out
-        jsr     emit_flag_i
-        jsr     emit_flag_n
-        jsr     emit_flag_z
-        jsr     emit_flag_c
-        ldx     #cpu_row_stopped_text-cpu_row_text
-        jsr     emit_cpu_row_text
-        jsr     emit_stop_reason        ; Stop reason maps internal causes to display text
-        ldx     #cpu_row_crlf_text-cpu_row_text
-        jsr     emit_cpu_row_text
+        jsr     hex_byte
+        ldx     #cpu_flags_txt-cpu_txt
+        jsr     emit_cpu_txt
+        jsr     flag_h                  ; Unset flags become blanks so set flags stand out
+        jsr     flag_i
+        jsr     flag_n
+        jsr     flag_z
+        jsr     flag_c
+        ldx     #cpu_stop_txt-cpu_txt
+        jsr     emit_cpu_txt
+        jsr     emit_stop               ; Stop reason maps internal causes to display text
+        ldx     #cpu_crlf_txt-cpu_txt
+        jsr     emit_cpu_txt
         rts
 
-emit_cpu_row_text:
-        lda     cpu_row_text,x
+emit_cpu_txt:
+        lda     cpu_txt,x
         bmi     _last
         jsr     chrout
         inx
-        bra     emit_cpu_row_text
+        bra     emit_cpu_txt
 
 _last:
         and     #$7f
         jsr     chrout
         rts
 
-        .module screen_output
+        .module scr_out
 
 _save   .equ    scratch                 ; saved A across spacing output
 
-emit_spaces:
+emit_spcs:
         sta     _save
         lda     #$20
 
@@ -265,7 +265,7 @@ _loop:
         lda     _save
         rts
 
-        .module disasm_output
+        .module dasm_out
 
 _op     .equ    scratch                 ; opcode byte being decoded
 _hex    .equ    scratch                 ; byte being formatted as buffered hex
@@ -278,7 +278,7 @@ _rhi    .equ    dline_tmp               ; relative target high byte
 _rlo    .equ    dline_tmp + $01         ; relative target low byte
 
 ; Disassembly first classifies the opcode, then renders buffered text.
-decode_inst:
+dec_inst:
         sta     _op
         lda     #$01
         sta     _len
@@ -319,7 +319,7 @@ _bit:
         and     #$01
         add     #$02
         tax
-        lda     branch_bit_index,x
+        lda     brbit_idx,x
         sta     _mnem
         rts
 
@@ -330,7 +330,7 @@ _br:
         and     #$0f
         add     #$05
         tax
-        lda     branch_bit_index,x
+        lda     brbit_idx,x
         sta     _mnem
         rts
 
@@ -338,7 +338,7 @@ _uop:
         lda     _op
         and     #$0f
         tax
-        lda     opcode_30_7f_index,x
+        lda     op30_idx,x
         beq     _bad
         cmp     #op_lsl_idx
         bne     _ustor
@@ -368,7 +368,7 @@ _inhx:
         tax
 
 _inhop:
-        lda     opcode_80_9f_index,x
+        lda     op80_idx,x
         beq     _bad
         sta     _mnem
         rts
@@ -417,7 +417,7 @@ _alu:
         lda     _op
         and     #$0f
         tax
-        lda     opcode_a0_af_index,x
+        lda     opa0_idx,x
         sta     _mnem
         rts
 
@@ -430,7 +430,7 @@ _bad:
 _done:
         rts
 
-disassemble_line:
+dasm_line:
         lda     _mnem
         cmp     #op_fcb_idx
         bne     _nfcb
@@ -722,31 +722,31 @@ _olp:
 _ret:
         rts
 
-        .module hex_output
+        .module hex_out
 
 _byte   .equ    scratch                 ; byte being formatted as hex
 
-emit_hex_byte:
+hex_byte:
         sta     _byte
         lsra
         lsra
         lsra
         lsra
-        jsr     emit_hex_nibble
+        jsr     hex_nib
         lda     _byte
         and     #$0f
-        jsr     emit_hex_nibble
+        jsr     hex_nib
         lda     _byte
         rts
 
-emit_hex_nibble:
+hex_nib:
         and     #$0f
         tax
         lda     hex_digits,x
         jsr     chrout
         rts
 
-emit_flag_h:
+flag_h:
         brset   cc_h_bit,saved_cc,_h_set
         lda     #$20
         bra     _h_wr
@@ -758,7 +758,7 @@ _h_wr:
         jsr     chrout
         rts
 
-emit_flag_i:
+flag_i:
         brset   cc_i_bit,saved_cc,_i_set
         lda     #$20
         bra     _i_wr
@@ -770,7 +770,7 @@ _i_wr:
         jsr     chrout
         rts
 
-emit_flag_n:
+flag_n:
         brset   cc_n_bit,saved_cc,_n_set
         lda     #$20
         bra     _n_wr
@@ -782,7 +782,7 @@ _n_wr:
         jsr     chrout
         rts
 
-emit_flag_z:
+flag_z:
         brset   cc_z_bit,saved_cc,_z_set
         lda     #$20
         bra     _z_wr
@@ -794,7 +794,7 @@ _z_wr:
         jsr     chrout
         rts
 
-emit_flag_c:
+flag_c:
         brset   cc_c_bit,saved_cc,_c_set
         lda     #$20
         bra     _c_wr
@@ -806,47 +806,47 @@ _c_wr:
         jsr     chrout
         rts
 
-emit_stop_reason:
-        lda     stop_reason
-        cmp     #stop_reset
+emit_stop:
+        lda     stop_rsn
+        cmp     #stop_rst
         beq     _reset
-        cmp     #stop_test
+        cmp     #stop_tst
         beq     _test
-        ldx     #stop_unknown_text-cpu_row_text
+        ldx     #stop_unk_txt-cpu_txt
         bra     _write
 
 _reset:
-        ldx     #stop_reset_text-cpu_row_text
+        ldx     #stop_rst_txt-cpu_txt
         bra     _write
 
 _test:
-        ldx     #stop_test_text-cpu_row_text
+        ldx     #stop_tst_txt-cpu_txt
 
 _write:
-        jsr     emit_cpu_row_text
+        jsr     emit_cpu_txt
         rts
 
-        .module draw_memory_row
+        .module draw_mem_row
 
 _idx    .equ    scratch + $01           ; memory row byte offset
 
 ; Memory row rendering uses the generated access thunk for addressable RAM.
-draw_memory_row:
-        lda     memory_page_hi          ; The row address patches the shared thunk before output
+draw_mem_row:
+        lda     mem_page_hi             ; The row address patches the shared thunk before output
         sta     mem_thunk_hi
-        jsr     emit_hex_byte
-        lda     memory_page_lo
+        jsr     hex_byte
+        lda     mem_page_lo
         sta     mem_thunk_lo
-        jsr     emit_hex_byte
-        ldx     #memory_row_address_suffix_text-cpu_row_text
-        jsr     emit_cpu_row_text
+        jsr     hex_byte
+        ldx     #mem_addr_sfx_txt-cpu_txt
+        jsr     emit_cpu_txt
         clrx
         stx     _idx
 
 _hexlp:
         ldx     _idx
         jsr     mem_thunk_read
-        jsr     emit_hex_byte
+        jsr     hex_byte
         lda     #$20
         jsr     chrout
         ldx     _idx
@@ -860,38 +860,38 @@ _hexlp:
 
 _asclp:
         jsr     mem_thunk_read          ; The ASCII pass rereads the same row from byte zero
-        jsr     emit_memory_ascii
+        jsr     emit_mem_asc
         inx
         cpx     #$10
         bne     _asclp
-        ldx     #cpu_row_crlf_text-cpu_row_text
-        jsr     emit_cpu_row_text
+        ldx     #cpu_crlf_txt-cpu_txt
+        jsr     emit_cpu_txt
         rts
 
-        .module draw_disassembly_row
+        .module draw_dasm_row
 
 _len    .equ    scratch + $01           ; decoded instruction byte count
 
 ; Disassembly row rendering advances a separate PC from the memory panel.
-draw_disassembly_row:
+draw_dasm_row:
         lda     #$20                    ; Disassembly has its own PC so rows need not align
         jsr     chrout
         lda     disasm_pc_hi
         sta     mem_thunk_hi
-        jsr     emit_hex_byte
+        jsr     hex_byte
         lda     disasm_pc_lo
         sta     mem_thunk_lo
-        jsr     emit_hex_byte
-        ldx     #memory_row_address_suffix_text-cpu_row_text
-        jsr     emit_cpu_row_text
+        jsr     hex_byte
+        ldx     #mem_addr_sfx_txt-cpu_txt
+        jsr     emit_cpu_txt
         clrx
         jsr     mem_thunk_read
-        jsr     decode_inst
+        jsr     dec_inst
 
 _bytes:
         clrx
         jsr     mem_thunk_read
-        jsr     emit_hex_byte
+        jsr     hex_byte
         lda     _len
         cmp     #$01
         beq     _spc10
@@ -899,7 +899,7 @@ _bytes:
         jsr     chrout
         ldx     #$01
         jsr     mem_thunk_read
-        jsr     emit_hex_byte
+        jsr     hex_byte
         lda     _len
         cmp     #$02
         beq     _spc7
@@ -907,7 +907,7 @@ _bytes:
         jsr     chrout
         ldx     #$02
         jsr     mem_thunk_read
-        jsr     emit_hex_byte
+        jsr     hex_byte
         ldx     #$04
         bra     _spc
 
@@ -919,15 +919,15 @@ _spc7:
         ldx     #$07
 
 _spc:
-        jsr     emit_spaces
+        jsr     emit_spcs
         clrx
         jsr     mem_thunk_read
-        jsr     decode_inst
-        jsr     disassemble_line
+        jsr     dec_inst
+        jsr     dasm_line
 
 _done:
-        ldx     #cpu_row_crlf_text-cpu_row_text
-        jsr     emit_cpu_row_text
+        ldx     #cpu_crlf_txt-cpu_txt
+        jsr     emit_cpu_txt
         lda     disasm_pc_lo
         add     _len
         sta     disasm_pc_lo
@@ -937,9 +937,9 @@ _done:
 _return:
         rts
 
-        .module memory_ascii
+        .module mem_asc
 
-emit_memory_ascii:
+emit_mem_asc:
         cmp     #$20                    ; Control and high-bit bytes collapse to dot for scanability
         blo     _dot
         cmp     #$7f
@@ -952,30 +952,30 @@ _write:
         jsr     chrout
         rts
 
-        .module memory_panel
+        .module mem_pnl
 
 ; Memory panel state starts on the first RAM page with hex focus.
-init_memory_panel:
+init_mem_pnl:
         clra                            ; Page and cursor track the same window at initialization
-        sta     memory_page_hi
-        sta     memory_cursor_hi
-        sta     memory_focus
-        sta     memory_hex_phase
+        sta     mem_page_hi
+        sta     mem_cur_hi
+        sta     mem_focus
+        sta     mem_hex_phs
         lda     #$80
-        sta     memory_page_lo
-        sta     memory_cursor_lo
+        sta     mem_page_lo
+        sta     mem_cur_lo
         rts
 
-        .module memory_editing
+        .module mem_edit
 
 _ch     .equ    scratch                 ; key byte during dispatch
 _nib    .equ    scratch                 ; parsed hex nibble
 _tmp    .equ    scratch + $01           ; preserved high nibble
 
 ; Memory key handling updates panel state without redrawing here.
-memory_key_input:
+mem_key_in:
         jsr     _key
-        jmp     monitor_idle
+        jmp     idle
 
 _key:
         sta     _ch
@@ -993,7 +993,7 @@ _key:
         beq     _up
         cmp     #key_down
         beq     _down
-        lda     memory_focus
+        lda     mem_focus
         beq     _hexgo
         lda     _ch
         jmp     _ascii
@@ -1003,37 +1003,37 @@ _hexgo:
         jmp     _hex
 
 _tab:
-        lda     memory_focus            ; Tab changes which view accepts edits
-        eor     #memory_focus_ascii
-        sta     memory_focus
+        lda     mem_focus               ; Tab changes which view accepts edits
+        eor     #mem_focus_asc
+        sta     mem_focus
         clra
-        sta     memory_hex_phase
+        sta     mem_hex_phs
         rts
 
 _next:
-        inc     memory_page_hi          ; Page motion keeps cursor and page together
-        inc     memory_cursor_hi
-        jmp     memory_cursor_done
+        inc     mem_page_hi             ; Page motion keeps cursor and page together
+        inc     mem_cur_hi
+        jmp     mem_cur_done
 
 _prev:
-        dec     memory_page_hi
-        dec     memory_cursor_hi
-        jmp     memory_cursor_done
+        dec     mem_page_hi
+        dec     mem_cur_hi
+        jmp     mem_cur_done
 
 _left:
-        jsr     memory_cursor_left
+        jsr     mem_cur_lft
         rts
 
 _right:
-        jsr     memory_cursor_right
+        jsr     mem_cur_rgt
         rts
 
 _up:
-        jsr     memory_cursor_up
+        jsr     mem_cur_up
         rts
 
 _down:
-        jsr     memory_cursor_down
+        jsr     mem_cur_dwn
         rts
 
 _ascii:
@@ -1041,8 +1041,8 @@ _ascii:
         blo     _done
         cmp     #$7f
         bhs     _done
-        bsr     memory_write_cursor
-        bsr     memory_cursor_right
+        bsr     mem_wr_cur
+        bsr     mem_cur_rgt
 
 _done:
         rts
@@ -1075,92 +1075,92 @@ _lower:
 
 _nibl:
         sta     _nib                    ; The first hex digit writes the high nibble and waits
-        lda     memory_hex_phase
+        lda     mem_hex_phs
         bne     _low
         lda     _nib
         lsla
         lsla
         lsla
         lsla
-        bsr     memory_write_cursor
+        bsr     mem_wr_cur
         lda     #$01
-        sta     memory_hex_phase
+        sta     mem_hex_phs
         rts
 
 _low:
-        bsr     memory_read_cursor      ; The second hex digit merges with the saved high nibble
+        bsr     mem_rd_cur              ; The second hex digit merges with the saved high nibble
         and     #$f0
         sta     _tmp
         lda     _nib
         ora     _tmp
-        bsr     memory_write_cursor
+        bsr     mem_wr_cur
         clra
-        sta     memory_hex_phase
-        bsr     memory_cursor_right
+        sta     mem_hex_phs
+        bsr     mem_cur_rgt
         rts
 
-        .module memory_cursor
+        .module mem_cur
 
 _byte   .equ    scratch                 ; byte held while patching write thunk
 
 ; Memory helpers patch one generated access thunk around the current address.
-memory_select_cursor:
-        lda     memory_cursor_hi        ; Cursor selection patches the shared memory thunk
+mem_sel_cur:
+        lda     mem_cur_hi              ; Cursor selection patches the shared memory thunk
         sta     mem_thunk_hi
-        lda     memory_cursor_lo
+        lda     mem_cur_lo
         sta     mem_thunk_lo
         clrx
         rts
 
-memory_read_cursor:
-        bsr     memory_select_cursor
+mem_rd_cur:
+        bsr     mem_sel_cur
 
 mem_thunk_read:
-        bclr    0,mem_thunk_opcode      ; LDA/STA indexed differ only in opcode bit 0
-        jmp     mem_thunk_opcode
+        bclr    0,mem_thunk_op          ; LDA/STA indexed differ only in opcode bit 0
+        jmp     mem_thunk_op
 
-memory_write_cursor:
+mem_wr_cur:
         sta     _byte
-        bsr     memory_select_cursor
+        bsr     mem_sel_cur
         lda     _byte
 
 mem_thunk_write:
-        bset    0,mem_thunk_opcode
-        jmp     mem_thunk_opcode
+        bset    0,mem_thunk_op
+        jmp     mem_thunk_op
 
-memory_cursor_left:
-        lda     memory_cursor_lo
+mem_cur_lft:
+        lda     mem_cur_lo
         bne     _dec
-        dec     memory_cursor_hi
+        dec     mem_cur_hi
 
 _dec:
-        dec     memory_cursor_lo
-        bra     memory_cursor_done
+        dec     mem_cur_lo
+        bra     mem_cur_done
 
-memory_cursor_right:
-        inc     memory_cursor_lo
-        bne     memory_cursor_done
-        inc     memory_cursor_hi
-        bra     memory_cursor_done
+mem_cur_rgt:
+        inc     mem_cur_lo
+        bne     mem_cur_done
+        inc     mem_cur_hi
+        bra     mem_cur_done
 
-memory_cursor_up:
-        lda     memory_cursor_lo
+mem_cur_up:
+        lda     mem_cur_lo
         sub     #$10
-        sta     memory_cursor_lo
-        bcc     memory_cursor_done
-        dec     memory_cursor_hi
-        bra     memory_cursor_done
+        sta     mem_cur_lo
+        bcc     mem_cur_done
+        dec     mem_cur_hi
+        bra     mem_cur_done
 
-memory_cursor_down:
-        lda     memory_cursor_lo
+mem_cur_dwn:
+        lda     mem_cur_lo
         add     #$10
-        sta     memory_cursor_lo
-        bcc     memory_cursor_done
-        inc     memory_cursor_hi
+        sta     mem_cur_lo
+        bcc     mem_cur_done
+        inc     mem_cur_hi
 
-memory_cursor_done:
+mem_cur_done:
         clra                            ; Cursor movement clears the pending nibble after navigation
-        sta     memory_hex_phase
+        sta     mem_hex_phs
         rts
 
         .module test_hooks
@@ -1168,8 +1168,8 @@ memory_cursor_done:
 _cnt    .equ    saved_a                 ; test loop count while renderer owns scratch
 
 ; MAME test hooks expose stable ROM entry points for focused checks.
-test_console_output:
-        lda     #$4f                    ; Hooks stop by branching to monitor_idle after emitting fixture data
+test_con_out:
+        lda     #$4f                    ; Hooks stop by branching to idle after emitting fixture data
         jsr     chrout
         lda     #$4b
         jsr     chrout
@@ -1177,9 +1177,9 @@ test_console_output:
         jsr     chrout
         lda     #LF
         jsr     chrout
-        bra     monitor_idle
+        bra     idle
 
-test_cpu_row_output:
+test_cpu_out:
         lda     #$7f
         sta     saved_sp
         lda     #$12
@@ -1192,20 +1192,20 @@ test_cpu_row_output:
         sta     saved_x
         lda     #$1f
         sta     saved_cc
-        lda     #stop_test
-        sta     stop_reason
-        jsr     draw_cpu_row
-        bra     monitor_idle
+        lda     #stop_tst
+        sta     stop_rsn
+        jsr     draw_cpu
+        bra     idle
 
-test_memory_row_output:
+test_mem_out:
         clra
-        sta     memory_page_hi
+        sta     mem_page_hi
         lda     #$80
-        sta     memory_page_lo
-        jsr     draw_memory_row
-        bra     monitor_idle
+        sta     mem_page_lo
+        jsr     draw_mem_row
+        bra     idle
 
-test_disassembler_output:
+test_dasm_out:
         clra
         sta     disasm_pc_hi
         lda     #$80
@@ -1214,64 +1214,64 @@ test_disassembler_output:
         sta     _cnt
 
 _loop:
-        jsr     draw_disassembly_row
+        jsr     draw_dasm_row
         dec     _cnt
         bne     _loop
-        bra     monitor_idle
+        bra     idle
 
-        .module monitor_idle
+        .module idle
 
-monitor_idle:
-        bra     monitor_idle
+idle:
+        bra     idle
 
-        .module data_tables
+        .module data
 
 hex_digits:
         .text   "0123456789ABCDEF"
 
-cpu_row_text:
+cpu_txt:
 
-cpu_row_sp_text:
+cpu_sp_txt:
         .text   "SP"
         .byte   (' ' | msg_end)
 
-cpu_row_pc_text:
+cpu_pc_txt:
         .text   "  PC"
         .byte   (' ' | msg_end)
 
-cpu_row_a_text:
+cpu_a_txt:
         .text   "  A"
         .byte   (' ' | msg_end)
 
-cpu_row_x_text:
+cpu_x_txt:
         .text   "  X"
         .byte   (' ' | msg_end)
 
-cpu_row_flags_text:
+cpu_flags_txt:
         .text   "  FLAGS 11"
         .byte   ('1' | msg_end)
 
-cpu_row_stopped_text:
+cpu_stop_txt:
         .text   "  STOPPED:"
         .byte   (' ' | msg_end)
 
-stop_reset_text:
+stop_rst_txt:
         .text   "RESE"
         .byte   ('T' | msg_end)
 
-stop_test_text:
+stop_tst_txt:
         .text   "TES"
         .byte   ('T' | msg_end)
 
-stop_unknown_text:
+stop_unk_txt:
         .text   "UNKNOW"
         .byte   ('N' | msg_end)
 
-memory_row_address_suffix_text:
+mem_addr_sfx_txt:
         .text   ":"
         .byte   (' ' | msg_end)
 
-cpu_row_crlf_text:
+cpu_crlf_txt:
         .byte   CR,(LF | msg_end)
 
 op_adc_imm      .equ    $a9
@@ -1330,7 +1330,6 @@ op_rol_dir      .equ    $39
 op_ror_dir      .equ    $36
 op_rsp          .equ    $9c
 op_rti          .equ    $80
-op_rts          .equ    $81
 op_sbc_imm      .equ    $a2
 op_sec          .equ    $99
 op_sei          .equ    $9b
@@ -1410,22 +1409,22 @@ op_txa_idx      .equ    $43
 op_wait_idx     .equ    $44
 op_unused_idx   .equ    $00
 
-; opcode_30_7f_index maps low nibbles to mnemonic indices.
-opcode_30_7f_index:
+; op30_idx maps low nibbles to mnemonic indices.
+op30_idx:
         .byte   op_neg_idx,     op_unused_idx,  op_mul_idx,     op_com_idx
         .byte   op_lsr_idx,     op_unused_idx,  op_ror_idx,     op_asr_idx
         .byte   op_lsl_idx,     op_rol_idx,     op_dec_idx,     op_unused_idx
         .byte   op_inc_idx,     op_tst_idx,     op_unused_idx,  op_clr_idx
 
-; opcode_a0_af_index maps ALU/load/store opcode low nibbles.
-opcode_a0_af_index:
+; opa0_idx maps ALU/load/store opcode low nibbles.
+opa0_idx:
         .byte   op_sub_idx,     op_cmp_idx,     op_sbc_idx,     op_cpx_idx
         .byte   op_and_idx,     op_bit_idx,     op_lda_idx,     op_sta_idx
         .byte   op_eor_idx,     op_adc_idx,     op_ora_idx,     op_add_idx
         .byte   op_jmp_idx,     op_jsr_idx,     op_ldx_idx,     op_stx_idx
 
-; branch_bit_index folds branch and bit-operation decoding.
-branch_bit_index:
+; brbit_idx folds branch and bit-operation decoding.
+brbit_idx:
         .byte   op_brset_idx,   op_brclr_idx,   op_bset_idx,    op_bclr_idx
         .byte   op_bsr_idx,     op_bra_idx,     op_brn_idx,     op_bhi_idx
         .byte   op_bls_idx,     op_bcc_idx,     op_bcs_idx,     op_bne_idx
@@ -1433,8 +1432,8 @@ branch_bit_index:
         .byte   op_bmi_idx,     op_bmc_idx,     op_bms_idx,     op_bil_idx
         .byte   op_bih_idx
 
-; opcode_80_9f_index maps inherent opcodes by low nibble.
-opcode_80_9f_index:
+; op80_idx maps inherent opcodes by low nibble.
+op80_idx:
         .byte   op_rti_idx,     op_rts_idx,     op_wait_idx,    op_swi_idx
         .byte   op_unused_idx,  op_unused_idx,  op_unused_idx,  op_tax_idx
         .byte   op_clc_idx,     op_sec_idx,     op_cli_idx,     op_sei_idx
@@ -1559,8 +1558,8 @@ mnemonic_modes:
         .byte   _idx | $02,        $01,                 _inh | $02,         $00
         .byte   $01,               $02,                 _inh | $03,         $00
 
-; opcode_table maps mnemonic index to representative opcode.
-opcode_table:
+; op_tbl maps mnemonic index to representative opcode.
+op_tbl:
         .byte   op_adc_imm,     op_add_imm,     op_and_imm,     op_asl_dir
         .byte   op_asr_dir,     op_bcc,         op_bclr0,       op_bcs
         .byte   op_beq,         op_bhcc,        op_bhcs,        op_bhi
@@ -1580,7 +1579,7 @@ opcode_table:
         .byte   op_swi,         op_tax,         op_tst_dir,     op_txa
         .byte   op_wait
 
-boot_screen_text:
+boot_txt:
         .byte   ESC                     ; Boot text emits escape sequences instead of blank-filled rows
         .text   "[H"
         .byte   ESC
@@ -1592,15 +1591,15 @@ boot_screen_text:
         .text   "[H"
         .byte   NUL
 
-rom_code_end:
+rom_end:
 
-        .module interrupt_vectors
+        .module int_vecs
 
         .org    $1ff6                   ; Vectors remain at the CPU hardware locations
-        .dw     timer_wait_dispatch     ; Timer from wait state
-        .dw     timer_dispatch          ; Timer
-        .dw     external_dispatch       ; External interrupt
-        .dw     swi_entry               ; Software interrupt
-        .dw     reset_entry             ; Reset
+        .dw     tmr_wt_disp             ; Timer from wait state
+        .dw     tmr_disp                ; Timer
+        .dw     ext_disp                ; External interrupt
+        .dw     swi                     ; Software interrupt
+        .dw     reset                   ; Reset
 
         .end

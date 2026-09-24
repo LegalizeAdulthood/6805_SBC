@@ -11,11 +11,11 @@ file(READ "${MONITOR_SOURCE}" source_text)
 
 set(errors "")
 set(required_labels
-    "decode_inst"
-    "disassemble_line"
+    "dec_inst"
+    "dasm_line"
 )
-set(decode_inst_block "")
-set(disassemble_line_block "")
+set(dec_inst_block "")
+set(dasm_line_block "")
 set(section "")
 
 foreach(line IN LISTS source_lines)
@@ -30,10 +30,10 @@ foreach(line IN LISTS source_lines)
         endif()
     endif()
 
-    if(section STREQUAL "decode_inst")
-        set(decode_inst_block "${decode_inst_block}${line}\n")
-    elseif(section STREQUAL "disassemble_line")
-        set(disassemble_line_block "${disassemble_line_block}${line}\n")
+    if(section STREQUAL "dec_inst")
+        set(dec_inst_block "${dec_inst_block}${line}\n")
+    elseif(section STREQUAL "dasm_line")
+        set(dasm_line_block "${dasm_line_block}${line}\n")
     endif()
 endforeach()
 
@@ -62,13 +62,13 @@ function(require_block block_name block_text needle)
     endif()
 endfunction()
 
-require_block("decode_inst" "${decode_inst_block}" "opcode_30_7f_index")
-require_block("decode_inst" "${decode_inst_block}" "opcode_a0_af_index")
-require_block("decode_inst" "${decode_inst_block}" "branch_bit_index")
-require_block("decode_inst" "${decode_inst_block}" "opcode_80_9f_index")
-require_block("disassemble_line" "${disassemble_line_block}" "mnemonic_modes")
-require_block("disassemble_line" "${disassemble_line_block}" "mnemonics")
-require_block("disassemble_line" "${disassemble_line_block}" "dline_buf")
+require_block("dec_inst" "${dec_inst_block}" "op30_idx")
+require_block("dec_inst" "${dec_inst_block}" "opa0_idx")
+require_block("dec_inst" "${dec_inst_block}" "brbit_idx")
+require_block("dec_inst" "${dec_inst_block}" "op80_idx")
+require_block("dasm_line" "${dasm_line_block}" "mnemonic_modes")
+require_block("dasm_line" "${dasm_line_block}" "mnemonics")
+require_block("dasm_line" "${dasm_line_block}" "dline_buf")
 
 if(errors)
     list(JOIN errors "\n  - " error_text)

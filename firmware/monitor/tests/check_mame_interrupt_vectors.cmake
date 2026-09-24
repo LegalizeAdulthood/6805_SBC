@@ -95,29 +95,29 @@ foreach(_line IN LISTS _symbol_lines)
 endforeach()
 
 foreach(_symbol IN ITEMS
-        monitor_idle
-        timer_wait_dispatch
-        timer_dispatch
-        external_dispatch
-        timer_wait_default_handler
-        timer_default_handler
-        external_default_handler
-        timer_wait_vector_hi
-        timer_wait_vector_lo
-        timer_vector_hi
-        timer_vector_lo
-        external_vector_hi
-        external_vector_lo
-        int_jump_opcode)
+        idle
+        tmr_wt_disp
+        tmr_disp
+        ext_disp
+        tmr_wt_def_hdlr
+        tmr_def_hdlr
+        ext_def_hdlr
+        tmr_wt_vec_hi
+        tmr_wt_vec_lo
+        tmr_vec_hi
+        tmr_vec_lo
+        ext_vec_hi
+        ext_vec_lo
+        int_jmp_op)
     _require_symbol("${_symbol}")
 endforeach()
 
-_require_vector("timer-from-wait" "${VECTOR_TIMER_WAIT}" "timer_wait_dispatch")
-_require_vector("timer" "${VECTOR_TIMER}" "timer_dispatch")
-_require_vector("external" "${VECTOR_EXTERNAL}" "external_dispatch")
-_require_not_vector("timer-from-wait" "${VECTOR_TIMER_WAIT}" "timer_wait_default_handler")
-_require_not_vector("timer" "${VECTOR_TIMER}" "timer_default_handler")
-_require_not_vector("external" "${VECTOR_EXTERNAL}" "external_default_handler")
+_require_vector("timer-from-wait" "${VECTOR_TIMER_WAIT}" "tmr_wt_disp")
+_require_vector("timer" "${VECTOR_TIMER}" "tmr_disp")
+_require_vector("external" "${VECTOR_EXTERNAL}" "ext_disp")
+_require_not_vector("timer-from-wait" "${VECTOR_TIMER_WAIT}" "tmr_wt_def_hdlr")
+_require_not_vector("timer" "${VECTOR_TIMER}" "tmr_def_hdlr")
+_require_not_vector("external" "${VECTOR_EXTERNAL}" "ext_def_hdlr")
 
 file(REMOVE_RECURSE "${_stage_dir}")
 file(MAKE_DIRECTORY
@@ -138,21 +138,21 @@ file(WRITE "${_stage_dir}/cfg/m6805sbc.cfg"
     "</mameconfig>\r\n"
 )
 
-set(_interrupt_script "${_stage_dir}/interrupt_vectors.lua")
+set(_interrupt_script "${_stage_dir}/int_vecs.lua")
 file(WRITE "${_interrupt_script}"
-    "local idle = 0x${SYM_monitor_idle}\r\n"
-    "local timer_wait_default = 0x${SYM_timer_wait_default_handler}\r\n"
-    "local timer_default = 0x${SYM_timer_default_handler}\r\n"
-    "local external_default = 0x${SYM_external_default_handler}\r\n"
-    "local timer_dispatch = 0x${SYM_timer_dispatch}\r\n"
-    "local external_dispatch = 0x${SYM_external_dispatch}\r\n"
-    "local timer_wait_hi = 0x${SYM_timer_wait_vector_hi}\r\n"
-    "local timer_wait_lo = 0x${SYM_timer_wait_vector_lo}\r\n"
-    "local timer_hi = 0x${SYM_timer_vector_hi}\r\n"
-    "local timer_lo = 0x${SYM_timer_vector_lo}\r\n"
-    "local external_hi = 0x${SYM_external_vector_hi}\r\n"
-    "local external_lo = 0x${SYM_external_vector_lo}\r\n"
-    "local jump_opcode = 0x${SYM_int_jump_opcode}\r\n"
+    "local idle = 0x${SYM_idle}\r\n"
+    "local timer_wait_default = 0x${SYM_tmr_wt_def_hdlr}\r\n"
+    "local timer_default = 0x${SYM_tmr_def_hdlr}\r\n"
+    "local external_default = 0x${SYM_ext_def_hdlr}\r\n"
+    "local tmr_disp = 0x${SYM_tmr_disp}\r\n"
+    "local ext_disp = 0x${SYM_ext_disp}\r\n"
+    "local timer_wait_hi = 0x${SYM_tmr_wt_vec_hi}\r\n"
+    "local timer_wait_lo = 0x${SYM_tmr_wt_vec_lo}\r\n"
+    "local timer_hi = 0x${SYM_tmr_vec_hi}\r\n"
+    "local timer_lo = 0x${SYM_tmr_vec_lo}\r\n"
+    "local external_hi = 0x${SYM_ext_vec_hi}\r\n"
+    "local external_lo = 0x${SYM_ext_vec_lo}\r\n"
+    "local jump_opcode = 0x${SYM_int_jmp_op}\r\n"
     "local marker = ${TEST_MARKER}\r\n"
     "local timer_handler = ${TIMER_TEST_HANDLER}\r\n"
     "local external_handler = ${EXTERNAL_TEST_HANDLER}\r\n"
@@ -187,7 +187,7 @@ file(WRITE "${_interrupt_script}"
     "        install_handler(mem, external_handler, 0x5A)\r\n"
     "        mem:write_u8(marker, 0x00)\r\n"
     "        write_word(mem, timer_hi, timer_lo, timer_handler)\r\n"
-    "        cpu.state[\"PC\"].value = timer_dispatch\r\n"
+    "        cpu.state[\"PC\"].value = tmr_disp\r\n"
     "        phase = \"wait_timer\"\r\n"
     "        return\r\n"
     "    end\r\n"
@@ -196,7 +196,7 @@ file(WRITE "${_interrupt_script}"
     "        result.timer_marker = mem:read_u8(marker)\r\n"
     "        mem:write_u8(marker, 0x00)\r\n"
     "        write_word(mem, external_hi, external_lo, external_handler)\r\n"
-    "        cpu.state[\"PC\"].value = external_dispatch\r\n"
+    "        cpu.state[\"PC\"].value = ext_disp\r\n"
     "        phase = \"wait_external\"\r\n"
     "        return\r\n"
     "    end\r\n"
@@ -217,7 +217,7 @@ file(WRITE "${_interrupt_script}"
     "        return\r\n"
     "    end\r\n"
     "    if frames >= 300 then print(\"INTERRUPT_VECTORS TIMEOUT\"); manager.machine:exit() end\r\n"
-    "end, \"interrupt_vectors\")\r\n"
+    "end, \"int_vecs\")\r\n"
 )
 
 execute_process(
@@ -232,7 +232,7 @@ execute_process(
         -skip_gameinfo
         -nothrottle
         -autoboot_delay 0
-        -autoboot_script interrupt_vectors.lua
+        -autoboot_script int_vecs.lua
         -seconds_to_run 3
     WORKING_DIRECTORY "${_stage_dir}"
     RESULT_VARIABLE _mame_result
@@ -271,16 +271,16 @@ _capture_hex(_actual_tw_restored " TW_RESTORED=([0-9A-Fa-f]+)" "restored timer-f
 _capture_hex(_actual_timer_restored " T_RESTORED=([0-9A-Fa-f]+)" "restored timer RAM vector")
 _capture_hex(_actual_external_restored " E_RESTORED=([0-9A-Fa-f]+)" "restored external RAM vector")
 
-if(NOT _actual_tw STREQUAL "${SYM_timer_wait_default_handler}")
-    message(FATAL_ERROR "Expected timer-from-wait RAM vector ${SYM_timer_wait_default_handler}, got ${_actual_tw}\n${_mame_output}")
+if(NOT _actual_tw STREQUAL "${SYM_tmr_wt_def_hdlr}")
+    message(FATAL_ERROR "Expected timer-from-wait RAM vector ${SYM_tmr_wt_def_hdlr}, got ${_actual_tw}\n${_mame_output}")
 endif()
 
-if(NOT _actual_timer STREQUAL "${SYM_timer_default_handler}")
-    message(FATAL_ERROR "Expected timer RAM vector ${SYM_timer_default_handler}, got ${_actual_timer}\n${_mame_output}")
+if(NOT _actual_timer STREQUAL "${SYM_tmr_def_hdlr}")
+    message(FATAL_ERROR "Expected timer RAM vector ${SYM_tmr_def_hdlr}, got ${_actual_timer}\n${_mame_output}")
 endif()
 
-if(NOT _actual_external STREQUAL "${SYM_external_default_handler}")
-    message(FATAL_ERROR "Expected external RAM vector ${SYM_external_default_handler}, got ${_actual_external}\n${_mame_output}")
+if(NOT _actual_external STREQUAL "${SYM_ext_def_hdlr}")
+    message(FATAL_ERROR "Expected external RAM vector ${SYM_ext_def_hdlr}, got ${_actual_external}\n${_mame_output}")
 endif()
 
 if(NOT _actual_jump STREQUAL "CC")
@@ -295,14 +295,14 @@ if(NOT _external_marker STREQUAL "5A")
     message(FATAL_ERROR "Expected external dispatch marker 5A, got ${_external_marker}\n${_mame_output}")
 endif()
 
-if(NOT _actual_tw_restored STREQUAL "${SYM_timer_wait_default_handler}")
-    message(FATAL_ERROR "Expected restored timer-from-wait RAM vector ${SYM_timer_wait_default_handler}, got ${_actual_tw_restored}\n${_mame_output}")
+if(NOT _actual_tw_restored STREQUAL "${SYM_tmr_wt_def_hdlr}")
+    message(FATAL_ERROR "Expected restored timer-from-wait RAM vector ${SYM_tmr_wt_def_hdlr}, got ${_actual_tw_restored}\n${_mame_output}")
 endif()
 
-if(NOT _actual_timer_restored STREQUAL "${SYM_timer_default_handler}")
-    message(FATAL_ERROR "Expected restored timer RAM vector ${SYM_timer_default_handler}, got ${_actual_timer_restored}\n${_mame_output}")
+if(NOT _actual_timer_restored STREQUAL "${SYM_tmr_def_hdlr}")
+    message(FATAL_ERROR "Expected restored timer RAM vector ${SYM_tmr_def_hdlr}, got ${_actual_timer_restored}\n${_mame_output}")
 endif()
 
-if(NOT _actual_external_restored STREQUAL "${SYM_external_default_handler}")
-    message(FATAL_ERROR "Expected restored external RAM vector ${SYM_external_default_handler}, got ${_actual_external_restored}\n${_mame_output}")
+if(NOT _actual_external_restored STREQUAL "${SYM_ext_def_hdlr}")
+    message(FATAL_ERROR "Expected restored external RAM vector ${SYM_ext_def_hdlr}, got ${_actual_external_restored}\n${_mame_output}")
 endif()

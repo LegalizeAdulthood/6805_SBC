@@ -59,8 +59,8 @@ foreach(_line IN LISTS _symbol_lines)
     endif()
 endforeach()
 
-_require_symbol("monitor_idle")
-_require_symbol("test_disassembler_output")
+_require_symbol("idle")
+_require_symbol("test_dasm_out")
 
 file(READ "${_disassembly_expected}" _expected_bytes HEX)
 string(TOUPPER "${_expected_bytes}" _expected_bytes)
@@ -155,8 +155,8 @@ file(WRITE "${_stage_dir}/cfg/m6805sbc.cfg"
 
 set(_disassembler_script "${_stage_dir}/disassembler.lua")
 file(WRITE "${_disassembler_script}"
-    "local idle = 0x${SYM_monitor_idle}\r\n"
-    "local entry = 0x${SYM_test_disassembler_output}\r\n"
+    "local idle = 0x${SYM_idle}\r\n"
+    "local entry = 0x${SYM_test_dasm_out}\r\n"
     "local expected = ${_expected_count}\r\n"
     "local bytes = {}\r\n"
     "local phase = \"wait_reset\"\r\n"
@@ -166,7 +166,7 @@ file(WRITE "${_disassembler_script}"
     "mem:install_write_tap(${ACIA_DATA}, ${ACIA_DATA}, \"disassembler_acia_data\", function(offset, data, mask)\r\n"
     "    table.insert(bytes, data & 0xff)\r\n"
     "end)\r\n"
-    "mem:install_read_tap(${ACIA_STATUS}, ${ACIA_STATUS}, \"disassembler_acia_status\", function(offset, data, mask)\r\n"
+    "mem:install_read_tap(${ACIA_STATUS}, ${ACIA_STATUS}, \"disassembler_acia_stat\", function(offset, data, mask)\r\n"
     "    return data | 0x02\r\n"
     "end)\r\n"
     "local function hex_bytes()\r\n"

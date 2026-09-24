@@ -52,7 +52,7 @@ foreach(_line IN LISTS _symbol_lines)
     endif()
 endforeach()
 
-_require_symbol("monitor_idle")
+_require_symbol("idle")
 
 string(ASCII 27 _esc)
 string(ASCII 13 _cr)
@@ -90,7 +90,7 @@ file(WRITE "${_stage_dir}/cfg/m6805sbc.cfg"
 
 set(_boot_script "${_stage_dir}/boot_screen.lua")
 file(WRITE "${_boot_script}"
-    "local idle = 0x${SYM_monitor_idle}\r\n"
+    "local idle = 0x${SYM_idle}\r\n"
     "local bytes = {}\r\n"
     "local frames = 0\r\n"
     "local phase = \"wait_idle\"\r\n"
@@ -170,5 +170,5 @@ if(NOT _actual_bytes STREQUAL "${_expected_bytes}")
 endif()
 
 if(NOT _idle_extra STREQUAL "0")
-    message(FATAL_ERROR "Expected no bytes after monitor_idle, got ${_idle_extra}\n${_mame_output}")
+    message(FATAL_ERROR "Expected no bytes after idle, got ${_idle_extra}\n${_mame_output}")
 endif()
