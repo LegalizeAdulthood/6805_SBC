@@ -56,6 +56,16 @@ add_test(
         "${CMAKE_CURRENT_SOURCE_DIR}/check_monitor_zero_page.cmake"
 )
 
+add_test(
+    NAME monitor.table_encoding
+    COMMAND
+        "${CMAKE_COMMAND}"
+        "-DMONITOR_SOURCE=${MONITOR_SOURCE}"
+        "-DMONITOR_SYMBOLS=${MONITOR_SYMBOLS}"
+        "-P"
+        "${CMAKE_CURRENT_SOURCE_DIR}/check_monitor_table_encoding.cmake"
+)
+
 if(MAME_EXECUTABLE)
 add_test(
     NAME monitor.mame.reset_vector

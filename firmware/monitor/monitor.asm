@@ -5,6 +5,7 @@ TAB                    .equ    $09      ; horizontal tab
 LF                     .equ    $0a      ; line feed
 CR                     .equ    $0d      ; carriage return
 ESC                    .equ    $1b      ; escape
+msg_end .equ    $80                     ; high-bit string terminator
 
 monitor_stack_top      .equ    $7f
 reset_cc               .equ    $08
@@ -249,12 +250,14 @@ draw_cpu_row:
 
 emit_cpu_row_text:
         lda     cpu_row_text,x
-        beq     _done
+        bmi     _last
         jsr     chrout
         inx
         bra     emit_cpu_row_text
 
-_done:
+_last:
+        and     #$7f
+        jsr     chrout
         rts
 
         .module screen_output
@@ -792,47 +795,47 @@ hex_digits:
 cpu_row_text:
 
 cpu_row_sp_text:
-        .text   "SP "
-        .byte   NUL
+        .text   "SP"
+        .byte   (' ' | msg_end)
 
 cpu_row_pc_text:
-        .text   "  PC "
-        .byte   NUL
+        .text   "  PC"
+        .byte   (' ' | msg_end)
 
 cpu_row_a_text:
-        .text   "  A "
-        .byte   NUL
+        .text   "  A"
+        .byte   (' ' | msg_end)
 
 cpu_row_x_text:
-        .text   "  X "
-        .byte   NUL
+        .text   "  X"
+        .byte   (' ' | msg_end)
 
 cpu_row_flags_text:
-        .text   "  FLAGS 111"
-        .byte   NUL
+        .text   "  FLAGS 11"
+        .byte   ('1' | msg_end)
 
 cpu_row_stopped_text:
-        .text   "  STOPPED: "
-        .byte   NUL
+        .text   "  STOPPED:"
+        .byte   (' ' | msg_end)
 
 stop_reset_text:
-        .text   "RESET"
-        .byte   NUL
+        .text   "RESE"
+        .byte   ('T' | msg_end)
 
 stop_test_text:
-        .text   "TEST"
-        .byte   NUL
+        .text   "TES"
+        .byte   ('T' | msg_end)
 
 stop_unknown_text:
-        .text   "UNKNOWN"
-        .byte   NUL
+        .text   "UNKNOW"
+        .byte   ('N' | msg_end)
 
 memory_row_address_suffix_text:
-        .text   ": "
-        .byte   NUL
+        .text   ":"
+        .byte   (' ' | msg_end)
 
 cpu_row_crlf_text:
-        .byte   CR,LF,NUL
+        .byte   CR,(LF | msg_end)
 
 disasm_text:
 
@@ -989,9 +992,11 @@ disasm_inherent_table:
 
 boot_screen_text:
         .byte   ESC                     ; Boot text emits escape sequences instead of blank-filled rows
-        .text   "[2J"
+        .text   "[H"
         .byte   ESC
-        .text   "[1;68H"
+        .text   "[J"
+        .byte   ESC
+        .text   "[68G"
 #include "monitor_version.inc"
         .byte   ESC
         .text   "[H"

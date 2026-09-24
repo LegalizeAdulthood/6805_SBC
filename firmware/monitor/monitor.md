@@ -554,20 +554,6 @@ integration where needed:
 
 ## Implementation Slices
 
-### 9.1.6. Existing Table Encoding Refactor
-
-Failing test: a size and table-shape audit fails until the existing monitor
-tables are named, tightly encoded, and no larger than the current table
-representations for the behavior they support.
-
-End state: current strings, CPU/status text, boot escape sequences,
-disassembly mnemonic text, and opcode lookup data use compact encodings
-that match the EVSBUG12 lessons: shared base tables, symbolic constants,
-high-bit terminators where they save bytes, and no duplicate fixed-width
-text unless the fixed width is measurably smaller. This slice preserves the
-current limited behavior and does not attempt full opcode coverage; it
-prepares the source for the later EVSBUG-derived table lift.
-
 ### 9.2.1. EVSBUG12 Disassembler Harness
 
 Failing test: the monitor disassembler fixture is extended with rows that

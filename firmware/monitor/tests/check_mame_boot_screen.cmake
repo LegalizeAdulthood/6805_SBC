@@ -63,7 +63,7 @@ if(_cpu_row_length GREATER 67)
     message(FATAL_ERROR "CPU row must not overwrite columns 68 through 80: ${_cpu_row_length}")
 endif()
 
-set(_expected_text "${_esc}[2J${_esc}[1;68H${MONITOR_VERSION_TEXT}${_esc}[H${_cpu_row}${_cr}${_lf}")
+set(_expected_text "${_esc}[H${_esc}[J${_esc}[68G${MONITOR_VERSION_TEXT}${_esc}[H${_cpu_row}${_cr}${_lf}")
 string(HEX "${_expected_text}" _expected_bytes)
 string(TOUPPER "${_expected_bytes}" _expected_bytes)
 string(LENGTH "${_expected_bytes}" _expected_hex_length)
