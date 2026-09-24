@@ -13,7 +13,6 @@ reset_cc               .equ    $08
 stop_reset             .equ    $01
 stop_test              .equ    $02
 
-memory_focus_hex       .equ    $00
 memory_focus_ascii     .equ    $01
 
 key_tab                .equ    TAB
@@ -53,7 +52,6 @@ disasm_pc_lo           .equ    $2b
 scratch                .equ    $2c
 dline_buf              .equ    scratch + $03
 dline_tmp              .equ    dline_buf + $0e
-scratch_end            .equ    scratch + $13
 
 timer_wait_vector_hi   .equ    $17
 timer_wait_vector_lo   .equ    $18
@@ -74,7 +72,6 @@ acia_default_control   .equ    $15
 
 jmp_extended           .equ    $cc
 lda_extended_indexed   .equ    $d6
-sta_extended_indexed   .equ    $d7
 rts_instruction        .equ    $81
 
 ; Zero Page Usage
@@ -1305,7 +1302,6 @@ op_brclr0       .equ    $01
 op_brn          .equ    $21
 op_brset0       .equ    $00
 op_bset0        .equ    $10
-op_bset1        .equ    $12
 op_bsr          .equ    $ad
 op_clc          .equ    $98
 op_cli          .equ    $9a
@@ -1320,9 +1316,7 @@ op_fcb          .equ    $01
 op_inc_dir      .equ    $3c
 op_inx          .equ    $5c
 op_jmp_base     .equ    $ac
-op_jmp_ext      .equ    $cc
 op_jsr_base     .equ    $ad
-op_lda_ext      .equ    $c6
 op_lda_imm      .equ    $a6
 op_ldx_imm      .equ    $ae
 op_lsl_dir      .equ    $38
@@ -1341,7 +1335,6 @@ op_sbc_imm      .equ    $a2
 op_sec          .equ    $99
 op_sei          .equ    $9b
 op_sta_base     .equ    $a7
-op_sta_ext      .equ    $c7
 op_stop         .equ    $8e
 op_stx_base     .equ    $af
 op_sub_imm      .equ    $a0
@@ -1363,11 +1356,9 @@ op_beq_idx      .equ    $08
 op_bhcc_idx     .equ    $09
 op_bhcs_idx     .equ    $0a
 op_bhi_idx      .equ    $0b
-op_bhs_idx      .equ    $0c
 op_bih_idx      .equ    $0d
 op_bil_idx      .equ    $0e
 op_bit_idx      .equ    $0f
-op_blo_idx      .equ    $10
 op_bls_idx      .equ    $11
 op_bmc_idx      .equ    $12
 op_bmi_idx      .equ    $13
@@ -1387,11 +1378,9 @@ op_cmp_idx      .equ    $20
 op_com_idx      .equ    $21
 op_cpx_idx      .equ    $22
 op_dec_idx      .equ    $23
-op_dex_idx      .equ    $24
 op_eor_idx      .equ    $25
 op_fcb_idx      .equ    $26
 op_inc_idx      .equ    $27
-op_inx_idx      .equ    $28
 op_jmp_idx      .equ    $29
 op_jsr_idx      .equ    $2a
 op_lda_idx      .equ    $2b
@@ -1402,7 +1391,6 @@ op_mul_idx      .equ    $2f
 op_neg_idx      .equ    $30
 op_nop_idx      .equ    $31
 op_ora_idx      .equ    $32
-op_org_idx      .equ    $33
 op_rol_idx      .equ    $34
 op_ror_idx      .equ    $35
 op_rsp_idx      .equ    $36

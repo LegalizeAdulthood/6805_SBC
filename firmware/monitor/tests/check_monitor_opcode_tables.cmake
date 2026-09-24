@@ -72,7 +72,7 @@ endfunction()
 foreach(symbol IN ITEMS
         "op_adc_imm" "op_add_imm" "op_and_imm" "op_asl_dir"
         "op_bcc" "op_bclr0" "op_brset0" "op_bset0"
-        "op_lda_ext" "op_lda_imm" "op_sta_base" "op_wait"
+        "op_lda_imm" "op_sta_base" "op_wait"
         "op_adc_idx" "op_brset_idx" "op_bset_idx" "op_fcb_idx"
         "op_lda_idx" "op_unused_idx")
     require_source_regex(
