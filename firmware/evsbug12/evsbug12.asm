@@ -1057,9 +1057,9 @@ read_command_char:
         rts
 
 uppercase_command_char:
-        cmp     #$60
+        cmp     #('a' - 1)
         bls     _return
-        sub     #$20
+        sub     #('a' - 'A')
         sta     cmd_char
 
 _return:
