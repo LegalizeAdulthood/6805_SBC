@@ -1451,7 +1451,7 @@ nibl_ascii:
         add     #'0'
         cmp     #'9'
         bls     app_char
-        add     #$07
+        add     #('A' - ('9' + 1))
 
 app_char:
         sta     line_buf,x
