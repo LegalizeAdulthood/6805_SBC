@@ -176,6 +176,77 @@ op_tst_dir      .equ    $3d
 op_txa          .equ    $9f
 op_wait         .equ    $8f
 
+op_adc_idx      .equ    $00
+op_add_idx      .equ    $01
+op_and_idx      .equ    $02
+op_asl_idx      .equ    $03
+op_asr_idx      .equ    $04
+op_bcc_idx      .equ    $05
+op_bclr_idx     .equ    $06
+op_bcs_idx      .equ    $07
+op_beq_idx      .equ    $08
+op_bhcc_idx     .equ    $09
+op_bhcs_idx     .equ    $0a
+op_bhi_idx      .equ    $0b
+op_bhs_idx      .equ    $0c
+op_bih_idx      .equ    $0d
+op_bil_idx      .equ    $0e
+op_bit_idx      .equ    $0f
+op_blo_idx      .equ    $10
+op_bls_idx      .equ    $11
+op_bmc_idx      .equ    $12
+op_bmi_idx      .equ    $13
+op_bms_idx      .equ    $14
+op_bne_idx      .equ    $15
+op_bpl_idx      .equ    $16
+op_bra_idx      .equ    $17
+op_brclr_idx    .equ    $18
+op_brn_idx      .equ    $19
+op_brset_idx    .equ    $1a
+op_bset_idx     .equ    $1b
+op_bsr_idx      .equ    $1c
+op_clc_idx      .equ    $1d
+op_cli_idx      .equ    $1e
+op_clr_idx      .equ    $1f
+op_cmp_idx      .equ    $20
+op_com_idx      .equ    $21
+op_cpx_idx      .equ    $22
+op_dec_idx      .equ    $23
+op_dex_idx      .equ    $24
+op_eor_idx      .equ    $25
+op_fcb_idx      .equ    $26
+op_inc_idx      .equ    $27
+op_inx_idx      .equ    $28
+op_jmp_idx      .equ    $29
+op_jsr_idx      .equ    $2a
+op_lda_idx      .equ    $2b
+op_ldx_idx      .equ    $2c
+op_lsl_idx      .equ    $2d
+op_lsr_idx      .equ    $2e
+op_mul_idx      .equ    $2f
+op_neg_idx      .equ    $30
+op_nop_idx      .equ    $31
+op_ora_idx      .equ    $32
+op_org_idx      .equ    $33
+op_rol_idx      .equ    $34
+op_ror_idx      .equ    $35
+op_rsp_idx      .equ    $36
+op_rti_idx      .equ    $37
+op_rts_idx      .equ    $38
+op_sbc_idx      .equ    $39
+op_sec_idx      .equ    $3a
+op_sei_idx      .equ    $3b
+op_sta_idx      .equ    $3c
+op_stop_idx     .equ    $3d
+op_stx_idx      .equ    $3e
+op_sub_idx      .equ    $3f
+op_swi_idx      .equ    $40
+op_tax_idx      .equ    $41
+op_tst_idx      .equ    $42
+op_txa_idx      .equ    $43
+op_wait_idx     .equ    $44
+op_unused_idx   .equ    $00
+
         .org    $0000
         .byte   $00
         .org    $0800
@@ -1403,18 +1474,30 @@ app_hex_word:
 ; assembler/disassembler mnemonic index tables
 
 opcode_30_7f_index:
-        .byte   $30,$00,$2f,$21,$2e,$00,$35,$04,$2d,$34,$23,$00,$27,$42,$00,$1f
+        .byte   op_neg_idx,     op_unused_idx,  op_mul_idx,     op_com_idx
+        .byte   op_lsr_idx,     op_unused_idx,  op_ror_idx,     op_asr_idx
+        .byte   op_lsl_idx,     op_rol_idx,     op_dec_idx,     op_unused_idx
+        .byte   op_inc_idx,     op_tst_idx,     op_unused_idx,  op_clr_idx
 
 opcode_a0_af_index:
-        .byte   $3f,$20,$39,$22,$02,$0f,$2b,$3c,$25,$00,$32,$01,$29,$2a,$2c,$3e
+        .byte   op_sub_idx,     op_cmp_idx,     op_sbc_idx,     op_cpx_idx
+        .byte   op_and_idx,     op_bit_idx,     op_lda_idx,     op_sta_idx
+        .byte   op_eor_idx,     op_adc_idx,     op_ora_idx,     op_add_idx
+        .byte   op_jmp_idx,     op_jsr_idx,     op_ldx_idx,     op_stx_idx
 
 branch_bit_index:
-        .byte   $1a,$18,$1b,$06,$1c,$17,$19,$0b,$11,$05,$07,$15,$08,$09,$0a,$16
-        .byte   $13,$12,$14,$0e,$0d
+        .byte   op_brset_idx,   op_brclr_idx,   op_bset_idx,    op_bclr_idx
+        .byte   op_bsr_idx,     op_bra_idx,     op_brn_idx,     op_bhi_idx
+        .byte   op_bls_idx,     op_bcc_idx,     op_bcs_idx,     op_bne_idx
+        .byte   op_beq_idx,     op_bhcc_idx,    op_bhcs_idx,    op_bpl_idx
+        .byte   op_bmi_idx,     op_bmc_idx,     op_bms_idx,     op_bil_idx
+        .byte   op_bih_idx
 
 opcode_80_9f_index:
-        .byte   $37,$38,$44,$40,$00,$00,$00,$41,$1d,$3a,$1e
-        .byte   $3b,$36,$31,$3d,$43
+        .byte   op_rti_idx,     op_rts_idx,     op_wait_idx,    op_swi_idx
+        .byte   op_unused_idx,  op_unused_idx,  op_unused_idx,  op_tax_idx
+        .byte   op_clc_idx,     op_sec_idx,     op_cli_idx,     op_sei_idx
+        .byte   op_rsp_idx,     op_nop_idx,     op_stop_idx,    op_txa_idx
 
         .module asm_cmd
 _op             .equ    scratch         ; assembled opcode byte
