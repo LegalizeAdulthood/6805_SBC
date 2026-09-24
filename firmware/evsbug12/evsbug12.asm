@@ -1845,74 +1845,74 @@ _parse_zp:
 
         .module mnemonics
 mnemonics:
-        .byte   "AD",('C' | msg_end)
-        .byte   ('D' | msg_end)
-        .byte   "N",('D' | msg_end)
-        .byte   "S",('L' | msg_end)
-        .byte   ('R' | msg_end)
-        .byte   "BC",('C' | msg_end)
-        .byte   "L",('R' | msg_end)
-        .byte   ('S' | msg_end)
-        .byte   "E",('Q' | msg_end)
-        .byte   "HC",('C' | msg_end)
-        .byte   ('S' | msg_end)
-        .byte   ('I' | msg_end)
-        .byte   ('S' | msg_end)
-        .byte   "I",('H' | msg_end)
-        .byte   ('L' | msg_end)
-        .byte   ('T' | msg_end)
-        .byte   "L",('O' | msg_end)
-        .byte   ('S' | msg_end)
-        .byte   "M",('C' | msg_end)
-        .byte   ('I' | msg_end)
-        .byte   ('S' | msg_end)
-        .byte   "N",('E' | msg_end)
-        .byte   "P",('L' | msg_end)
-        .byte   "R",('A' | msg_end)
-        .byte   "CL",('R' | msg_end)
-        .byte   ('N' | msg_end)
-        .byte   "SE",('T' | msg_end)
-        .byte   "SE",('T' | msg_end)
-        .byte   ('R' | msg_end)
-        .byte   "CL",('C' | msg_end)
-        .byte   ('I' | msg_end)
-        .byte   ('R' | msg_end)
-        .byte   "M",('P' | msg_end)
-        .byte   "O",('M' | msg_end)
-        .byte   "P",('X' | msg_end)
-        .byte   "DE",('C' | msg_end)
-        .byte   ('X' | msg_end)
-        .byte   "EO",('R' | msg_end)
-        .byte   "FC",('B' | msg_end)
-        .byte   "IN",('C' | msg_end)
-        .byte   ('X' | msg_end)
-        .byte   "JM",('P' | msg_end)
-        .byte   "S",('R' | msg_end)
-        .byte   "LD",('A' | msg_end)
-        .byte   ('X' | msg_end)
-        .byte   "S",('L' | msg_end)
-        .byte   ('R' | msg_end)
-        .byte   "MU",('L' | msg_end)
-        .byte   "NE",('G' | msg_end)
-        .byte   "O",('P' | msg_end)
-        .byte   "OR",('A' | msg_end)
-        .byte   ('G' | msg_end)
-        .byte   "RO",('L' | msg_end)
-        .byte   ('R' | msg_end)
-        .byte   "S",('P' | msg_end)
-        .byte   "T",('I' | msg_end)
-        .byte   ('S' | msg_end)
-        .byte   "SB",('C' | msg_end)
-        .byte   "E",('C' | msg_end)
-        .byte   ('I' | msg_end)
-        .byte   "T",('A' | msg_end)
-        .byte   "O",('P' | msg_end)
-        .byte   ('X' | msg_end)
-        .byte   "U",('B' | msg_end)
-        .byte   "W",('I' | msg_end)
-        .byte   "TA",('X' | msg_end)
-        .byte   "S",('T' | msg_end)
-        .byte   "X",('A' | msg_end)
+        .byte   "AD", ('C' | msg_end)
+        .byte         ('D' | msg_end)
+        .byte   "N",  ('D' | msg_end)
+        .byte   "S",  ('L' | msg_end)
+        .byte         ('R' | msg_end)
+        .byte   "BC", ('C' | msg_end)
+        .byte   "L",  ('R' | msg_end)
+        .byte         ('S' | msg_end)
+        .byte   "E",  ('Q' | msg_end)
+        .byte   "HC", ('C' | msg_end)
+        .byte         ('S' | msg_end)
+        .byte         ('I' | msg_end)
+        .byte         ('S' | msg_end)
+        .byte   "I",  ('H' | msg_end)
+        .byte         ('L' | msg_end)
+        .byte         ('T' | msg_end)
+        .byte   "L",  ('O' | msg_end)
+        .byte         ('S' | msg_end)
+        .byte   "M",  ('C' | msg_end)
+        .byte         ('I' | msg_end)
+        .byte         ('S' | msg_end)
+        .byte   "N",  ('E' | msg_end)
+        .byte   "P",  ('L' | msg_end)
+        .byte   "R",  ('A' | msg_end)
+        .byte   "CL", ('R' | msg_end)
+        .byte         ('N' | msg_end)
+        .byte   "SE", ('T' | msg_end)
+        .byte   "SE", ('T' | msg_end)
+        .byte         ('R' | msg_end)
+        .byte   "CL", ('C' | msg_end)
+        .byte         ('I' | msg_end)
+        .byte         ('R' | msg_end)
+        .byte   "M",  ('P' | msg_end)
+        .byte   "O",  ('M' | msg_end)
+        .byte   "P",  ('X' | msg_end)
+        .byte   "DE", ('C' | msg_end)
+        .byte         ('X' | msg_end)
+        .byte   "EO", ('R' | msg_end)
+        .byte   "FC", ('B' | msg_end)
+        .byte   "IN", ('C' | msg_end)
+        .byte         ('X' | msg_end)
+        .byte   "JM", ('P' | msg_end)
+        .byte   "S",  ('R' | msg_end)
+        .byte   "LD", ('A' | msg_end)
+        .byte         ('X' | msg_end)
+        .byte   "S",  ('L' | msg_end)
+        .byte         ('R' | msg_end)
+        .byte   "MU", ('L' | msg_end)
+        .byte   "NE", ('G' | msg_end)
+        .byte   "O",  ('P' | msg_end)
+        .byte   "OR", ('A' | msg_end)
+        .byte         ('G' | msg_end)
+        .byte   "RO", ('L' | msg_end)
+        .byte         ('R' | msg_end)
+        .byte   "S",  ('P' | msg_end)
+        .byte   "T",  ('I' | msg_end)
+        .byte         ('S' | msg_end)
+        .byte   "SB", ('C' | msg_end)
+        .byte   "E",  ('C' | msg_end)
+        .byte         ('I' | msg_end)
+        .byte   "T",  ('A' | msg_end)
+        .byte   "O",  ('P' | msg_end)
+        .byte         ('X' | msg_end)
+        .byte   "U",  ('B' | msg_end)
+        .byte   "W",  ('I' | msg_end)
+        .byte   "TA", ('X' | msg_end)
+        .byte   "S",  ('T' | msg_end)
+        .byte   "X",  ('A' | msg_end)
         .byte   "WAI",('T' | msg_end)
         .byte   NUL
 
@@ -1929,40 +1929,40 @@ _imm_mem        .equ    $70             ; immediate/memory operand
 _bit_rel        .equ    $80             ; bit + branch target
 
 mnemonic_modes:
-        .byte   $00,                  $01,                  _imm_mem | $02,       _imm_mem | $02
-        .byte   $01,                  _imm_mem | $02,       $01,                  _idx | $02
-        .byte   _idx | $02,           $00,                  $01,                  _rel | $02
-        .byte   $02,                  _bit_dir | $03,       _rel | $02,           $01
-        .byte   _rel | $02,           $01,                  $02,                  _rel | $03
-        .byte   _rel | $03,           _rel | $02,           _rel | $02,           $01
-        .byte   _rel | $02,           _rel | $02,           _imm_mem | $02,       $01
-        .byte   _rel | $02,           _rel | $02,           $01,                  _rel | $02
-        .byte   _rel | $02,           _rel | $02,           $01,                  _rel | $02
-        .byte   $01,                  _rel | $02,           $01,                  _rel | $02
-        .byte   $02,                  $03,                  _bit_rel | $04,       _rel | $02
-        .byte   $02,                  $03,                  _bit_rel | $04,       $01
-        .byte   $02,                  _bit_dir | $03,       _rel | $02,           $00
-        .byte   $01,                  _inh | $02,           _inh | $02,           _idx | $02
-        .byte   $01,                  _imm_mem | $02,       $01,                  _idx | $02
-        .byte   $01,                  _imm_mem | $02,       $00,                  $01
-        .byte   _idx | $02,           _inh | $02,           $00,                  $01
-        .byte   _imm_mem | $02,       $00,                  $01,                  _bad | $02
-        .byte   $00,                  $01,                  _idx | $02,           _inh | $02
-        .byte   $00,                  $01,                  _mem | $02,           $01
-        .byte   _mem | $02,           $00,                  $01,                  _imm_mem | $02
-        .byte   _imm_mem | $02,       $01,                  _idx | $02,           _idx | $02
-        .byte   $00,                  $01,                  _inh | $02,           $00
-        .byte   $01,                  _idx | $02,           $01,                  _inh | $02
-        .byte   $00,                  $01,                  _imm_mem | $02,       _bad | $02
-        .byte   $00,                  $01,                  _idx | $02,           _idx | $02
-        .byte   $01,                  _inh | $02,           $01,                  _inh | $02
-        .byte   _inh | $02,           $00,                  $01,                  _imm_mem | $02
-        .byte   $01,                  _inh | $02,           _inh | $02,           $01
-        .byte   _mem | $02,           $02,                  _inh | $03,           _mem | $02
-        .byte   $01,                  _imm_mem | $02,       $01,                  _inh | $02
-        .byte   $00,                  $01,                  _inh | $02,           $01
-        .byte   _idx | $02,           $01,                  _inh | $02,           $00
-        .byte   $01,                  $02,                  _inh | $03,           $00
+        .byte   $00,               $01,                 _imm_mem | $02,     _imm_mem | $02
+        .byte   $01,               _imm_mem | $02,      $01,                _idx | $02
+        .byte   _idx | $02,        $00,                 $01,                _rel | $02
+        .byte   $02,               _bit_dir | $03,      _rel | $02,         $01
+        .byte   _rel | $02,        $01,                 $02,                _rel | $03
+        .byte   _rel | $03,        _rel | $02,          _rel | $02,         $01
+        .byte   _rel | $02,        _rel | $02,          _imm_mem | $02,     $01
+        .byte   _rel | $02,        _rel | $02,          $01,                _rel | $02
+        .byte   _rel | $02,        _rel | $02,          $01,                _rel | $02
+        .byte   $01,               _rel | $02,          $01,                _rel | $02
+        .byte   $02,               $03,                 _bit_rel | $04,     _rel | $02
+        .byte   $02,               $03,                 _bit_rel | $04,     $01
+        .byte   $02,               _bit_dir | $03,      _rel | $02,         $00
+        .byte   $01,               _inh | $02,          _inh | $02,         _idx | $02
+        .byte   $01,               _imm_mem | $02,      $01,                _idx | $02
+        .byte   $01,               _imm_mem | $02,      $00,                $01
+        .byte   _idx | $02,        _inh | $02,          $00,                $01
+        .byte   _imm_mem | $02,     $00,                 $01,               _bad | $02
+        .byte   $00,               $01,                 _idx | $02,         _inh | $02
+        .byte   $00,               $01,                 _mem | $02,         $01
+        .byte   _mem | $02,        $00,                 $01,                _imm_mem | $02
+        .byte   _imm_mem | $02,    $01,                 _idx | $02,         _idx | $02
+        .byte   $00,               $01,                 _inh | $02,         $00
+        .byte   $01,               _idx | $02,          $01,                _inh | $02
+        .byte   $00,               $01,                 _imm_mem | $02,     _bad | $02
+        .byte   $00,               $01,                 _idx | $02,         _idx | $02
+        .byte   $01,               _inh | $02,          $01,                _inh | $02
+        .byte   _inh | $02,        $00,                 $01,                _imm_mem | $02
+        .byte   $01,               _inh | $02,          _inh | $02,         $01
+        .byte   _mem | $02,        $02,                 _inh | $03,         _mem | $02
+        .byte   $01,               _imm_mem | $02,      $01,                _inh | $02
+        .byte   $00,               $01,                 _inh | $02,         $01
+        .byte   _idx | $02,        $01,                 _inh | $02,         $00
+        .byte   $01,               $02,                 _inh | $03,         $00
 
 ; opcode table
 
