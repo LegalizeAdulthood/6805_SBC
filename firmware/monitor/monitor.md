@@ -683,3 +683,26 @@ positions. This slice adds decorative borders around the panels in the
 reserved spacing without changing any monitor behavior. Follow-PC and
 pinned disassembly modes both have snapshot tests with fixed `PC`, fixed
 memory bytes, and fixed selected panel state.
+
+### 15.1. Manual CRT Raw-Socket Smoke Test
+
+Manual test: launch `m6805sbc` from an absolute path with the monitor ROM
+staged in an isolated MAME data directory, connect the emulated RS-232
+path to a TCP raw socket, and connect Van Dyke CRT or SecureCRT to that
+socket using a raw TCP session. The manual notes for this slice must record
+the exact MAME command line, CRT protocol/session settings, host, port, and
+any required startup ordering, such as whether CRT connects before or after
+MAME starts.
+
+End state: a reset observed through CRT clears the terminal and draws the
+same monitor screen state validated by the automated snapshot tests:
+`MONITOR 1.0` appears in the upper-right version field, CPU state appears
+in its panel, memory appears in the 16-byte hex-plus-ASCII format, and the
+disassembly panel is populated from its selected start address. CRT should
+not show streams of unnecessary blank-filled 80-column rows; ANSI clear and
+cursor-positioning sequences should produce the final screen state. Manual
+input through CRT should exercise the real ACIA receive path: TAB changes
+the active panel, memory cursor movement/editing behaves like the MAME
+keyboard tests, simple assembler entries produce the same bytes/status as
+the automated assembler fixtures, and execution commands visibly refresh
+CPU and disassembly state after monitor re-entry.
