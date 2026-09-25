@@ -341,11 +341,6 @@ _uop:
         tax
         lda     op30_idx,x
         beq     _bad
-        cmp     #op_lsl_idx
-        bne     _ustor
-        lda     #op_asl_idx
-
-_ustor:
         sta     _mnem
         lda     _op
         cmp     #$40

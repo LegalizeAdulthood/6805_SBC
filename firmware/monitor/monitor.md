@@ -597,19 +597,6 @@ surrounding I/O and monitor integration where needed:
 
 ## Implementation Slices
 
-### 9.9. Shared Table Compaction and Monitor Integration
-
-Failing test: a size-regression test fails until the completed
-disassembler and keyboard assembler share the ported EVSBUG12 metadata and
-fit within the documented ROM-size budget while preserving all disassembler
-and assembler coverage fixtures.
-
-End state: duplicate mnemonic strings, operand-class tables, and opcode
-family tables are merged where that reduces ROM size without making tests
-opaque. The disassembly panel, keyboard assembler command path, and shared
-coverage audits all pass in the monitor context. The final result keeps the
-smallest tested monitor binary that remains maintainable.
-
 ### 10. SWI Monitor Entry
 
 Failing test: a MAME SWI-entry test runs a fixed RAM program ending in

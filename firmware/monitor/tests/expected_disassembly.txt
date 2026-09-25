@@ -1,5 +1,5 @@
- 0200: 48          asla
- 0201: 58          aslx
+ 0200: 48          lsla
+ 0201: 58          lslx
  0202: 47          asra
  0203: 57          asrx
  0204: 98          clc 
@@ -14,8 +14,8 @@
  020D: 4C          inca
  020E: 5C          incx
  020F: 5C          incx
- 0210: 48          asla
- 0211: 58          aslx
+ 0210: 48          lsla
+ 0211: 58          lslx
  0212: 44          lsra
  0213: 54          lsrx
  0214: 42          mul 
@@ -103,9 +103,9 @@
  02B3: AA 5A       ora     #$5A
  02B5: A2 5A       sbc     #$5A
  02B7: A0 5A       sub     #$5A
- 02B9: 38 44       asl     $44
+ 02B9: 38 44       lsl     $44
  02BB: 37 44       asr     $44
- 02BD: 38 44       asl     $44
+ 02BD: 38 44       lsl     $44
  02BF: 3F 44       clr     $44
  02C1: 33 44       com     $44
  02C3: 3A 44       dec     $44
@@ -152,7 +152,7 @@
  0326: F9          adc     ,x
  0327: FB          add     ,x
  0328: F4          and     ,x
- 0329: 78          asl     ,x
+ 0329: 78          lsl     ,x
  032A: 77          asr     ,x
  032B: F5          bit     ,x
  032C: 7F          clr     ,x
@@ -167,7 +167,7 @@
  0335: FD          jsr     ,x
  0336: F6          lda     ,x
  0337: FE          ldx     ,x
- 0338: 78          asl     ,x
+ 0338: 78          lsl     ,x
  0339: 74          lsr     ,x
  033A: 70          neg     ,x
  033B: FA          ora     ,x
@@ -183,8 +183,8 @@
  0347: 64 44       lsr     $44,x
  0349: 66 44       ror     $44,x
  034B: 67 44       asr     $44,x
- 034D: 68 44       asl     $44,x
- 034F: 68 44       asl     $44,x
+ 034D: 68 44       lsl     $44,x
+ 034F: 68 44       lsl     $44,x
  0351: 69 44       rol     $44,x
  0353: 6A 44       dec     $44,x
  0355: 6C 44       inc     $44,x

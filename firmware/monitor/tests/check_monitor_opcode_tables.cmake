@@ -125,6 +125,11 @@ require_block_regex(
 )
 require_block_regex(
     "op30_idx"
+    "30-7f index table should preserve EVSBUG12 lsl mnemonic selection"
+    "op_lsl_idx"
+)
+require_block_regex(
+    "op30_idx"
     "30-7f index table should mark unused entries symbolically"
     "op_unused_idx"
 )
