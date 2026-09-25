@@ -92,16 +92,22 @@ file(WRITE "${_assembler_script}"
     "local dpc_lo = 0x${SYM_disasm_pc_lo}\r\n"
     "local saved = {0x${SYM_saved_sp}, 0x${SYM_saved_pc_hi}, 0x${SYM_saved_pc_lo}, 0x${SYM_saved_a}, 0x${SYM_saved_x}, 0x${SYM_saved_cc}, 0x${SYM_stop_rsn}}\r\n"
     "local cases = {\r\n"
-    "    { name = \"inh\",    addr = 0x0400, line = \"nop\",          status = \"ok\",  pc = 0x0401, expect = {0x9d} },\r\n"
-    "    { name = \"imm\",    addr = 0x0404, line = \"lda #$5a\",     status = \"ok\",  pc = 0x0406, expect = {0xa6, 0x5a} },\r\n"
-    "    { name = \"dir\",    addr = 0x0408, line = \"sta $44\",      status = \"ok\",  pc = 0x040a, expect = {0xb7, 0x44} },\r\n"
-    "    { name = \"ext\",    addr = 0x040c, line = \"jsr $1234\",    status = \"ok\",  pc = 0x040f, expect = {0xcd, 0x12, 0x34} },\r\n"
-    "    { name = \"idx0\",   addr = 0x0410, line = \"lda ,x\",       status = \"ok\",  pc = 0x0411, expect = {0xf6} },\r\n"
-    "    { name = \"idx8\",   addr = 0x0412, line = \"lda $44,x\",    status = \"ok\",  pc = 0x0414, expect = {0xe6, 0x44} },\r\n"
-    "    { name = \"rel\",    addr = 0x0414, line = \"bra $0418\",    status = \"ok\",  pc = 0x0416, expect = {0x20, 0x02} },\r\n"
-    "    { name = \"bit\",    addr = 0x0420, line = \"bset 3,$44\",   status = \"ok\",  pc = 0x0422, expect = {0x16, 0x44} },\r\n"
-    "    { name = \"badop\",  addr = 0x0424, line = \"lda #\",        status = \"err\", pc = 0x0424, expect = {0x42, 0x55, 0x66} },\r\n"
-    "    { name = \"range\",  addr = 0x0428, line = \"bra $0500\",    status = \"err\", pc = 0x0428, expect = {0x42, 0x55, 0x66} },\r\n"
+    "    { name = \"inh\",    addr = 0x0400, line = \"NOP\",          status = \"ok\",  pc = 0x0401, expect = {0x9d} },\r\n"
+    "    { name = \"imm\",    addr = 0x0404, line = \"LDA #5A\",      status = \"ok\",  pc = 0x0406, expect = {0xa6, 0x5a} },\r\n"
+    "    { name = \"dir\",    addr = 0x0408, line = \"STA 44\",       status = \"ok\",  pc = 0x040a, expect = {0xb7, 0x44} },\r\n"
+    "    { name = \"ext\",    addr = 0x040c, line = \"JSR 1234\",     status = \"ok\",  pc = 0x040f, expect = {0xcd, 0x12, 0x34} },\r\n"
+    "    { name = \"idx0\",   addr = 0x0410, line = \"LDA ,X\",       status = \"ok\",  pc = 0x0411, expect = {0xf6} },\r\n"
+    "    { name = \"idx8\",   addr = 0x0412, line = \"LDA 44,X\",     status = \"ok\",  pc = 0x0414, expect = {0xe6, 0x44} },\r\n"
+    "    { name = \"rel\",    addr = 0x0414, line = \"BRA 0418\",     status = \"ok\",  pc = 0x0416, expect = {0x20, 0x02} },\r\n"
+    "    { name = \"bit\",    addr = 0x0420, line = \"BSET 3,44\",    status = \"ok\",  pc = 0x0422, expect = {0x16, 0x44} },\r\n"
+    "    { name = \"rega\",   addr = 0x0424, line = \"ASLA\",         status = \"ok\",  pc = 0x0425, expect = {0x48} },\r\n"
+    "    { name = \"regx\",   addr = 0x0428, line = \"ASLX\",         status = \"ok\",  pc = 0x0429, expect = {0x58} },\r\n"
+    "    { name = \"cpx\",    addr = 0x042c, line = \"CPX #5A\",      status = \"ok\",  pc = 0x042e, expect = {0xa3, 0x5a} },\r\n"
+    "    { name = \"bitrel\", addr = 0x0430, line = \"BRSET 3,44,0435\", status = \"ok\", pc = 0x0433, expect = {0x06, 0x44, 0x02} },\r\n"
+    "    { name = \"clrx0\",  addr = 0x0438, line = \"CLR ,X\",       status = \"ok\",  pc = 0x0439, expect = {0x7f} },\r\n"
+    "    { name = \"jmpdir\", addr = 0x043c, line = \"JMP 44\",       status = \"ok\",  pc = 0x043e, expect = {0xbc, 0x44} },\r\n"
+    "    { name = \"badop\",  addr = 0x0440, line = \"???\",          status = \"err\", pc = 0x0440, expect = {0x42, 0x55, 0x66} },\r\n"
+    "    { name = \"range\",  addr = 0x0444, line = \"BRA 0500\",     status = \"err\", pc = 0x0444, expect = {0x42, 0x55, 0x66} },\r\n"
     "}\r\n"
     "local ok_hex = \"6F6B0D0A\"\r\n"
     "local err_hex = \"6572720D0A\"\r\n"
@@ -263,8 +269,8 @@ set(_actual_saved "${CMAKE_MATCH_3}")
 set(_actual_detail "${CMAKE_MATCH_4}")
 string(TOUPPER "${_actual_saved}" _actual_saved)
 
-if(NOT _actual_cases STREQUAL "10")
-    message(FATAL_ERROR "Expected 10 assembler cases, got ${_actual_cases}\n${_mame_output}")
+if(NOT _actual_cases STREQUAL "16")
+    message(FATAL_ERROR "Expected 16 assembler cases, got ${_actual_cases}\n${_mame_output}")
 endif()
 
 if(NOT _actual_fails STREQUAL "0")

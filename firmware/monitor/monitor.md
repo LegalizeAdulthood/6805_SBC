@@ -597,25 +597,6 @@ surrounding I/O and monitor integration where needed:
 
 ## Implementation Slices
 
-### 9.8. EVSBUG12 Assembler Port
-
-Failing test: an EVSBUG12 assembler fixture suite drives the monitor's
-keyboard assembler path and fails until EVSBUG12-valid source lines produce
-the same bytes, status, and redisassembly feedback as the EVSBUG12
-assembler. The suite uses EVSBUG12 source/manual behavior as the syntax
-authority. TASM may assemble test programs, but it must not define the
-interactive assembler language.
-
-End state: the keyboard assembler core is ported directly from
-`firmware/evsbug12/evsbug12.asm`, preserving its micro-optimized parser,
-opcode construction paths, accepted operand forms, aliases, diagnostics,
-and one-line feedback behavior. Only character I/O, memory access, saved
-state, and screen-integration boundaries are adapted to the visual monitor.
-Any existing partial assembler code in `monitor.asm` has been removed
-rather than retained as scaffolding. Coverage reports any EVSBUG12
-assembler fixture not yet represented by mnemonic, operand form, addressing
-mode, and opcode byte.
-
 ### 9.9. Shared Table Compaction and Monitor Integration
 
 Failing test: a size-regression test fails until the completed

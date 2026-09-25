@@ -8,6 +8,7 @@ ESC             .equ    $1b             ; escape
 SP              .equ    $20             ; space
 DEL             .equ    $7f             ; delete
 char_mask       .equ    $7f             ; strip char high bit
+lo_nibl_mask    .equ    $0f             ; low nibble mask
 msg_end         .equ    $80             ; high-bit string terminator
 
 stack_top       .equ    $7f
@@ -1239,10 +1240,15 @@ mem_cur_done:
         .module asm_cmd
 
 _op     .equ    scratch                 ; assembled opcode byte
-_len    .equ    scratch + $01           ; assembled byte count or decode length
-_pos    .equ    scratch + $02           ; parser offset or temporary byte
-_hi     .equ    dline_tmp               ; parsed operand high byte
-_lo     .equ    dline_tmp + $01         ; parsed operand low byte
+op_len  .equ    scratch + $01           ; operand byte count or decoded length
+_len    .equ    scratch + $01           ; decoded length alias used by shared RAM map checks
+_mpos   .equ    scratch + $01           ; mnemonic match position before operand parsing
+_mode   .equ    scratch + $02           ; mode nibble or saved direct operand
+_xsave  .equ    dline_buf + $11         ; saved X for the line reader
+parse_hi .equ   dline_buf + $12         ; parsed word high byte
+parse_lo .equ   dline_buf + $13         ; parsed word low byte
+line_pos .equ   dline_tmp               ; line buffer read offset
+cmd_ch  .equ    dline_tmp + $01         ; current parsed source character
 
 ; Keyboard assembler collects a source line, then assembles at disasm_pc.
 asm_key_in:
@@ -1257,7 +1263,7 @@ _key:
         cmp     #DEL
         bhs     _ret
         ldx     asm_len
-        cpx     #$13
+        cpx     #$10
         bhs     _ret
         sta     dline_buf,x
         inc     asm_len
@@ -1271,6 +1277,9 @@ _enter:
         jmp     _blank
 
 _ent1:
+        ldx     asm_len
+        lda     #CR
+        sta     dline_buf,x
         jsr     _asm
         bne     _ent2
         jmp     _ok
@@ -1278,366 +1287,382 @@ _ent1:
 _ent2:
         jmp     _err
 
+; EVSBUG12 assembler core adapted to the monitor line buffer and memory thunk.
 _asm:
-        lda     dline_buf               ; Mnemonic dispatch is the seed for table-driven parsing
-        cmp     #'n'
-        beq     _nop
-        cmp     #'l'
-        beq     _lda
-        cmp     #'s'
-        beq     _sta
-        cmp     #'j'
-        beq     _jsr
-        cmp     #'b'
-        bne     _asm1
-        jmp     _bop
+        clr     op_len
+        clr     line_pos
+        clr     _mpos
+        clr     _op
+        ldx     #$ff
 
-_asm1:
-        jmp     _fail
+_mlp:
+        jsr     _read_ch
+        jsr     _canon
 
-_nop:
-        lda     asm_len
-        cmp     #$03
-        beq     _nop1
-        jmp     _fail
-
-_nop1:
-        lda     dline_buf+$01
-        cmp     #'o'
-        beq     _nop2
-        jmp     _fail
-
-_nop2:
-        lda     dline_buf+$02
-        cmp     #'p'
-        beq     _nop3
-        jmp     _fail
-
-_nop3:
-        ldx     #op_nop_idx
-        jsr     _base
-        lda     #$01
-        sta     _len
-        jmp     _write
-
-_lda:
-        lda     dline_buf+$01
-        cmp     #'d'
-        beq     _lda1
-        jmp     _fail
-
-_lda1:
-        lda     dline_buf+$02
-        cmp     #'a'
-        beq     _lda2
-        jmp     _fail
-
-_lda2:
-        ldx     #op_lda_idx
-        jsr     _base
-        lda     #$03
-        jsr     _spc
-        bne     _lda3
-        jmp     _amem
-
-_lda3:
-        jmp     _fail
-
-_sta:
-        lda     dline_buf+$01
-        cmp     #'t'
-        beq     _sta1
-        jmp     _fail
-
-_sta1:
-        lda     dline_buf+$02
-        cmp     #'a'
-        beq     _sta2
-        jmp     _fail
-
-_sta2:
-        ldx     #op_sta_idx
-        jsr     _base
-        lda     #$03
-        jsr     _spc
-        bne     _sta3
-        jmp     _mem
-
-_sta3:
-        jmp     _fail
-
-_jsr:
-        lda     dline_buf+$01
-        cmp     #'s'
-        beq     _jsr1
-        jmp     _fail
-
-_jsr1:
-        lda     dline_buf+$02
-        cmp     #'r'
-        beq     _jsr2
-        jmp     _fail
-
-_jsr2:
-        ldx     #op_jsr_idx
-        jsr     _base
-        lda     #$03
-        jsr     _spc
-        bne     _jsr3
-        jmp     _mem
-
-_jsr3:
-        jmp     _fail
-
-_bop:
-        lda     dline_buf+$01
-        cmp     #'r'
-        beq     _bra
-        cmp     #'s'
-        beq     _bset
-        jmp     _fail
-
-_bra:
-        lda     dline_buf+$02
-        cmp     #'a'
-        beq     _bra1
-        jmp     _fail
-
-_bra1:
-        ldx     #op_bra_idx
-        jsr     _base
-        lda     #$03
-        jsr     _spc
-        bne     _bra2
-        jmp     _rel
-
-_bra2:
-        jmp     _fail
-
-_bset:
-        lda     dline_buf+$02
-        cmp     #'e'
-        beq     _bs1
-        jmp     _fail
-
-_bs1:
-        lda     dline_buf+$03
-        cmp     #'t'
-        beq     _bs2
-        jmp     _fail
-
-_bs2:
-        ldx     #op_bset_idx
-        jsr     _base
-        lda     #$04
-        jsr     _spc
-        bne     _bs3
-        jmp     _bit
-
-_bs3:
-        jmp     _fail
-
-_amem:
-        ldx     _pos
-        cpx     asm_len
-        bne     _am1
-        jmp     _fail
-
-_am1:
-        lda     dline_buf,x
-        cmp     #'#'
-        beq     _imm
-        jmp     _mem
-
-_imm:
+_mnxt:
         incx
-        stx     _pos
-        jsr     _phex
-        bcc     _imm1
-        jmp     _fail
+        lda     mnemonic_modes,x
+        cmp     #lo_nibl_mask
+        bls     _mchk
+        and     #lo_nibl_mask
+        inc     _op
 
-_imm1:
-        jsr     _end
-        beq     _imm2
-        jmp     _fail
+_mchk:
+        cmp     _mpos
+        beq     _mgot
+        bhi     _mnxt
 
-_imm2:
-        tst     _hi
-        beq     _imm3
-        jmp     _fail
+_bad:
+        lda     #$01
+        rts
 
-_imm3:
-        lda     #$02
-        sta     _len
-        jmp     _write
+_mgot:
+        lda     mnemonics,x
+        beq     _bad
+        and     #char_mask
+        cmp     cmd_ch
+        bhi     _bad
+        bne     _mnxt
+        lda     mnemonics,x
+        bmi     _smod
+        inc     _mpos
+        bra     _mlp
 
-_mem:
-        ldx     _pos
-        cpx     asm_len
-        bne     _mem1
-        jmp     _fail
+_smod:
+        lda     mnemonic_modes,x        ; High nibble dispatches EVS operand parsers
+        lsra
+        lsra
+        lsra
+        lsra
+        sta     _mode
+        clr     op_len                  ; The mnemonic matcher reused this byte as _mpos
+        ldx     _op
+        decx
+        lda     op_tbl,x
+        sta     _op
+        lda     _mode
+        cmp     #$04
+        bne     _rsuf
+        jsr     _read_ch
+        jsr     _canon
+        cmp     #'a'
+        beq     _reg_a
+        cmp     #'x'
+        bne     _csuf
+        lda     #$20
+        bra     _add_reg
 
-_mem1:
-        lda     dline_buf,x
-        cmp     #','
-        beq     _idx0
-        jsr     _phex
-        bcc     _mem2
-        jmp     _fail
+_reg_a:
+        lda     #$10
 
-_mem2:
-        ldx     _pos
-        cpx     asm_len
-        beq     _abs
-        lda     dline_buf,x
-        cmp     #','
-        beq     _idxn
-        jmp     _fail
-
-_idx0:
-        jsr     _ckx
-        beq     _idx01
-        jmp     _fail
-
-_idx01:
-        lda     _op
-        add     #$50
+_add_reg:
+        add     _op
         sta     _op
         lda     #$01
-        sta     _len
-        jmp     _write
+        sta     _mode
 
-_idxn:
-        jsr     _ckx
-        beq     _idxn1
-        jmp     _fail
+_rsuf:
+        jsr     _read_ch
 
-_idxn1:
-        lda     _op
-        tst     _hi
-        beq     _idx8
-        add     #$30
-        sta     _op
-        lda     #$03
-        sta     _len
-        jmp     _write
+_csuf:
+        cmp     #'.'
+        beq     _noarg
+        cmp     #CR
+        bne     _nspc
 
-_idx8:
-        add     #$40
-        sta     _op
+_noarg:
+        lda     _mode
+        deca
+        bne     _bad
+        dec     line_pos
+        bra     _mjmp
+
+_nspc:
+        cmp     #SP
+        bne     _bad
+
+_mjmp:
+        lda     _mode
+        asla
+        add     _mode
+        tax
+
+_mtab:
+        jmp     _mtab,x
+        jmp     _rnch
+        jmp     _babs
+        jmp     _rel
+        jmp     _pidx
+        jmp     _bmod
+        jmp     _rcom
+        jmp     _icom
+        bsr     _pbit
+        jsr     _phex
+        tst     parse_hi
+        bne     _ncom
+        lda     cmd_ch
+        cmp     #','
+
+_ncom:
+        bne     _bjmp
+        lda     parse_lo
+        sta     _mode
         lda     #$02
-        sta     _len
-        jmp     _write
-
-_abs:
-        lda     _op
-        tst     _hi
-        beq     _dir
-        add     #$20
-        sta     _op
-        lda     #$03
-        sta     _len
-        jmp     _write
-
-_dir:
-        add     #$10
-        sta     _op
-        lda     #$02
-        sta     _len
-        jmp     _write
+        bra     _popr
 
 _rel:
+        lda     #$01
+
+_popr:
+        sta     op_len
         jsr     _phex
-        bcc     _rel1
-        jmp     _fail
+        lda     op_len
+        inca
+        jsr     _badd
+        lda     parse_hi
+        cmp     mem_thunk_hi
+        bcs     _cneg
+        bhi     _cpos
+        lda     parse_lo
+        cmp     mem_thunk_lo
+        bcs     _cneg
 
-_rel1:
-        jsr     _end
-        beq     _rel2
-        jmp     _fail
+_cpos:
+        lda     parse_lo
+        sub     mem_thunk_lo
+        sta     parse_lo
+        lda     parse_hi
+        sbc     mem_thunk_hi
+        bne     _bjmp
+        lda     parse_lo
+        bmi     _bjmp
+        bra     _sopr
 
-_rel2:
-        lda     disasm_pc_lo            ; Branch operands are displayed and entered as targets
-        add     #$02
-        sta     _pos
-        lda     disasm_pc_hi
-        adc     #$00
-        sta     _len
-        lda     _lo
-        sub     _pos
-        sta     _lo
-        lda     _hi
-        sbc     _len
-        sta     _hi
-        lda     _lo
-        bpl     _relpos
-        lda     _hi
-        cmp     #$ff
-        beq     _relok
-        jmp     _fail
+_cneg:
+        lda     mem_thunk_lo
+        sub     parse_lo
+        sta     mem_thunk_lo
+        lda     mem_thunk_hi
+        sbc     parse_hi
+        bne     _bjmp
+        lda     mem_thunk_lo
+        nega
+        bmi     _sopr
 
-_relpos:
-        tst     _hi
-        beq     _relok
-        jmp     _fail
+_bjmp:
+        jmp     _bad
 
-_relok:
-        lda     #$02
-        sta     _len
-        jmp     _write
+_sopr:
+        sta     parse_lo
+        lda     _mode
+        sta     parse_hi
+        jmp     _cend
 
-_bit:
-        ldx     _pos
-        cpx     asm_len
-        bne     _bit1
-        jmp     _fail
+_babs:
+        bsr     _pbit
+        jmp     _pzp
 
-_bit1:
-        lda     dline_buf,x
-        sub     #'0'
-        bmi     _bitbad
-        cmp     #$08
-        blo     _bit2
-
-_bitbad:
-        jmp     _fail
-
-_bit2:
+_pbit:
+        jsr     _phex
+        lda     parse_lo
+        and     #lo_nibl_mask
+        cmp     #$00
+        bcs     _bbr
+        cmp     #$07
+        bhi     _bbr
         asla
         add     _op
         sta     _op
-        incx
-        cpx     asm_len
-        bne     _bit3
-        jmp     _fail
-
-_bit3:
-        lda     dline_buf,x
+        lda     cmd_ch
         cmp     #','
-        beq     _bit4
-        jmp     _fail
+        bne     _tbad
+        rts
 
-_bit4:
-        incx
-        stx     _pos
+_pidx:
+        jsr     _read_ch
+        cmp     #','
+        bne     _poff
+        clra
+        bra     _stmd
+
+_poff:
+        inc     op_len
+        dec     line_pos
         jsr     _phex
-        bcc     _bit5
-        jmp     _fail
+        tst     parse_hi
+        beq     _smod10
 
-_bit5:
-        jsr     _end
-        beq     _bit6
-        jmp     _fail
+_bbr:
+        bra     _tbad
 
-_bit6:
-        tst     _hi
-        beq     _bit7
-        jmp     _fail
+_rcom:
+        jsr     _read_ch
+        bra     _ccom
 
-_bit7:
-        lda     #$02
-        sta     _len
-        jmp     _write
+_icom:
+        jsr     _read_ch
+        cmp     #'#'
+        beq     _pzp
+
+_ccom:
+        cmp     #','
+        beq     _smod10
+        inc     op_len
+        dec     line_pos
+        jsr     _phex
+        lda     #$10
+        tst     parse_hi
+        beq     _aopc
+        inc     op_len
+        add     #$10
+
+_aopc:
+        add     _op
+        sta     _op
+
+_smod10:
+        lda     #$10
+
+_stmd:
+        sta     _mode
+        lda     cmd_ch
+        cmp     #','
+        bne     _cend
+        jsr     _read_ch
+        jsr     _canon
+        cmp     #'x'
+        bne     _tbad
+        lda     _mode
+        brset   1, op_len, _fopc
+        add     #$20
+        brset   0, op_len, _fopc
+        add     #$20
+
+_fopc:
+        add     _op
+        sta     _op
+        bra     _rnch
+
+; EVSBUG12 uses dot for one-shot entry; here it is just a terminator.
+_dot:
+
+_rnch:
+        jsr     _read_ch
+
+_cend:
+        lda     cmd_ch
+        cmp     #CR
+        beq     _wbyt
+        cmp     #'.'
+        beq     _dot
+
+_tbad:
+        jmp     _bad
+
+_wbyt:
+        jsr     _ladr
+        clrx
+        lda     _op
+        jsr     mem_thunk_write
+        lda     op_len
+        beq     _apc
+        cmp     #$01
+        beq     _wlo
+        ldx     #$01
+        lda     parse_hi
+        jsr     mem_thunk_write
+
+_wlo:
+        ldx     op_len
+        lda     parse_lo
+        jsr     mem_thunk_write
+
+_apc:
+        lda     op_len
+        inca
+        add     disasm_pc_lo
+        sta     disasm_pc_lo
+        bcc     _success
+        inc     disasm_pc_hi
+
+_success:
+        clra
+        rts
+
+_bmod:
+        bra     _tbad
+
+_pzp:
+        jsr     _phex
+        tst     parse_hi
+        bne     _tbad
+        dec     line_pos
+        inc     op_len
+        bra     _rnch
+
+_phex:
+        clr     parse_hi
+        clr     parse_lo
+        jsr     _read_ch
+        cmp     #'$'
+        bne     _hdig
+
+_ndig:
+        jsr     _read_ch
+
+_hdig:
+        jsr     _canon
+        sub     #'0'
+        bmi     _hdone
+        cmp     #$09
+        bls     _vdig
+        sub     #('a' - ('9' + 1))
+        cmp     #$09
+        bls     _hdone
+        cmp     #lo_nibl_mask
+        bhi     _hdone
+
+_vdig:
+        sta     cmd_ch                  ; Digit value is temporary until the next read
+        lda     parse_hi
+        ldx     parse_lo
+        aslx
+        rola
+        aslx
+        rola
+        aslx
+        rola
+        aslx
+        rola
+        sta     parse_hi
+        txa
+        ora     cmd_ch
+        sta     parse_lo
+        bra     _ndig
+
+_hdone:
+        rts
+
+_read_ch:
+        txa
+        sta     _xsave
+        ldx     line_pos
+        lda     dline_buf,x
+        inc     line_pos
+        ldx     _xsave
+        sta     cmd_ch
+        rts
+
+_canon:
+        cmp     #'A'
+        blo     _cret
+        cmp     #('Z' + 1)
+        bhs     _cret
+        add     #('a' - 'A')
+        sta     cmd_ch
+
+_cret:
+        rts
 
 _blank:
         lda     disasm_pc_hi            ; Blank lines skip over the current decoded instruction
@@ -1649,7 +1674,7 @@ _blank:
         jsr     dec_inst
         jsr     chk_trnc
         lda     disasm_pc_lo
-        add     _len
+        add     op_len
         sta     disasm_pc_lo
         bcs     _bla1
         jmp     _ok
@@ -1658,223 +1683,19 @@ _bla1:
         inc     disasm_pc_hi
         jmp     _ok
 
-_write:
+_ladr:
         lda     disasm_pc_hi
         sta     mem_thunk_hi
         lda     disasm_pc_lo
         sta     mem_thunk_lo
-        clrx
-        lda     _op
-        jsr     mem_thunk_write
-        lda     _len
-        cmp     #$01
-        beq     _adv
-        cmp     #$02
-        beq     _wrlo
-        ldx     #$01
-        lda     _hi
-        jsr     mem_thunk_write
-        ldx     #$02
-        bra     _wrlo2
+        rts
 
-_wrlo:
-        ldx     #$01
-
-_wrlo2:
-        lda     _lo
-        jsr     mem_thunk_write
-
-_adv:
-        lda     disasm_pc_lo
-        add     _len
-        sta     disasm_pc_lo
-        bcc     _suc
-        inc     disasm_pc_hi
-
-_suc:
+_badd:
+        add     disasm_pc_lo
+        sta     mem_thunk_lo
         clra
-        rts
-
-_base:
-        lda     op_tbl,x
-        sta     _op
-        rts
-
-_spc:
-        sta     _pos
-        tax
-        cpx     asm_len
-        beq     _spbad
-        lda     dline_buf,x
-        cmp     #SP
-        bne     _spbad
-        incx
-        stx     _pos
-        clra
-        rts
-
-_spbad:
-        lda     #$01
-        rts
-
-_end:
-        ldx     _pos
-        cpx     asm_len
-        bne     _endbad
-        clra
-        rts
-
-_endbad:
-        lda     #$01
-        rts
-
-_ckx:
-        ldx     _pos
-        cpx     asm_len
-        bne     _ckx1
-        lda     #$01
-        rts
-
-_ckx1:
-        lda     dline_buf,x
-        cmp     #','
-        beq     _ckx2
-        lda     #$01
-        rts
-
-_ckx2:
-        incx
-        cpx     asm_len
-        bne     _ckx3
-        lda     #$01
-        rts
-
-_ckx3:
-        lda     dline_buf,x
-        cmp     #'x'
-        beq     _ckx4
-        lda     #$01
-        rts
-
-_ckx4:
-        incx
-        stx     _pos
-        jmp     _end
-
-_phex:
-        clr     _hi
-        clr     _lo
-        ldx     _pos
-        cpx     asm_len
-        bne     _ph1
-        sec
-        rts
-
-_ph1:
-        lda     dline_buf,x
-        cmp     #'$'
-        bne     _ph2
-        incx
-
-_ph2:
-        jsr     _pbyte
-        bcc     _ph3
-        rts
-
-_ph3:
-        sta     _lo
-        cpx     asm_len
-        beq     _phdone
-        lda     dline_buf,x
-        jsr     _nib
-        cmp     #$10
-        bhs     _phdone
-        lda     _lo
-        sta     _hi
-        jsr     _pbyte
-        bcc     _ph4
-        rts
-
-_ph4:
-        sta     _lo
-
-_phdone:
-        stx     _pos
-        clc
-        rts
-
-_pbyte:
-        cpx     asm_len
-        bne     _pb1
-        sec
-        rts
-
-_pb1:
-        lda     dline_buf,x
-        jsr     _nib
-        cmp     #$10
-        blo     _pb2
-        sec
-        rts
-
-_pb2:
-        lsla
-        lsla
-        lsla
-        lsla
-        sta     _pos
-        incx
-        cpx     asm_len
-        bne     _pb3
-        sec
-        rts
-
-_pb3:
-        lda     dline_buf,x
-        jsr     _nib
-        cmp     #$10
-        blo     _pb4
-        sec
-        rts
-
-_pb4:
-        ora     _pos
-        incx
-        clc
-        rts
-
-_nib:
-        cmp     #'0'
-        blo     _nbad
-        cmp     #':'
-        blo     _ndig
-        cmp     #'A'
-        blo     _nlo
-        cmp     #'G'
-        blo     _nup
-
-_nlo:
-        cmp     #'a'
-        blo     _nbad
-        cmp     #'g'
-        bhs     _nbad
-        sub     #('a' - 10)
-        rts
-
-_nup:
-        sub     #('A' - 10)
-        rts
-
-_ndig:
-        sub     #'0'
-        rts
-
-_nbad:
-        lda     #$10
-        rts
-
-_fail:
-        lda     #$01
+        adc     disasm_pc_hi
+        sta     mem_thunk_hi
         rts
 
 _err:
