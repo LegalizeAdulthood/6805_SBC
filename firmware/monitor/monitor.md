@@ -597,16 +597,6 @@ surrounding I/O and monitor integration where needed:
 
 ## Implementation Slices
 
-### 10. SWI Monitor Entry
-
-Failing test: a MAME SWI-entry test runs a fixed RAM program ending in
-`SWI` and fails until the monitor captures the expected saved frame.
-
-End state: the RAM program loads known values into `A` and `X`, sets a
-known condition-code state, and executes `SWI` at label `user_swi`.
-`swi_entry` records stop reason `STOP_SWI`, saves `A`, `X`, condition
-codes, and saves `PC=user_swi+1`, then enters `monitor_idle`.
-
 ### 11. Timer Single-Step
 
 Failing test: a MAME timer-step test computes a checksum of the ROM test

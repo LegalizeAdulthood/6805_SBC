@@ -16,6 +16,10 @@ reset_cc        .equ    $08
 
 stop_rst        .equ    $01
 stop_tst        .equ    $02
+stop_swi        .equ    $03
+
+stk_cc          .equ    $01             ; stacked condition codes
+stk_len         .equ    $05             ; interrupt stack frame byte count
 
 mem_focus_asc   .equ    $01
 
@@ -139,8 +143,30 @@ reset:
 
         .module int_disp
 
+; SWI copies the hardware-stacked frame into monitor state.
 swi:
-        jmp     idle                    ; SWI is the current user-code return path
+                                        ; Hardware has already stacked the user frame
+        lda     #stack_top-stk_len
+        sta     saved_sp                ; The saved frame records the post-SWI stack pointer
+        ldx     #stack_top-stk_len+stk_cc
+        lda     ,x
+        sta     saved_cc
+        incx
+        lda     ,x
+        sta     saved_a
+        incx
+        lda     ,x
+        sta     saved_x
+        incx
+        lda     ,x
+        sta     saved_pc_hi
+        incx
+        lda     ,x
+        sta     saved_pc_lo
+        lda     #stop_swi
+        sta     stop_rsn
+        rsp
+        jmp     idle                    ; Monitor code resumes with its private stack again
 
 ; Interrupt dispatch vectors through RAM so user code can intercept IRQs.
 tmr_wt_disp:
@@ -879,6 +905,8 @@ emit_stop:
         beq     _reset
         cmp     #stop_tst
         beq     _test
+        cmp     #stop_swi
+        beq     _swi
         ldx     #stop_unk_txt-cpu_txt
         bra     _write
 
@@ -888,6 +916,10 @@ _reset:
 
 _test:
         ldx     #stop_tst_txt-cpu_txt
+        bra     _write
+
+_swi:
+        ldx     #stop_swi_txt-cpu_txt
 
 _write:
         jsr     emit_cpu_txt
@@ -1748,6 +1780,10 @@ stop_rst_txt:
 stop_tst_txt:
         .text   "TES"
         .byte   ('T' | msg_end)
+
+stop_swi_txt:
+        .text   "SW"
+        .byte   ('I' | msg_end)
 
 stop_unk_txt:
         .text   "UNKNOW"
