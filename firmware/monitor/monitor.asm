@@ -1745,64 +1745,51 @@ idle:
         .module data
 
 hex_digits:
-        .text   "0123456789ABCDEF"
+        .byte   "0123456789ABCDEF"
 
 cpu_txt:
 
 cpu_sp_txt:
-        .text   "SP"
-        .byte   (' ' | msg_end)
+        .byte   "SP", (' ' | msg_end)
 
 cpu_pc_txt:
-        .text   "  PC"
-        .byte   (' ' | msg_end)
+        .byte   "  PC", (' ' | msg_end)
 
 cpu_a_txt:
-        .text   "  A"
-        .byte   (' ' | msg_end)
+        .byte   "  A", (' ' | msg_end)
 
 cpu_x_txt:
-        .text   "  X"
-        .byte   (' ' | msg_end)
+        .byte   "  X", (' ' | msg_end)
 
 cpu_flags_txt:
-        .text   "  FLAGS 11"
-        .byte   ('1' | msg_end)
+        .byte   "  FLAGS 11", ('1' | msg_end)
 
 cpu_stop_txt:
-        .text   "  STOPPED:"
-        .byte   (' ' | msg_end)
+        .byte   "  STOPPED:", (' ' | msg_end)
 
 stop_rst_txt:
-        .text   "RESE"
-        .byte   ('T' | msg_end)
+        .byte   "RESE", ('T' | msg_end)
 
 stop_tst_txt:
-        .text   "TES"
-        .byte   ('T' | msg_end)
+        .byte   "TES", ('T' | msg_end)
 
 stop_swi_txt:
-        .text   "SW"
-        .byte   ('I' | msg_end)
+        .byte   "SW", ('I' | msg_end)
 
 stop_unk_txt:
-        .text   "UNKNOW"
-        .byte   ('N' | msg_end)
+        .byte   "UNKNOW", ('N' | msg_end)
 
 mem_addr_sfx_txt:
-        .text   ":"
-        .byte   (' ' | msg_end)
+        .byte   ":", (' ' | msg_end)
 
 cpu_crlf_txt:
         .byte   CR,(LF | msg_end)
 
 asm_ok_txt:
-        .text   "ok"
-        .byte   CR,(LF | msg_end)
+        .byte   "ok", CR, (LF | msg_end)
 
 asm_err_txt:
-        .text   "err"
-        .byte   CR,(LF | msg_end)
+        .byte   "err", CR, (LF | msg_end)
 
 op_adc_imm      .equ    $a9
 op_add_imm      .equ    $ab
@@ -2111,15 +2098,9 @@ op_tbl:
 
 boot_txt:
         .byte   ESC                     ; Boot text emits escape sequences instead of blank-filled rows
-        .text   "[H"
-        .byte   ESC
-        .text   "[J"
-        .byte   ESC
-        .text   "[68G"
+        .byte   "[H", ESC, "[J", ESC, "[68G"
 #include "monitor_version.inc"
-        .byte   ESC
-        .text   "[H"
-        .byte   NUL
+        .byte   ESC, "[H", NUL
 
 rom_end:
 
