@@ -117,7 +117,8 @@ foreach(name
         mem_focus
         mem_hex_phs
         disasm_pc_hi
-        disasm_pc_lo)
+        disasm_pc_lo
+        asm_len)
     require_global("${name}")
 endforeach()
 
@@ -132,6 +133,7 @@ require_module_scratch("mem_edit" "_ch")
 require_module_scratch("mem_edit" "_nib")
 require_module_scratch("mem_edit" "_tmp")
 require_module_scratch("mem_cur" "_byte")
+require_module_scratch("asm_cmd" "_len")
 
 if(errors)
     list(JOIN errors "\n  - " error_text)

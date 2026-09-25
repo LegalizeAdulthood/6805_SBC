@@ -256,6 +256,19 @@ add_test(
 )
 
 add_test(
+    NAME monitor.mame.assembler_cmd
+    COMMAND
+        "${CMAKE_COMMAND}"
+        "-DMONITOR_BINARY=${MONITOR_BINARY}"
+        "-DMONITOR_SYMBOLS=${MONITOR_SYMBOLS}"
+        "-DMAME_EXE=${MAME_EXECUTABLE}"
+        "-DMAME_STAGE_DIR=${MONITOR_OUTPUT_DIR}/mame-assembler-cmd"
+        "-DMONITOR_OUTPUT_DIR=${MONITOR_OUTPUT_DIR}"
+        "-P"
+        "${CMAKE_CURRENT_SOURCE_DIR}/check_mame_assembler_cmd.cmake"
+)
+
+add_test(
     NAME monitor.mame.interrupt_vectors
     COMMAND
         "${CMAKE_COMMAND}"

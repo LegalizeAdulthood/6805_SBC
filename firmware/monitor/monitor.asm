@@ -52,7 +52,8 @@ mem_focus       .equ    $28
 mem_hex_phs     .equ    $29
 disasm_pc_hi    .equ    $2a
 disasm_pc_lo    .equ    $2b
-scratch         .equ    $2c
+asm_len         .equ    $2c
+scratch         .equ    $2d
 dline_buf       .equ    scratch + $03
 dline_tmp       .equ    dline_buf + $14
 
@@ -87,8 +88,8 @@ op_rts          .equ    $81
 ; $20-$21   state   memory panel page address.
 ; $22-$25   thunk   generated indexed memory access routine.
 ; $26-$29   state   memory cursor address, focus, and edit phase.
-; $2a-$2b   state   disassembly panel start address.
-; $2c-$44   scratch shared temps, disassembly text buffer, and target temps.
+; $2a-$2c   state   disassembly panel start address and assembler input length.
+; $2d-$45   scratch shared temps, disassembly text buffer, and target temps.
 
         .org    $1000
 
@@ -129,6 +130,7 @@ reset:
         sta     mem_thunk_op
         lda     #op_rts
         sta     mem_thunk_rts
+        clr     asm_len
         jsr     init_mem_pnl
         jsr     init_con
         jsr     draw_boot
@@ -1234,6 +1236,85 @@ mem_cur_done:
         sta     mem_hex_phs
         rts
 
+        .module asm_cmd
+
+_len    .equ    scratch + $01           ; decoded instruction length after blank-line advance
+
+; Keyboard assembler collects a source line, then assembles at disasm_pc.
+asm_key_in:
+        bsr     _key
+        jmp     idle
+
+_key:
+        cmp     #CR
+        beq     _enter
+        cmp     #SP
+        blo     _ret
+        cmp     #DEL
+        bhs     _ret
+        ldx     asm_len
+        cpx     #$13
+        bhs     _ret
+        sta     dline_buf,x
+        inc     asm_len
+
+_ret:
+        rts
+
+_enter:
+        lda     asm_len
+        beq     _blank
+        cmp     #$03
+        bne     _err
+        lda     dline_buf               ; This slice accepts only a tiny parser seed
+        cmp     #'n'
+        bne     _err
+        lda     dline_buf+$01
+        cmp     #'o'
+        bne     _err
+        lda     dline_buf+$02
+        cmp     #'p'
+        bne     _err
+        lda     disasm_pc_hi
+        sta     mem_thunk_hi
+        lda     disasm_pc_lo
+        sta     mem_thunk_lo
+        lda     #op_nop
+        clrx
+        jsr     mem_thunk_write
+        inc     disasm_pc_lo
+        bne     _ok
+        inc     disasm_pc_hi
+        bra     _ok
+
+_blank:
+        lda     disasm_pc_hi            ; Blank lines skip over the current decoded instruction
+        sta     mem_thunk_hi
+        lda     disasm_pc_lo
+        sta     mem_thunk_lo
+        clrx
+        jsr     mem_thunk_read
+        jsr     dec_inst
+        jsr     chk_trnc
+        lda     disasm_pc_lo
+        add     _len
+        sta     disasm_pc_lo
+        bcc     _ok
+        inc     disasm_pc_hi
+        bra     _ok
+
+_err:
+        ldx     #asm_err_txt-cpu_txt
+        bra     _stat
+
+_ok:
+        ldx     #asm_ok_txt-cpu_txt
+
+_stat:
+        clr     asm_len
+        jsr     emit_cpu_txt
+        rts
+
         .module idle
 
 idle:
@@ -1287,6 +1368,14 @@ mem_addr_sfx_txt:
         .byte   (' ' | msg_end)
 
 cpu_crlf_txt:
+        .byte   CR,(LF | msg_end)
+
+asm_ok_txt:
+        .text   "ok"
+        .byte   CR,(LF | msg_end)
+
+asm_err_txt:
+        .text   "err"
         .byte   CR,(LF | msg_end)
 
 op_adc_imm      .equ    $a9
