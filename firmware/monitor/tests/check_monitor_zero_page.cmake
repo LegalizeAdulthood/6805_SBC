@@ -6,7 +6,7 @@ if(NOT EXISTS "${MONITOR_SOURCE}")
     message(FATAL_ERROR "monitor source does not exist: ${MONITOR_SOURCE}")
 endif()
 
-set(zero_page_budget 49)
+set(zero_page_budget 55)
 set(valid_categories hardware state thunk scratch)
 set(errors "")
 
@@ -117,7 +117,7 @@ _require_range(0x20 0x21 state)
 _require_range(0x22 0x25 thunk)
 _require_range(0x26 0x29 state)
 _require_range(0x2a 0x2b state)
-_require_range(0x2c 0x3e scratch)
+_require_range(0x2c 0x44 scratch)
 
 if(errors)
     list(JOIN errors "\n  - " error_text)

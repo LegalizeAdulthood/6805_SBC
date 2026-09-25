@@ -90,9 +90,11 @@ set(MONITOR_SYMBOLS "${MONITOR_OUTPUT_DIR}/monitor.sym")
 set(MONITOR_SREC "${MONITOR_OUTPUT_DIR}/monitor.s19")
 set(MONITOR_SREC_LISTING "${MONITOR_OUTPUT_DIR}/monitor-s19.lst")
 set(MONITOR_VERSION_TEXT "MONITOR ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}")
-set(MONITOR_EXPECTED_ROM_END "17EF")
+set(MONITOR_EXPECTED_ROM_END "1818")
 set(MONITOR_VERSION_INCLUDE "${MONITOR_OUTPUT_DIR}/monitor_version.inc")
 set(MONITOR_BUILD_TASM_TABLE "${MONITOR_OUTPUT_DIR}/TASM05.TAB")
+set(MONITOR_ENTRIES_INCLUDE "${MONITOR_OUTPUT_DIR}/monitor_entries.inc")
+set(MONITOR_ENTRY_SYMBOLS "draw_dasm_row")
 
 configure_file(
     "${CMAKE_CURRENT_SOURCE_DIR}/monitor_version.inc.in"
@@ -145,6 +147,24 @@ add_custom_command(
 
 add_custom_target(monitor ALL DEPENDS "${MONITOR_BINARY}")
 add_custom_target(monitor-s19 ALL DEPENDS "${MONITOR_SREC}")
+
+add_custom_command(
+    OUTPUT "${MONITOR_ENTRIES_INCLUDE}"
+    COMMAND
+        "${CMAKE_COMMAND}"
+        "-DMONITOR_SYMBOLS=${MONITOR_SYMBOLS}"
+        "-DMONITOR_ENTRIES_OUTPUT=${MONITOR_ENTRIES_INCLUDE}"
+        "-DMONITOR_ENTRY_SYMBOLS=${MONITOR_ENTRY_SYMBOLS}"
+        -P
+        "${CMAKE_CURRENT_SOURCE_DIR}/generate_monitor_entries.cmake"
+    DEPENDS
+        "${MONITOR_BINARY}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/generate_monitor_entries.cmake"
+    COMMENT "Generating monitor ROM entry include"
+    VERBATIM
+)
+
+add_custom_target(monitor-entries DEPENDS "${MONITOR_ENTRIES_INCLUDE}")
 
 if(BUILD_TESTING)
     add_subdirectory(tests)

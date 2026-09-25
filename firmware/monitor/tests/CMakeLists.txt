@@ -1,5 +1,31 @@
 get_filename_component(MONITOR_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/.." ABSOLUTE)
 
+set(MONITOR_DISASM_TEST_SOURCE "${CMAKE_CURRENT_SOURCE_DIR}/disasm_user_test.asm")
+set(MONITOR_DISASM_TEST_BINARY "${MONITOR_OUTPUT_DIR}/disasm_user_test.bin")
+set(MONITOR_DISASM_TEST_LISTING "${MONITOR_OUTPUT_DIR}/disasm_user_test.lst")
+set(MONITOR_DISASM_TEST_EXPORTS "${MONITOR_OUTPUT_DIR}/disasm_user_test.exp")
+set(MONITOR_DISASM_TEST_SYMBOLS "${MONITOR_OUTPUT_DIR}/disasm_user_test.sym")
+
+add_custom_command(
+    OUTPUT "${MONITOR_DISASM_TEST_BINARY}"
+    BYPRODUCTS
+        "${MONITOR_DISASM_TEST_LISTING}"
+        "${MONITOR_DISASM_TEST_EXPORTS}"
+        "${MONITOR_DISASM_TEST_SYMBOLS}"
+    COMMAND "${TASM_EXE}" -05 -b -s "${MONITOR_DISASM_TEST_SOURCE}" "${MONITOR_DISASM_TEST_BINARY}" "${MONITOR_DISASM_TEST_LISTING}" "${MONITOR_DISASM_TEST_EXPORTS}" "${MONITOR_DISASM_TEST_SYMBOLS}"
+    DEPENDS
+        "${MONITOR_DISASM_TEST_SOURCE}"
+        "${MONITOR_ENTRIES_INCLUDE}"
+        "${MONITOR_BUILD_TASM_TABLE}"
+        "${TASM_EXE}"
+    WORKING_DIRECTORY "${MONITOR_OUTPUT_DIR}"
+    COMMENT "Assembling RAM disassembler test program"
+    VERBATIM
+)
+
+add_custom_target(monitor-disasm-test ALL DEPENDS "${MONITOR_DISASM_TEST_BINARY}")
+add_dependencies(monitor-disasm-test monitor-entries)
+
 add_test(
     NAME monitor.rom_layout
     COMMAND
@@ -182,6 +208,7 @@ add_test(
         "${CMAKE_COMMAND}"
         "-DMONITOR_BINARY=${MONITOR_BINARY}"
         "-DMONITOR_SYMBOLS=${MONITOR_SYMBOLS}"
+        "-DDISASSEMBLY_TEST_BINARY=${MONITOR_DISASM_TEST_BINARY}"
         "-DDISASSEMBLY_EXPECTED=${CMAKE_CURRENT_SOURCE_DIR}/expected_disassembly.txt"
         "-DMAME_EXE=${MAME_EXECUTABLE}"
         "-DMAME_STAGE_DIR=${MONITOR_OUTPUT_DIR}/mame-disassembler"

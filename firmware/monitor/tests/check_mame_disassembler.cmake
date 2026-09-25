@@ -1,4 +1,4 @@
-foreach(_required_var IN ITEMS MONITOR_BINARY MONITOR_SYMBOLS DISASSEMBLY_EXPECTED MAME_EXE MAME_STAGE_DIR MONITOR_OUTPUT_DIR)
+foreach(_required_var IN ITEMS MONITOR_BINARY MONITOR_SYMBOLS DISASSEMBLY_TEST_BINARY DISASSEMBLY_EXPECTED MAME_EXE MAME_STAGE_DIR MONITOR_OUTPUT_DIR)
     if(NOT DEFINED ${_required_var} OR "${${_required_var}}" STREQUAL "")
         message(FATAL_ERROR "${_required_var} is required")
     endif()
@@ -7,29 +7,23 @@ endforeach()
 set(ACIA_STATUS 0x0006)
 set(ACIA_CONTROL 0x0006)
 set(ACIA_DATA 0x0007)
+set(TEST_CODE_LOAD 0x0080)
+set(TEST_DONE_ADDR 0x00f0)
+set(TEST_DONE_PASS 0xa5)
 
 get_filename_component(_monitor_binary "${MONITOR_BINARY}" ABSOLUTE)
 get_filename_component(_monitor_symbols "${MONITOR_SYMBOLS}" ABSOLUTE)
+get_filename_component(_disassembly_test_binary "${DISASSEMBLY_TEST_BINARY}" ABSOLUTE)
 get_filename_component(_disassembly_expected "${DISASSEMBLY_EXPECTED}" ABSOLUTE)
 get_filename_component(_mame_exe "${MAME_EXE}" ABSOLUTE)
 get_filename_component(_monitor_output_dir "${MONITOR_OUTPUT_DIR}" ABSOLUTE)
 get_filename_component(_stage_dir "${MAME_STAGE_DIR}" ABSOLUTE BASE_DIR "${_monitor_output_dir}")
 
-if(NOT EXISTS "${_monitor_binary}")
-    message(FATAL_ERROR "Monitor binary does not exist: ${_monitor_binary}")
-endif()
-
-if(NOT EXISTS "${_monitor_symbols}")
-    message(FATAL_ERROR "Monitor symbols do not exist: ${_monitor_symbols}")
-endif()
-
-if(NOT EXISTS "${_disassembly_expected}")
-    message(FATAL_ERROR "Expected disassembly fixture does not exist: ${_disassembly_expected}")
-endif()
-
-if(NOT EXISTS "${_mame_exe}")
-    message(FATAL_ERROR "MAME executable does not exist: ${_mame_exe}")
-endif()
+foreach(_path_var IN ITEMS _monitor_binary _monitor_symbols _disassembly_test_binary _disassembly_expected _mame_exe)
+    if(NOT EXISTS "${${_path_var}}")
+        message(FATAL_ERROR "required input does not exist: ${${_path_var}}")
+    endif()
+endforeach()
 
 file(TO_CMAKE_PATH "${_monitor_output_dir}" _monitor_output_cmp)
 file(TO_CMAKE_PATH "${_stage_dir}" _stage_cmp)
@@ -60,18 +54,14 @@ foreach(_line IN LISTS _symbol_lines)
 endforeach()
 
 _require_symbol("idle")
-_require_symbol("draw_dasm_row")
 _require_symbol("disasm_pc_hi")
 _require_symbol("disasm_pc_lo")
-
-file(READ "${_disassembly_expected}" _expected_bytes HEX)
-string(TOUPPER "${_expected_bytes}" _expected_bytes)
-string(LENGTH "${_expected_bytes}" _expected_hex_length)
-math(EXPR _expected_count "${_expected_hex_length} / 2")
 
 file(STRINGS "${_disassembly_expected}" _expected_lines)
 list(LENGTH _expected_lines _row_count)
 set(_row_keys "")
+set(_fixture_bytes "")
+set(_fixture_start "")
 
 foreach(_line IN LISTS _expected_lines)
     string(LENGTH "${_line}" _line_length)
@@ -84,6 +74,14 @@ foreach(_line IN LISTS _expected_lines)
     string(SUBSTRING "${_line}" 5 2 _row_addr_suffix)
     string(SUBSTRING "${_line}" 7 12 _row_bytes_field)
     string(SUBSTRING "${_line}" 19 4 _row_mnemonic)
+    set(_mnemonic_width 4)
+    if(_line_length GREATER 23)
+        string(SUBSTRING "${_line}" 23 1 _maybe_mnemonic_char)
+        if(NOT _maybe_mnemonic_char STREQUAL " ")
+            string(SUBSTRING "${_line}" 19 5 _row_mnemonic)
+            set(_mnemonic_width 5)
+        endif()
+    endif()
     string(STRIP "${_row_bytes_field}" _row_bytes)
 
     if(NOT _row_mark STREQUAL " ")
@@ -102,20 +100,32 @@ foreach(_line IN LISTS _expected_lines)
         message(FATAL_ERROR "Disassembly row has invalid machine-byte field: '${_line}'")
     endif()
 
-    if(NOT _row_mnemonic MATCHES "^[a-z][a-z0-9 ][a-z0-9 ][a-z0-9 ]$")
+    if(NOT _row_mnemonic MATCHES "^[a-z][a-z0-9 ][a-z0-9 ][a-z0-9 ][a-z0-9 ]?$")
         message(FATAL_ERROR "Disassembly row has invalid mnemonic field: '${_line}'")
     endif()
 
     if(_line_length GREATER 27)
-        string(SUBSTRING "${_line}" 23 4 _operand_gap)
+        math(EXPR _operand_gap_start "19 + ${_mnemonic_width}")
+        math(EXPR _operand_gap_length "27 - ${_operand_gap_start}")
+        string(SUBSTRING "${_line}" ${_operand_gap_start} ${_operand_gap_length} _operand_gap)
+        string(REPEAT " " ${_operand_gap_length} _expected_operand_gap)
         string(SUBSTRING "${_line}" 27 -1 _row_operand)
         string(STRIP "${_row_operand}" _row_operand)
-        if(NOT _operand_gap STREQUAL "    ")
+        if(NOT _operand_gap STREQUAL "${_expected_operand_gap}")
             message(FATAL_ERROR "Disassembly row operand must begin in column 28: '${_line}'")
         endif()
     else()
         set(_row_operand "")
     endif()
+
+    if(_fixture_start STREQUAL "")
+        set(_fixture_start "${_row_addr}")
+    endif()
+
+    string(REPLACE " " ";" _row_byte_list "${_row_bytes}")
+    foreach(_byte IN LISTS _row_byte_list)
+        list(APPEND _fixture_bytes "0x${_byte}")
+    endforeach()
 
     list(APPEND _row_keys "${_row_addr}|${_row_bytes}|${_row_mnemonic}|${_row_operand}")
 endforeach()
@@ -128,14 +138,33 @@ function(_require_row _addr _bytes _mnemonic _operand _description)
     endif()
 endfunction()
 
-_require_row("0080" "48" "asla" "" "inherent")
-_require_row("00A8" "02" "fcb " "$02" "invalid-opcode")
-_require_row("00A9" "20 00" "bra " "$00AB" "relative")
-_require_row("00AB" "A6 5A" "lda " "#$5A" "immediate")
-_require_row("00AD" "3F 44" "clr " "$44" "direct")
-_require_row("00AF" "C6 12 34" "lda " "$1234" "extended")
-_require_row("00B2" "F6" "lda " ",x" "indexed")
-_require_row("00B3" "10 44" "bset" "0,$44" "bit-operation")
+_require_row("0200" "48" "asla" "" "inherent")
+_require_row("0228" "31" "fcb " "$31" "invalid-opcode")
+_require_row("0229" "24 00" "bcc " "$022B" "relative")
+_require_row("024D" "AD 00" "bsr " "$024F" "relative")
+_require_row("024F" "10 44" "bset" "0,$44" "bit-operation")
+_require_row("026D" "1F 44" "bclr" "7,$44" "bit-operation")
+_require_row("026F" "00 44 00" "brset" "0,$44,$0272" "bit-relative")
+_require_row("029C" "0F 44 00" "brclr" "7,$44,$029F" "bit-relative")
+_require_row("029F" "A6 5A" "lda " "#$5A" "immediate")
+_require_row("02A1" "3F 44" "clr " "$44" "direct")
+_require_row("02A3" "C6 12 34" "lda " "$1234" "extended")
+_require_row("02A6" "F6" "lda " ",x" "indexed")
+
+file(READ "${_disassembly_expected}" _expected_bytes HEX)
+string(TOUPPER "${_expected_bytes}" _expected_bytes)
+string(LENGTH "${_expected_bytes}" _expected_hex_length)
+math(EXPR _expected_count "${_expected_hex_length} / 2")
+
+file(READ "${_disassembly_test_binary}" _test_code_bytes HEX)
+string(REGEX REPLACE "([0-9A-Fa-f][0-9A-Fa-f])" "0x\\1;" _test_code_list "${_test_code_bytes}")
+string(REGEX REPLACE ";$" "" _test_code_list "${_test_code_list}")
+
+list(JOIN _fixture_bytes ", " _lua_fixture_bytes)
+string(REPLACE ";" ", " _lua_test_code_bytes "${_test_code_list}")
+
+string(SUBSTRING "${_fixture_start}" 0 2 _fixture_hi)
+string(SUBSTRING "${_fixture_start}" 2 2 _fixture_lo)
 
 file(REMOVE_RECURSE "${_stage_dir}")
 file(MAKE_DIRECTORY
@@ -159,24 +188,21 @@ file(WRITE "${_stage_dir}/cfg/m6805sbc.cfg"
 set(_disassembler_script "${_stage_dir}/disassembler.lua")
 file(WRITE "${_disassembler_script}"
     "local idle = 0x${SYM_idle}\r\n"
-    "local entry = 0x${SYM_draw_dasm_row}\r\n"
     "local disasm_pc_hi = 0x${SYM_disasm_pc_hi}\r\n"
     "local disasm_pc_lo = 0x${SYM_disasm_pc_lo}\r\n"
+    "local code_base = ${TEST_CODE_LOAD}\r\n"
+    "local fixture_base = 0x${_fixture_start}\r\n"
+    "local done_addr = ${TEST_DONE_ADDR}\r\n"
+    "local pass = ${TEST_DONE_PASS}\r\n"
     "local expected = ${_expected_count}\r\n"
     "local rows = ${_row_count}\r\n"
+    "local fixture = { ${_lua_fixture_bytes} }\r\n"
+    "local test_code = { ${_lua_test_code_bytes} }\r\n"
     "local bytes = {}\r\n"
     "local phase = \"wait_reset\"\r\n"
     "local frames = 0\r\n"
-    "local row_frames = 0\r\n"
-    "local row = 0\r\n"
     "local cpu = manager.machine.devices[\":maincpu\"]\r\n"
     "local mem = cpu.spaces[\"program\"]\r\n"
-    "local function call_entry(addr)\r\n"
-    "    cpu.state[\"S\"].value = 0x7d\r\n"
-    "    mem:write_u8(0x007e, (idle >> 8) & 0xff)\r\n"
-    "    mem:write_u8(0x007f, idle & 0xff)\r\n"
-    "    cpu.state[\"PC\"].value = addr\r\n"
-    "end\r\n"
     "mem:install_write_tap(${ACIA_DATA}, ${ACIA_DATA}, \"disassembler_acia_data\", function(offset, data, mask)\r\n"
     "    table.insert(bytes, data & 0xff)\r\n"
     "end)\r\n"
@@ -185,7 +211,7 @@ file(WRITE "${_disassembler_script}"
     "end)\r\n"
     "local function hex_bytes()\r\n"
     "    local out = {}\r\n"
-    "    for _,byte in ipairs(bytes) do table.insert(out, string.format(\"%02X\", byte)) end\r\n"
+    "    for _, byte in ipairs(bytes) do table.insert(out, string.format(\"%02X\", byte)) end\r\n"
     "    return table.concat(out, \"\")\r\n"
     "end\r\n"
     "emu.register_frame_done(function()\r\n"
@@ -196,38 +222,21 @@ file(WRITE "${_disassembler_script}"
     "        if cpu.state[\"PC\"].value ~= idle and frames < 60 then return end\r\n"
     "        mem:write_u8(${ACIA_CONTROL}, 0x03)\r\n"
     "        mem:write_u8(${ACIA_CONTROL}, 0x15)\r\n"
-    "        local fixture = { 0x48, 0x58, 0x47, 0x57, 0x98, 0x9a, 0x4f, 0x5f,\r\n"
-    "            0x43, 0x53, 0x4a, 0x5a, 0x5a, 0x4c, 0x5c, 0x5c,\r\n"
-    "            0x48, 0x58, 0x44, 0x54, 0x42, 0x40, 0x50, 0x9d,\r\n"
-    "            0x49, 0x59, 0x46, 0x56, 0x9c, 0x80, 0x81, 0x99,\r\n"
-    "            0x9b, 0x8e, 0x83, 0x97, 0x4d, 0x5d, 0x9f, 0x8f,\r\n"
-    "            0x02, 0x20, 0x00, 0xa6, 0x5a, 0x3f, 0x44, 0xc6,\r\n"
-    "            0x12, 0x34, 0xf6, 0x10, 0x44 }\r\n"
-    "        for index, byte in ipairs(fixture) do mem:write_u8(0x007f + index, byte) end\r\n"
-    "        mem:write_u8(disasm_pc_hi, 0x00)\r\n"
-    "        mem:write_u8(disasm_pc_lo, 0x80)\r\n"
+    "        for index, byte in ipairs(fixture) do mem:write_u8(fixture_base + index - 1, byte) end\r\n"
+    "        for index, byte in ipairs(test_code) do mem:write_u8(code_base + index - 1, byte) end\r\n"
+    "        mem:write_u8(disasm_pc_hi, 0x${_fixture_hi})\r\n"
+    "        mem:write_u8(disasm_pc_lo, 0x${_fixture_lo})\r\n"
+    "        mem:write_u8(done_addr, 0x00)\r\n"
     "        bytes = {}\r\n"
-    "        row = 0\r\n"
-    "        row_frames = 0\r\n"
-    "        call_entry(entry)\r\n"
-    "        phase = \"wait_row\"\r\n"
+    "        cpu.state[\"CC\"].value = cpu.state[\"CC\"].value | 0x08\r\n"
+    "        cpu.state[\"S\"].value = 0x7f\r\n"
+    "        cpu.state[\"PC\"].value = code_base\r\n"
+    "        phase = \"wait_done\"\r\n"
     "        return\r\n"
     "    end\r\n"
-    "    if phase == \"wait_row\" then\r\n"
-    "        row_frames = row_frames + 1\r\n"
-    "        if cpu.state[\"PC\"].value ~= idle and row_frames < 60 then return end\r\n"
-    "        row = row + 1\r\n"
-    "        if row < rows then\r\n"
-    "            row_frames = 0\r\n"
-    "            call_entry(entry)\r\n"
-    "            return\r\n"
-    "        end\r\n"
-    "        phase = \"wait_output\"\r\n"
-    "        return\r\n"
-    "    end\r\n"
-    "    if phase == \"wait_output\" then\r\n"
-    "        if #bytes < expected and frames < 240 then return end\r\n"
-    "        print(string.format(\"DISASSEMBLY COUNT=%d BYTES=%s\", #bytes, hex_bytes()))\r\n"
+    "    if phase == \"wait_done\" then\r\n"
+    "        if mem:read_u8(done_addr) ~= pass and frames < 300 then return end\r\n"
+    "        print(string.format(\"DISASSEMBLY DONE=%02X ROWS=%d COUNT=%d BYTES=%s\", mem:read_u8(done_addr), rows, #bytes, hex_bytes()))\r\n"
     "        manager.machine:exit()\r\n"
     "        return\r\n"
     "    end\r\n"
@@ -247,7 +256,7 @@ execute_process(
         -nothrottle
         -autoboot_delay 0
         -autoboot_script disassembler.lua
-        -seconds_to_run 3
+        -seconds_to_run 10
     WORKING_DIRECTORY "${_stage_dir}"
     RESULT_VARIABLE _mame_result
     OUTPUT_VARIABLE _mame_stdout
@@ -260,14 +269,25 @@ if(NOT _mame_result EQUAL 0)
     message(FATAL_ERROR "MAME failed with exit code ${_mame_result}\n${_mame_output}")
 endif()
 
-string(REGEX MATCH "DISASSEMBLY COUNT=([0-9]+) BYTES=([0-9A-Fa-f]*)" _output_match "${_mame_output}")
+string(REGEX MATCH "DISASSEMBLY DONE=([0-9A-Fa-f][0-9A-Fa-f]) ROWS=([0-9]+) COUNT=([0-9]+) BYTES=([0-9A-Fa-f]*)" _output_match "${_mame_output}")
 if(NOT _output_match)
     message(FATAL_ERROR "MAME output did not report DISASSEMBLY\n${_mame_output}")
 endif()
 
-set(_actual_count "${CMAKE_MATCH_1}")
-set(_actual_bytes "${CMAKE_MATCH_2}")
+set(_done_value "${CMAKE_MATCH_1}")
+set(_actual_rows "${CMAKE_MATCH_2}")
+set(_actual_count "${CMAKE_MATCH_3}")
+set(_actual_bytes "${CMAKE_MATCH_4}")
+string(TOLOWER "${_done_value}" _done_value)
 string(TOUPPER "${_actual_bytes}" _actual_bytes)
+
+if(NOT _done_value STREQUAL "a5")
+    message(FATAL_ERROR "Disassembler test program did not signal pass; done=${_done_value}\n${_mame_output}")
+endif()
+
+if(NOT _actual_rows STREQUAL "${_row_count}")
+    message(FATAL_ERROR "Expected ${_row_count} disassembly rows, got ${_actual_rows}\n${_mame_output}")
+endif()
 
 if(NOT _actual_count STREQUAL "${_expected_count}")
     message(FATAL_ERROR "Expected ${_expected_count} disassembly bytes, got ${_actual_count}\n${_mame_output}")

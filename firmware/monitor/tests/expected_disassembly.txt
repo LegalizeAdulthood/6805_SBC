@@ -1,47 +1,96 @@
- 0080: 48          asla
- 0081: 58          aslx
- 0082: 47          asra
- 0083: 57          asrx
- 0084: 98          clc 
- 0085: 9A          cli 
- 0086: 4F          clra
- 0087: 5F          clrx
- 0088: 43          coma
- 0089: 53          comx
- 008A: 4A          deca
- 008B: 5A          decx
- 008C: 5A          decx
- 008D: 4C          inca
- 008E: 5C          incx
- 008F: 5C          incx
- 0090: 48          asla
- 0091: 58          aslx
- 0092: 44          lsra
- 0093: 54          lsrx
- 0094: 42          mul 
- 0095: 40          nega
- 0096: 50          negx
- 0097: 9D          nop 
- 0098: 49          rola
- 0099: 59          rolx
- 009A: 46          rora
- 009B: 56          rorx
- 009C: 9C          rsp 
- 009D: 80          rti 
- 009E: 81          rts 
- 009F: 99          sec 
- 00A0: 9B          sei 
- 00A1: 8E          stop
- 00A2: 83          swi 
- 00A3: 97          tax 
- 00A4: 4D          tsta
- 00A5: 5D          tstx
- 00A6: 9F          txa 
- 00A7: 8F          wait
- 00A8: 02          fcb     $02
- 00A9: 20 00       bra     $00AB
- 00AB: A6 5A       lda     #$5A
- 00AD: 3F 44       clr     $44
- 00AF: C6 12 34    lda     $1234
- 00B2: F6          lda     ,x
- 00B3: 10 44       bset    0,$44
+ 0200: 48          asla
+ 0201: 58          aslx
+ 0202: 47          asra
+ 0203: 57          asrx
+ 0204: 98          clc 
+ 0205: 9A          cli 
+ 0206: 4F          clra
+ 0207: 5F          clrx
+ 0208: 43          coma
+ 0209: 53          comx
+ 020A: 4A          deca
+ 020B: 5A          decx
+ 020C: 5A          decx
+ 020D: 4C          inca
+ 020E: 5C          incx
+ 020F: 5C          incx
+ 0210: 48          asla
+ 0211: 58          aslx
+ 0212: 44          lsra
+ 0213: 54          lsrx
+ 0214: 42          mul 
+ 0215: 40          nega
+ 0216: 50          negx
+ 0217: 9D          nop 
+ 0218: 49          rola
+ 0219: 59          rolx
+ 021A: 46          rora
+ 021B: 56          rorx
+ 021C: 9C          rsp 
+ 021D: 80          rti 
+ 021E: 81          rts 
+ 021F: 99          sec 
+ 0220: 9B          sei 
+ 0221: 8E          stop
+ 0222: 83          swi 
+ 0223: 97          tax 
+ 0224: 4D          tsta
+ 0225: 5D          tstx
+ 0226: 9F          txa 
+ 0227: 8F          wait
+ 0228: 31          fcb     $31
+ 0229: 24 00       bcc     $022B
+ 022B: 25 00       bcs     $022D
+ 022D: 27 00       beq     $022F
+ 022F: 28 00       bhcc    $0231
+ 0231: 29 00       bhcs    $0233
+ 0233: 22 00       bhi     $0235
+ 0235: 24 00       bcc     $0237
+ 0237: 2F 00       bih     $0239
+ 0239: 2E 00       bil     $023B
+ 023B: 25 00       bcs     $023D
+ 023D: 23 00       bls     $023F
+ 023F: 2C 00       bmc     $0241
+ 0241: 2B 00       bmi     $0243
+ 0243: 2D 00       bms     $0245
+ 0245: 26 00       bne     $0247
+ 0247: 2A 00       bpl     $0249
+ 0249: 20 00       bra     $024B
+ 024B: 21 00       brn     $024D
+ 024D: AD 00       bsr     $024F
+ 024F: 10 44       bset    0,$44
+ 0251: 11 44       bclr    0,$44
+ 0253: 12 44       bset    1,$44
+ 0255: 13 44       bclr    1,$44
+ 0257: 14 44       bset    2,$44
+ 0259: 15 44       bclr    2,$44
+ 025B: 16 44       bset    3,$44
+ 025D: 17 44       bclr    3,$44
+ 025F: 18 44       bset    4,$44
+ 0261: 19 44       bclr    4,$44
+ 0263: 1A 44       bset    5,$44
+ 0265: 1B 44       bclr    5,$44
+ 0267: 1C 44       bset    6,$44
+ 0269: 1D 44       bclr    6,$44
+ 026B: 1E 44       bset    7,$44
+ 026D: 1F 44       bclr    7,$44
+ 026F: 00 44 00    brset   0,$44,$0272
+ 0272: 01 44 00    brclr   0,$44,$0275
+ 0275: 02 44 00    brset   1,$44,$0278
+ 0278: 03 44 00    brclr   1,$44,$027B
+ 027B: 04 44 00    brset   2,$44,$027E
+ 027E: 05 44 00    brclr   2,$44,$0281
+ 0281: 06 44 00    brset   3,$44,$0284
+ 0284: 07 44 00    brclr   3,$44,$0287
+ 0287: 08 44 00    brset   4,$44,$028A
+ 028A: 09 44 00    brclr   4,$44,$028D
+ 028D: 0A 44 00    brset   5,$44,$0290
+ 0290: 0B 44 00    brclr   5,$44,$0293
+ 0293: 0C 44 00    brset   6,$44,$0296
+ 0296: 0D 44 00    brclr   6,$44,$0299
+ 0299: 0E 44 00    brset   7,$44,$029C
+ 029C: 0F 44 00    brclr   7,$44,$029F
+ 029F: A6 5A       lda     #$5A
+ 02A1: 3F 44       clr     $44
+ 02A3: C6 12 34    lda     $1234
+ 02A6: F6          lda     ,x

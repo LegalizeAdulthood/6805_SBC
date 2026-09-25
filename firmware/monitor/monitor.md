@@ -445,6 +445,26 @@ path with the process current directory set to the staged data directory.
 Tests must not depend on shared mutable files in the developer's normal
 MAME directory or on any caller working directory.
 
+End-to-end tests that need to exercise monitor ROM services from user code
+should assemble a small RAM-resident test program rather than adding
+test-only entry points or direct Lua calls into production ROM code. The
+build first assembles `monitor.asm` to produce `monitor.sym`, then a helper
+generates a whitelisted include file containing only the global ROM entry
+points that the test program is allowed to call. The test assembly includes
+that generated file, is assembled by TASM into a binary, and is loaded by
+the MAME Lua script into low RAM.
+
+The Lua side stages the ROM image, fixture bytes, and RAM test program,
+sets the monitor state needed by the test, masks interrupts if the test is
+not validating interrupt behavior, gives the CPU a safe stack, and starts
+execution by setting the program counter to the RAM test code. Test code
+must leave its verdict in RAM, such as a done/pass byte, and must keep its
+own loop counters or persistent state in RAM rather than assuming monitor
+ROM calls preserve A or X. Lua may inspect RAM for the verdict and may
+install ACIA read/write taps to make the serial port observable, but the
+behavior under test should still flow through the CPU, memory map, and ROM
+entry points in the same shape user code would use.
+
 Planned implementation slices follow in dependency order.
 
 The current `firmware/monitor/monitor.asm` is still structured like an
@@ -553,19 +573,6 @@ integration where needed:
   ASSIST05-style timer-step requirement with RAM/ROM patching.
 
 ## Implementation Slices
-
-### 9.3. Disassembler Inherent, Relative, and Bit Coverage
-
-Failing test: the disassembler fixture is extended with every inherent,
-relative branch, bit-test, and bit-manipulation row in `TASM05.TAB`, and
-fails until each row decodes to the expected monitor text.
-
-End state: all inherent instructions, all one-byte relative branches
-including `BSR`, all `BSET`/`BCLR` rows, and all `BRSET`/`BRCLR` rows are
-covered in the monitor fixture. Branch operands display resolved absolute
-targets using uppercase hexadecimal. Bit rows display the bit number,
-literal direct-page address, and branch target where applicable. Rows emit
-no labels or symbolic operands.
 
 ### 9.4. Disassembler Immediate, Direct, and Extended Coverage
 

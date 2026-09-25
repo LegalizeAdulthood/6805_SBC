@@ -54,7 +54,7 @@ disasm_pc_hi    .equ    $2a
 disasm_pc_lo    .equ    $2b
 scratch         .equ    $2c
 dline_buf       .equ    scratch + $03
-dline_tmp       .equ    dline_buf + $0e
+dline_tmp       .equ    dline_buf + $14
 
 tmr_wt_vec_hi   .equ    $17
 tmr_wt_vec_lo   .equ    $18
@@ -88,7 +88,7 @@ op_rts          .equ    $81
 ; $22-$25   thunk   generated indexed memory access routine.
 ; $26-$29   state   memory cursor address, focus, and edit phase.
 ; $2a-$2b   state   disassembly panel start address.
-; $2c-$3e   scratch shared temps, disassembly text buffer, and target temps.
+; $2c-$44   scratch shared temps, disassembly text buffer, and target temps.
 
         .org    $1000
 
@@ -272,8 +272,8 @@ _mnem   .equ    scratch + $02           ; mnemonic table index
 _pos    .equ    scratch + $02           ; text buffer write offset after decode
 _mctr   .equ    dline_tmp               ; mnemonic scan count or saved X
 _mpos   .equ    dline_tmp + $01         ; mnemonic copy offset
-_rhi    .equ    dline_tmp               ; relative target high byte
-_rlo    .equ    dline_tmp + $01         ; relative target low byte
+_rhi    .equ    scratch                 ; relative high byte reuses opcode temp after decode
+_rlo    .equ    dline_tmp               ; relative low byte lives in the line terminator slot
 
 ; Disassembly first classifies the opcode, then renders buffered text.
 dec_inst:
@@ -285,7 +285,7 @@ dec_inst:
         lda     _op
         cmp     #$10
         bhs     _chk20
-        jmp     _done
+        jmp     _brbit
 
 _chk20:
         cmp     #$20
@@ -428,6 +428,16 @@ _bad:
 _done:
         rts
 
+_brbit:
+        lda     #$03
+        sta     _len
+        lda     _op
+        and     #$01
+        tax
+        lda     brbit_idx,x
+        sta     _mnem
+        rts
+
 dasm_line:
         lda     _mnem
         cmp     #op_fcb_idx
@@ -445,7 +455,7 @@ _nfcb:
 _nbsr:
         cmp     #$10
         bhs     _n10
-        jmp     _line
+        jmp     _bitop
 
 _n10:
         cmp     #$20
@@ -536,6 +546,16 @@ _mgot:
         lda     mnemonic_modes,x
         and     #$0f
         sta     _mpos
+        cmp     #$04
+        bhs     _mwide
+        lda     #$04
+        bra     _mposok
+
+_mwide:
+        inca
+
+_mposok:
+        sta     _pos
 
 _mcopy:
         lda     mnemonic_modes,x
@@ -561,8 +581,8 @@ _reg:
         blo     _mterm
         cmp     #$60
         bhs     _mterm
-        lda     _mnem
-        cmp     #op_mul_idx
+        lda     _op
+        cmp     #op_mul
         beq     _mterm
         lda     _op
         cmp     #$50
@@ -577,8 +597,6 @@ _streg:
         sta     dline_buf+$03
 
 _mterm:
-        lda     #$04
-        sta     _pos
         rts
 
 _fcb:
@@ -638,26 +656,39 @@ _bitop:
         ldx     #$01
         jsr     mem_thunk_read
         jsr     _apphx
+        lda     _len
+        cmp     #$03
+        beq     _bitrel
         jmp     _line
+
+_bitrel:
+        lda     #','
+        jsr     _app
+        jsr     _dol
+        ldx     #$02
+        lda     #$03
+        bra     _relad
 
 _relop:
         jsr     _gap
         jsr     _dol
-        lda     disasm_pc_lo
-        add     #$02
+        ldx     #$01
+        lda     #$02
+
+_relad:
+        add     disasm_pc_lo
         sta     _rlo
         lda     disasm_pc_hi
         adc     #$00
         sta     _rhi
-        ldx     #$01
         jsr     mem_thunk_read
-        sta     _hex
+        tax
         add     _rlo
         sta     _rlo
         lda     _rhi
         adc     #$00
         sta     _rhi
-        lda     _hex
+        txa
         bpl     _relhx
         dec     _rhi
 
@@ -669,15 +700,17 @@ _relhx:
         jmp     _line
 
 _gap:
+        lda     _pos
+        cmp     #$05
+        beq     _gap3
         lda     #SP
         jsr     _app
+
+_gap3:
         lda     #SP
         jsr     _app
-        lda     #SP
         jsr     _app
-        lda     #SP
-        jsr     _app
-        rts
+        jmp     _app
 
 _dol:
         lda     #'$'
@@ -929,7 +962,7 @@ _done:
         lda     disasm_pc_lo
         add     _len
         sta     disasm_pc_lo
-        bne     _return
+        bcc     _return
         inc     disasm_pc_hi
 
 _return:
