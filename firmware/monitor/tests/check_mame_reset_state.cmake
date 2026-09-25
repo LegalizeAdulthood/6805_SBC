@@ -90,7 +90,7 @@ file(WRITE "${_reset_script}"
     "emu.register_frame_done(function()\r\n"
     "    frames = frames + 1\r\n"
     "    local cpu = manager.machine.devices[\":maincpu\"]\r\n"
-    "    if cpu.state[\"PC\"].value ~= idle and frames < 60 then return end\r\n"
+    "    if cpu.state[\"PC\"].value ~= idle and frames < 1200 then return end\r\n"
     "    local mem = cpu.spaces[\"program\"]\r\n"
     "    print(string.format(\"RESET_STATE PC=%04X S=%02X A=%02X X=%02X CC=%02X SAVED_SP=%02X SAVED_PC=%02X%02X SAVED_A=%02X SAVED_X=%02X SAVED_CC=%02X STOP=%02X\", cpu.state[\"PC\"].value, cpu.state[\"S\"].value, cpu.state[\"A\"].value, cpu.state[\"X\"].value, cpu.state[\"CC\"].value, mem:read_u8(${SAVED_SP}), mem:read_u8(${SAVED_PC_HI}), mem:read_u8(${SAVED_PC_LO}), mem:read_u8(${SAVED_A}), mem:read_u8(${SAVED_X}), mem:read_u8(${SAVED_CC}), mem:read_u8(${STOP_REASON})))\r\n"
     "    manager.machine:exit()\r\n"
@@ -110,7 +110,7 @@ execute_process(
         -nothrottle
         -autoboot_delay 0
         -autoboot_script reset_state.lua
-        -seconds_to_run 2
+        -seconds_to_run 30
     WORKING_DIRECTORY "${_stage_dir}"
     RESULT_VARIABLE _mame_result
     OUTPUT_VARIABLE _mame_stdout

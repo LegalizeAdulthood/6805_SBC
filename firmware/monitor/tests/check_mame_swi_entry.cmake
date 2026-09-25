@@ -99,6 +99,7 @@ file(WRITE "${_swi_script}"
     "local idle = 0x${SYM_idle}\r\n"
     "local user_code = ${USER_CODE}\r\n"
     "local frames = 0\r\n"
+    "local phase_frames = 0\r\n"
     "local phase = \"wait_reset\"\r\n"
     "local cpu = manager.machine.devices[\":maincpu\"]\r\n"
     "local mem = cpu.spaces[\"program\"]\r\n"
@@ -108,17 +109,19 @@ file(WRITE "${_swi_script}"
     "end\r\n"
     "emu.register_frame_done(function()\r\n"
     "    frames = frames + 1\r\n"
+    "    phase_frames = phase_frames + 1\r\n"
     "    cpu = manager.machine.devices[\":maincpu\"]\r\n"
     "    mem = cpu.spaces[\"program\"]\r\n"
     "    if phase == \"wait_reset\" then\r\n"
-    "        if cpu.state[\"PC\"].value ~= idle and frames < 60 then return end\r\n"
+    "        if cpu.state[\"PC\"].value ~= idle and phase_frames < 1200 then return end\r\n"
     "        load_program()\r\n"
     "        cpu.state[\"PC\"].value = user_code\r\n"
+    "        phase_frames = 0\r\n"
     "        phase = \"wait_swi\"\r\n"
     "        return\r\n"
     "    end\r\n"
     "    if phase == \"wait_swi\" then\r\n"
-    "        if cpu.state[\"PC\"].value ~= idle and frames < 120 then return end\r\n"
+    "        if cpu.state[\"PC\"].value ~= idle and phase_frames < 120 then return end\r\n"
     "        print(string.format(\"SWI_ENTRY PC=%04X S=%02X SAVED_SP=%02X SAVED_PC=%02X%02X SAVED_A=%02X SAVED_X=%02X SAVED_CC=%02X STOP=%02X\", cpu.state[\"PC\"].value, cpu.state[\"S\"].value, mem:read_u8(0x${SYM_saved_sp}), mem:read_u8(0x${SYM_saved_pc_hi}), mem:read_u8(0x${SYM_saved_pc_lo}), mem:read_u8(0x${SYM_saved_a}), mem:read_u8(0x${SYM_saved_x}), mem:read_u8(0x${SYM_saved_cc}), mem:read_u8(0x${SYM_stop_rsn})))\r\n"
     "        manager.machine:exit()\r\n"
     "        return\r\n"
@@ -139,7 +142,7 @@ execute_process(
         -nothrottle
         -autoboot_delay 0
         -autoboot_script swi_entry.lua
-        -seconds_to_run 3
+        -seconds_to_run 30
     WORKING_DIRECTORY "${_stage_dir}"
     RESULT_VARIABLE _mame_result
     OUTPUT_VARIABLE _mame_stdout

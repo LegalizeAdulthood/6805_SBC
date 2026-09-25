@@ -606,23 +606,6 @@ surrounding I/O and monitor integration where needed:
 
 ## Implementation Slices
 
-### 15. Full-Screen Polish Pass
-
-Failing test: a MAME screen-snapshot test fails until the final terminal
-screen state after reset matches the checked-in expected 80x24 snapshot for
-a fixed machine state.
-
-End state: reset uses ANSI clear, cursor positioning, and targeted output
-to produce the expected 24-row by 80-column screen state. The emitted
-serial byte stream is not required to contain 80 printable characters for
-each row when ANSI clearing or positioning already supplies the intended
-blank cells. The snapshot includes the CPU state panel, sixteen memory
-rows, five disassembly rows, and reserved panel spacing in the documented
-positions. This slice adds decorative borders around the panels in the
-reserved spacing without changing any monitor behavior. Follow-PC and
-pinned disassembly modes both have snapshot tests with fixed `PC`, fixed
-memory bytes, and fixed selected panel state.
-
 ### 15.1. Manual CRT Raw-Socket Smoke Test
 
 Manual test: launch `m6805sbc` from an absolute path with the monitor ROM

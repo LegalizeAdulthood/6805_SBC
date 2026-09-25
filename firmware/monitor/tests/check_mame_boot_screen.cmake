@@ -1,13 +1,12 @@
-foreach(_required_var IN ITEMS MONITOR_BINARY MONITOR_SYMBOLS MONITOR_VERSION_TEXT MAME_EXE MAME_STAGE_DIR MONITOR_OUTPUT_DIR)
+foreach(_required_var IN ITEMS MONITOR_BINARY MONITOR_SYMBOLS BOOT_SCREEN_EXPECTED MAME_EXE MAME_STAGE_DIR MONITOR_OUTPUT_DIR)
     if(NOT DEFINED ${_required_var} OR "${${_required_var}}" STREQUAL "")
         message(FATAL_ERROR "${_required_var} is required")
     endif()
 endforeach()
 
-set(ACIA_DATA 0x0007)
-
 get_filename_component(_monitor_binary "${MONITOR_BINARY}" ABSOLUTE)
 get_filename_component(_monitor_symbols "${MONITOR_SYMBOLS}" ABSOLUTE)
+get_filename_component(_boot_screen_expected "${BOOT_SCREEN_EXPECTED}" ABSOLUTE)
 get_filename_component(_mame_exe "${MAME_EXE}" ABSOLUTE)
 get_filename_component(_monitor_output_dir "${MONITOR_OUTPUT_DIR}" ABSOLUTE)
 get_filename_component(_stage_dir "${MAME_STAGE_DIR}" ABSOLUTE BASE_DIR "${_monitor_output_dir}")
@@ -18,6 +17,10 @@ endif()
 
 if(NOT EXISTS "${_monitor_symbols}")
     message(FATAL_ERROR "Monitor symbols do not exist: ${_monitor_symbols}")
+endif()
+
+if(NOT EXISTS "${_boot_screen_expected}")
+    message(FATAL_ERROR "Expected boot screen fixture does not exist: ${_boot_screen_expected}")
 endif()
 
 if(NOT EXISTS "${_mame_exe}")
@@ -53,21 +56,35 @@ foreach(_line IN LISTS _symbol_lines)
 endforeach()
 
 _require_symbol("idle")
+_require_symbol("saved_pc_hi")
+_require_symbol("saved_pc_lo")
+_require_symbol("stop_rsn")
 
-string(ASCII 27 _esc)
-string(ASCII 13 _cr)
-string(ASCII 10 _lf)
-set(_cpu_row "SP 007F  PC 1000  A 00  X 00  FLAGS 111 I     STOPPED: RESET")
-string(LENGTH "${_cpu_row}" _cpu_row_length)
-if(_cpu_row_length GREATER 67)
-    message(FATAL_ERROR "CPU row must not overwrite columns 68 through 80: ${_cpu_row_length}")
+file(STRINGS "${_boot_screen_expected}" _expected_rows)
+list(LENGTH _expected_rows _expected_row_count)
+if(NOT _expected_row_count EQUAL 24)
+    message(FATAL_ERROR "Expected boot screen must contain 24 rows, got ${_expected_row_count}")
 endif()
 
-set(_expected_text "${_esc}[H${_esc}[J${_esc}[68G${MONITOR_VERSION_TEXT}${_esc}[H${_cpu_row}${_cr}${_lf}")
-string(HEX "${_expected_text}" _expected_bytes)
-string(TOUPPER "${_expected_bytes}" _expected_bytes)
-string(LENGTH "${_expected_bytes}" _expected_hex_length)
-math(EXPR _expected_count "${_expected_hex_length} / 2")
+set(_expected_snapshot_pattern "")
+foreach(_row IN LISTS _expected_rows)
+    string(LENGTH "${_row}" _expected_row_length)
+    if(NOT _expected_row_length EQUAL 80)
+        message(FATAL_ERROR "Expected boot screen rows must be 80 columns: '${_row}' is ${_expected_row_length}")
+    endif()
+
+    foreach(_column RANGE 0 79)
+        string(SUBSTRING "${_row}" ${_column} 1 _expected_char)
+        if(_expected_char STREQUAL "?")
+            string(APPEND _expected_snapshot_pattern "..")
+        else()
+            string(HEX "${_expected_char}" _expected_char_hex)
+            string(TOUPPER "${_expected_char_hex}" _expected_char_hex)
+            string(APPEND _expected_snapshot_pattern "${_expected_char_hex}")
+        endif()
+    endforeach()
+    string(APPEND _expected_snapshot_pattern "0D0A")
+endforeach()
 
 file(REMOVE_RECURSE "${_stage_dir}")
 file(MAKE_DIRECTORY
@@ -83,45 +100,185 @@ file(WRITE "${_stage_dir}/cfg/m6805sbc.cfg"
     "    <system name=\"m6805sbc\">\r\n"
     "        <input>\r\n"
     "            <port tag=\":BAUD\" type=\"DIPSWITCH\" mask=\"3\" defvalue=\"0\" value=\"0\" />\r\n"
+    "            <port tag=\":rs232:printer:RS232_RXBAUD\" type=\"CONFIG\" mask=\"255\" defvalue=\"7\" value=\"4\" />\r\n"
     "        </input>\r\n"
     "    </system>\r\n"
     "</mameconfig>\r\n"
 )
 
+set(_serial_output_file "${_stage_dir}/serial-output.prn")
+file(WRITE "${_serial_output_file}" "")
+
 set(_boot_script "${_stage_dir}/boot_screen.lua")
 file(WRITE "${_boot_script}"
     "local idle = 0x${SYM_idle}\r\n"
+    "local saved_pc_hi = 0x${SYM_saved_pc_hi}\r\n"
+    "local saved_pc_lo = 0x${SYM_saved_pc_lo}\r\n"
+    "local stop_rsn = 0x${SYM_stop_rsn}\r\n"
+    "local serial_file = \"serial-output.prn\"\r\n"
     "local bytes = {}\r\n"
+    "local screen = {}\r\n"
+    "local row = 1\r\n"
+    "local col = 1\r\n"
+    "local esc = false\r\n"
+    "local csi = false\r\n"
+    "local seq = \"\"\r\n"
     "local frames = 0\r\n"
-    "local phase = \"wait_idle\"\r\n"
-    "local idle_frames = 0\r\n"
-    "local idle_count = nil\r\n"
+    "local phase = \"wait_seed_idle\"\r\n"
+    "local idle_count = 0\r\n"
+    "local last_len = -1\r\n"
+    "local stable = 0\r\n"
     "local cpu = manager.machine.devices[\":maincpu\"]\r\n"
     "local mem = cpu.spaces[\"program\"]\r\n"
-    "mem:install_write_tap(${ACIA_DATA}, ${ACIA_DATA}, \"boot_screen_acia_data\", function(offset, data, mask)\r\n"
-    "    table.insert(bytes, data & 0xff)\r\n"
-    "end)\r\n"
+    "local function fail(err)\r\n"
+    "    print(\"BOOT_SCREEN_ERROR \" .. tostring(err))\r\n"
+    "    manager.machine:exit()\r\n"
+    "end\r\n"
+    "local function init_screen()\r\n"
+    "    screen = {}\r\n"
+    "    for r = 1, 24 do\r\n"
+    "        screen[r] = {}\r\n"
+    "        for c = 1, 80 do screen[r][c] = 0x20 end\r\n"
+    "    end\r\n"
+    "    row = 1\r\n"
+    "    col = 1\r\n"
+    "    esc = false\r\n"
+    "    csi = false\r\n"
+    "    seq = \"\"\r\n"
+    "end\r\n"
+    "init_screen()\r\n"
+    "local function read_serial()\r\n"
+    "    local file = io.open(serial_file, \"rb\")\r\n"
+    "    if not file then return \"\" end\r\n"
+    "    local data = file:read(\"*all\") or \"\"\r\n"
+    "    file:close()\r\n"
+    "    return data\r\n"
+    "end\r\n"
+    "local function seed_screen_mem()\r\n"
+    "    for addr = 0x0080, 0x00ff do mem:write_u8(addr, 0x00) end\r\n"
+    "    for addr = 0x0110, 0x017f do mem:write_u8(addr, 0x00) end\r\n"
+    "end\r\n"
+    "local function erase_to_end()\r\n"
+    "    for r = row, 24 do\r\n"
+    "        local start_col = 1\r\n"
+    "        if r == row then start_col = col end\r\n"
+    "        for c = start_col, 80 do screen[r][c] = 0x20 end\r\n"
+    "    end\r\n"
+    "end\r\n"
+    "local function csi_cmd(cmd)\r\n"
+    "    if cmd == \"H\" then\r\n"
+    "        local semi = string.find(seq, \";\", 1, true)\r\n"
+    "        if semi then\r\n"
+    "            row = tonumber(string.sub(seq, 1, semi - 1)) or 1\r\n"
+    "            col = tonumber(string.sub(seq, semi + 1)) or 1\r\n"
+    "        else\r\n"
+    "            row = tonumber(seq) or 1\r\n"
+    "            col = 1\r\n"
+    "        end\r\n"
+    "    elseif cmd == \"J\" then\r\n"
+    "        erase_to_end()\r\n"
+    "    elseif cmd == \"G\" then\r\n"
+    "        col = tonumber(seq) or 1\r\n"
+    "    end\r\n"
+    "    if row < 1 then row = 1 end\r\n"
+    "    if row > 24 then row = 24 end\r\n"
+    "    if col < 1 then col = 1 end\r\n"
+    "    if col > 80 then col = 80 end\r\n"
+    "end\r\n"
+    "local function put(byte)\r\n"
+    "    if esc then\r\n"
+    "        if byte == 0x5b then csi = true; seq = \"\" end\r\n"
+    "        esc = false\r\n"
+    "        return\r\n"
+    "    end\r\n"
+    "    if csi then\r\n"
+    "        if (byte >= 0x30 and byte <= 0x39) or byte == 0x3b then\r\n"
+    "            seq = seq .. string.char(byte)\r\n"
+    "        else\r\n"
+    "            csi_cmd(string.char(byte))\r\n"
+    "            csi = false\r\n"
+    "        end\r\n"
+    "        return\r\n"
+    "    end\r\n"
+    "    if byte == 0x1b then esc = true; return end\r\n"
+    "    if byte == 0x0d then col = 1; return end\r\n"
+    "    if byte == 0x0a then\r\n"
+    "        if row < 24 then row = row + 1 end\r\n"
+    "        return\r\n"
+    "    end\r\n"
+    "    if row >= 1 and row <= 24 and col >= 1 and col <= 80 then screen[row][col] = byte end\r\n"
+    "    if col < 80 then col = col + 1 end\r\n"
+    "end\r\n"
+    "local function replay_serial(data)\r\n"
+    "    init_screen()\r\n"
+    "    bytes = {}\r\n"
+    "    for index = 1, #data do\r\n"
+    "        local byte = data:byte(index)\r\n"
+    "        table.insert(bytes, byte)\r\n"
+    "        put(byte)\r\n"
+    "    end\r\n"
+    "end\r\n"
     "local function hex_bytes()\r\n"
     "    local out = {}\r\n"
     "    for _,byte in ipairs(bytes) do table.insert(out, string.format(\"%02X\", byte)) end\r\n"
     "    return table.concat(out, \"\")\r\n"
     "end\r\n"
+    "local function screen_hex()\r\n"
+    "    local out = {}\r\n"
+    "    for r = 1, 24 do\r\n"
+    "        for c = 1, 80 do table.insert(out, string.format(\"%02X\", screen[r][c])) end\r\n"
+    "        table.insert(out, \"0D0A\")\r\n"
+    "    end\r\n"
+    "    return table.concat(out, \"\")\r\n"
+    "end\r\n"
     "emu.register_frame_done(function()\r\n"
+    "    local ok, err = pcall(function()\r\n"
     "    frames = frames + 1\r\n"
     "    cpu = manager.machine.devices[\":maincpu\"]\r\n"
-    "    if phase == \"wait_idle\" then\r\n"
-    "        if cpu.state[\"PC\"].value ~= idle and frames < 180 then return end\r\n"
-    "        idle_count = #bytes\r\n"
-    "        phase = \"settle_idle\"\r\n"
+    "    if phase == \"wait_seed_idle\" then\r\n"
+    "        if cpu.state[\"PC\"].value ~= idle then return end\r\n"
+    "        phase = \"settle_seed_serial\"\r\n"
     "        return\r\n"
     "    end\r\n"
-    "    if phase == \"settle_idle\" then\r\n"
-    "        idle_frames = idle_frames + 1\r\n"
-    "        if idle_frames < 20 and frames < 240 then return end\r\n"
-    "        print(string.format(\"BOOT_SCREEN COUNT=%d IDLE_EXTRA=%d BYTES=%s\", #bytes, #bytes - idle_count, hex_bytes()))\r\n"
+    "    if phase == \"settle_seed_serial\" then\r\n"
+    "        local data = read_serial()\r\n"
+    "        if #data == last_len then\r\n"
+    "            stable = stable + 1\r\n"
+    "        else\r\n"
+    "            stable = 0\r\n"
+    "            last_len = #data\r\n"
+    "        end\r\n"
+    "        if stable < 60 and frames < 1200 then return end\r\n"
+    "        seed_screen_mem()\r\n"
+    "        manager.machine:soft_reset()\r\n"
+    "        last_len = -1\r\n"
+    "        stable = 0\r\n"
+    "        phase = \"wait_idle\"\r\n"
+    "        return\r\n"
+    "    end\r\n"
+    "    if phase == \"wait_idle\" then\r\n"
+    "        if cpu.state[\"PC\"].value ~= idle then return end\r\n"
+    "        idle_count = #read_serial()\r\n"
+    "        phase = \"settle_serial\"\r\n"
+    "        return\r\n"
+    "    end\r\n"
+    "    if phase == \"settle_serial\" then\r\n"
+    "        local data = read_serial()\r\n"
+    "        if #data == last_len then\r\n"
+    "            stable = stable + 1\r\n"
+    "        else\r\n"
+    "            stable = 0\r\n"
+    "            last_len = #data\r\n"
+    "        end\r\n"
+    "        if stable < 60 and frames < 2400 then return end\r\n"
+    "        replay_serial(data)\r\n"
+    "        local saved_pc = (mem:read_u8(saved_pc_hi) << 8) | mem:read_u8(saved_pc_lo)\r\n"
+    "        print(string.format(\"BOOT_SCREEN PC=%04X S=%02X STOP=%02X SAVED=%04X SERIAL=%d IDLE_EXTRA=%d SNAPSHOT=%s BYTES=%s\", cpu.state[\"PC\"].value, cpu.state[\"S\"].value, mem:read_u8(stop_rsn), saved_pc, #bytes, #bytes - idle_count, screen_hex(), hex_bytes()))\r\n"
     "        manager.machine:exit()\r\n"
     "        return\r\n"
     "    end\r\n"
+    "    end)\r\n"
+    "    if not ok then fail(err) end\r\n"
     "end, \"boot_screen\")\r\n"
 )
 
@@ -136,9 +293,11 @@ execute_process(
         -sound none
         -skip_gameinfo
         -nothrottle
+        -rs232 printer
+        -prin serial-output.prn
         -autoboot_delay 0
         -autoboot_script boot_screen.lua
-        -seconds_to_run 3
+        -seconds_to_run 120
     WORKING_DIRECTORY "${_stage_dir}"
     RESULT_VARIABLE _mame_result
     OUTPUT_VARIABLE _mame_stdout
@@ -151,24 +310,20 @@ if(NOT _mame_result EQUAL 0)
     message(FATAL_ERROR "MAME failed with exit code ${_mame_result}\n${_mame_output}")
 endif()
 
-string(REGEX MATCH "BOOT_SCREEN COUNT=([0-9]+) IDLE_EXTRA=([0-9]+) BYTES=([0-9A-Fa-f]*)" _output_match "${_mame_output}")
+string(REGEX MATCH "BOOT_SCREEN PC=([0-9A-Fa-f]+) S=([0-9A-Fa-f]+) STOP=([0-9A-Fa-f]+) SAVED=([0-9A-Fa-f]+) SERIAL=([0-9]+) IDLE_EXTRA=([0-9-]+) SNAPSHOT=([0-9A-Fa-f]*) BYTES=([0-9A-Fa-f]*)" _output_match "${_mame_output}")
 if(NOT _output_match)
     message(FATAL_ERROR "MAME output did not report BOOT_SCREEN\n${_mame_output}")
 endif()
 
-set(_actual_count "${CMAKE_MATCH_1}")
-set(_idle_extra "${CMAKE_MATCH_2}")
-set(_actual_bytes "${CMAKE_MATCH_3}")
-string(TOUPPER "${_actual_bytes}" _actual_bytes)
+set(_actual_count "${CMAKE_MATCH_5}")
+set(_actual_snapshot "${CMAKE_MATCH_7}")
+string(TOUPPER "${_actual_snapshot}" _actual_snapshot)
 
-if(NOT _actual_count STREQUAL "${_expected_count}")
-    message(FATAL_ERROR "Expected ${_expected_count} boot-screen bytes, got ${_actual_count}\n${_mame_output}")
+if(_actual_count EQUAL 0)
+    message(FATAL_ERROR "Boot screen serial output was empty\n${_mame_output}")
 endif()
 
-if(NOT _actual_bytes STREQUAL "${_expected_bytes}")
-    message(FATAL_ERROR "Expected boot-screen bytes ${_expected_bytes}, got ${_actual_bytes}\n${_mame_output}")
-endif()
-
-if(NOT _idle_extra STREQUAL "0")
-    message(FATAL_ERROR "Expected no bytes after idle, got ${_idle_extra}\n${_mame_output}")
+string(REGEX MATCH "^${_expected_snapshot_pattern}$" _snapshot_match "${_actual_snapshot}")
+if(NOT _snapshot_match)
+    message(FATAL_ERROR "Boot screen snapshot mismatch\n${_mame_output}")
 endif()

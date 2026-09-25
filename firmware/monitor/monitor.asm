@@ -125,6 +125,7 @@ op_rts          .equ    $81
 ; Reset entry initializes the monitor-owned machine image.
 reset:
         rsp
+        sei                             ; Monitor reset drawing runs with hardware IRQs masked
         lda     #stack_top
         sta     saved_sp
         lda     #reset/100h
@@ -157,6 +158,8 @@ reset:
         sta     mem_thunk_op
         lda     #op_rts
         sta     mem_thunk_rts
+        lda     #tmr_off                ; Reset display must not be interrupted by the timer
+        sta     tmr_ctl
         clr     run_ctl
         clr     asm_len
         jsr     bp_clr
@@ -561,24 +564,118 @@ chrin:
 
         .module draw_boot
 
-; Boot drawing positions the terminal with compact ANSI text.
+; Boot drawing composes panel rows while ANSI clear supplies blank space.
 draw_boot:
-        ldx     #0                      ; Boot text leans on terminal state instead of filling rows
-
-_loop:
-        lda     boot_txt,x
-        beq     _done
+        ldx     #boot_txt-cpu_txt       ; Clear once, then draw only visible panel text
+        jsr     emit_cpu_txt
+        jsr     _barsp
+        jsr     draw_cpu_body
+        ldx     #$05
+        jsr     emit_spcs
+        ldx     #ver_txt-cpu_txt
+        jsr     emit_cpu_txt
+        jsr     _rbar
+        lda     #'+'
         jsr     chrout
-        inx
-        bra     _loop
+        ldx     #$4e
 
-_done:
-        jmp     draw_cpu
+_topln:
+        lda     #'-'
+        jsr     chrout
+        decx
+        bne     _topln
+        lda     #'+'
+        jsr     chrout
+        lda     #CR
+        jsr     chrout
+        lda     #LF
+        jsr     chrout
+        jsr     _mrow
+        jsr     _mrow
+        jsr     _mrow
+        jsr     _mrow
+        jsr     _mrow
+        jsr     _mrow
+        jsr     _mrow
+        jsr     _mrow
+        jsr     _mrow
+        jsr     _mrow
+        jsr     _mrow
+        jsr     _mrow
+        jsr     _mrow
+        jsr     _mrow
+        jsr     _mrow
+        jsr     _mrow
+        dec     mem_page_hi             ; Sixteen rows advance exactly one page
+        lda     #'+'
+        jsr     chrout
+        ldx     #$4e
+
+_botln:
+        lda     #'-'
+        jsr     chrout
+        decx
+        bne     _botln
+        lda     #'+'
+        jsr     chrout
+        lda     #CR
+        jsr     chrout
+        lda     #LF
+        jsr     chrout
+        bsr     _seed
+        bsr     _drow
+        bsr     _drow
+        bsr     _drow
+        bsr     _drow
+        bsr     _drow
+        bra     _seed
+
+_drow:
+        bsr     _barsp
+        jsr     draw_dasm_body
+        bra     _rbar
+
+_mrow:
+        bsr     _barsp
+        jsr     draw_mem_body
+        bsr     _rbar
+        lda     mem_page_lo
+        add     #$10
+        sta     mem_page_lo
+        bcc     _mret
+        inc     mem_page_hi
+
+_mret:
+        rts
+
+_seed:
+        lda     saved_pc_hi             ; Full redraw follows the saved PC without moving the anchor
+        sta     disasm_pc_hi
+        lda     saved_pc_lo
+        sta     disasm_pc_lo
+        rts
+
+_barsp:
+        lda     #'|'
+        jsr     chrout
+        lda     #SP
+        jsr     chrout
+        rts
+
+_rbar:
+        ldx     #rbar_txt-cpu_txt
+        jsr     emit_cpu_txt
+        rts
 
         .module draw_cpu
 
 ; CPU status rendering formats the saved user context as one row.
 draw_cpu:
+        jsr     draw_cpu_body
+        ldx     #cpu_crlf_txt-cpu_txt
+        jmp     emit_cpu_txt
+
+draw_cpu_body:
                                         ; Text fragments keep labels local while sharing one emitter
         ldx     #cpu_sp_txt-cpu_txt
         jsr     emit_cpu_txt
@@ -610,8 +707,6 @@ draw_cpu:
         ldx     #cpu_stop_txt-cpu_txt
         jsr     emit_cpu_txt
         jsr     emit_stop               ; Stop reason maps internal causes to display text
-        ldx     #cpu_crlf_txt-cpu_txt
-        jsr     emit_cpu_txt
         rts
 
 emit_cpu_txt:
@@ -1292,6 +1387,11 @@ _idx    .equ    scratch + $01           ; memory row byte offset
 
 ; Memory row rendering uses the generated access thunk for addressable RAM.
 draw_mem_row:
+        jsr     draw_mem_body
+        ldx     #cpu_crlf_txt-cpu_txt
+        jmp     emit_cpu_txt
+
+draw_mem_body:
         lda     mem_page_hi             ; The row address patches the shared thunk before output
         sta     mem_thunk_hi
         jsr     hex_byte
@@ -1324,8 +1424,6 @@ _asclp:
         inx
         cpx     #$10
         bne     _asclp
-        ldx     #cpu_crlf_txt-cpu_txt
-        jsr     emit_cpu_txt
         rts
 
         .module draw_dasm_row
@@ -1335,6 +1433,11 @@ _len    .equ    scratch + $01           ; decoded instruction byte count
 
 ; Disassembly row rendering advances a separate PC from the memory panel.
 draw_dasm_row:
+        jsr     draw_dasm_body
+        ldx     #cpu_crlf_txt-cpu_txt
+        jmp     emit_cpu_txt
+
+draw_dasm_body:
         lda     #SP                     ; Disassembly has its own PC so rows need not align
         jsr     chrout
         lda     disasm_pc_hi
@@ -1388,8 +1491,6 @@ _spc:
         jsr     dasm_line
 
 _done:
-        ldx     #cpu_crlf_txt-cpu_txt
-        jsr     emit_cpu_txt
         lda     disasm_pc_lo
         add     _len
         sta     disasm_pc_lo
@@ -2368,6 +2469,18 @@ mem_addr_sfx_txt:
 cpu_crlf_txt:
         .byte   CR,(LF | msg_end)
 
+boot_txt:
+        .byte   ESC                     ; Home and erase through ANSI defaults
+        .byte   "[H", ESC, "[", ('J' | msg_end)
+
+rbar_txt:
+        .byte   ESC                     ; Right border uses cursor positioning instead of padding
+        .byte   "[80G|", CR, (LF | msg_end)
+
+ver_txt:
+#include "monitor_version.inc"
+        .byte   (SP | msg_end)
+
 asm_ok_txt:
         .byte   "ok", CR, (LF | msg_end)
 
@@ -2678,12 +2791,6 @@ op_tbl:
         .byte   op_sta_base,    op_stop,        op_stx_base,    op_sub_imm
         .byte   op_swi,         op_tax,         op_tst_dir,     op_txa
         .byte   op_wait
-
-boot_txt:
-        .byte   ESC                     ; Boot text emits escape sequences instead of blank-filled rows
-        .byte   "[H", ESC, "[J", ESC, "[68G"
-#include "monitor_version.inc"
-        .byte   ESC, "[H", NUL
 
 rom_end:
 

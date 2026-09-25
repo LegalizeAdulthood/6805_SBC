@@ -56,6 +56,8 @@ add_dependencies(monitor-ram-test-programs monitor-entries)
 add_custom_target(monitor-disasm-test DEPENDS "${MONITOR_DISASM_TEST_BINARY}")
 add_dependencies(monitor-disasm-test monitor-entries)
 
+add_executable(opcode-checker opcode-checker/opcode-checker.cpp)
+
 add_test(
     NAME monitor.rom_layout
     COMMAND
@@ -135,10 +137,8 @@ add_test(
 add_test(
     NAME monitor.opcode_tables
     COMMAND
-        "${CMAKE_COMMAND}"
-        "-DMONITOR_SOURCE=${MONITOR_SOURCE}"
-        "-P"
-        "${CMAKE_CURRENT_SOURCE_DIR}/check_monitor_opcode_tables.cmake"
+        opcode-checker
+        "${MONITOR_SOURCE}"
 )
 
 add_test(
@@ -192,7 +192,7 @@ add_test(
         "${CMAKE_COMMAND}"
         "-DMONITOR_BINARY=${MONITOR_BINARY}"
         "-DMONITOR_SYMBOLS=${MONITOR_SYMBOLS}"
-        "-DMONITOR_VERSION_TEXT=${MONITOR_VERSION_TEXT}"
+        "-DBOOT_SCREEN_EXPECTED=${CMAKE_CURRENT_SOURCE_DIR}/expected_boot_screen.txt"
         "-DMAME_EXE=${MAME_EXECUTABLE}"
         "-DMAME_STAGE_DIR=${MONITOR_OUTPUT_DIR}/mame-boot-screen"
         "-DMONITOR_OUTPUT_DIR=${MONITOR_OUTPUT_DIR}"
@@ -206,7 +206,7 @@ add_test(
         "${CMAKE_COMMAND}"
         "-DMONITOR_BINARY=${MONITOR_BINARY}"
         "-DMONITOR_SYMBOLS=${MONITOR_SYMBOLS}"
-        "-DMONITOR_VERSION_TEXT=${MONITOR_VERSION_TEXT}"
+        "-DBOOT_SCREEN_EXPECTED=${CMAKE_CURRENT_SOURCE_DIR}/expected_boot_screen.txt"
         "-DMAME_EXE=${MAME_EXECUTABLE}"
         "-DMAME_STAGE_DIR=${MONITOR_OUTPUT_DIR}/mame-serial-file-boot-screen"
         "-DMONITOR_OUTPUT_DIR=${MONITOR_OUTPUT_DIR}"
