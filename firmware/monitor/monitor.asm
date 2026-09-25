@@ -17,6 +17,7 @@ reset_cc        .equ    $08
 stop_rst        .equ    $01
 stop_tst        .equ    $02
 stop_swi        .equ    $03
+stop_stp        .equ    $04
 
 stk_cc          .equ    $01             ; stacked condition codes
 stk_len         .equ    $05             ; interrupt stack frame byte count
@@ -36,6 +37,8 @@ cc_z_bit        .equ    1
 cc_n_bit        .equ    2
 cc_i_bit        .equ    3
 cc_h_bit        .equ    4
+cc_i_msk        .equ    $08
+cc_i_clr        .equ    $f7
 
 saved_sp        .equ    $10
 saved_pc_hi     .equ    $11
@@ -78,6 +81,10 @@ acia_data       .equ    $07
 acia_tdre       .equ    1
 acia_rst        .equ    $03
 acia_def_ctl    .equ    $15
+tmr_dat         .equ    $08             ; timer data register
+tmr_ctl         .equ    $09             ; timer control register
+tmr_psc         .equ    $08             ; clear prescaler, clock source, unmasked
+tmr_stp         .equ    $0e             ; timer count for one-instruction step
 
 op_jmp_ext      .equ    $cc
 op_lda_ext_idx  .equ    $d6
@@ -194,10 +201,79 @@ tmr_wt_def_hdlr .equ    swi
 tmr_def_hdlr    .equ    swi
 ext_def_hdlr    .equ    swi
 
+        .module step
+
+; Timer step resumes through RTI and lets the timer pull us back.
+step_one:
+        ldx     #stack_top-stk_len+stk_cc
+        lda     saved_cc                ; RTI frame borrows the saved user state
+        and     #cc_i_clr               ; Timer must be unmasked only for the stepped instruction
+        sta     ,x
+        incx
+        lda     saved_a
+        sta     ,x
+        incx
+        lda     saved_x
+        sta     ,x
+        incx
+        lda     saved_pc_hi
+        sta     ,x
+        incx
+        lda     saved_pc_lo
+        sta     ,x
+        lda     tmr_vec_hi
+        sta     saved_pc_hi             ; Saved PC temporarily holds the interrupted timer vector
+        lda     tmr_vec_lo
+        sta     saved_pc_lo
+        lda     #step_irq/100h
+        sta     tmr_vec_hi
+        lda     #step_irq-(step_irq/100h*100h)
+        sta     tmr_vec_lo
+        lda     #tmr_stp
+        sta     tmr_dat
+        lda     #tmr_psc
+        sta     tmr_ctl
+        rti
+
+; Timer step handler saves the new frame and restores the user timer vector.
+step_irq:
+        lda     saved_pc_hi             ; The temporary vector is consumed before PC is overwritten
+        sta     tmr_vec_hi
+        lda     saved_pc_lo
+        sta     tmr_vec_lo
+        lda     #stack_top-stk_len
+        sta     saved_sp
+        lda     saved_cc
+        and     #cc_i_msk
+        sta     scratch                 ; Only the user's intended interrupt-mask bit survives
+        ldx     #stack_top-stk_len+stk_cc
+        lda     ,x
+        and     #cc_i_clr
+        ora     scratch
+        sta     saved_cc
+        incx
+        lda     ,x
+        sta     saved_a
+        incx
+        lda     ,x
+        sta     saved_x
+        incx
+        lda     ,x
+        sta     saved_pc_hi
+        incx
+        lda     ,x
+        sta     saved_pc_lo
+        lda     #stop_stp
+        sta     stop_rsn
+        rsp
+        jmp     idle
+
         .module con_io
 
 ; Console I/O owns the ACIA setup and byte-at-a-time transmit path.
 init_con:
+step_rom_start  .equ    init_con
+step_rom_next   .equ    init_con + $02
         lda     #acia_rst               ; ACIA reset and mode bytes are separate writes
         sta     acia_ctl
         lda     #acia_def_ctl
@@ -907,6 +983,8 @@ emit_stop:
         beq     _test
         cmp     #stop_swi
         beq     _swi
+        cmp     #stop_stp
+        beq     _step
         ldx     #stop_unk_txt-cpu_txt
         bra     _write
 
@@ -920,6 +998,10 @@ _test:
 
 _swi:
         ldx     #stop_swi_txt-cpu_txt
+        bra     _write
+
+_step:
+        ldx     #stop_stp_txt-cpu_txt
 
 _write:
         jsr     emit_cpu_txt
@@ -1775,6 +1857,9 @@ stop_tst_txt:
 
 stop_swi_txt:
         .byte   "SW", ('I' | msg_end)
+
+stop_stp_txt:
+        .byte   "STE", ('P' | msg_end)
 
 stop_unk_txt:
         .byte   "UNKNOW", ('N' | msg_end)

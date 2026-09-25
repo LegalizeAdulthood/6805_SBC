@@ -597,19 +597,6 @@ surrounding I/O and monitor integration where needed:
 
 ## Implementation Slices
 
-### 11. Timer Single-Step
-
-Failing test: a MAME timer-step test computes a checksum of the ROM test
-code, performs one monitor step, and fails until `PC` advances by one
-instruction with the checksum unchanged.
-
-End state: starting at ROM label `step_rom_start`, one step temporarily
-uses the timer RAM vector to enter the monitor's step handler, executes the
-instruction at the saved `PC`, returns through the timer interrupt, saves
-the new `PC`, restores the previous timer RAM vector value, preserves the
-user's intended interrupt-mask state, records stop reason `STOP_STEP`, and
-leaves every byte in ROM unchanged.
-
 ### 12. RAM Breakpoints
 
 Failing test: a MAME breakpoint test sets one breakpoint in a fixed RAM
