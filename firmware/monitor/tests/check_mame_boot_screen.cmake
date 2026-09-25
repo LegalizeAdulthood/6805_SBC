@@ -123,6 +123,7 @@ file(WRITE "${_boot_script}"
     "local esc = false\r\n"
     "local csi = false\r\n"
     "local seq = \"\"\r\n"
+    "local autowrap = true\r\n"
     "local frames = 0\r\n"
     "local phase = \"wait_seed_idle\"\r\n"
     "local idle_count = 0\r\n"
@@ -145,6 +146,7 @@ file(WRITE "${_boot_script}"
     "    esc = false\r\n"
     "    csi = false\r\n"
     "    seq = \"\"\r\n"
+    "    autowrap = true\r\n"
     "end\r\n"
     "init_screen()\r\n"
     "local function read_serial()\r\n"
@@ -179,6 +181,10 @@ file(WRITE "${_boot_script}"
     "        erase_to_end()\r\n"
     "    elseif cmd == \"G\" then\r\n"
     "        col = tonumber(seq) or 1\r\n"
+    "    elseif cmd == \"l\" and seq == \"?7\" then\r\n"
+    "        autowrap = false\r\n"
+    "    elseif cmd == \"h\" and seq == \"?7\" then\r\n"
+    "        autowrap = true\r\n"
     "    end\r\n"
     "    if row < 1 then row = 1 end\r\n"
     "    if row > 24 then row = 24 end\r\n"
@@ -192,7 +198,7 @@ file(WRITE "${_boot_script}"
     "        return\r\n"
     "    end\r\n"
     "    if csi then\r\n"
-    "        if (byte >= 0x30 and byte <= 0x39) or byte == 0x3b then\r\n"
+    "        if (byte >= 0x30 and byte <= 0x39) or byte == 0x3b or byte == 0x3f then\r\n"
     "            seq = seq .. string.char(byte)\r\n"
     "        else\r\n"
     "            csi_cmd(string.char(byte))\r\n"
@@ -207,7 +213,12 @@ file(WRITE "${_boot_script}"
     "        return\r\n"
     "    end\r\n"
     "    if row >= 1 and row <= 24 and col >= 1 and col <= 80 then screen[row][col] = byte end\r\n"
-    "    if col < 80 then col = col + 1 end\r\n"
+    "    if col < 80 then\r\n"
+    "        col = col + 1\r\n"
+    "    elseif autowrap and row < 24 then\r\n"
+    "        row = row + 1\r\n"
+    "        col = 1\r\n"
+    "    end\r\n"
     "end\r\n"
     "local function replay_serial(data)\r\n"
     "    init_screen()\r\n"
@@ -273,7 +284,7 @@ file(WRITE "${_boot_script}"
     "        if stable < 60 and frames < 2400 then return end\r\n"
     "        replay_serial(data)\r\n"
     "        local saved_pc = (mem:read_u8(saved_pc_hi) << 8) | mem:read_u8(saved_pc_lo)\r\n"
-    "        print(string.format(\"BOOT_SCREEN PC=%04X S=%02X STOP=%02X SAVED=%04X SERIAL=%d IDLE_EXTRA=%d SNAPSHOT=%s BYTES=%s\", cpu.state[\"PC\"].value, cpu.state[\"S\"].value, mem:read_u8(stop_rsn), saved_pc, #bytes, #bytes - idle_count, screen_hex(), hex_bytes()))\r\n"
+    "        print(string.format(\"BOOT_SCREEN PC=%04X S=%02X STOP=%02X SAVED=%04X SERIAL=%d IDLE_EXTRA=%d ROW=%d COL=%d SNAPSHOT=%s BYTES=%s\", cpu.state[\"PC\"].value, cpu.state[\"S\"].value, mem:read_u8(stop_rsn), saved_pc, #bytes, #bytes - idle_count, row, col, screen_hex(), hex_bytes()))\r\n"
     "        manager.machine:exit()\r\n"
     "        return\r\n"
     "    end\r\n"
@@ -310,17 +321,23 @@ if(NOT _mame_result EQUAL 0)
     message(FATAL_ERROR "MAME failed with exit code ${_mame_result}\n${_mame_output}")
 endif()
 
-string(REGEX MATCH "BOOT_SCREEN PC=([0-9A-Fa-f]+) S=([0-9A-Fa-f]+) STOP=([0-9A-Fa-f]+) SAVED=([0-9A-Fa-f]+) SERIAL=([0-9]+) IDLE_EXTRA=([0-9-]+) SNAPSHOT=([0-9A-Fa-f]*) BYTES=([0-9A-Fa-f]*)" _output_match "${_mame_output}")
+string(REGEX MATCH "BOOT_SCREEN PC=([0-9A-Fa-f]+) S=([0-9A-Fa-f]+) STOP=([0-9A-Fa-f]+) SAVED=([0-9A-Fa-f]+) SERIAL=([0-9]+) IDLE_EXTRA=([0-9-]+) ROW=([0-9]+) COL=([0-9]+) SNAPSHOT=([0-9A-Fa-f]*) BYTES=([0-9A-Fa-f]*)" _output_match "${_mame_output}")
 if(NOT _output_match)
     message(FATAL_ERROR "MAME output did not report BOOT_SCREEN\n${_mame_output}")
 endif()
 
 set(_actual_count "${CMAKE_MATCH_5}")
-set(_actual_snapshot "${CMAKE_MATCH_7}")
+set(_actual_row "${CMAKE_MATCH_7}")
+set(_actual_col "${CMAKE_MATCH_8}")
+set(_actual_snapshot "${CMAKE_MATCH_9}")
 string(TOUPPER "${_actual_snapshot}" _actual_snapshot)
 
 if(_actual_count EQUAL 0)
     message(FATAL_ERROR "Boot screen serial output was empty\n${_mame_output}")
+endif()
+
+if(NOT _actual_row EQUAL 24 OR NOT _actual_col EQUAL 80)
+    message(FATAL_ERROR "Boot screen cursor escaped expected final position 24,80: got ${_actual_row},${_actual_col}\n${_mame_output}")
 endif()
 
 string(REGEX MATCH "^${_expected_snapshot_pattern}$" _snapshot_match "${_actual_snapshot}")

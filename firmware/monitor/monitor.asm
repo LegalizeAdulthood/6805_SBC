@@ -562,6 +562,12 @@ chrin:
         lda     acia_data
         rts
 
+crlf:
+        lda     #CR
+        jsr     chrout
+        lda     #LF
+        jmp     chrout
+
         .module draw_boot
 
 ; Boot drawing composes panel rows while ANSI clear supplies blank space.
@@ -586,10 +592,7 @@ _topln:
         bne     _topln
         lda     #'+'
         jsr     chrout
-        lda     #CR
-        jsr     chrout
-        lda     #LF
-        jsr     chrout
+        jsr     crlf
         jsr     _mrow
         jsr     _mrow
         jsr     _mrow
@@ -618,16 +621,16 @@ _botln:
         bne     _botln
         lda     #'+'
         jsr     chrout
-        lda     #CR
-        jsr     chrout
-        lda     #LF
-        jsr     chrout
+        jsr     crlf
         bsr     _seed
         bsr     _drow
         bsr     _drow
         bsr     _drow
         bsr     _drow
-        bsr     _drow
+        bsr     _barsp
+        jsr     draw_dasm_body
+        ldx     #rbare_txt-cpu_txt
+        jsr     emit_cpu_txt
         bra     _seed
 
 _drow:
@@ -672,8 +675,7 @@ _rbar:
 ; CPU status rendering formats the saved user context as one row.
 draw_cpu:
         jsr     draw_cpu_body
-        ldx     #cpu_crlf_txt-cpu_txt
-        jmp     emit_cpu_txt
+        jmp     crlf
 
 draw_cpu_body:
                                         ; Text fragments keep labels local while sharing one emitter
@@ -1388,8 +1390,7 @@ _idx    .equ    scratch + $01           ; memory row byte offset
 ; Memory row rendering uses the generated access thunk for addressable RAM.
 draw_mem_row:
         jsr     draw_mem_body
-        ldx     #cpu_crlf_txt-cpu_txt
-        jmp     emit_cpu_txt
+        jmp     crlf
 
 draw_mem_body:
         lda     mem_page_hi             ; The row address patches the shared thunk before output
@@ -1434,8 +1435,7 @@ _len    .equ    scratch + $01           ; decoded instruction byte count
 ; Disassembly row rendering advances a separate PC from the memory panel.
 draw_dasm_row:
         jsr     draw_dasm_body
-        ldx     #cpu_crlf_txt-cpu_txt
-        jmp     emit_cpu_txt
+        jmp     crlf
 
 draw_dasm_body:
         lda     #SP                     ; Disassembly has its own PC so rows need not align
@@ -1911,7 +1911,7 @@ _dck:
         lda     _sum
         coma
         jsr     hex_byte
-        bsr     _crlf
+        jsr     crlf
         clr     _sum
         lda     #'S'
         jsr     chrout
@@ -1926,7 +1926,7 @@ _dck:
         lda     _sum
         coma
         jsr     hex_byte
-        bra     _crlf
+        jmp     crlf
 
 _out_sum:
         sta     _byte
@@ -1934,12 +1934,6 @@ _out_sum:
         sta     _sum
         lda     _byte
         jmp     hex_byte
-
-_crlf:
-        lda     #CR
-        jsr     chrout
-        lda     #LF
-        jmp     chrout
 
         .module asm_cmd
 
@@ -2466,16 +2460,17 @@ stop_unk_txt:
 mem_addr_sfx_txt:
         .byte   ":", (' ' | msg_end)
 
-cpu_crlf_txt:
-        .byte   CR,(LF | msg_end)
-
 boot_txt:
-        .byte   ESC                     ; Home and erase through ANSI defaults
-        .byte   "[H", ESC, "[", ('J' | msg_end)
+        .byte   ESC                     ; No-wrap lets column 80 hold borders
+        .byte   "[?7l", ESC, "[H", ESC, "[", ('J' | msg_end)
 
 rbar_txt:
         .byte   ESC                     ; Right border uses cursor positioning instead of padding
         .byte   "[80G|", CR, (LF | msg_end)
+
+rbare_txt:
+        .byte   ESC
+        .byte   "[80G", ('|' | msg_end)
 
 ver_txt:
 #include "monitor_version.inc"
