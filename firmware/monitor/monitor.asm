@@ -18,6 +18,7 @@ stop_rst        .equ    $01
 stop_tst        .equ    $02
 stop_swi        .equ    $03
 stop_stp        .equ    $04
+stop_brk        .equ    $05
 
 stk_cc          .equ    $01             ; stacked condition codes
 stk_len         .equ    $05             ; interrupt stack frame byte count
@@ -61,7 +62,10 @@ mem_hex_phs     .equ    $29
 disasm_pc_hi    .equ    $2a
 disasm_pc_lo    .equ    $2b
 asm_len         .equ    $2c
-scratch         .equ    $2d
+bp_hi           .equ    $2d
+bp_lo           .equ    $2e
+bp_op           .equ    $2f
+scratch         .equ    $30
 dline_buf       .equ    scratch + $03
 dline_tmp       .equ    dline_buf + $14
 
@@ -85,6 +89,7 @@ tmr_dat         .equ    $08             ; timer data register
 tmr_ctl         .equ    $09             ; timer control register
 tmr_psc         .equ    $08             ; clear prescaler, clock source, unmasked
 tmr_stp         .equ    $0e             ; timer count for one-instruction step
+bp_off          .equ    $ff             ; no active breakpoint
 
 op_jmp_ext      .equ    $cc
 op_lda_ext_idx  .equ    $d6
@@ -101,7 +106,8 @@ op_rts          .equ    $81
 ; $22-$25   thunk   generated indexed memory access routine.
 ; $26-$29   state   memory cursor address, focus, and edit phase.
 ; $2a-$2c   state   disassembly panel start address and assembler input length.
-; $2d-$45   scratch shared temps, disassembly text buffer, and target temps.
+; $2d-$2f   state   active breakpoint address and original opcode.
+; $30-$48   scratch shared temps, disassembly text buffer, and target temps.
 
         .org    $1000
 
@@ -143,6 +149,8 @@ reset:
         lda     #op_rts
         sta     mem_thunk_rts
         clr     asm_len
+        lda     #bp_off
+        sta     bp_hi
         jsr     init_mem_pnl
         jsr     init_con
         jsr     draw_boot
@@ -172,6 +180,7 @@ swi:
         sta     saved_pc_lo
         lda     #stop_swi
         sta     stop_rsn
+        jsr     bp_chk
         rsp
         jmp     idle                    ; Monitor code resumes with its private stack again
 
@@ -205,6 +214,12 @@ ext_def_hdlr    .equ    swi
 
 ; Timer step resumes through RTI and lets the timer pull us back.
 step_one:
+        lda     #step_irq/100h
+        sta     int_jmp_hi
+        lda     #step_irq-(step_irq/100h*100h)
+        sta     int_jmp_lo
+
+step_go:
         ldx     #stack_top-stk_len+stk_cc
         lda     saved_cc                ; RTI frame borrows the saved user state
         and     #cc_i_clr               ; Timer must be unmasked only for the stepped instruction
@@ -225,9 +240,9 @@ step_one:
         sta     saved_pc_hi             ; Saved PC temporarily holds the interrupted timer vector
         lda     tmr_vec_lo
         sta     saved_pc_lo
-        lda     #step_irq/100h
+        lda     int_jmp_hi
         sta     tmr_vec_hi
-        lda     #step_irq-(step_irq/100h*100h)
+        lda     int_jmp_lo
         sta     tmr_vec_lo
         lda     #tmr_stp
         sta     tmr_dat
@@ -267,6 +282,86 @@ step_irq:
         sta     stop_rsn
         rsp
         jmp     idle
+
+        .module brkpt
+
+; Breakpoints patch one RAM opcode and remember the byte they replaced.
+bp_set:
+        lda     bp_hi
+        cmp     #bp_off
+        beq     _done
+        bsr     bp_sel
+        jsr     mem_thunk_read
+        sta     bp_op
+        bsr     bp_patch
+
+_done:
+        jmp     idle
+
+bp_sel:
+        lda     bp_hi                   ; Breakpoint helpers patch the shared memory thunk
+        sta     mem_thunk_hi
+        lda     bp_lo
+        sta     mem_thunk_lo
+        clrx
+        rts
+
+bp_patch:
+        bsr     bp_sel
+        lda     #op_swi
+        jmp     mem_thunk_write
+
+bp_rst:
+        bsr     bp_sel
+        lda     bp_op
+        jmp     mem_thunk_write
+
+bp_chk:
+        lda     bp_hi
+        cmp     #bp_off
+        beq     _ret
+        lda     bp_lo
+        add     #$01
+        cmp     saved_pc_lo
+        bne     _ret
+        lda     bp_hi
+        adc     #$00
+        cmp     saved_pc_hi
+        bne     _ret
+        bsr     bp_rst                  ; A hit exposes the original byte before monitor drawing
+        lda     bp_hi
+        sta     saved_pc_hi
+        lda     bp_lo
+        sta     saved_pc_lo
+        lda     #stop_brk
+        sta     stop_rsn
+
+_ret:
+        rts
+
+; Breakpoint continue steps the restored byte, re-arms it, then resumes user code.
+bp_cont:
+        lda     #bp_irq/100h
+        sta     int_jmp_hi
+        lda     #bp_irq-(bp_irq/100h*100h)
+        sta     int_jmp_lo
+        jmp     step_go
+
+bp_irq:
+        lda     saved_pc_hi             ; The timer vector was borrowed for the temporary step
+        sta     tmr_vec_hi
+        lda     saved_pc_lo
+        sta     tmr_vec_lo
+        bsr     bp_patch
+        lda     saved_cc
+        and     #cc_i_msk
+        sta     scratch
+        ldx     #stack_top-stk_len+stk_cc
+        lda     ,x
+        and     #cc_i_clr
+        ora     scratch
+        sta     ,x
+        rti
 
         .module con_io
 
@@ -985,6 +1080,8 @@ emit_stop:
         beq     _swi
         cmp     #stop_stp
         beq     _step
+        cmp     #stop_brk
+        beq     _break
         ldx     #stop_unk_txt-cpu_txt
         bra     _write
 
@@ -1002,6 +1099,10 @@ _swi:
 
 _step:
         ldx     #stop_stp_txt-cpu_txt
+        bra     _write
+
+_break:
+        ldx     #stop_brk_txt-cpu_txt
 
 _write:
         jsr     emit_cpu_txt
@@ -1860,6 +1961,9 @@ stop_swi_txt:
 
 stop_stp_txt:
         .byte   "STE", ('P' | msg_end)
+
+stop_brk_txt:
+        .byte   "BREA", ('K' | msg_end)
 
 stop_unk_txt:
         .byte   "UNKNOW", ('N' | msg_end)

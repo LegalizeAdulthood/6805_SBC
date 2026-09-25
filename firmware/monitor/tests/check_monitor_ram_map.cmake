@@ -118,7 +118,10 @@ foreach(name
         mem_hex_phs
         disasm_pc_hi
         disasm_pc_lo
-        asm_len)
+        asm_len
+        bp_hi
+        bp_lo
+        bp_op)
     require_global("${name}")
 endforeach()
 

@@ -597,19 +597,23 @@ surrounding I/O and monitor integration where needed:
 
 ## Implementation Slices
 
-### 12. RAM Breakpoints
+### 12.5. EVSBUG-Style Breakpoint Table Refactor
 
-Failing test: a MAME breakpoint test sets one breakpoint in a fixed RAM
-program and fails until breakpoint hit and continue behavior match the
-contract below.
+Failing test: extend the breakpoint MAME regression so it stages two RAM
+breakpoints, arms both slots, verifies both target opcodes are patched to
+`SWI`, then runs user code until the first and second breakpoint hits. The
+test fails until each hit restores the correct original opcode, saves `PC` at
+the hit address, records `stop_brk`, and re-arms the hit slot after continue.
+The existing single-breakpoint behavior remains covered by the same test.
 
-End state: arming the breakpoint stores opcode `$83` at the breakpoint
-address and records the original opcode in the breakpoint table. When the
-program hits the breakpoint, the monitor restores the original opcode
-before drawing or exposing memory, records stop reason `STOP_BREAK`, and
-saves `PC` equal to the breakpoint address. Continuing executes the
-restored instruction exactly once under timer-step control, then re-arms
-the breakpoint before normal execution resumes.
+End state: the one-breakpoint state is replaced by compact EVSBUG-style
+breakpoint tables. Fixed breakpoint state precedes scratchpad RAM, user slots
+store high bytes, low bytes, and original opcodes, empty slots use `bp_off`,
+and shared helpers clear, arm, restore, find, and select breakpoint slots.
+The monitor supports five user breakpoint slots internally. Breakpoint
+continue still uses the current timer-step resume path; ASSIST05-style timer
+stepping remains the mechanism for stepping through ROM code. No command UI
+changes are included in this slice.
 
 ### 13. Go and Trace UI Integration
 
