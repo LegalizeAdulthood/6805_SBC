@@ -606,16 +606,6 @@ surrounding I/O and monitor integration where needed:
 
 ## Implementation Slices
 
-### 14. S-Record Load and Dump
-
-Failing test: an S-record test feeds one fixed valid record and one fixed
-invalid record, then fails until load and dump behavior is exact.
-
-End state: loading `S107011001020304DD` writes bytes `$01,$02,$03,$04` to
-`$0110`-`$0113`. Loading the same record with the checksum changed by one
-bit reports a checksum error and leaves memory unchanged. Dumping
-`$0110`-`$0113` emits exactly `S107011001020304DD\r\nS9030000FC\r\n`.
-
 ### 15. Full-Screen Polish Pass
 
 Failing test: a MAME screen-snapshot test fails until the final terminal

@@ -9,6 +9,7 @@ set(MONITOR_RAM_TEST_PROGRAMS
     exec_trace_user_test
     int_timer_handler_test
     int_external_handler_test
+    srec_user_test
 )
 
 set(MONITOR_RAM_TEST_BINARIES "")
@@ -47,6 +48,7 @@ set(MONITOR_EXEC_STEP_TEST_BINARY "${MONITOR_OUTPUT_DIR}/exec_step_user_test.bin
 set(MONITOR_EXEC_TRACE_TEST_BINARY "${MONITOR_OUTPUT_DIR}/exec_trace_user_test.bin")
 set(MONITOR_INT_TIMER_HANDLER_TEST_BINARY "${MONITOR_OUTPUT_DIR}/int_timer_handler_test.bin")
 set(MONITOR_INT_EXTERNAL_HANDLER_TEST_BINARY "${MONITOR_OUTPUT_DIR}/int_external_handler_test.bin")
+set(MONITOR_SREC_TEST_BINARY "${MONITOR_OUTPUT_DIR}/srec_user_test.bin")
 
 add_custom_target(monitor-ram-test-programs ALL DEPENDS ${MONITOR_RAM_TEST_BINARIES})
 add_dependencies(monitor-ram-test-programs monitor-entries)
@@ -279,6 +281,20 @@ add_test(
         "-DMONITOR_OUTPUT_DIR=${MONITOR_OUTPUT_DIR}"
         "-P"
         "${CMAKE_CURRENT_SOURCE_DIR}/check_mame_assembler_cmd.cmake"
+)
+
+add_test(
+    NAME monitor.mame.srec_transfer
+    COMMAND
+        "${CMAKE_COMMAND}"
+        "-DMONITOR_BINARY=${MONITOR_BINARY}"
+        "-DMONITOR_SYMBOLS=${MONITOR_SYMBOLS}"
+        "-DSREC_TEST_BINARY=${MONITOR_SREC_TEST_BINARY}"
+        "-DMAME_EXE=${MAME_EXECUTABLE}"
+        "-DMAME_STAGE_DIR=${MONITOR_OUTPUT_DIR}/mame-srec-transfer"
+        "-DMONITOR_OUTPUT_DIR=${MONITOR_OUTPUT_DIR}"
+        "-P"
+        "${CMAKE_CURRENT_SOURCE_DIR}/check_mame_srec_transfer.cmake"
 )
 
 add_test(

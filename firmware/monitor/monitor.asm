@@ -87,6 +87,7 @@ int_jmp_lo      .equ    $1f
 acia_stat       .equ    $06
 acia_ctl        .equ    $06
 acia_data       .equ    $07
+acia_rdrf       .equ    0
 acia_tdre       .equ    1
 acia_rst        .equ    $03
 acia_def_ctl    .equ    $15
@@ -551,6 +552,11 @@ chrout:
                                         ; Polling keeps the early ROM serial path small
         brclr   acia_tdre,acia_stat,chrout
         sta     acia_data
+        rts
+
+chrin:
+        brclr   acia_rdrf,acia_stat,chrin
+        lda     acia_data
         rts
 
         .module draw_boot
@@ -1618,6 +1624,221 @@ mem_cur_done:
         clra                            ; Cursor movement clears the pending nibble after navigation
         sta     mem_hex_phs
         rts
+
+        .module srec_io
+
+_byte   .equ    scratch                 ; parsed or emitted byte
+_sum    .equ    scratch + $01           ; accumulated S-record checksum
+_cnt    .equ    scratch + $02           ; data byte count or dump byte index
+_idx    .equ    _cnt
+
+; S-record load validates each S1 record before writing buffered data.
+srec_load:
+        bsr     _load
+        bne     _err
+        ldx     #asm_ok_txt-cpu_txt
+        jsr     emit_cpu_txt
+        clra
+        rts
+
+_err:
+        ldx     #asm_err_txt-cpu_txt
+        jsr     emit_cpu_txt
+        lda     #$01
+        rts
+
+_load:
+_wait_s:
+        jsr     chrin
+        cmp     #'S'
+        bne     _wait_s
+        jsr     chrin
+        cmp     #'1'
+        beq     _s1
+        cmp     #'9'
+        beq     _s9
+        bra     _wait_s
+
+_s1:
+        clr     _sum
+        bsr     _rd_sum
+        bcs     _bad
+        sub     #$03
+        cmp     #$11
+        bhs     _bad
+        sta     _cnt
+        bsr     _rd_sum
+        bcs     _bad
+        sta     mem_thunk_hi
+        bsr     _rd_sum
+        bcs     _bad
+        sta     mem_thunk_lo
+        clrx
+
+_data:
+        cpx     _cnt
+        bhs     _ck
+        bsr     _rd_sum
+        bcs     _bad
+        sta     dline_buf,x
+        incx
+        bra     _data
+
+_ck:
+        bsr     _rd_hex
+        bcs     _bad
+        sta     _byte
+        lda     _sum
+        coma
+        cmp     _byte
+        bne     _bad
+        clrx
+
+_wr:
+        cpx     _cnt
+        bhs     _wait_s
+        lda     dline_buf,x
+        jsr     mem_thunk_write
+        incx
+        bra     _wr
+
+_s9:
+        clr     _sum
+        bsr     _rd_sum
+        bcs     _bad
+        cmp     #$03
+        bne     _bad
+        bsr     _rd_sum
+        bcs     _bad
+        bsr     _rd_sum
+        bcs     _bad
+        bsr     _rd_hex
+        bcs     _bad
+        sta     _byte
+        lda     _sum
+        coma
+        cmp     _byte
+        bne     _bad
+        clra
+        rts
+
+_bad:
+        lda     #$01
+        rts
+
+_rd_sum:
+        bsr     _rd_hex
+        bcs     _ret
+        sta     _byte
+        add     _sum
+        sta     _sum
+        lda     _byte
+        clc
+
+_ret:
+        rts
+
+_rd_hex:
+        bsr     _nib
+        bcs     _hret
+        asla
+        asla
+        asla
+        asla
+        sta     _byte
+        bsr     _nib
+        bcs     _hret
+        ora     _byte
+        clc
+
+_hret:
+        rts
+
+_nib:
+        jsr     chrin
+        cmp     #'0'
+        blo     _nbad
+        cmp     #('9' + 1)
+        blo     _dig
+        cmp     #'A'
+        blo     _nbad
+        cmp     #('F' + 1)
+        bhs     _nbad
+        sub     #$37
+        clc
+        rts
+
+_dig:
+        sub     #'0'
+        clc
+        rts
+
+_nbad:
+        sec
+        rts
+
+; S-record dump emits the four-byte range used by the first transfer slice.
+srec_dump:
+        clr     _sum
+        lda     #'S'
+        jsr     chrout
+        lda     #'1'
+        jsr     chrout
+        lda     #$07
+        bsr     _out_sum
+        lda     #$01
+        bsr     _out_sum
+        lda     #$10
+        bsr     _out_sum
+        lda     #$01
+        sta     mem_thunk_hi
+        lda     #$10
+        sta     mem_thunk_lo
+        clr     _idx
+
+_dlp:
+        lda     _idx
+        cmp     #$04
+        bhs     _dck
+        tax
+        jsr     mem_thunk_read
+        bsr     _out_sum
+        inc     _idx
+        bra     _dlp
+
+_dck:
+        lda     _sum
+        coma
+        jsr     hex_byte
+        bsr     _crlf
+        clr     _sum
+        lda     #'S'
+        jsr     chrout
+        lda     #'9'
+        jsr     chrout
+        lda     #$03
+        bsr     _out_sum
+        clra
+        bsr     _out_sum
+        clra
+        bsr     _out_sum
+        lda     _sum
+        coma
+        jsr     hex_byte
+        bra     _crlf
+
+_out_sum:
+        sta     _byte
+        add     _sum
+        sta     _sum
+        lda     _byte
+        jmp     hex_byte
+
+_crlf:
+        lda     #CR
+        jsr     chrout
+        lda     #LF
+        jmp     chrout
 
         .module asm_cmd
 
