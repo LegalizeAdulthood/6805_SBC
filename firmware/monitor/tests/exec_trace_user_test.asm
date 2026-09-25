@@ -1,6 +1,6 @@
         .msfirst
 
-        .org    $0000
+        .org    $0110
 
         .module trace_test
 

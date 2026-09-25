@@ -1,12 +1,12 @@
         .msfirst
 #include "monitor_entries.inc"
 
-        .org    $0000
+        .org    $0110
 
         .module disasm_test
 
-row_cur .equ    $60
-rows_done .equ  $61
+row_cur .equ    $ff
+rows_done .equ  $fe
 
 start:
         jsr     draw_dasm_row

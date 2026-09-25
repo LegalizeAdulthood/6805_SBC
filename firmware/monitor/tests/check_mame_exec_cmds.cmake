@@ -6,7 +6,7 @@ endforeach()
 
 set(ACIA_STATUS 0x0006)
 set(ACIA_DATA 0x0007)
-set(PROGRAM_START 0x0400)
+set(PROGRAM_START 0x0110)
 set(STACK_TOP "7F")
 set(EXPECTED_SP "7A")
 set(CC_MASKED "08")
@@ -262,26 +262,26 @@ _capture_hex(_trace_dasm " TRACE_DASM=([0-9A-Fa-f]+)" "TRACE disassembly PC")
 _capture_hex(_timer_vec " TIMER_VEC=([0-9A-Fa-f]+)" "timer vector")
 
 foreach(_expected_pair IN ITEMS
-        "_go_pc;0405;GO saved PC after SWI"
+        "_go_pc;0115;GO saved PC after SWI"
         "_go_a;56;GO saved A"
         "_go_x;34;GO saved X"
         "_go_cc;${CC_MASKED};GO saved condition codes"
         "_go_sp;${EXPECTED_SP};GO saved stack pointer"
         "_go_stop;${STOP_SWI};GO stop reason"
-        "_step_pc;0402;STEP saved PC after one instruction"
+        "_step_pc;0112;STEP saved PC after one instruction"
         "_step_a;22;STEP saved A"
         "_step_x;44;STEP saved X"
         "_step_cc;${CC_MASKED};STEP saved condition codes"
         "_step_sp;${EXPECTED_SP};STEP saved stack pointer"
         "_step_stop;${STOP_STEP};STEP stop reason"
-        "_step_dasm;0403;STEP disassembly panel PC"
-        "_trace_pc;0406;TRACE saved PC after three instructions"
+        "_step_dasm;0113;STEP disassembly panel PC"
+        "_trace_pc;0116;TRACE saved PC after three instructions"
         "_trace_a;13;TRACE saved A"
         "_trace_x;55;TRACE saved X"
         "_trace_cc;${CC_CLEAR};TRACE saved condition codes"
         "_trace_sp;${EXPECTED_SP};TRACE saved stack pointer"
         "_trace_stop;${STOP_STEP};TRACE stop reason"
-        "_trace_dasm;0407;TRACE disassembly panel PC"
+        "_trace_dasm;0117;TRACE disassembly panel PC"
         "_timer_vec;${SYM_tmr_def_hdlr};restored timer RAM vector")
     string(REPLACE ";" "|" _encoded "${_expected_pair}")
     string(REPLACE "|" ";" _fields "${_encoded}")

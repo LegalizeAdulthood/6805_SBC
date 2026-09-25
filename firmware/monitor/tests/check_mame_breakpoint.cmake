@@ -4,9 +4,9 @@ foreach(_required_var IN ITEMS MONITOR_BINARY MONITOR_SYMBOLS BREAKPOINT_TEST_BI
     endif()
 endforeach()
 
-set(PROGRAM_START 0x0400)
-set(BREAK1_ADDR 0x0402)
-set(BREAK2_ADDR 0x040C)
+set(PROGRAM_START 0x0110)
+set(BREAK1_ADDR 0x0112)
+set(BREAK2_ADDR 0x011C)
 set(BREAK1_OPCODE "A6")
 set(BREAK2_OPCODE "AE")
 set(PATCH_OPCODE "83")
@@ -253,14 +253,14 @@ foreach(_expected_pair IN ITEMS
         "_patch2;${PATCH_OPCODE};second patched breakpoint opcode"
         "_orig1;${BREAK1_OPCODE};first recorded original opcode"
         "_orig2;${BREAK2_OPCODE};second recorded original opcode"
-        "_first_pc;0402;first saved PC at breakpoint address"
+        "_first_pc;0112;first saved PC at breakpoint address"
         "_first_a;12;first saved A before breakpoint instruction"
         "_first_x;${EXPECTED_X_BEFORE};first saved X before breakpoint instruction"
         "_first_sp;${EXPECTED_SP};first saved breakpoint stack pointer"
         "_first_stop;${STOP_BREAK};first breakpoint stop reason"
         "_restored1;${BREAK1_OPCODE};first restored opcode after breakpoint hit"
         "_first_patch2;${PATCH_OPCODE};second breakpoint remains armed after first hit"
-        "_second_pc;040C;second saved PC at breakpoint address"
+        "_second_pc;011C;second saved PC at breakpoint address"
         "_second_a;${EXPECTED_A};second saved A after first continued instruction"
         "_second_x;${EXPECTED_X_BEFORE};second saved X after first continued instruction"
         "_second_sp;${EXPECTED_SP};second saved breakpoint stack pointer"

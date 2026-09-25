@@ -4,8 +4,8 @@ foreach(_required_var IN ITEMS MONITOR_BINARY MONITOR_SYMBOLS SWI_ENTRY_TEST_BIN
     endif()
 endforeach()
 
-set(USER_CODE 0x0400)
-set(USER_PC_AFTER_SWI "0409")
+set(USER_CODE 0x0110)
+set(USER_PC_AFTER_SWI "0119")
 set(EXPECTED_A "00")
 set(EXPECTED_X "34")
 set(EXPECTED_CC "0B")
