@@ -62,10 +62,10 @@ mem_hex_phs     .equ    $29
 disasm_pc_hi    .equ    $2a
 disasm_pc_lo    .equ    $2b
 asm_len         .equ    $2c
-bp_hi           .equ    $2d
-bp_lo           .equ    $2e
-bp_op           .equ    $2f
-scratch         .equ    $30
+bp_len          .equ    $0f             ; five breakpoint table entries
+bp_tbl          .equ    $2d
+bp_act          .equ    bp_tbl + bp_len
+scratch         .equ    bp_act + $01
 dline_buf       .equ    scratch + $03
 dline_tmp       .equ    dline_buf + $14
 
@@ -88,6 +88,7 @@ acia_def_ctl    .equ    $15
 tmr_dat         .equ    $08             ; timer data register
 tmr_ctl         .equ    $09             ; timer control register
 tmr_psc         .equ    $08             ; clear prescaler, clock source, unmasked
+tmr_off         .equ    $40             ; mask timer interrupt after one-shot step
 tmr_stp         .equ    $0e             ; timer count for one-instruction step
 bp_off          .equ    $ff             ; no active breakpoint
 
@@ -106,8 +107,8 @@ op_rts          .equ    $81
 ; $22-$25   thunk   generated indexed memory access routine.
 ; $26-$29   state   memory cursor address, focus, and edit phase.
 ; $2a-$2c   state   disassembly panel start address and assembler input length.
-; $2d-$2f   state   active breakpoint address and original opcode.
-; $30-$48   scratch shared temps, disassembly text buffer, and target temps.
+; $2d-$3c   state   breakpoint table and active breakpoint slot.
+; $3d-$55   scratch shared temps, disassembly text buffer, and target temps.
 
         .org    $1000
 
@@ -149,8 +150,7 @@ reset:
         lda     #op_rts
         sta     mem_thunk_rts
         clr     asm_len
-        lda     #bp_off
-        sta     bp_hi
+        jsr     bp_clr
         jsr     init_mem_pnl
         jsr     init_con
         jsr     draw_boot
@@ -252,6 +252,8 @@ step_go:
 
 ; Timer step handler saves the new frame and restores the user timer vector.
 step_irq:
+        lda     #tmr_off                ; One-shot timer must not remain pending after trace
+        sta     tmr_ctl
         lda     saved_pc_hi             ; The temporary vector is consumed before PC is overwritten
         sta     tmr_vec_hi
         lda     saved_pc_lo
@@ -285,23 +287,58 @@ step_irq:
 
         .module brkpt
 
-; Breakpoints patch one RAM opcode and remember the byte they replaced.
+_idx    .equ    scratch                 ; active breakpoint table entry offset
+_nhi    .equ    scratch + $01           ; breakpoint address plus one high byte
+_nlo    .equ    scratch + $02           ; breakpoint address plus one low byte
+
+; Breakpoint table entries store address high, address low, and saved opcode.
+bp_clr:
+        clrx                            ; Reset only needs high-byte markers cleared
+
+_clr:
+        lda     #bp_off                 ; Stale low/opcode bytes cannot be selected
+        sta     bp_tbl,x
+        incx
+        incx
+        incx
+        cpx     #bp_len
+        blo     _clr
+        lda     #bp_off
+        sta     bp_act
+        rts
+
+; Arming scans the compact table and patches every occupied slot.
 bp_set:
-        lda     bp_hi
+        clrx
+
+_setlp:
+        stx     _idx                    ; X is reused by memory thunks, so preserve the slot
+        lda     bp_tbl,x
         cmp     #bp_off
-        beq     _done
+        beq     _setnx
         bsr     bp_sel
         jsr     mem_thunk_read
-        sta     bp_op
+        ldx     _idx
+        sta     bp_tbl+$02,x
         bsr     bp_patch
+
+_setnx:
+        ldx     _idx
+        incx
+        incx
+        incx
+        cpx     #bp_len
+        blo     _setlp
 
 _done:
         jmp     idle
 
 bp_sel:
-        lda     bp_hi                   ; Breakpoint helpers patch the shared memory thunk
+        stx     _idx
+        lda     bp_tbl,x                ; Selected slot patches the shared memory thunk
         sta     mem_thunk_hi
-        lda     bp_lo
+        incx
+        lda     bp_tbl,x
         sta     mem_thunk_lo
         clrx
         rts
@@ -313,46 +350,109 @@ bp_patch:
 
 bp_rst:
         bsr     bp_sel
-        lda     bp_op
+        ldx     _idx
+        lda     bp_tbl+$02,x
+        clrx
         jmp     mem_thunk_write
 
+; SWI reports a breakpoint when the stacked PC is one byte past a patched slot.
 bp_chk:
-        lda     bp_hi
-        cmp     #bp_off
-        beq     _ret
-        lda     bp_lo
+        clrx
+
+_chklp:
+        stx     _idx
+        lda     bp_tbl,x
+        cmp     #bp_off                 ; Empty slots do not participate in hit detection
+        beq     _chknx
+        sta     _nhi
+        incx
+        lda     bp_tbl,x
         add     #$01
-        cmp     saved_pc_lo
-        bne     _ret
-        lda     bp_hi
+        sta     _nlo
+        lda     _nhi
         adc     #$00
         cmp     saved_pc_hi
-        bne     _ret
+        bne     _chknx
+        lda     _nlo
+        cmp     saved_pc_lo
+        bne     _chknx
+        ldx     _idx
         bsr     bp_rst                  ; A hit exposes the original byte before monitor drawing
-        lda     bp_hi
+        ldx     _idx
+        lda     bp_tbl,x
         sta     saved_pc_hi
-        lda     bp_lo
+        incx
+        lda     bp_tbl,x
         sta     saved_pc_lo
         lda     #stop_brk
         sta     stop_rsn
+        rts
+
+_chknx:
+        ldx     _idx
+        incx
+        incx
+        incx
+        cpx     #bp_len
+        blo     _chklp
 
 _ret:
         rts
 
 ; Breakpoint continue steps the restored byte, re-arms it, then resumes user code.
 bp_cont:
+        bsr     bp_find
+        bcc     _cret
+        stx     bp_act
         lda     #bp_irq/100h
         sta     int_jmp_hi
         lda     #bp_irq-(bp_irq/100h*100h)
         sta     int_jmp_lo
         jmp     step_go
 
+_cret:
+        rts
+
+; Continue records the hit slot because the timer step borrows saved PC storage.
+bp_find:
+        clrx
+
+_find:
+        stx     _idx
+        lda     bp_tbl,x
+        cmp     #bp_off
+        beq     _next
+        cmp     saved_pc_hi
+        bne     _next
+        incx
+        lda     bp_tbl,x
+        cmp     saved_pc_lo
+        beq     _found
+
+_next:
+        ldx     _idx
+        incx
+        incx
+        incx
+        cpx     #bp_len
+        blo     _find
+        clc
+        rts
+
+_found:
+        ldx     _idx
+        sec
+        rts
+
 bp_irq:
+        lda     #tmr_off                ; Clear the trace timer before re-arming breakpoints
+        sta     tmr_ctl
         lda     saved_pc_hi             ; The timer vector was borrowed for the temporary step
         sta     tmr_vec_hi
         lda     saved_pc_lo
         sta     tmr_vec_lo
-        bsr     bp_patch
+        ldx     bp_act                  ; Only the restored slot needs re-arming after the step
+        jsr     bp_patch
         lda     saved_cc
         and     #cc_i_msk
         sta     scratch

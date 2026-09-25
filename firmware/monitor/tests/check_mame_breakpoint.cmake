@@ -5,18 +5,15 @@ foreach(_required_var IN ITEMS MONITOR_BINARY MONITOR_SYMBOLS MAME_EXE MAME_STAG
 endforeach()
 
 set(PROGRAM_START 0x0400)
-set(BREAK_ADDR 0x0402)
-set(BREAK_AFTER 0x0403)
-set(CONT_AFTER 0x0404)
-set(FINAL_PC 0x0407)
-set(RESULT_ADDR 0x0050)
-set(BREAK_OPCODE "A6")
+set(BREAK1_ADDR 0x0402)
+set(BREAK2_ADDR 0x040C)
+set(BREAK1_OPCODE "A6")
+set(BREAK2_OPCODE "AE")
 set(PATCH_OPCODE "83")
 set(EXPECTED_A "56")
-set(EXPECTED_X "34")
+set(EXPECTED_X_BEFORE "34")
 set(EXPECTED_SP "7A")
 set(STOP_BREAK "05")
-set(STOP_SWI "03")
 
 get_filename_component(_monitor_binary "${MONITOR_BINARY}" ABSOLUTE)
 get_filename_component(_monitor_symbols "${MONITOR_SYMBOLS}" ABSOLUTE)
@@ -62,9 +59,7 @@ foreach(_symbol IN ITEMS
         idle
         bp_set
         bp_cont
-        bp_hi
-        bp_lo
-        bp_op
+        bp_tbl
         saved_sp
         saved_pc_hi
         saved_pc_lo
@@ -102,16 +97,15 @@ file(WRITE "${_breakpoint_script}"
     "local idle = 0x${SYM_idle}\r\n"
     "local bp_set = 0x${SYM_bp_set}\r\n"
     "local bp_cont = 0x${SYM_bp_cont}\r\n"
-    "local bp_hi = 0x${SYM_bp_hi}\r\n"
-    "local bp_lo = 0x${SYM_bp_lo}\r\n"
-    "local bp_op = 0x${SYM_bp_op}\r\n"
+    "local bp_tbl = 0x${SYM_bp_tbl}\r\n"
     "local program_start = ${PROGRAM_START}\r\n"
-    "local break_addr = ${BREAK_ADDR}\r\n"
-    "local result_addr = ${RESULT_ADDR}\r\n"
+    "local break1_addr = ${BREAK1_ADDR}\r\n"
+    "local break2_addr = ${BREAK2_ADDR}\r\n"
     "local frames = 0\r\n"
     "local phase = \"wait_reset\"\r\n"
+    "local armed = {}\r\n"
     "local first = {}\r\n"
-    "local final = {}\r\n"
+    "local second = {}\r\n"
     "local cpu = manager.machine.devices[\":maincpu\"]\r\n"
     "local mem = cpu.spaces[\"program\"]\r\n"
     "local function write_word(high_addr, low_addr, value)\r\n"
@@ -122,9 +116,8 @@ file(WRITE "${_breakpoint_script}"
     "    return mem:read_u8(high_addr) * 256 + mem:read_u8(low_addr)\r\n"
     "end\r\n"
     "local function load_program()\r\n"
-    "    local program = {0xae, 0x34, 0xa6, 0x56, 0xb7, result_addr, 0x83}\r\n"
+    "    local program = {0xae, 0x34, 0xa6, 0x56, 0x9d, 0x9d, 0x9d, 0x9d, 0x9d, 0x9d, 0x9d, 0x9d, 0xae, 0x78, 0x9d, 0x9d, 0x9d, 0x9d, 0x9d, 0x9d, 0x9d, 0x9d, 0x83}\r\n"
     "    for index, byte in ipairs(program) do mem:write_u8(program_start + index - 1, byte) end\r\n"
-    "    mem:write_u8(result_addr, 0x00)\r\n"
     "end\r\n"
     "emu.register_frame_done(function()\r\n"
     "    frames = frames + 1\r\n"
@@ -133,46 +126,50 @@ file(WRITE "${_breakpoint_script}"
     "    if phase == \"wait_reset\" then\r\n"
     "        if cpu.state[\"PC\"].value ~= idle and frames < 60 then return end\r\n"
     "        load_program()\r\n"
-    "        write_word(bp_hi, bp_lo, break_addr)\r\n"
+    "        write_word(bp_tbl, bp_tbl + 1, break1_addr)\r\n"
+    "        write_word(bp_tbl + 3, bp_tbl + 4, break2_addr)\r\n"
     "        cpu.state[\"PC\"].value = bp_set\r\n"
     "        phase = \"wait_set\"\r\n"
     "        return\r\n"
     "    end\r\n"
     "    if phase == \"wait_set\" then\r\n"
     "        if cpu.state[\"PC\"].value ~= idle and frames < 120 then return end\r\n"
-    "        first.patched = mem:read_u8(break_addr)\r\n"
-    "        first.original = mem:read_u8(bp_op)\r\n"
+    "        armed.patch1 = mem:read_u8(break1_addr)\r\n"
+    "        armed.patch2 = mem:read_u8(break2_addr)\r\n"
+    "        armed.orig1 = mem:read_u8(bp_tbl + 2)\r\n"
+    "        armed.orig2 = mem:read_u8(bp_tbl + 5)\r\n"
     "        cpu.state[\"A\"].value = 0x12\r\n"
     "        cpu.state[\"X\"].value = 0x00\r\n"
     "        cpu.state[\"S\"].value = 0x7f\r\n"
     "        cpu.state[\"PC\"].value = program_start\r\n"
-    "        phase = \"wait_break\"\r\n"
+    "        phase = \"wait_first_break\"\r\n"
     "        return\r\n"
     "    end\r\n"
-    "    if phase == \"wait_break\" then\r\n"
+    "    if phase == \"wait_first_break\" then\r\n"
     "        if cpu.state[\"PC\"].value ~= idle and frames < 240 then return end\r\n"
     "        first.saved_pc = read_word(0x${SYM_saved_pc_hi}, 0x${SYM_saved_pc_lo})\r\n"
     "        first.saved_a = mem:read_u8(0x${SYM_saved_a})\r\n"
     "        first.saved_x = mem:read_u8(0x${SYM_saved_x})\r\n"
     "        first.saved_sp = mem:read_u8(0x${SYM_saved_sp})\r\n"
     "        first.stop = mem:read_u8(0x${SYM_stop_rsn})\r\n"
-    "        first.restored = mem:read_u8(break_addr)\r\n"
+    "        first.restored1 = mem:read_u8(break1_addr)\r\n"
+    "        first.patch2 = mem:read_u8(break2_addr)\r\n"
     "        cpu.state[\"S\"].value = 0x${EXPECTED_SP}\r\n"
     "        cpu.state[\"PC\"].value = bp_cont\r\n"
-    "        phase = \"wait_final_swi\"\r\n"
+    "        phase = \"wait_second_break\"\r\n"
     "        return\r\n"
     "    end\r\n"
-    "    if phase == \"wait_final_swi\" then\r\n"
+    "    if phase == \"wait_second_break\" then\r\n"
     "        if cpu.state[\"PC\"].value ~= idle and frames < 360 then return end\r\n"
-    "        final.saved_pc = read_word(0x${SYM_saved_pc_hi}, 0x${SYM_saved_pc_lo})\r\n"
-    "        final.saved_a = mem:read_u8(0x${SYM_saved_a})\r\n"
-    "        final.saved_x = mem:read_u8(0x${SYM_saved_x})\r\n"
-    "        final.saved_sp = mem:read_u8(0x${SYM_saved_sp})\r\n"
-    "        final.stop = mem:read_u8(0x${SYM_stop_rsn})\r\n"
-    "        final.break_byte = mem:read_u8(break_addr)\r\n"
-    "        final.result = mem:read_u8(result_addr)\r\n"
-    "        final.timer_vec = read_word(0x${SYM_tmr_vec_hi}, 0x${SYM_tmr_vec_lo})\r\n"
-    "        print(string.format(\"BREAKPOINT PATCH=%02X ORIG=%02X FIRST_PC=%04X FIRST_A=%02X FIRST_X=%02X FIRST_SP=%02X FIRST_STOP=%02X RESTORED=%02X FINAL_PC=%04X FINAL_A=%02X FINAL_X=%02X FINAL_SP=%02X FINAL_STOP=%02X FINAL_BP=%02X RESULT=%02X TIMER_VEC=%04X\", first.patched, first.original, first.saved_pc, first.saved_a, first.saved_x, first.saved_sp, first.stop, first.restored, final.saved_pc, final.saved_a, final.saved_x, final.saved_sp, final.stop, final.break_byte, final.result, final.timer_vec))\r\n"
+    "        second.saved_pc = read_word(0x${SYM_saved_pc_hi}, 0x${SYM_saved_pc_lo})\r\n"
+    "        second.saved_a = mem:read_u8(0x${SYM_saved_a})\r\n"
+    "        second.saved_x = mem:read_u8(0x${SYM_saved_x})\r\n"
+    "        second.saved_sp = mem:read_u8(0x${SYM_saved_sp})\r\n"
+    "        second.stop = mem:read_u8(0x${SYM_stop_rsn})\r\n"
+    "        second.patch1 = mem:read_u8(break1_addr)\r\n"
+    "        second.restored2 = mem:read_u8(break2_addr)\r\n"
+    "        second.timer_vec = read_word(0x${SYM_tmr_vec_hi}, 0x${SYM_tmr_vec_lo})\r\n"
+    "        print(string.format(\"BREAKPOINT PATCH1=%02X PATCH2=%02X ORIG1=%02X ORIG2=%02X FIRST_PC=%04X FIRST_A=%02X FIRST_X=%02X FIRST_SP=%02X FIRST_STOP=%02X RESTORED1=%02X FIRST_PATCH2=%02X SECOND_PC=%04X SECOND_A=%02X SECOND_X=%02X SECOND_SP=%02X SECOND_STOP=%02X SECOND_PATCH1=%02X RESTORED2=%02X TIMER_VEC=%04X\", armed.patch1, armed.patch2, armed.orig1, armed.orig2, first.saved_pc, first.saved_a, first.saved_x, first.saved_sp, first.stop, first.restored1, first.patch2, second.saved_pc, second.saved_a, second.saved_x, second.saved_sp, second.stop, second.patch1, second.restored2, second.timer_vec))\r\n"
     "        manager.machine:exit()\r\n"
     "        return\r\n"
     "    end\r\n"
@@ -220,39 +217,45 @@ function(_capture_hex _out_var _pattern _description)
     set(${_out_var} "${_captured}" PARENT_SCOPE)
 endfunction()
 
-_capture_hex(_patch "PATCH=([0-9A-Fa-f]+)" "patched breakpoint opcode")
-_capture_hex(_orig " ORIG=([0-9A-Fa-f]+)" "original breakpoint opcode")
-_capture_hex(_first_pc " FIRST_PC=([0-9A-Fa-f]+)" "breakpoint saved PC")
-_capture_hex(_first_a " FIRST_A=([0-9A-Fa-f]+)" "breakpoint saved A")
-_capture_hex(_first_x " FIRST_X=([0-9A-Fa-f]+)" "breakpoint saved X")
-_capture_hex(_first_sp " FIRST_SP=([0-9A-Fa-f]+)" "breakpoint saved SP")
-_capture_hex(_first_stop " FIRST_STOP=([0-9A-Fa-f]+)" "breakpoint stop reason")
-_capture_hex(_restored " RESTORED=([0-9A-Fa-f]+)" "restored breakpoint opcode")
-_capture_hex(_final_pc " FINAL_PC=([0-9A-Fa-f]+)" "final saved PC")
-_capture_hex(_final_a " FINAL_A=([0-9A-Fa-f]+)" "final saved A")
-_capture_hex(_final_x " FINAL_X=([0-9A-Fa-f]+)" "final saved X")
-_capture_hex(_final_sp " FINAL_SP=([0-9A-Fa-f]+)" "final saved SP")
-_capture_hex(_final_stop " FINAL_STOP=([0-9A-Fa-f]+)" "final stop reason")
-_capture_hex(_final_bp " FINAL_BP=([0-9A-Fa-f]+)" "final breakpoint opcode")
-_capture_hex(_result " RESULT=([0-9A-Fa-f]+)" "program result byte")
+_capture_hex(_patch1 "PATCH1=([0-9A-Fa-f]+)" "first patched breakpoint opcode")
+_capture_hex(_patch2 " PATCH2=([0-9A-Fa-f]+)" "second patched breakpoint opcode")
+_capture_hex(_orig1 " ORIG1=([0-9A-Fa-f]+)" "first original breakpoint opcode")
+_capture_hex(_orig2 " ORIG2=([0-9A-Fa-f]+)" "second original breakpoint opcode")
+_capture_hex(_first_pc " FIRST_PC=([0-9A-Fa-f]+)" "first breakpoint saved PC")
+_capture_hex(_first_a " FIRST_A=([0-9A-Fa-f]+)" "first breakpoint saved A")
+_capture_hex(_first_x " FIRST_X=([0-9A-Fa-f]+)" "first breakpoint saved X")
+_capture_hex(_first_sp " FIRST_SP=([0-9A-Fa-f]+)" "first breakpoint saved SP")
+_capture_hex(_first_stop " FIRST_STOP=([0-9A-Fa-f]+)" "first breakpoint stop reason")
+_capture_hex(_restored1 " RESTORED1=([0-9A-Fa-f]+)" "first restored breakpoint opcode")
+_capture_hex(_first_patch2 " FIRST_PATCH2=([0-9A-Fa-f]+)" "second opcode during first break")
+_capture_hex(_second_pc " SECOND_PC=([0-9A-Fa-f]+)" "second breakpoint saved PC")
+_capture_hex(_second_a " SECOND_A=([0-9A-Fa-f]+)" "second breakpoint saved A")
+_capture_hex(_second_x " SECOND_X=([0-9A-Fa-f]+)" "second breakpoint saved X")
+_capture_hex(_second_sp " SECOND_SP=([0-9A-Fa-f]+)" "second breakpoint saved SP")
+_capture_hex(_second_stop " SECOND_STOP=([0-9A-Fa-f]+)" "second breakpoint stop reason")
+_capture_hex(_second_patch1 " SECOND_PATCH1=([0-9A-Fa-f]+)" "first opcode during second break")
+_capture_hex(_restored2 " RESTORED2=([0-9A-Fa-f]+)" "second restored breakpoint opcode")
 _capture_hex(_timer_vec " TIMER_VEC=([0-9A-Fa-f]+)" "restored timer vector")
 
 foreach(_expected_pair IN ITEMS
-        "_patch;${PATCH_OPCODE};patched breakpoint opcode"
-        "_orig;${BREAK_OPCODE};recorded original opcode"
-        "_first_pc;0402;saved PC at breakpoint address"
-        "_first_a;12;saved A before breakpoint instruction"
-        "_first_x;${EXPECTED_X};saved X before breakpoint instruction"
-        "_first_sp;${EXPECTED_SP};saved breakpoint stack pointer"
-        "_first_stop;${STOP_BREAK};breakpoint stop reason"
-        "_restored;${BREAK_OPCODE};restored opcode after breakpoint hit"
-        "_final_pc;0407;final SWI saved PC"
-        "_final_a;${EXPECTED_A};final saved A after continue"
-        "_final_x;${EXPECTED_X};final saved X after continue"
-        "_final_sp;${EXPECTED_SP};final saved SP"
-        "_final_stop;${STOP_SWI};final SWI stop reason"
-        "_final_bp;${PATCH_OPCODE};re-armed breakpoint opcode"
-        "_result;${EXPECTED_A};continued program result"
+        "_patch1;${PATCH_OPCODE};first patched breakpoint opcode"
+        "_patch2;${PATCH_OPCODE};second patched breakpoint opcode"
+        "_orig1;${BREAK1_OPCODE};first recorded original opcode"
+        "_orig2;${BREAK2_OPCODE};second recorded original opcode"
+        "_first_pc;0402;first saved PC at breakpoint address"
+        "_first_a;12;first saved A before breakpoint instruction"
+        "_first_x;${EXPECTED_X_BEFORE};first saved X before breakpoint instruction"
+        "_first_sp;${EXPECTED_SP};first saved breakpoint stack pointer"
+        "_first_stop;${STOP_BREAK};first breakpoint stop reason"
+        "_restored1;${BREAK1_OPCODE};first restored opcode after breakpoint hit"
+        "_first_patch2;${PATCH_OPCODE};second breakpoint remains armed after first hit"
+        "_second_pc;040C;second saved PC at breakpoint address"
+        "_second_a;${EXPECTED_A};second saved A after first continued instruction"
+        "_second_x;${EXPECTED_X_BEFORE};second saved X after first continued instruction"
+        "_second_sp;${EXPECTED_SP};second saved breakpoint stack pointer"
+        "_second_stop;${STOP_BREAK};second breakpoint stop reason"
+        "_second_patch1;${PATCH_OPCODE};first breakpoint re-armed after continue"
+        "_restored2;${BREAK2_OPCODE};second restored opcode after breakpoint hit"
         "_timer_vec;${SYM_tmr_def_hdlr};restored timer vector")
     string(REPLACE ";" "|" _encoded "${_expected_pair}")
     string(REPLACE "|" ";" _fields "${_encoded}")

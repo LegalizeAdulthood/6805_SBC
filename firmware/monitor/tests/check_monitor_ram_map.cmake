@@ -119,12 +119,14 @@ foreach(name
         disasm_pc_hi
         disasm_pc_lo
         asm_len
-        bp_hi
-        bp_lo
-        bp_op)
+        bp_tbl
+        bp_act)
     require_global("${name}")
 endforeach()
 
+require_module_scratch("brkpt" "_idx")
+require_module_scratch("brkpt" "_nhi")
+require_module_scratch("brkpt" "_nlo")
 require_module_scratch("scr_out" "_save")
 require_module_scratch("dasm_out" "_op")
 require_module_scratch("dasm_out" "_len")
