@@ -119,6 +119,7 @@ foreach(name
         disasm_pc_hi
         disasm_pc_lo
         asm_len
+        run_ctl
         bp_tbl
         bp_act)
     require_global("${name}")

@@ -308,6 +308,19 @@ add_test(
 )
 
 add_test(
+    NAME monitor.mame.exec_cmds
+    COMMAND
+        "${CMAKE_COMMAND}"
+        "-DMONITOR_BINARY=${MONITOR_BINARY}"
+        "-DMONITOR_SYMBOLS=${MONITOR_SYMBOLS}"
+        "-DMAME_EXE=${MAME_EXECUTABLE}"
+        "-DMAME_STAGE_DIR=${MONITOR_OUTPUT_DIR}/mame-exec-cmds"
+        "-DMONITOR_OUTPUT_DIR=${MONITOR_OUTPUT_DIR}"
+        "-P"
+        "${CMAKE_CURRENT_SOURCE_DIR}/check_mame_exec_cmds.cmake"
+)
+
+add_test(
     NAME monitor.mame.breakpoint
     COMMAND
         "${CMAKE_COMMAND}"

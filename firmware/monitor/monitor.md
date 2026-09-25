@@ -597,18 +597,6 @@ surrounding I/O and monitor integration where needed:
 
 ## Implementation Slices
 
-### 13. Go and Trace UI Integration
-
-Failing test: a command-dispatch test invokes internal commands `GO`,
-`STEP`, and `TRACE_COUNT` and fails until each command updates execution
-state and panel state as specified.
-
-End state: `GO` resumes from the saved `PC` and stops only at a monitor
-entry condition. `STEP` executes exactly one instruction and refreshes the
-CPU and disassembly panel state. `TRACE_COUNT` with count `3` performs
-three single steps, refreshing CPU and disassembly state after each step,
-then returns to `monitor_idle`.
-
 ### 14. S-Record Load and Dump
 
 Failing test: an S-record test feeds one fixed valid record and one fixed

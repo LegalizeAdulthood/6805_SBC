@@ -41,6 +41,10 @@ cc_h_bit        .equ    4
 cc_i_msk        .equ    $08
 cc_i_clr        .equ    $f7
 
+run_cnt_msk     .equ    $3f             ; trace count stored in low bits
+run_stp_bit     .equ    6               ; resume with the trace timer armed
+run_res_bit     .equ    7               ; internal SWI resume request
+
 saved_sp        .equ    $10
 saved_pc_hi     .equ    $11
 saved_pc_lo     .equ    $12
@@ -63,7 +67,8 @@ disasm_pc_hi    .equ    $2a
 disasm_pc_lo    .equ    $2b
 asm_len         .equ    $2c
 bp_len          .equ    $0f             ; five breakpoint table entries
-bp_tbl          .equ    $2d
+run_ctl         .equ    $2d
+bp_tbl          .equ    $2e
 bp_act          .equ    bp_tbl + bp_len
 scratch         .equ    bp_act + $01
 dline_buf       .equ    scratch + $03
@@ -88,7 +93,7 @@ acia_def_ctl    .equ    $15
 tmr_dat         .equ    $08             ; timer data register
 tmr_ctl         .equ    $09             ; timer control register
 tmr_psc         .equ    $08             ; clear prescaler, clock source, unmasked
-tmr_off         .equ    $40             ; mask timer interrupt after one-shot step
+tmr_off         .equ    $60             ; mask timer interrupt and stop the timer source
 tmr_stp         .equ    $0e             ; timer count for one-instruction step
 bp_off          .equ    $ff             ; no active breakpoint
 
@@ -107,8 +112,10 @@ op_rts          .equ    $81
 ; $22-$25   thunk   generated indexed memory access routine.
 ; $26-$29   state   memory cursor address, focus, and edit phase.
 ; $2a-$2c   state   disassembly panel start address and assembler input length.
-; $2d-$3c   state   breakpoint table and active breakpoint slot.
-; $3d-$55   scratch shared temps, disassembly text buffer, and target temps.
+; $2d       state   run control flags and trace repeat count.
+; $2e-$3c   state   breakpoint table entries for patched user code.
+; $3d       state   active breakpoint slot for continue handling.
+; $3e-$56   scratch shared temps, disassembly text buffer, and target temps.
 
         .org    $1000
 
@@ -149,6 +156,7 @@ reset:
         sta     mem_thunk_op
         lda     #op_rts
         sta     mem_thunk_rts
+        clr     run_ctl
         clr     asm_len
         jsr     bp_clr
         jsr     init_mem_pnl
@@ -160,6 +168,11 @@ reset:
 
 ; SWI copies the hardware-stacked frame into monitor state.
 swi:
+        brclr   run_res_bit,run_ctl,_user
+        bclr    run_res_bit,run_ctl
+        jmp     resume_rti              ; Internal SWI builds a user frame on the monitor stack
+
+_user:
                                         ; Hardware has already stacked the user frame
         lda     #stack_top-stk_len
         sta     saved_sp                ; The saved frame records the post-SWI stack pointer
@@ -220,35 +233,8 @@ step_one:
         sta     int_jmp_lo
 
 step_go:
-        ldx     #stack_top-stk_len+stk_cc
-        lda     saved_cc                ; RTI frame borrows the saved user state
-        and     #cc_i_clr               ; Timer must be unmasked only for the stepped instruction
-        sta     ,x
-        incx
-        lda     saved_a
-        sta     ,x
-        incx
-        lda     saved_x
-        sta     ,x
-        incx
-        lda     saved_pc_hi
-        sta     ,x
-        incx
-        lda     saved_pc_lo
-        sta     ,x
-        lda     tmr_vec_hi
-        sta     saved_pc_hi             ; Saved PC temporarily holds the interrupted timer vector
-        lda     tmr_vec_lo
-        sta     saved_pc_lo
-        lda     int_jmp_hi
-        sta     tmr_vec_hi
-        lda     int_jmp_lo
-        sta     tmr_vec_lo
-        lda     #tmr_stp
-        sta     tmr_dat
-        lda     #tmr_psc
-        sta     tmr_ctl
-        rti
+        bset    run_stp_bit,run_ctl
+        jmp     resume
 
 ; Timer step handler saves the new frame and restores the user timer vector.
 step_irq:
@@ -283,7 +269,88 @@ step_irq:
         lda     #stop_stp
         sta     stop_rsn
         rsp
-        jmp     idle
+        jsr     ref_pan                 ; Every trace stop updates what the user will inspect
+        lda     run_ctl
+        and     #run_cnt_msk
+        beq     _done
+        dec     run_ctl
+        lda     run_ctl
+        and     #run_cnt_msk
+        beq     _done
+        jmp     step_one
+
+_done:
+        bclr    run_stp_bit,run_ctl
+        jmp     monitor_idle
+
+        .module run_cmd
+
+; Execution commands are small veneers over the shared resume path.
+go_cmd:
+        clr     run_ctl                 ; GO resumes without the timer unless a breakpoint fires
+        jsr     bp_arm
+        jmp     resume
+
+stp_cmd:
+        clr     run_ctl                 ; STEP is trace with no repeat budget
+        jmp     step_one
+
+trc_cmd:
+        lda     #$03
+        sta     run_ctl                 ; TRACE_COUNT is fixed at three for this first UI hook
+        jmp     step_one
+
+ref_pan:
+        jsr     draw_cpu                ; Saved CPU state and disassembly stay in lockstep
+        lda     saved_pc_hi
+        sta     disasm_pc_hi
+        lda     saved_pc_lo
+        sta     disasm_pc_lo
+        jmp     draw_dasm_row
+
+; Resume uses SWI to manufacture the stacked frame from monitor context.
+resume:
+        bset    run_res_bit,run_ctl
+        rsp
+        swi
+
+resume_rti:
+                                        ; The internal SWI frame is overwritten before RTI returns
+        ldx     #stack_top-stk_len+stk_cc
+        lda     saved_cc                ; RTI frame borrows the saved user state
+        brclr   run_stp_bit,run_ctl,_cc
+        and     #cc_i_clr               ; Timer must be unmasked only for the stepped instruction
+
+_cc:
+        sta     ,x
+        incx
+        lda     saved_a
+        sta     ,x
+        incx
+        lda     saved_x
+        sta     ,x
+        incx
+        lda     saved_pc_hi
+        sta     ,x
+        incx
+        lda     saved_pc_lo
+        sta     ,x
+        brclr   run_stp_bit,run_ctl,_rti
+        lda     tmr_vec_hi
+        sta     saved_pc_hi             ; Saved PC temporarily holds the interrupted timer vector
+        lda     tmr_vec_lo
+        sta     saved_pc_lo
+        lda     int_jmp_hi
+        sta     tmr_vec_hi
+        lda     int_jmp_lo
+        sta     tmr_vec_lo
+        lda     #tmr_stp
+        sta     tmr_dat
+        lda     #tmr_psc
+        sta     tmr_ctl
+
+_rti:
+        rti
 
         .module brkpt
 
@@ -309,6 +376,10 @@ _clr:
 
 ; Arming scans the compact table and patches every occupied slot.
 bp_set:
+        bsr     bp_arm
+        jmp     idle
+
+bp_arm:
         clrx
 
 _setlp:
@@ -331,7 +402,7 @@ _setnx:
         blo     _setlp
 
 _done:
-        jmp     idle
+        rts
 
 bp_sel:
         stx     _idx
@@ -453,6 +524,7 @@ bp_irq:
         sta     tmr_vec_lo
         ldx     bp_act                  ; Only the restored slot needs re-arming after the step
         jsr     bp_patch
+        bclr    run_stp_bit,run_ctl
         lda     saved_cc
         and     #cc_i_msk
         sta     scratch
@@ -2022,6 +2094,7 @@ _stat:
 
         .module idle
 
+monitor_idle:
 idle:
         bra     idle
 
