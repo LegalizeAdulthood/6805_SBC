@@ -91,12 +91,30 @@ file(WRITE "${_assembler_script}"
     "local dpc_hi = 0x${SYM_disasm_pc_hi}\r\n"
     "local dpc_lo = 0x${SYM_disasm_pc_lo}\r\n"
     "local saved = {0x${SYM_saved_sp}, 0x${SYM_saved_pc_hi}, 0x${SYM_saved_pc_lo}, 0x${SYM_saved_a}, 0x${SYM_saved_x}, 0x${SYM_saved_cc}, 0x${SYM_stop_rsn}}\r\n"
-    "local keys = {0x6e, 0x6f, 0x70, 0x0d}\r\n"
+    "local cases = {\r\n"
+    "    { name = \"inh\",    addr = 0x0400, line = \"nop\",          status = \"ok\",  pc = 0x0401, expect = {0x9d} },\r\n"
+    "    { name = \"imm\",    addr = 0x0404, line = \"lda #$5a\",     status = \"ok\",  pc = 0x0406, expect = {0xa6, 0x5a} },\r\n"
+    "    { name = \"dir\",    addr = 0x0408, line = \"sta $44\",      status = \"ok\",  pc = 0x040a, expect = {0xb7, 0x44} },\r\n"
+    "    { name = \"ext\",    addr = 0x040c, line = \"jsr $1234\",    status = \"ok\",  pc = 0x040f, expect = {0xcd, 0x12, 0x34} },\r\n"
+    "    { name = \"idx0\",   addr = 0x0410, line = \"lda ,x\",       status = \"ok\",  pc = 0x0411, expect = {0xf6} },\r\n"
+    "    { name = \"idx8\",   addr = 0x0412, line = \"lda $44,x\",    status = \"ok\",  pc = 0x0414, expect = {0xe6, 0x44} },\r\n"
+    "    { name = \"rel\",    addr = 0x0414, line = \"bra $0418\",    status = \"ok\",  pc = 0x0416, expect = {0x20, 0x02} },\r\n"
+    "    { name = \"bit\",    addr = 0x0420, line = \"bset 3,$44\",   status = \"ok\",  pc = 0x0422, expect = {0x16, 0x44} },\r\n"
+    "    { name = \"badop\",  addr = 0x0424, line = \"lda #\",        status = \"err\", pc = 0x0424, expect = {0x42, 0x55, 0x66} },\r\n"
+    "    { name = \"range\",  addr = 0x0428, line = \"bra $0500\",    status = \"err\", pc = 0x0428, expect = {0x42, 0x55, 0x66} },\r\n"
+    "}\r\n"
+    "local ok_hex = \"6F6B0D0A\"\r\n"
+    "local err_hex = \"6572720D0A\"\r\n"
+    "local seed = {0x42, 0x55, 0x66}\r\n"
     "local bytes = {}\r\n"
+    "local fails = {}\r\n"
+    "local taps = {}\r\n"
     "local phase = \"wait_reset\"\r\n"
     "local frames = 0\r\n"
     "local key_frames = 0\r\n"
-    "local index = 1\r\n"
+    "local case_index = 1\r\n"
+    "local key_index = 1\r\n"
+    "local keys = {}\r\n"
     "local cpu = manager.machine.devices[\":maincpu\"]\r\n"
     "local mem = cpu.spaces[\"program\"]\r\n"
     "local function hex_bytes(list)\r\n"
@@ -112,17 +130,53 @@ file(WRITE "${_assembler_script}"
     "    for _, addr in ipairs(saved) do table.insert(out, mem:read_u8(addr)) end\r\n"
     "    return hex_bytes(out)\r\n"
     "end\r\n"
+    "local function cpu_state(name)\r\n"
+    "    local item = cpu.state[name]\r\n"
+    "    if item == nil then return -1 end\r\n"
+    "    return item.value\r\n"
+    "end\r\n"
+    "local function make_keys(line)\r\n"
+    "    local out = {}\r\n"
+    "    for index = 1, #line do table.insert(out, line:byte(index)) end\r\n"
+    "    table.insert(out, 0x0d)\r\n"
+    "    return out\r\n"
+    "end\r\n"
     "local function call_key(value)\r\n"
     "    cpu.state[\"A\"].value = value\r\n"
     "    cpu.state[\"PC\"].value = entry\r\n"
     "end\r\n"
-    "mem:install_write_tap(${ACIA_DATA}, ${ACIA_DATA}, \"assembler_cmd_acia_data\", function(offset, data, mask)\r\n"
+    "local function start_case(index)\r\n"
+    "    local item = cases[index]\r\n"
+    "    for offset, byte in ipairs(seed) do mem:write_u8(item.addr + offset - 1, byte) end\r\n"
+    "    mem:write_u8(dpc_hi, (item.addr >> 8) & 0xff)\r\n"
+    "    mem:write_u8(dpc_lo, item.addr & 0xff)\r\n"
+    "    bytes = {}\r\n"
+    "    keys = make_keys(item.line)\r\n"
+    "    key_index = 1\r\n"
+    "    key_frames = 0\r\n"
+    "    call_key(keys[key_index])\r\n"
+    "end\r\n"
+    "local function check_case(item)\r\n"
+    "    local pc = mem:read_u8(dpc_hi) * 256 + mem:read_u8(dpc_lo)\r\n"
+    "    local mem0 = mem:read_u8(item.addr)\r\n"
+    "    local mem1 = mem:read_u8(item.addr + 1)\r\n"
+    "    local mem2 = mem:read_u8(item.addr + 2)\r\n"
+    "    if pc ~= item.pc then table.insert(fails, item.name .. \":pc\") end\r\n"
+    "    if mem:read_u8(asm_len) ~= 0 then table.insert(fails, item.name .. \":len\") end\r\n"
+    "    local want_status = item.status == \"ok\" and ok_hex or err_hex\r\n"
+    "    if acia_bytes() ~= want_status then table.insert(fails, item.name .. string.format(\":status:%s:cpu:%04X:a:%02X:x:%02X:cc:%02X:sp:%04X:s:%04X:dpc:%04X:len:%02X:mem:%02X%02X%02X\", acia_bytes(), cpu.state[\"PC\"].value, cpu_state(\"A\") & 0xff, cpu_state(\"X\") & 0xff, cpu_state(\"CC\") & 0xff, cpu_state(\"SP\") & 0xffff, cpu_state(\"S\") & 0xffff, pc, mem:read_u8(asm_len), mem0, mem1, mem2)) end\r\n"
+    "    for offset, byte in ipairs(item.expect) do\r\n"
+    "        if mem:read_u8(item.addr + offset - 1) ~= byte then table.insert(fails, item.name .. \":mem\" .. offset) end\r\n"
+    "    end\r\n"
+    "end\r\n"
+    "taps.acia_data = mem:install_write_tap(${ACIA_DATA}, ${ACIA_DATA}, \"assembler_cmd_acia_data\", function(offset, data, mask)\r\n"
     "    table.insert(bytes, data & 0xff)\r\n"
     "end)\r\n"
-    "mem:install_read_tap(${ACIA_STATUS}, ${ACIA_STATUS}, \"assembler_cmd_acia_status\", function(offset, data, mask)\r\n"
+    "taps.acia_status = mem:install_read_tap(${ACIA_STATUS}, ${ACIA_STATUS}, \"assembler_cmd_acia_status\", function(offset, data, mask)\r\n"
     "    return data | 0x02\r\n"
     "end)\r\n"
     "emu.register_frame_done(function()\r\n"
+    "    if taps.acia_data == nil or taps.acia_status == nil then table.insert(fails, \"tap:lost\") end\r\n"
     "    frames = frames + 1\r\n"
     "    cpu = manager.machine.devices[\":maincpu\"]\r\n"
     "    mem = cpu.spaces[\"program\"]\r\n"
@@ -130,10 +184,6 @@ file(WRITE "${_assembler_script}"
     "        if cpu.state[\"PC\"].value ~= idle and frames < 60 then return end\r\n"
     "        mem:write_u8(${ACIA_CONTROL}, 0x03)\r\n"
     "        mem:write_u8(${ACIA_CONTROL}, 0x15)\r\n"
-    "        mem:write_u8(dpc_hi, 0x04)\r\n"
-    "        mem:write_u8(dpc_lo, 0x00)\r\n"
-    "        mem:write_u8(0x0400, 0x42)\r\n"
-    "        mem:write_u8(0x0401, 0x55)\r\n"
     "        mem:write_u8(saved[1], 0x7d)\r\n"
     "        mem:write_u8(saved[2], 0x12)\r\n"
     "        mem:write_u8(saved[3], 0x34)\r\n"
@@ -141,23 +191,35 @@ file(WRITE "${_assembler_script}"
     "        mem:write_u8(saved[5], 0x78)\r\n"
     "        mem:write_u8(saved[6], 0x09)\r\n"
     "        mem:write_u8(saved[7], 0x02)\r\n"
-    "        bytes = {}\r\n"
-    "        key_frames = 0\r\n"
-    "        call_key(keys[index])\r\n"
+    "        start_case(case_index)\r\n"
     "        phase = \"wait_key\"\r\n"
     "        return\r\n"
     "    end\r\n"
     "    if phase == \"wait_key\" then\r\n"
     "        key_frames = key_frames + 1\r\n"
-    "        if cpu.state[\"PC\"].value ~= idle and key_frames < 60 then return end\r\n"
-    "        index = index + 1\r\n"
-    "        if index <= #keys then\r\n"
-    "            key_frames = 0\r\n"
-    "            call_key(keys[index])\r\n"
+    "        if cpu.state[\"PC\"].value ~= idle then\r\n"
+    "            if key_frames < 80 then return end\r\n"
+    "            table.insert(fails, cases[case_index].name .. string.format(\":busy:key:%d:cpu:%04X\", key_index, cpu.state[\"PC\"].value))\r\n"
+    "            print(string.format(\"ASM_CMD CASES=%d FAILS=%d SAVED=%s DETAIL=%s\", #cases, #fails, saved_bytes(), table.concat(fails, \",\")))\r\n"
+    "            manager.machine:exit()\r\n"
     "            return\r\n"
     "        end\r\n"
-    "        local pc = mem:read_u8(dpc_hi) * 256 + mem:read_u8(dpc_lo)\r\n"
-    "        print(string.format(\"ASM_CMD PC=%04X LEN=%d MEM0=%02X MEM1=%02X COUNT=%d BYTES=%s SAVED=%s\", pc, mem:read_u8(asm_len), mem:read_u8(0x0400), mem:read_u8(0x0401), #bytes, acia_bytes(), saved_bytes()))\r\n"
+    "        if key_index < #keys and mem:read_u8(asm_len) ~= key_index then\r\n"
+    "            table.insert(fails, cases[case_index].name .. string.format(\":key:%d:len:%02X\", key_index, mem:read_u8(asm_len)))\r\n"
+    "        end\r\n"
+    "        key_index = key_index + 1\r\n"
+    "        if key_index <= #keys then\r\n"
+    "            key_frames = 0\r\n"
+    "            call_key(keys[key_index])\r\n"
+    "            return\r\n"
+    "        end\r\n"
+    "        check_case(cases[case_index])\r\n"
+    "        case_index = case_index + 1\r\n"
+    "        if case_index <= #cases then\r\n"
+    "            start_case(case_index)\r\n"
+    "            return\r\n"
+    "        end\r\n"
+    "        print(string.format(\"ASM_CMD CASES=%d FAILS=%d SAVED=%s DETAIL=%s\", #cases, #fails, saved_bytes(), table.concat(fails, \",\")))\r\n"
     "        manager.machine:exit()\r\n"
     "        return\r\n"
     "    end\r\n"
@@ -177,7 +239,7 @@ execute_process(
         -nothrottle
         -autoboot_delay 0
         -autoboot_script assembler_cmd.lua
-        -seconds_to_run 5
+        -seconds_to_run 10
     WORKING_DIRECTORY "${_stage_dir}"
     RESULT_VARIABLE _mame_result
     OUTPUT_VARIABLE _mame_stdout
@@ -190,38 +252,23 @@ if(NOT _mame_result EQUAL 0)
     message(FATAL_ERROR "MAME failed with exit code ${_mame_result}\n${_mame_output}")
 endif()
 
-string(REGEX MATCH "ASM_CMD PC=([0-9A-Fa-f]+) LEN=([0-9]+) MEM0=([0-9A-Fa-f][0-9A-Fa-f]) MEM1=([0-9A-Fa-f][0-9A-Fa-f]) COUNT=([0-9]+) BYTES=([0-9A-Fa-f]*) SAVED=([0-9A-Fa-f]+)" _output_match "${_mame_output}")
+string(REGEX MATCH "ASM_CMD CASES=([0-9]+) FAILS=([0-9]+) SAVED=([0-9A-Fa-f]+) DETAIL=([^\r\n]*)" _output_match "${_mame_output}")
 if(NOT _output_match)
     message(FATAL_ERROR "MAME output did not report ASM_CMD\n${_mame_output}")
 endif()
 
-set(_actual_pc "${CMAKE_MATCH_1}")
-set(_actual_len "${CMAKE_MATCH_2}")
-set(_actual_mem0 "${CMAKE_MATCH_3}")
-set(_actual_mem1 "${CMAKE_MATCH_4}")
-set(_actual_count "${CMAKE_MATCH_5}")
-set(_actual_bytes "${CMAKE_MATCH_6}")
-set(_actual_saved "${CMAKE_MATCH_7}")
-string(TOUPPER "${_actual_pc}" _actual_pc)
-string(TOUPPER "${_actual_mem0}" _actual_mem0)
-string(TOUPPER "${_actual_mem1}" _actual_mem1)
-string(TOUPPER "${_actual_bytes}" _actual_bytes)
+set(_actual_cases "${CMAKE_MATCH_1}")
+set(_actual_fails "${CMAKE_MATCH_2}")
+set(_actual_saved "${CMAKE_MATCH_3}")
+set(_actual_detail "${CMAKE_MATCH_4}")
 string(TOUPPER "${_actual_saved}" _actual_saved)
 
-if(NOT _actual_pc STREQUAL "0401")
-    message(FATAL_ERROR "Expected assembler PC 0401, got ${_actual_pc}\n${_mame_output}")
+if(NOT _actual_cases STREQUAL "10")
+    message(FATAL_ERROR "Expected 10 assembler cases, got ${_actual_cases}\n${_mame_output}")
 endif()
 
-if(NOT _actual_len STREQUAL "0")
-    message(FATAL_ERROR "Expected assembler line length reset to 0, got ${_actual_len}\n${_mame_output}")
-endif()
-
-if(NOT _actual_mem0 STREQUAL "9D" OR NOT _actual_mem1 STREQUAL "55")
-    message(FATAL_ERROR "Expected assembled bytes 9D 55, got ${_actual_mem0} ${_actual_mem1}\n${_mame_output}")
-endif()
-
-if(NOT _actual_count STREQUAL "4" OR NOT _actual_bytes STREQUAL "6F6B0D0A")
-    message(FATAL_ERROR "Expected assembler status bytes 6F6B0D0A, got count=${_actual_count} bytes=${_actual_bytes}\n${_mame_output}")
+if(NOT _actual_fails STREQUAL "0")
+    message(FATAL_ERROR "Assembler command fixture failures: ${_actual_detail}\n${_mame_output}")
 endif()
 
 if(NOT _actual_saved STREQUAL "7D123456780902")

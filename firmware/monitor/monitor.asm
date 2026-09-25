@@ -1238,7 +1238,11 @@ mem_cur_done:
 
         .module asm_cmd
 
-_len    .equ    scratch + $01           ; decoded instruction length after blank-line advance
+_op     .equ    scratch                 ; assembled opcode byte
+_len    .equ    scratch + $01           ; assembled byte count or decode length
+_pos    .equ    scratch + $02           ; parser offset or temporary byte
+_hi     .equ    dline_tmp               ; parsed operand high byte
+_lo     .equ    dline_tmp + $01         ; parsed operand low byte
 
 ; Keyboard assembler collects a source line, then assembles at disasm_pc.
 asm_key_in:
@@ -1263,29 +1267,377 @@ _ret:
 
 _enter:
         lda     asm_len
-        beq     _blank
-        cmp     #$03
-        bne     _err
-        lda     dline_buf               ; This slice accepts only a tiny parser seed
+        bne     _ent1
+        jmp     _blank
+
+_ent1:
+        jsr     _asm
+        bne     _ent2
+        jmp     _ok
+
+_ent2:
+        jmp     _err
+
+_asm:
+        lda     dline_buf               ; Mnemonic dispatch is the seed for table-driven parsing
         cmp     #'n'
-        bne     _err
+        beq     _nop
+        cmp     #'l'
+        beq     _lda
+        cmp     #'s'
+        beq     _sta
+        cmp     #'j'
+        beq     _jsr
+        cmp     #'b'
+        bne     _asm1
+        jmp     _bop
+
+_asm1:
+        jmp     _fail
+
+_nop:
+        lda     asm_len
+        cmp     #$03
+        beq     _nop1
+        jmp     _fail
+
+_nop1:
         lda     dline_buf+$01
         cmp     #'o'
-        bne     _err
+        beq     _nop2
+        jmp     _fail
+
+_nop2:
         lda     dline_buf+$02
         cmp     #'p'
-        bne     _err
+        beq     _nop3
+        jmp     _fail
+
+_nop3:
+        ldx     #op_nop_idx
+        jsr     _base
+        lda     #$01
+        sta     _len
+        jmp     _write
+
+_lda:
+        lda     dline_buf+$01
+        cmp     #'d'
+        beq     _lda1
+        jmp     _fail
+
+_lda1:
+        lda     dline_buf+$02
+        cmp     #'a'
+        beq     _lda2
+        jmp     _fail
+
+_lda2:
+        ldx     #op_lda_idx
+        jsr     _base
+        lda     #$03
+        jsr     _spc
+        bne     _lda3
+        jmp     _amem
+
+_lda3:
+        jmp     _fail
+
+_sta:
+        lda     dline_buf+$01
+        cmp     #'t'
+        beq     _sta1
+        jmp     _fail
+
+_sta1:
+        lda     dline_buf+$02
+        cmp     #'a'
+        beq     _sta2
+        jmp     _fail
+
+_sta2:
+        ldx     #op_sta_idx
+        jsr     _base
+        lda     #$03
+        jsr     _spc
+        bne     _sta3
+        jmp     _mem
+
+_sta3:
+        jmp     _fail
+
+_jsr:
+        lda     dline_buf+$01
+        cmp     #'s'
+        beq     _jsr1
+        jmp     _fail
+
+_jsr1:
+        lda     dline_buf+$02
+        cmp     #'r'
+        beq     _jsr2
+        jmp     _fail
+
+_jsr2:
+        ldx     #op_jsr_idx
+        jsr     _base
+        lda     #$03
+        jsr     _spc
+        bne     _jsr3
+        jmp     _mem
+
+_jsr3:
+        jmp     _fail
+
+_bop:
+        lda     dline_buf+$01
+        cmp     #'r'
+        beq     _bra
+        cmp     #'s'
+        beq     _bset
+        jmp     _fail
+
+_bra:
+        lda     dline_buf+$02
+        cmp     #'a'
+        beq     _bra1
+        jmp     _fail
+
+_bra1:
+        ldx     #op_bra_idx
+        jsr     _base
+        lda     #$03
+        jsr     _spc
+        bne     _bra2
+        jmp     _rel
+
+_bra2:
+        jmp     _fail
+
+_bset:
+        lda     dline_buf+$02
+        cmp     #'e'
+        beq     _bs1
+        jmp     _fail
+
+_bs1:
+        lda     dline_buf+$03
+        cmp     #'t'
+        beq     _bs2
+        jmp     _fail
+
+_bs2:
+        ldx     #op_bset_idx
+        jsr     _base
+        lda     #$04
+        jsr     _spc
+        bne     _bs3
+        jmp     _bit
+
+_bs3:
+        jmp     _fail
+
+_amem:
+        ldx     _pos
+        cpx     asm_len
+        bne     _am1
+        jmp     _fail
+
+_am1:
+        lda     dline_buf,x
+        cmp     #'#'
+        beq     _imm
+        jmp     _mem
+
+_imm:
+        incx
+        stx     _pos
+        jsr     _phex
+        bcc     _imm1
+        jmp     _fail
+
+_imm1:
+        jsr     _end
+        beq     _imm2
+        jmp     _fail
+
+_imm2:
+        tst     _hi
+        beq     _imm3
+        jmp     _fail
+
+_imm3:
+        lda     #$02
+        sta     _len
+        jmp     _write
+
+_mem:
+        ldx     _pos
+        cpx     asm_len
+        bne     _mem1
+        jmp     _fail
+
+_mem1:
+        lda     dline_buf,x
+        cmp     #','
+        beq     _idx0
+        jsr     _phex
+        bcc     _mem2
+        jmp     _fail
+
+_mem2:
+        ldx     _pos
+        cpx     asm_len
+        beq     _abs
+        lda     dline_buf,x
+        cmp     #','
+        beq     _idxn
+        jmp     _fail
+
+_idx0:
+        jsr     _ckx
+        beq     _idx01
+        jmp     _fail
+
+_idx01:
+        lda     _op
+        add     #$50
+        sta     _op
+        lda     #$01
+        sta     _len
+        jmp     _write
+
+_idxn:
+        jsr     _ckx
+        beq     _idxn1
+        jmp     _fail
+
+_idxn1:
+        lda     _op
+        tst     _hi
+        beq     _idx8
+        add     #$30
+        sta     _op
+        lda     #$03
+        sta     _len
+        jmp     _write
+
+_idx8:
+        add     #$40
+        sta     _op
+        lda     #$02
+        sta     _len
+        jmp     _write
+
+_abs:
+        lda     _op
+        tst     _hi
+        beq     _dir
+        add     #$20
+        sta     _op
+        lda     #$03
+        sta     _len
+        jmp     _write
+
+_dir:
+        add     #$10
+        sta     _op
+        lda     #$02
+        sta     _len
+        jmp     _write
+
+_rel:
+        jsr     _phex
+        bcc     _rel1
+        jmp     _fail
+
+_rel1:
+        jsr     _end
+        beq     _rel2
+        jmp     _fail
+
+_rel2:
+        lda     disasm_pc_lo            ; Branch operands are displayed and entered as targets
+        add     #$02
+        sta     _pos
         lda     disasm_pc_hi
-        sta     mem_thunk_hi
-        lda     disasm_pc_lo
-        sta     mem_thunk_lo
-        lda     #op_nop
-        clrx
-        jsr     mem_thunk_write
-        inc     disasm_pc_lo
-        bne     _ok
-        inc     disasm_pc_hi
-        bra     _ok
+        adc     #$00
+        sta     _len
+        lda     _lo
+        sub     _pos
+        sta     _lo
+        lda     _hi
+        sbc     _len
+        sta     _hi
+        lda     _lo
+        bpl     _relpos
+        lda     _hi
+        cmp     #$ff
+        beq     _relok
+        jmp     _fail
+
+_relpos:
+        tst     _hi
+        beq     _relok
+        jmp     _fail
+
+_relok:
+        lda     #$02
+        sta     _len
+        jmp     _write
+
+_bit:
+        ldx     _pos
+        cpx     asm_len
+        bne     _bit1
+        jmp     _fail
+
+_bit1:
+        lda     dline_buf,x
+        sub     #'0'
+        bmi     _bitbad
+        cmp     #$08
+        blo     _bit2
+
+_bitbad:
+        jmp     _fail
+
+_bit2:
+        asla
+        add     _op
+        sta     _op
+        incx
+        cpx     asm_len
+        bne     _bit3
+        jmp     _fail
+
+_bit3:
+        lda     dline_buf,x
+        cmp     #','
+        beq     _bit4
+        jmp     _fail
+
+_bit4:
+        incx
+        stx     _pos
+        jsr     _phex
+        bcc     _bit5
+        jmp     _fail
+
+_bit5:
+        jsr     _end
+        beq     _bit6
+        jmp     _fail
+
+_bit6:
+        tst     _hi
+        beq     _bit7
+        jmp     _fail
+
+_bit7:
+        lda     #$02
+        sta     _len
+        jmp     _write
 
 _blank:
         lda     disasm_pc_hi            ; Blank lines skip over the current decoded instruction
@@ -1299,9 +1651,231 @@ _blank:
         lda     disasm_pc_lo
         add     _len
         sta     disasm_pc_lo
-        bcc     _ok
+        bcs     _bla1
+        jmp     _ok
+
+_bla1:
         inc     disasm_pc_hi
-        bra     _ok
+        jmp     _ok
+
+_write:
+        lda     disasm_pc_hi
+        sta     mem_thunk_hi
+        lda     disasm_pc_lo
+        sta     mem_thunk_lo
+        clrx
+        lda     _op
+        jsr     mem_thunk_write
+        lda     _len
+        cmp     #$01
+        beq     _adv
+        cmp     #$02
+        beq     _wrlo
+        ldx     #$01
+        lda     _hi
+        jsr     mem_thunk_write
+        ldx     #$02
+        bra     _wrlo2
+
+_wrlo:
+        ldx     #$01
+
+_wrlo2:
+        lda     _lo
+        jsr     mem_thunk_write
+
+_adv:
+        lda     disasm_pc_lo
+        add     _len
+        sta     disasm_pc_lo
+        bcc     _suc
+        inc     disasm_pc_hi
+
+_suc:
+        clra
+        rts
+
+_base:
+        lda     op_tbl,x
+        sta     _op
+        rts
+
+_spc:
+        sta     _pos
+        tax
+        cpx     asm_len
+        beq     _spbad
+        lda     dline_buf,x
+        cmp     #SP
+        bne     _spbad
+        incx
+        stx     _pos
+        clra
+        rts
+
+_spbad:
+        lda     #$01
+        rts
+
+_end:
+        ldx     _pos
+        cpx     asm_len
+        bne     _endbad
+        clra
+        rts
+
+_endbad:
+        lda     #$01
+        rts
+
+_ckx:
+        ldx     _pos
+        cpx     asm_len
+        bne     _ckx1
+        lda     #$01
+        rts
+
+_ckx1:
+        lda     dline_buf,x
+        cmp     #','
+        beq     _ckx2
+        lda     #$01
+        rts
+
+_ckx2:
+        incx
+        cpx     asm_len
+        bne     _ckx3
+        lda     #$01
+        rts
+
+_ckx3:
+        lda     dline_buf,x
+        cmp     #'x'
+        beq     _ckx4
+        lda     #$01
+        rts
+
+_ckx4:
+        incx
+        stx     _pos
+        jmp     _end
+
+_phex:
+        clr     _hi
+        clr     _lo
+        ldx     _pos
+        cpx     asm_len
+        bne     _ph1
+        sec
+        rts
+
+_ph1:
+        lda     dline_buf,x
+        cmp     #'$'
+        bne     _ph2
+        incx
+
+_ph2:
+        jsr     _pbyte
+        bcc     _ph3
+        rts
+
+_ph3:
+        sta     _lo
+        cpx     asm_len
+        beq     _phdone
+        lda     dline_buf,x
+        jsr     _nib
+        cmp     #$10
+        bhs     _phdone
+        lda     _lo
+        sta     _hi
+        jsr     _pbyte
+        bcc     _ph4
+        rts
+
+_ph4:
+        sta     _lo
+
+_phdone:
+        stx     _pos
+        clc
+        rts
+
+_pbyte:
+        cpx     asm_len
+        bne     _pb1
+        sec
+        rts
+
+_pb1:
+        lda     dline_buf,x
+        jsr     _nib
+        cmp     #$10
+        blo     _pb2
+        sec
+        rts
+
+_pb2:
+        lsla
+        lsla
+        lsla
+        lsla
+        sta     _pos
+        incx
+        cpx     asm_len
+        bne     _pb3
+        sec
+        rts
+
+_pb3:
+        lda     dline_buf,x
+        jsr     _nib
+        cmp     #$10
+        blo     _pb4
+        sec
+        rts
+
+_pb4:
+        ora     _pos
+        incx
+        clc
+        rts
+
+_nib:
+        cmp     #'0'
+        blo     _nbad
+        cmp     #':'
+        blo     _ndig
+        cmp     #'A'
+        blo     _nlo
+        cmp     #'G'
+        blo     _nup
+
+_nlo:
+        cmp     #'a'
+        blo     _nbad
+        cmp     #'g'
+        bhs     _nbad
+        sub     #('a' - 10)
+        rts
+
+_nup:
+        sub     #('A' - 10)
+        rts
+
+_ndig:
+        sub     #'0'
+        rts
+
+_nbad:
+        lda     #$10
+        rts
+
+_fail:
+        lda     #$01
+        rts
 
 _err:
         ldx     #asm_err_txt-cpu_txt

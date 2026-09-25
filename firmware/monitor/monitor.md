@@ -581,19 +581,6 @@ integration where needed:
 
 ## Implementation Slices
 
-### 9.7. EVSBUG12 Assembler Parser and Opcode Construction
-
-Failing test: assembler fixtures for representative inherent, immediate,
-direct, extended, indexed, relative, and bit-operation source lines fail
-until the monitor uses EVSBUG12-style mnemonic lookup, operand parsing, and
-opcode construction.
-
-End state: the keyboard assembler shares the EVSBUG12-derived `mnemonics`,
-`mnemonic_modes`, and `opcode_table` metadata with the disassembler where
-practical. It emits bytes for the representative addressing modes, rejects
-invalid operand forms without modifying memory, resolves relative branch
-offsets, and reports range errors deterministically.
-
 ### 9.8. Assembler Opcode and Addressing-Mode Coverage
 
 Failing test: a generated assembler coverage audit built from `TASM05.TAB`
