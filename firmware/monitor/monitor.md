@@ -148,6 +148,15 @@ direct-addressed instructions. Use zero page deliberately for hardware,
 persistent debugger state, generated-code thunks, or scratch values whose
 direct addressing saves enough ROM to justify the allocation.
 
+Zero-page data allocations must respect the hardware memory map. Do not
+allocate monitor state, test state, scratch bytes, buffers, or generated
+data in the memory-mapped I/O range `$0000`-`$000f` or in the zero-page
+stack reservation `$0040`-`$007f`. The zero-page regions available for
+data allocation are `$0010`-`$003f` and `$0080`-`$00ff`, subject to the
+monitor's own RAM map and lifetime rules. Test-only zero-page data should
+allocate downward from `$00ff` and must not cross into the stack region or
+reuse firmware-owned bytes.
+
 ## Control Model
 
 The monitor owns the display whenever the CPU is stopped. The state shown
