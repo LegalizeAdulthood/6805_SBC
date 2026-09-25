@@ -149,4 +149,80 @@
  031D: C7 12 34    sta     $1234
  0320: CF 12 34    stx     $1234
  0323: C0 12 34    sub     $1234
- 0326: F6          lda     ,x
+ 0326: F9          adc     ,x
+ 0327: FB          add     ,x
+ 0328: F4          and     ,x
+ 0329: 78          asl     ,x
+ 032A: 77          asr     ,x
+ 032B: F5          bit     ,x
+ 032C: 7F          clr     ,x
+ 032D: F1          cmp     ,x
+ 032E: F3          cpx     ,x
+ 032F: 73          com     ,x
+ 0330: F3          cpx     ,x
+ 0331: 7A          dec     ,x
+ 0332: F8          eor     ,x
+ 0333: 7C          inc     ,x
+ 0334: FC          jmp     ,x
+ 0335: FD          jsr     ,x
+ 0336: F6          lda     ,x
+ 0337: FE          ldx     ,x
+ 0338: 78          asl     ,x
+ 0339: 74          lsr     ,x
+ 033A: 70          neg     ,x
+ 033B: FA          ora     ,x
+ 033C: 79          rol     ,x
+ 033D: 76          ror     ,x
+ 033E: F2          sbc     ,x
+ 033F: F7          sta     ,x
+ 0340: FF          stx     ,x
+ 0341: F0          sub     ,x
+ 0342: 7D          tst     ,x
+ 0343: 60 44       neg     $44,x
+ 0345: 63 44       com     $44,x
+ 0347: 64 44       lsr     $44,x
+ 0349: 66 44       ror     $44,x
+ 034B: 67 44       asr     $44,x
+ 034D: 68 44       asl     $44,x
+ 034F: 68 44       asl     $44,x
+ 0351: 69 44       rol     $44,x
+ 0353: 6A 44       dec     $44,x
+ 0355: 6C 44       inc     $44,x
+ 0357: 6D 44       tst     $44,x
+ 0359: 6F 44       clr     $44,x
+ 035B: E0 44       sub     $44,x
+ 035D: E1 44       cmp     $44,x
+ 035F: E2 44       sbc     $44,x
+ 0361: E3 44       cpx     $44,x
+ 0363: E3 44       cpx     $44,x
+ 0365: E4 44       and     $44,x
+ 0367: E5 44       bit     $44,x
+ 0369: E6 44       lda     $44,x
+ 036B: E7 44       sta     $44,x
+ 036D: E8 44       eor     $44,x
+ 036F: E9 44       adc     $44,x
+ 0371: EA 44       ora     $44,x
+ 0373: EB 44       add     $44,x
+ 0375: EC 44       jmp     $44,x
+ 0377: ED 44       jsr     $44,x
+ 0379: EE 44       ldx     $44,x
+ 037B: EF 44       stx     $44,x
+ 037D: D0 12 34    sub     $1234,x
+ 0380: D1 12 34    cmp     $1234,x
+ 0383: D2 12 34    sbc     $1234,x
+ 0386: D3 12 34    cpx     $1234,x
+ 0389: D3 12 34    cpx     $1234,x
+ 038C: D4 12 34    and     $1234,x
+ 038F: D5 12 34    bit     $1234,x
+ 0392: D6 12 34    lda     $1234,x
+ 0395: D7 12 34    sta     $1234,x
+ 0398: D8 12 34    eor     $1234,x
+ 039B: D9 12 34    adc     $1234,x
+ 039E: DA 12 34    ora     $1234,x
+ 03A1: DB 12 34    add     $1234,x
+ 03A4: DC 12 34    jmp     $1234,x
+ 03A7: DD 12 34    jsr     $1234,x
+ 03AA: DE 12 34    ldx     $1234,x
+ 03AD: DF 12 34    stx     $1234,x
+ 1FFE: C9          fcb     $C9
+ 1FFF: A9          fcb     $A9

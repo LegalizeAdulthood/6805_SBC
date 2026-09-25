@@ -135,6 +135,16 @@ add_test(
         "${CMAKE_CURRENT_SOURCE_DIR}/check_monitor_disassembler_core.cmake"
 )
 
+add_test(
+    NAME monitor.disassembler_coverage
+    COMMAND
+        "${CMAKE_COMMAND}"
+        "-DTASM_TABLE=${TASM_6805_TABLE}"
+        "-DDISASSEMBLY_EXPECTED=${CMAKE_CURRENT_SOURCE_DIR}/expected_disassembly.txt"
+        "-P"
+        "${CMAKE_CURRENT_SOURCE_DIR}/check_monitor_disassembler_coverage.cmake"
+)
+
 if(MAME_EXECUTABLE)
 add_test(
     NAME monitor.mame.reset_vector

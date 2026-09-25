@@ -60,8 +60,9 @@ _require_symbol("disasm_pc_lo")
 file(STRINGS "${_disassembly_expected}" _expected_lines)
 list(LENGTH _expected_lines _row_count)
 set(_row_keys "")
-set(_fixture_bytes "")
-set(_fixture_start "")
+set(_fixture_writes "")
+set(_sparse_bytes "")
+set(_row_addrs "")
 
 foreach(_line IN LISTS _expected_lines)
     string(LENGTH "${_line}" _line_length)
@@ -118,16 +119,23 @@ foreach(_line IN LISTS _expected_lines)
         set(_row_operand "")
     endif()
 
-    if(_fixture_start STREQUAL "")
-        set(_fixture_start "${_row_addr}")
-    endif()
+    string(SUBSTRING "${_row_addr}" 0 2 _row_hi)
+    string(SUBSTRING "${_row_addr}" 2 2 _row_lo)
+    string(APPEND _row_addrs "    { 0x${_row_hi}, 0x${_row_lo} },\r\n")
 
+    set(_row_key_addr "${_row_addr}")
     string(REPLACE " " ";" _row_byte_list "${_row_bytes}")
+    math(EXPR _byte_addr "0x${_row_addr}")
     foreach(_byte IN LISTS _row_byte_list)
-        list(APPEND _fixture_bytes "0x${_byte}")
+        if(_byte_addr GREATER_EQUAL 0x1ff0)
+            string(APPEND _sparse_bytes "    [${_byte_addr}] = 0x${_byte},\r\n")
+        else()
+            string(APPEND _fixture_writes "        mem:write_u8(${_byte_addr}, 0x${_byte})\r\n")
+        endif()
+        math(EXPR _byte_addr "${_byte_addr} + 1")
     endforeach()
 
-    list(APPEND _row_keys "${_row_addr}|${_row_bytes}|${_row_mnemonic}|${_row_operand}")
+    list(APPEND _row_keys "${_row_key_addr}|${_row_bytes}|${_row_mnemonic}|${_row_operand}")
 endforeach()
 
 function(_require_row _addr _bytes _mnemonic _operand _description)
@@ -154,7 +162,11 @@ _require_row("02D1" "B9 44" "adc " "$44" "direct")
 _require_row("02DB" "B3 44" "cpx " "$44" "canonical direct alias")
 _require_row("02F3" "C9 12 34" "adc " "$1234" "extended")
 _require_row("0302" "C3 12 34" "cpx " "$1234" "canonical extended alias")
-_require_row("0326" "F6" "lda " ",x" "indexed")
+_require_row("0336" "F6" "lda " ",x" "indexed")
+_require_row("036F" "E9 44" "adc " "$44,x" "direct indexed")
+_require_row("039B" "D9 12 34" "adc " "$1234,x" "extended indexed")
+_require_row("1FFE" "C9" "fcb " "$C9" "truncated extended")
+_require_row("1FFF" "A9" "fcb " "$A9" "truncated immediate")
 
 file(READ "${_disassembly_expected}" _expected_bytes HEX)
 string(TOUPPER "${_expected_bytes}" _expected_bytes)
@@ -167,11 +179,7 @@ math(EXPR _test_code_size "${_test_code_hex_length} / 2")
 string(REGEX REPLACE "([0-9A-Fa-f][0-9A-Fa-f])" "0x\\1;" _test_code_list "${_test_code_bytes}")
 string(REGEX REPLACE ";$" "" _test_code_list "${_test_code_list}")
 
-list(JOIN _fixture_bytes ", " _lua_fixture_bytes)
 string(REPLACE ";" ", " _lua_test_code_bytes "${_test_code_list}")
-
-string(SUBSTRING "${_fixture_start}" 0 2 _fixture_hi)
-string(SUBSTRING "${_fixture_start}" 2 2 _fixture_lo)
 
 file(REMOVE_RECURSE "${_stage_dir}")
 file(MAKE_DIRECTORY
@@ -198,12 +206,17 @@ file(WRITE "${_disassembler_script}"
     "local disasm_pc_hi = 0x${SYM_disasm_pc_hi}\r\n"
     "local disasm_pc_lo = 0x${SYM_disasm_pc_lo}\r\n"
     "local code_base = ${TEST_CODE_LOAD}\r\n"
-    "local fixture_base = 0x${_fixture_start}\r\n"
     "local expected = ${_expected_count}\r\n"
     "local rows = ${_row_count}\r\n"
-    "local fixture = { ${_lua_fixture_bytes} }\r\n"
+    "local row_addrs = {\r\n"
+    "${_row_addrs}"
+    "}\r\n"
+    "local sparse = {\r\n"
+    "${_sparse_bytes}"
+    "}\r\n"
     "local test_code = { ${_lua_test_code_bytes} }\r\n"
     "local bytes = {}\r\n"
+    "local row = 0\r\n"
     "local phase = \"wait_reset\"\r\n"
     "local frames = 0\r\n"
     "local cpu = manager.machine.devices[\":maincpu\"]\r\n"
@@ -220,6 +233,16 @@ file(WRITE "${_disassembler_script}"
     "    for _, byte in ipairs(bytes) do table.insert(out, string.format(\"%02X\", byte)) end\r\n"
     "    return table.concat(out, \"\")\r\n"
     "end\r\n"
+    "local function launch_row(next_row)\r\n"
+    "    local addr = row_addrs[next_row]\r\n"
+    "    row = next_row\r\n"
+    "    mem:write_u8(disasm_pc_hi, addr[1])\r\n"
+    "    mem:write_u8(disasm_pc_lo, addr[2])\r\n"
+    "    mem:write_u8(${TEST_ROW_CURRENT}, next_row)\r\n"
+    "    cpu.state[\"CC\"].value = cpu.state[\"CC\"].value | 0x08\r\n"
+    "    cpu.state[\"S\"].value = 0x7f\r\n"
+    "    cpu.state[\"PC\"].value = code_base\r\n"
+    "end\r\n"
     "emu.register_frame_done(function()\r\n"
     "    frames = frames + 1\r\n"
     "    cpu = manager.machine.devices[\":maincpu\"]\r\n"
@@ -228,20 +251,25 @@ file(WRITE "${_disassembler_script}"
     "        if cpu.state[\"PC\"].value ~= idle and frames < 60 then return end\r\n"
     "        mem:write_u8(${ACIA_CONTROL}, 0x03)\r\n"
     "        mem:write_u8(${ACIA_CONTROL}, 0x15)\r\n"
-    "        for index, byte in ipairs(fixture) do mem:write_u8(fixture_base + index - 1, byte) end\r\n"
+    "${_fixture_writes}"
+    "        _G.disassembler_taps.sparse = mem:install_read_tap(0x1ff0, 0x1fff, \"disassembler_sparse\", function(offset, data, mask)\r\n"
+    "            return sparse[offset] or sparse[0x1ff0 + offset] or data\r\n"
+    "        end)\r\n"
     "        for index, byte in ipairs(test_code) do mem:write_u8(code_base + index - 1, byte) end\r\n"
-    "        mem:write_u8(disasm_pc_hi, 0x${_fixture_hi})\r\n"
-    "        mem:write_u8(disasm_pc_lo, 0x${_fixture_lo})\r\n"
+    "        mem:write_u8(${TEST_ROW_CURRENT}, 0)\r\n"
+    "        mem:write_u8(${TEST_ROWS_DONE}, 0)\r\n"
     "        bytes = {}\r\n"
-    "        cpu.state[\"CC\"].value = cpu.state[\"CC\"].value | 0x08\r\n"
-    "        cpu.state[\"S\"].value = 0x7f\r\n"
-    "        cpu.state[\"PC\"].value = code_base\r\n"
+    "        launch_row(1)\r\n"
     "        phase = \"wait_done\"\r\n"
     "        return\r\n"
     "    end\r\n"
     "    if phase == \"wait_done\" then\r\n"
     "        local halt = code_base + #test_code - 2\r\n"
-    "        if cpu.state[\"PC\"].value ~= halt and frames < 1000 then return end\r\n"
+    "        if cpu.state[\"PC\"].value ~= halt and frames < 5000 then return end\r\n"
+    "        if cpu.state[\"PC\"].value == halt and row < rows then\r\n"
+    "            launch_row(row + 1)\r\n"
+    "            return\r\n"
+    "        end\r\n"
     "        print(string.format(\"DISASSEMBLY HALT=%d ROWS=%d ROW=%d DONE=%d COUNT=%d BYTES=%s\", cpu.state[\"PC\"].value, rows, mem:read_u8(${TEST_ROW_CURRENT}), mem:read_u8(${TEST_ROWS_DONE}), #bytes, hex_bytes()))\r\n"
     "        manager.machine:exit()\r\n"
     "        return\r\n"

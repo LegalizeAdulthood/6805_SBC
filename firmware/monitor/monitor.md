@@ -574,20 +574,6 @@ integration where needed:
 
 ## Implementation Slices
 
-### 9.5. Disassembler Indexed and Full Coverage Audit
-
-Failing test: the disassembler fixture is extended with every indexed row
-in `TASM05.TAB`, and a fixture coverage audit fails until every opcode row
-and addressing mode accepted by `TASM05.TAB` is represented.
-
-End state: no-offset indexed operands display as `,X`. Offset-indexed
-operands display the literal numeric offset and `,X`, using `$nn,X` for
-one-byte offsets and `$nnnn,X` where the opcode encoding carries a full
-extended address. The disassembler fixture covers every opcode row in
-`TASM05.TAB`, plus invalid opcodes and truncated instructions near `$FFFF`.
-The coverage check names any missing table row by mnemonic, operand form,
-addressing mode, and opcode byte.
-
 ### 9.6. Keyboard Assembler Command Skeleton
 
 Failing test: a command-dispatch fixture feeds one simple keyboard

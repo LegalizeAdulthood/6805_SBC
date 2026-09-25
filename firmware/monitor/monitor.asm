@@ -438,6 +438,32 @@ _brbit:
         sta     _mnem
         rts
 
+chk_trnc:
+        lda     disasm_pc_hi
+        cmp     #$1f
+        bne     _trok
+        lda     disasm_pc_lo
+        cmp     #$fe
+        blo     _trok
+        lda     _len
+        cmp     #$01
+        beq     _trok
+        lda     disasm_pc_lo
+        cmp     #$ff
+        beq     _trbad
+        lda     _len
+        cmp     #$03
+        bne     _trok
+
+_trbad:
+        lda     #$01
+        sta     _len
+        lda     #op_fcb_idx
+        sta     _mnem
+
+_trok:
+        rts
+
 dasm_line:
         lda     _mnem
         cmp     #op_fcb_idx
@@ -480,7 +506,7 @@ _n40:
 _n60:
         cmp     #$70
         bhs     _n70
-        jmp     _dirop
+        jmp     _idxdir
 
 _n70:
         cmp     #$80
@@ -510,12 +536,12 @@ _nc0:
 _nd0:
         cmp     #$e0
         bhs     _ne0
-        jmp     _extop
+        jmp     _idxext
 
 _ne0:
         cmp     #$f0
         bhs     _nf0
-        jmp     _dirop
+        jmp     _idxdir
 
 _nf0:
         jmp     _idxop
@@ -610,33 +636,45 @@ _immop:
         jsr     _gap
         lda     #'#'
         jsr     _app
-        jsr     _dol
-        ldx     #$01
-        jsr     mem_thunk_read
-        jsr     _apphx
+        jsr     _val8
         jmp     _line
 
 _dirop:
-        jsr     _gap
-        jsr     _dol
-        ldx     #$01
-        jsr     mem_thunk_read
-        jsr     _apphx
+        bsr     _op8
         jmp     _line
 
 _extop:
-        jsr     _gap
-        jsr     _dol
-        ldx     #$01
-        jsr     mem_thunk_read
-        jsr     _apphx
-        ldx     #$02
-        jsr     mem_thunk_read
-        jsr     _apphx
+        bsr     _op16
         jmp     _line
+
+_idxdir:
+        bsr     _op8
+        bra     _idxsfx
+
+_idxext:
+        bsr     _op16
+        bra     _idxsfx
 
 _idxop:
         jsr     _gap
+        bra     _idxsfx
+
+_op16:
+        bsr     _op8
+        ldx     #$02
+        jsr     mem_thunk_read
+        jmp     _apphx
+
+_op8:
+        jsr     _gap
+
+_val8:
+        jsr     _dol
+        ldx     #$01
+        jsr     mem_thunk_read
+        jmp     _apphx
+
+_idxsfx:
         lda     #','
         jsr     _app
         lda     #'x'
@@ -901,6 +939,7 @@ _asclp:
 
         .module draw_dasm_row
 
+_op     .equ    scratch                 ; opcode byte restored after byte-column output
 _len    .equ    scratch + $01           ; decoded instruction byte count
 
 ; Disassembly row rendering advances a separate PC from the memory panel.
@@ -918,6 +957,7 @@ draw_dasm_row:
         clrx
         jsr     mem_thunk_read
         jsr     dec_inst
+        jsr     chk_trnc
 
 _bytes:
         clrx
@@ -953,7 +993,7 @@ _spc:
         jsr     emit_spcs
         clrx
         jsr     mem_thunk_read
-        jsr     dec_inst
+        sta     _op
         jsr     dasm_line
 
 _done:
