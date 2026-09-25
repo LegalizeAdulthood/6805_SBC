@@ -382,8 +382,11 @@ disassembly addresses should have explicit storage with known upper bounds.
 ## Extension Bank Features
 
 The base monitor includes the non-symbolic disassembler and keyboard
-assembler. Both should share the compact mnemonic, operand-class, and opcode
-construction implementation recovered in the reconstituted EVSBUG12 source.
+assembler. Both should directly carry over the compact mnemonic,
+operand-class, opcode construction, and parser implementation recovered in
+the reconstituted EVSBUG12 source. EVSBUG12's assembler has already been
+micro-optimized to fit in an 8KB debug ROM; treat that implementation as
+the size-tested source, not as loose inspiration for a replacement.
 If ROM bank switching is added later, an extension bank may provide larger
 optional tools that are useful but not essential to the core debugger.
 
@@ -401,7 +404,8 @@ The following details still need concrete key bindings and command syntax:
 - Breakpoint set, clear, list, display markers, and continue-from-breakpoint
   behavior.
 - User break behavior while a program is running.
-- Keyboard assembler command entry, operand syntax, and error reporting.
+- Keyboard assembler panel entry and full-screen editing affordances around
+  the EVSBUG12 assembler core.
 - Whether any non-return SWI monitor services are needed, and if so the
   exact command codes passed in the accumulator.
 - Error handling for S-record checksum failures and partial loads.
@@ -483,13 +487,20 @@ top-level assembly style and resource rules.
 
 The disassembler and keyboard assembler slices should now directly take the
 proven EVSBUG12 disassembler and assembler from the reconstituted assembly
-source, then adapt their I/O boundaries to the monitor's full-screen
-presentation and command-input model. This is not a from-scratch
-EVSBUG12-inspired variation. After the integration, keep adding
-monitor-context coverage until every 6805 opcode and addressing mode is
-validated. Disassembled source text follows local assembly style:
-mnemonics, directives, pseudo-ops, operands, labels, and symbols are
-lower-case, while hexadecimal digits remain uppercase.
+source, then adapt only their I/O boundaries to the monitor's full-screen
+presentation, command-input model, and memory abstraction. This is not a
+from-scratch EVSBUG12-inspired variation, and it is not a TASM-compatible
+interactive assembler. TASM remains the host assembler used to build ROMs
+and test helper programs; it is not the behavioral authority for the
+monitor's inline assembler syntax. After the integration, keep adding
+monitor-context coverage until every EVSBUG12 assembler opcode and
+addressing mode is validated. Disassembled source text follows local
+assembly style: mnemonics, directives, pseudo-ops, operands, labels, and
+symbols are lower-case, while hexadecimal digits remain uppercase.
+Any partial or prototype assembler implementation already present in
+`monitor.asm` must be ripped out rather than incrementally grown; the
+replacement is the EVSBUG12 assembler core adapted at the I/O and monitor
+integration boundaries.
 
 Use `firmware/evsbug12/evsbug12.asm` as the source-level reference for the
 compact decoder, mnemonic metadata, assembler opcode construction paths, and
@@ -522,10 +533,11 @@ Useful EVSBUG12 source artifacts include:
   position/count information.
 - `opcode_table`: assembler-side base opcode table, using named `op_*`
   equates rather than anonymous bytes.
-- `asm_cmd`: keyboard assembler parser and opcode construction path. It
-  reuses `mnemonics`, `mnemonic_modes`, `opcode_table`, `parse_hex_word`,
-  and the memory write path, then redisassembles the newly written
-  instruction for feedback.
+- `asm_cmd`: keyboard assembler parser and opcode construction path. Port
+  this code directly and preserve its compact parser/data structure unless
+  the monitor I/O boundary requires a change. It reuses `mnemonics`,
+  `mnemonic_modes`, `opcode_table`, `parse_hex_word`, and the memory write
+  path, then redisassembles the newly written instruction for feedback.
 - `cmd_tokens`, `cmd_handlers`, and `cmd_loop`: high-bit-terminated command
   token matching and compact command dispatch.
 - `message_text`, `help_intro`, `help_breakpoint`, `help_go_load_md`,
@@ -553,8 +565,8 @@ Useful EVSBUG12 source artifacts include:
   constants such as `NUL`, `CR`, `LF`, and `msg_end`.
 
 Directly carry over EVSBUG12's disassembler and assembler structure, data
-encoding, and shared metadata, adapting only the surrounding I/O and monitor
-integration where needed:
+encoding, shared metadata, and size-oriented control flow, adapting only the
+surrounding I/O and monitor integration where needed:
 
 - Classify opcodes by high nibble and low nibble first, then use tiny
   family tables only for irregular holes or mnemonic selection.
@@ -572,6 +584,10 @@ integration where needed:
 - Prefer shared metadata for disassembly and assembly so opcode coverage,
   operand classification, and alias handling do not drift between the two
   tools.
+- Preserve EVSBUG12 assembler syntax and error behavior except where the
+  monitor's full-screen I/O wrapper explicitly adds an outer interaction.
+  Do not use TASM operand syntax acceptance as the inline assembler
+  standard.
 - Use named opcode equates and named data tables when lifting EVSBUG12
   logic. The monitor source should be compact, but it should not return to
   anonymous byte blobs now that the EVSBUG12 source has reviewable labels.
@@ -581,26 +597,31 @@ integration where needed:
 
 ## Implementation Slices
 
-### 9.8. Assembler Opcode and Addressing-Mode Coverage
+### 9.8. EVSBUG12 Assembler Port
 
-Failing test: a generated assembler coverage audit built from `TASM05.TAB`
-fails until every mnemonic, opcode byte, and addressing mode accepted by
-the monitor assembler has a fixture whose emitted bytes match TASM's
-encoding.
+Failing test: an EVSBUG12 assembler fixture suite drives the monitor's
+keyboard assembler path and fails until EVSBUG12-valid source lines produce
+the same bytes, status, and redisassembly feedback as the EVSBUG12
+assembler. The suite uses EVSBUG12 source/manual behavior as the syntax
+authority. TASM may assemble test programs, but it must not define the
+interactive assembler language.
 
-End state: the keyboard assembler covers every 6805 opcode and addressing
-mode that the base monitor intends to support, including alias spellings,
-direct-versus-extended selection, indexed offset widths, relative branch
-ranges, and bit-operation operands. Unsupported symbolic features such as
-labels and expressions are rejected cleanly. The coverage audit reports any
-missing row by mnemonic, operand form, addressing mode, and opcode byte.
+End state: the keyboard assembler core is ported directly from
+`firmware/evsbug12/evsbug12.asm`, preserving its micro-optimized parser,
+opcode construction paths, accepted operand forms, aliases, diagnostics,
+and one-line feedback behavior. Only character I/O, memory access, saved
+state, and screen-integration boundaries are adapted to the visual monitor.
+Any existing partial assembler code in `monitor.asm` has been removed
+rather than retained as scaffolding. Coverage reports any EVSBUG12
+assembler fixture not yet represented by mnemonic, operand form, addressing
+mode, and opcode byte.
 
 ### 9.9. Shared Table Compaction and Monitor Integration
 
 Failing test: a size-regression test fails until the completed
-disassembler and keyboard assembler share EVSBUG12-derived metadata and fit
-within the documented ROM-size budget while preserving all disassembler and
-assembler coverage fixtures.
+disassembler and keyboard assembler share the ported EVSBUG12 metadata and
+fit within the documented ROM-size budget while preserving all disassembler
+and assembler coverage fixtures.
 
 End state: duplicate mnemonic strings, operand-class tables, and opcode
 family tables are merged where that reduces ROM size without making tests
