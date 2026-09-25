@@ -90,7 +90,63 @@
  0296: 0D 44 00    brclr   6,$44,$0299
  0299: 0E 44 00    brset   7,$44,$029C
  029C: 0F 44 00    brclr   7,$44,$029F
- 029F: A6 5A       lda     #$5A
- 02A1: 3F 44       clr     $44
- 02A3: C6 12 34    lda     $1234
- 02A6: F6          lda     ,x
+ 029F: A9 5A       adc     #$5A
+ 02A1: AB 5A       add     #$5A
+ 02A3: A4 5A       and     #$5A
+ 02A5: A5 5A       bit     #$5A
+ 02A7: A1 5A       cmp     #$5A
+ 02A9: A3 5A       cpx     #$5A
+ 02AB: A3 5A       cpx     #$5A
+ 02AD: A8 5A       eor     #$5A
+ 02AF: A6 5A       lda     #$5A
+ 02B1: AE 5A       ldx     #$5A
+ 02B3: AA 5A       ora     #$5A
+ 02B5: A2 5A       sbc     #$5A
+ 02B7: A0 5A       sub     #$5A
+ 02B9: 38 44       asl     $44
+ 02BB: 37 44       asr     $44
+ 02BD: 38 44       asl     $44
+ 02BF: 3F 44       clr     $44
+ 02C1: 33 44       com     $44
+ 02C3: 3A 44       dec     $44
+ 02C5: 3C 44       inc     $44
+ 02C7: 34 44       lsr     $44
+ 02C9: 30 44       neg     $44
+ 02CB: 39 44       rol     $44
+ 02CD: 36 44       ror     $44
+ 02CF: 3D 44       tst     $44
+ 02D1: B9 44       adc     $44
+ 02D3: BB 44       add     $44
+ 02D5: B4 44       and     $44
+ 02D7: B5 44       bit     $44
+ 02D9: B1 44       cmp     $44
+ 02DB: B3 44       cpx     $44
+ 02DD: B3 44       cpx     $44
+ 02DF: B8 44       eor     $44
+ 02E1: BC 44       jmp     $44
+ 02E3: BD 44       jsr     $44
+ 02E5: B6 44       lda     $44
+ 02E7: BE 44       ldx     $44
+ 02E9: BA 44       ora     $44
+ 02EB: B2 44       sbc     $44
+ 02ED: B7 44       sta     $44
+ 02EF: BF 44       stx     $44
+ 02F1: B0 44       sub     $44
+ 02F3: C9 12 34    adc     $1234
+ 02F6: CB 12 34    add     $1234
+ 02F9: C4 12 34    and     $1234
+ 02FC: C5 12 34    bit     $1234
+ 02FF: C1 12 34    cmp     $1234
+ 0302: C3 12 34    cpx     $1234
+ 0305: C3 12 34    cpx     $1234
+ 0308: C8 12 34    eor     $1234
+ 030B: CC 12 34    jmp     $1234
+ 030E: CD 12 34    jsr     $1234
+ 0311: C6 12 34    lda     $1234
+ 0314: CE 12 34    ldx     $1234
+ 0317: CA 12 34    ora     $1234
+ 031A: C2 12 34    sbc     $1234
+ 031D: C7 12 34    sta     $1234
+ 0320: CF 12 34    stx     $1234
+ 0323: C0 12 34    sub     $1234
+ 0326: F6          lda     ,x

@@ -7,9 +7,9 @@ endforeach()
 set(ACIA_STATUS 0x0006)
 set(ACIA_CONTROL 0x0006)
 set(ACIA_DATA 0x0007)
-set(TEST_CODE_LOAD 0x0080)
-set(TEST_DONE_ADDR 0x00f0)
-set(TEST_DONE_PASS 0xa5)
+set(TEST_CODE_LOAD 0x0400)
+set(TEST_ROW_CURRENT 0x0045)
+set(TEST_ROWS_DONE 0x0046)
 
 get_filename_component(_monitor_binary "${MONITOR_BINARY}" ABSOLUTE)
 get_filename_component(_monitor_symbols "${MONITOR_SYMBOLS}" ABSOLUTE)
@@ -146,10 +146,15 @@ _require_row("024F" "10 44" "bset" "0,$44" "bit-operation")
 _require_row("026D" "1F 44" "bclr" "7,$44" "bit-operation")
 _require_row("026F" "00 44 00" "brset" "0,$44,$0272" "bit-relative")
 _require_row("029C" "0F 44 00" "brclr" "7,$44,$029F" "bit-relative")
-_require_row("029F" "A6 5A" "lda " "#$5A" "immediate")
-_require_row("02A1" "3F 44" "clr " "$44" "direct")
-_require_row("02A3" "C6 12 34" "lda " "$1234" "extended")
-_require_row("02A6" "F6" "lda " ",x" "indexed")
+_require_row("029F" "A9 5A" "adc " "#$5A" "immediate")
+_require_row("02A9" "A3 5A" "cpx " "#$5A" "canonical immediate alias")
+_require_row("02B9" "38 44" "asl " "$44" "direct unary")
+_require_row("02BD" "38 44" "asl " "$44" "canonical direct unary alias")
+_require_row("02D1" "B9 44" "adc " "$44" "direct")
+_require_row("02DB" "B3 44" "cpx " "$44" "canonical direct alias")
+_require_row("02F3" "C9 12 34" "adc " "$1234" "extended")
+_require_row("0302" "C3 12 34" "cpx " "$1234" "canonical extended alias")
+_require_row("0326" "F6" "lda " ",x" "indexed")
 
 file(READ "${_disassembly_expected}" _expected_bytes HEX)
 string(TOUPPER "${_expected_bytes}" _expected_bytes)
@@ -157,6 +162,8 @@ string(LENGTH "${_expected_bytes}" _expected_hex_length)
 math(EXPR _expected_count "${_expected_hex_length} / 2")
 
 file(READ "${_disassembly_test_binary}" _test_code_bytes HEX)
+string(LENGTH "${_test_code_bytes}" _test_code_hex_length)
+math(EXPR _test_code_size "${_test_code_hex_length} / 2")
 string(REGEX REPLACE "([0-9A-Fa-f][0-9A-Fa-f])" "0x\\1;" _test_code_list "${_test_code_bytes}")
 string(REGEX REPLACE ";$" "" _test_code_list "${_test_code_list}")
 
@@ -192,8 +199,6 @@ file(WRITE "${_disassembler_script}"
     "local disasm_pc_lo = 0x${SYM_disasm_pc_lo}\r\n"
     "local code_base = ${TEST_CODE_LOAD}\r\n"
     "local fixture_base = 0x${_fixture_start}\r\n"
-    "local done_addr = ${TEST_DONE_ADDR}\r\n"
-    "local pass = ${TEST_DONE_PASS}\r\n"
     "local expected = ${_expected_count}\r\n"
     "local rows = ${_row_count}\r\n"
     "local fixture = { ${_lua_fixture_bytes} }\r\n"
@@ -203,10 +208,11 @@ file(WRITE "${_disassembler_script}"
     "local frames = 0\r\n"
     "local cpu = manager.machine.devices[\":maincpu\"]\r\n"
     "local mem = cpu.spaces[\"program\"]\r\n"
-    "mem:install_write_tap(${ACIA_DATA}, ${ACIA_DATA}, \"disassembler_acia_data\", function(offset, data, mask)\r\n"
+    "_G.disassembler_taps = {}\r\n"
+    "_G.disassembler_taps.acia_data = mem:install_write_tap(${ACIA_DATA}, ${ACIA_DATA}, \"disassembler_acia_data\", function(offset, data, mask)\r\n"
     "    table.insert(bytes, data & 0xff)\r\n"
     "end)\r\n"
-    "mem:install_read_tap(${ACIA_STATUS}, ${ACIA_STATUS}, \"disassembler_acia_stat\", function(offset, data, mask)\r\n"
+    "_G.disassembler_taps.acia_stat = mem:install_read_tap(${ACIA_STATUS}, ${ACIA_STATUS}, \"disassembler_acia_stat\", function(offset, data, mask)\r\n"
     "    return data | 0x02\r\n"
     "end)\r\n"
     "local function hex_bytes()\r\n"
@@ -226,7 +232,6 @@ file(WRITE "${_disassembler_script}"
     "        for index, byte in ipairs(test_code) do mem:write_u8(code_base + index - 1, byte) end\r\n"
     "        mem:write_u8(disasm_pc_hi, 0x${_fixture_hi})\r\n"
     "        mem:write_u8(disasm_pc_lo, 0x${_fixture_lo})\r\n"
-    "        mem:write_u8(done_addr, 0x00)\r\n"
     "        bytes = {}\r\n"
     "        cpu.state[\"CC\"].value = cpu.state[\"CC\"].value | 0x08\r\n"
     "        cpu.state[\"S\"].value = 0x7f\r\n"
@@ -235,8 +240,9 @@ file(WRITE "${_disassembler_script}"
     "        return\r\n"
     "    end\r\n"
     "    if phase == \"wait_done\" then\r\n"
-    "        if mem:read_u8(done_addr) ~= pass and frames < 300 then return end\r\n"
-    "        print(string.format(\"DISASSEMBLY DONE=%02X ROWS=%d COUNT=%d BYTES=%s\", mem:read_u8(done_addr), rows, #bytes, hex_bytes()))\r\n"
+    "        local halt = code_base + #test_code - 2\r\n"
+    "        if cpu.state[\"PC\"].value ~= halt and frames < 1000 then return end\r\n"
+    "        print(string.format(\"DISASSEMBLY HALT=%d ROWS=%d ROW=%d DONE=%d COUNT=%d BYTES=%s\", cpu.state[\"PC\"].value, rows, mem:read_u8(${TEST_ROW_CURRENT}), mem:read_u8(${TEST_ROWS_DONE}), #bytes, hex_bytes()))\r\n"
     "        manager.machine:exit()\r\n"
     "        return\r\n"
     "    end\r\n"
@@ -256,7 +262,7 @@ execute_process(
         -nothrottle
         -autoboot_delay 0
         -autoboot_script disassembler.lua
-        -seconds_to_run 10
+        -seconds_to_run 30
     WORKING_DIRECTORY "${_stage_dir}"
     RESULT_VARIABLE _mame_result
     OUTPUT_VARIABLE _mame_stdout
@@ -269,24 +275,30 @@ if(NOT _mame_result EQUAL 0)
     message(FATAL_ERROR "MAME failed with exit code ${_mame_result}\n${_mame_output}")
 endif()
 
-string(REGEX MATCH "DISASSEMBLY DONE=([0-9A-Fa-f][0-9A-Fa-f]) ROWS=([0-9]+) COUNT=([0-9]+) BYTES=([0-9A-Fa-f]*)" _output_match "${_mame_output}")
+string(REGEX MATCH "DISASSEMBLY HALT=([0-9]+) ROWS=([0-9]+) ROW=([0-9]+) DONE=([0-9]+) COUNT=([0-9]+) BYTES=([0-9A-Fa-f]*)" _output_match "${_mame_output}")
 if(NOT _output_match)
     message(FATAL_ERROR "MAME output did not report DISASSEMBLY\n${_mame_output}")
 endif()
 
-set(_done_value "${CMAKE_MATCH_1}")
+set(_halt_value "${CMAKE_MATCH_1}")
 set(_actual_rows "${CMAKE_MATCH_2}")
-set(_actual_count "${CMAKE_MATCH_3}")
-set(_actual_bytes "${CMAKE_MATCH_4}")
-string(TOLOWER "${_done_value}" _done_value)
+set(_actual_row "${CMAKE_MATCH_3}")
+set(_actual_done "${CMAKE_MATCH_4}")
+set(_actual_count "${CMAKE_MATCH_5}")
+set(_actual_bytes "${CMAKE_MATCH_6}")
 string(TOUPPER "${_actual_bytes}" _actual_bytes)
 
-if(NOT _done_value STREQUAL "a5")
-    message(FATAL_ERROR "Disassembler test program did not signal pass; done=${_done_value}\n${_mame_output}")
+math(EXPR _halt_expected "${TEST_CODE_LOAD} + ${_test_code_size} - 2")
+if(NOT _halt_value STREQUAL "${_halt_expected}")
+    message(FATAL_ERROR "Disassembler test program did not reach halt ${_halt_expected}; pc=${_halt_value}\n${_mame_output}")
 endif()
 
 if(NOT _actual_rows STREQUAL "${_row_count}")
     message(FATAL_ERROR "Expected ${_row_count} disassembly rows, got ${_actual_rows}\n${_mame_output}")
+endif()
+
+if(NOT _actual_row STREQUAL "${_row_count}" OR NOT _actual_done STREQUAL "${_row_count}")
+    message(FATAL_ERROR "Expected ${_row_count} completed disassembly rows; row=${_actual_row}, done=${_actual_done}\n${_mame_output}")
 endif()
 
 if(NOT _actual_count STREQUAL "${_expected_count}")

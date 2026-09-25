@@ -1,0 +1,35 @@
+foreach(_required_var IN ITEMS DISASSEMBLY_EXPECTED DISASSEMBLY_TEST_SOURCE)
+    if(NOT DEFINED ${_required_var} OR "${${_required_var}}" STREQUAL "")
+        message(FATAL_ERROR "${_required_var} is required")
+    endif()
+endforeach()
+
+if(NOT EXISTS "${DISASSEMBLY_EXPECTED}")
+    message(FATAL_ERROR "expected disassembly fixture does not exist: ${DISASSEMBLY_EXPECTED}")
+endif()
+
+file(STRINGS "${DISASSEMBLY_EXPECTED}" _expected_lines)
+list(LENGTH _expected_lines _row_count)
+
+set(_output "        .msfirst\n")
+string(APPEND _output "#include \"monitor_entries.inc\"\n\n")
+string(APPEND _output "        .org    $0000\n\n")
+string(APPEND _output "        .module disasm_test\n\n")
+string(APPEND _output "row_cur .equ    $45\n")
+string(APPEND _output "rows_done .equ  $46\n\n")
+string(APPEND _output "start:\n")
+string(APPEND _output "        clr     row_cur\n")
+string(APPEND _output "        clr     rows_done\n")
+
+foreach(_row RANGE 1 ${_row_count})
+    string(APPEND _output "        lda     #${_row}\n")
+    string(APPEND _output "        sta     row_cur\n")
+    string(APPEND _output "        jsr     draw_dasm_row\n")
+    string(APPEND _output "        inc     rows_done\n")
+endforeach()
+
+string(APPEND _output "_halt:\n")
+string(APPEND _output "        bra     _halt\n\n")
+string(APPEND _output "        .end\n")
+
+file(WRITE "${DISASSEMBLY_TEST_SOURCE}" "${_output}")

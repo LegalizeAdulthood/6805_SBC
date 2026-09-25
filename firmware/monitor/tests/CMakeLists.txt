@@ -1,10 +1,25 @@
 get_filename_component(MONITOR_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/.." ABSOLUTE)
 
-set(MONITOR_DISASM_TEST_SOURCE "${CMAKE_CURRENT_SOURCE_DIR}/disasm_user_test.asm")
+set(MONITOR_DISASM_TEST_SOURCE "${MONITOR_OUTPUT_DIR}/disasm_user_test.asm")
 set(MONITOR_DISASM_TEST_BINARY "${MONITOR_OUTPUT_DIR}/disasm_user_test.bin")
 set(MONITOR_DISASM_TEST_LISTING "${MONITOR_OUTPUT_DIR}/disasm_user_test.lst")
 set(MONITOR_DISASM_TEST_EXPORTS "${MONITOR_OUTPUT_DIR}/disasm_user_test.exp")
 set(MONITOR_DISASM_TEST_SYMBOLS "${MONITOR_OUTPUT_DIR}/disasm_user_test.sym")
+
+add_custom_command(
+    OUTPUT "${MONITOR_DISASM_TEST_SOURCE}"
+    COMMAND
+        "${CMAKE_COMMAND}"
+        "-DDISASSEMBLY_EXPECTED=${CMAKE_CURRENT_SOURCE_DIR}/expected_disassembly.txt"
+        "-DDISASSEMBLY_TEST_SOURCE=${MONITOR_DISASM_TEST_SOURCE}"
+        -P
+        "${CMAKE_CURRENT_SOURCE_DIR}/generate_disasm_user_test.cmake"
+    DEPENDS
+        "${CMAKE_CURRENT_SOURCE_DIR}/expected_disassembly.txt"
+        "${CMAKE_CURRENT_SOURCE_DIR}/generate_disasm_user_test.cmake"
+    COMMENT "Generating RAM disassembler test program"
+    VERBATIM
+)
 
 add_custom_command(
     OUTPUT "${MONITOR_DISASM_TEST_BINARY}"

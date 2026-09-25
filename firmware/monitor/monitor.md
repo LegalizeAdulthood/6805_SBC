@@ -574,18 +574,6 @@ integration where needed:
 
 ## Implementation Slices
 
-### 9.4. Disassembler Immediate, Direct, and Extended Coverage
-
-Failing test: the disassembler fixture is extended with every immediate,
-direct, and extended operand row in `TASM05.TAB`, and fails until each row
-decodes to the expected monitor text.
-
-End state: immediate operands display as `#$nn`, direct operands display as
-`$nn`, and extended operands display as `$nnnn`. Arithmetic, logic,
-load/store, compare, unary memory, `JMP`, and `JSR` rows are covered for
-all valid immediate, direct, and extended encodings. Alias opcodes such as
-`CMPX` and `CPX` use the monitor's canonical mnemonic.
-
 ### 9.5. Disassembler Indexed and Full Coverage Audit
 
 Failing test: the disassembler fixture is extended with every indexed row
