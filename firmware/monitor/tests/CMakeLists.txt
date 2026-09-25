@@ -1,29 +1,57 @@
 get_filename_component(MONITOR_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/.." ABSOLUTE)
 
-set(MONITOR_DISASM_TEST_SOURCE "${CMAKE_CURRENT_SOURCE_DIR}/disasm_user_test.asm")
-set(MONITOR_DISASM_TEST_BINARY "${MONITOR_OUTPUT_DIR}/disasm_user_test.bin")
-set(MONITOR_DISASM_TEST_LISTING "${MONITOR_OUTPUT_DIR}/disasm_user_test.lst")
-set(MONITOR_DISASM_TEST_EXPORTS "${MONITOR_OUTPUT_DIR}/disasm_user_test.exp")
-set(MONITOR_DISASM_TEST_SYMBOLS "${MONITOR_OUTPUT_DIR}/disasm_user_test.sym")
-
-add_custom_command(
-    OUTPUT "${MONITOR_DISASM_TEST_BINARY}"
-    BYPRODUCTS
-        "${MONITOR_DISASM_TEST_LISTING}"
-        "${MONITOR_DISASM_TEST_EXPORTS}"
-        "${MONITOR_DISASM_TEST_SYMBOLS}"
-    COMMAND "${TASM_EXE}" -05 -b -s "${MONITOR_DISASM_TEST_SOURCE}" "${MONITOR_DISASM_TEST_BINARY}" "${MONITOR_DISASM_TEST_LISTING}" "${MONITOR_DISASM_TEST_EXPORTS}" "${MONITOR_DISASM_TEST_SYMBOLS}"
-    DEPENDS
-        "${MONITOR_DISASM_TEST_SOURCE}"
-        "${MONITOR_ENTRIES_INCLUDE}"
-        "${MONITOR_BUILD_TASM_TABLE}"
-        "${TASM_EXE}"
-    WORKING_DIRECTORY "${MONITOR_OUTPUT_DIR}"
-    COMMENT "Assembling RAM disassembler test program"
-    VERBATIM
+set(MONITOR_RAM_TEST_PROGRAMS
+    disasm_user_test
+    swi_entry_user_test
+    breakpoint_user_test
+    exec_go_user_test
+    exec_step_user_test
+    exec_trace_user_test
+    int_timer_handler_test
+    int_external_handler_test
 )
 
-add_custom_target(monitor-disasm-test ALL DEPENDS "${MONITOR_DISASM_TEST_BINARY}")
+set(MONITOR_RAM_TEST_BINARIES "")
+foreach(_program IN LISTS MONITOR_RAM_TEST_PROGRAMS)
+    set(_source "${CMAKE_CURRENT_SOURCE_DIR}/${_program}.asm")
+    set(_binary "${MONITOR_OUTPUT_DIR}/${_program}.bin")
+    set(_listing "${MONITOR_OUTPUT_DIR}/${_program}.lst")
+    set(_exports "${MONITOR_OUTPUT_DIR}/${_program}.exp")
+    set(_symbols "${MONITOR_OUTPUT_DIR}/${_program}.sym")
+
+    add_custom_command(
+        OUTPUT "${_binary}"
+        BYPRODUCTS
+            "${_listing}"
+            "${_exports}"
+            "${_symbols}"
+        COMMAND "${TASM_EXE}" -05 -b -s "${_source}" "${_binary}" "${_listing}" "${_exports}" "${_symbols}"
+        DEPENDS
+            "${_source}"
+            "${MONITOR_ENTRIES_INCLUDE}"
+            "${MONITOR_BUILD_TASM_TABLE}"
+            "${TASM_EXE}"
+        WORKING_DIRECTORY "${MONITOR_OUTPUT_DIR}"
+        COMMENT "Assembling ${_program}.asm"
+        VERBATIM
+    )
+
+    list(APPEND MONITOR_RAM_TEST_BINARIES "${_binary}")
+endforeach()
+
+set(MONITOR_DISASM_TEST_BINARY "${MONITOR_OUTPUT_DIR}/disasm_user_test.bin")
+set(MONITOR_SWI_ENTRY_TEST_BINARY "${MONITOR_OUTPUT_DIR}/swi_entry_user_test.bin")
+set(MONITOR_BREAKPOINT_TEST_BINARY "${MONITOR_OUTPUT_DIR}/breakpoint_user_test.bin")
+set(MONITOR_EXEC_GO_TEST_BINARY "${MONITOR_OUTPUT_DIR}/exec_go_user_test.bin")
+set(MONITOR_EXEC_STEP_TEST_BINARY "${MONITOR_OUTPUT_DIR}/exec_step_user_test.bin")
+set(MONITOR_EXEC_TRACE_TEST_BINARY "${MONITOR_OUTPUT_DIR}/exec_trace_user_test.bin")
+set(MONITOR_INT_TIMER_HANDLER_TEST_BINARY "${MONITOR_OUTPUT_DIR}/int_timer_handler_test.bin")
+set(MONITOR_INT_EXTERNAL_HANDLER_TEST_BINARY "${MONITOR_OUTPUT_DIR}/int_external_handler_test.bin")
+
+add_custom_target(monitor-ram-test-programs ALL DEPENDS ${MONITOR_RAM_TEST_BINARIES})
+add_dependencies(monitor-ram-test-programs monitor-entries)
+
+add_custom_target(monitor-disasm-test DEPENDS "${MONITOR_DISASM_TEST_BINARY}")
 add_dependencies(monitor-disasm-test monitor-entries)
 
 add_test(
@@ -259,6 +287,8 @@ add_test(
         "${CMAKE_COMMAND}"
         "-DMONITOR_BINARY=${MONITOR_BINARY}"
         "-DMONITOR_SYMBOLS=${MONITOR_SYMBOLS}"
+        "-DINT_TIMER_HANDLER_TEST_BINARY=${MONITOR_INT_TIMER_HANDLER_TEST_BINARY}"
+        "-DINT_EXTERNAL_HANDLER_TEST_BINARY=${MONITOR_INT_EXTERNAL_HANDLER_TEST_BINARY}"
         "-DMAME_EXE=${MAME_EXECUTABLE}"
         "-DMAME_STAGE_DIR=${MONITOR_OUTPUT_DIR}/mame-interrupt-vectors"
         "-DMONITOR_OUTPUT_DIR=${MONITOR_OUTPUT_DIR}"
@@ -272,6 +302,7 @@ add_test(
         "${CMAKE_COMMAND}"
         "-DMONITOR_BINARY=${MONITOR_BINARY}"
         "-DMONITOR_SYMBOLS=${MONITOR_SYMBOLS}"
+        "-DSWI_ENTRY_TEST_BINARY=${MONITOR_SWI_ENTRY_TEST_BINARY}"
         "-DMAME_EXE=${MAME_EXECUTABLE}"
         "-DMAME_STAGE_DIR=${MONITOR_OUTPUT_DIR}/mame-swi-entry"
         "-DMONITOR_OUTPUT_DIR=${MONITOR_OUTPUT_DIR}"
@@ -298,6 +329,9 @@ add_test(
         "${CMAKE_COMMAND}"
         "-DMONITOR_BINARY=${MONITOR_BINARY}"
         "-DMONITOR_SYMBOLS=${MONITOR_SYMBOLS}"
+        "-DEXEC_GO_TEST_BINARY=${MONITOR_EXEC_GO_TEST_BINARY}"
+        "-DEXEC_STEP_TEST_BINARY=${MONITOR_EXEC_STEP_TEST_BINARY}"
+        "-DEXEC_TRACE_TEST_BINARY=${MONITOR_EXEC_TRACE_TEST_BINARY}"
         "-DMAME_EXE=${MAME_EXECUTABLE}"
         "-DMAME_STAGE_DIR=${MONITOR_OUTPUT_DIR}/mame-exec-cmds"
         "-DMONITOR_OUTPUT_DIR=${MONITOR_OUTPUT_DIR}"
@@ -311,6 +345,7 @@ add_test(
         "${CMAKE_COMMAND}"
         "-DMONITOR_BINARY=${MONITOR_BINARY}"
         "-DMONITOR_SYMBOLS=${MONITOR_SYMBOLS}"
+        "-DBREAKPOINT_TEST_BINARY=${MONITOR_BREAKPOINT_TEST_BINARY}"
         "-DMAME_EXE=${MAME_EXECUTABLE}"
         "-DMAME_STAGE_DIR=${MONITOR_OUTPUT_DIR}/mame-breakpoint"
         "-DMONITOR_OUTPUT_DIR=${MONITOR_OUTPUT_DIR}"

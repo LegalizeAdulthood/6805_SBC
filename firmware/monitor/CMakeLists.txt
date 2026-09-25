@@ -94,7 +94,7 @@ set(MONITOR_EXPECTED_ROM_END "1CCE")
 set(MONITOR_VERSION_INCLUDE "${MONITOR_OUTPUT_DIR}/monitor_version.inc")
 set(MONITOR_BUILD_TASM_TABLE "${MONITOR_OUTPUT_DIR}/TASM05.TAB")
 set(MONITOR_ENTRIES_INCLUDE "${MONITOR_OUTPUT_DIR}/monitor_entries.inc")
-set(MONITOR_ENTRY_SYMBOLS "draw_dasm_row")
+set(MONITOR_ENTRY_SYMBOLS draw_dasm_row idle)
 
 configure_file(
     "${CMAKE_CURRENT_SOURCE_DIR}/monitor_version.inc.in"

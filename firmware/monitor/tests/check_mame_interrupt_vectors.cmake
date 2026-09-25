@@ -1,4 +1,4 @@
-foreach(_required_var IN ITEMS MONITOR_BINARY MONITOR_SYMBOLS MAME_EXE MAME_STAGE_DIR MONITOR_OUTPUT_DIR)
+foreach(_required_var IN ITEMS MONITOR_BINARY MONITOR_SYMBOLS INT_TIMER_HANDLER_TEST_BINARY INT_EXTERNAL_HANDLER_TEST_BINARY MAME_EXE MAME_STAGE_DIR MONITOR_OUTPUT_DIR)
     if(NOT DEFINED ${_required_var} OR "${${_required_var}}" STREQUAL "")
         message(FATAL_ERROR "${_required_var} is required")
     endif()
@@ -14,6 +14,8 @@ set(EXTERNAL_TEST_HANDLER 0x50)
 
 get_filename_component(_monitor_binary "${MONITOR_BINARY}" ABSOLUTE)
 get_filename_component(_monitor_symbols "${MONITOR_SYMBOLS}" ABSOLUTE)
+get_filename_component(_int_timer_handler_test_binary "${INT_TIMER_HANDLER_TEST_BINARY}" ABSOLUTE)
+get_filename_component(_int_external_handler_test_binary "${INT_EXTERNAL_HANDLER_TEST_BINARY}" ABSOLUTE)
 get_filename_component(_mame_exe "${MAME_EXE}" ABSOLUTE)
 get_filename_component(_monitor_output_dir "${MONITOR_OUTPUT_DIR}" ABSOLUTE)
 get_filename_component(_stage_dir "${MAME_STAGE_DIR}" ABSOLUTE BASE_DIR "${_monitor_output_dir}")
@@ -26,9 +28,11 @@ if(NOT EXISTS "${_monitor_symbols}")
     message(FATAL_ERROR "Monitor symbols do not exist: ${_monitor_symbols}")
 endif()
 
-if(NOT EXISTS "${_mame_exe}")
-    message(FATAL_ERROR "MAME executable does not exist: ${_mame_exe}")
-endif()
+foreach(_path_var IN ITEMS _int_timer_handler_test_binary _int_external_handler_test_binary _mame_exe)
+    if(NOT EXISTS "${${_path_var}}")
+        message(FATAL_ERROR "required input does not exist: ${${_path_var}}")
+    endif()
+endforeach()
 
 file(TO_CMAKE_PATH "${_monitor_output_dir}" _monitor_output_cmp)
 file(TO_CMAKE_PATH "${_stage_dir}" _stage_cmp)
@@ -82,6 +86,17 @@ function(_require_not_vector _name _address _label)
         message(FATAL_ERROR "${_name} vector unexpectedly points directly to ${_label}")
     endif()
 endfunction()
+
+function(_binary_as_lua _out_var _path)
+    file(READ "${_path}" _bytes_hex HEX)
+    string(REGEX REPLACE "([0-9A-Fa-f][0-9A-Fa-f])" "0x\\1;" _byte_list "${_bytes_hex}")
+    string(REGEX REPLACE ";$" "" _byte_list "${_byte_list}")
+    string(REPLACE ";" ", " _lua_bytes "${_byte_list}")
+    set(${_out_var} "${_lua_bytes}" PARENT_SCOPE)
+endfunction()
+
+_binary_as_lua(_timer_handler_program "${_int_timer_handler_test_binary}")
+_binary_as_lua(_external_handler_program "${_int_external_handler_test_binary}")
 
 file(READ "${_monitor_binary}" _rom_hex HEX)
 string(TOUPPER "${_rom_hex}" _rom_hex)
@@ -156,6 +171,8 @@ file(WRITE "${_interrupt_script}"
     "local marker = ${TEST_MARKER}\r\n"
     "local timer_handler = ${TIMER_TEST_HANDLER}\r\n"
     "local external_handler = ${EXTERNAL_TEST_HANDLER}\r\n"
+    "local timer_handler_program = { ${_timer_handler_program} }\r\n"
+    "local external_handler_program = { ${_external_handler_program} }\r\n"
     "local phase = \"wait_reset\"\r\n"
     "local frames = 0\r\n"
     "local result = {}\r\n"
@@ -163,15 +180,8 @@ file(WRITE "${_interrupt_script}"
     "local function lo(value) return value % 256 end\r\n"
     "local function read_word(mem, high_addr, low_addr) return mem:read_u8(high_addr) * 256 + mem:read_u8(low_addr) end\r\n"
     "local function write_word(mem, high_addr, low_addr, value) mem:write_u8(high_addr, hi(value)); mem:write_u8(low_addr, lo(value)) end\r\n"
-    "local function install_handler(mem, address, value)\r\n"
-    "    mem:write_u8(address + 0, 0xA6)\r\n"
-    "    mem:write_u8(address + 1, value)\r\n"
-    "    mem:write_u8(address + 2, 0xC7)\r\n"
-    "    mem:write_u8(address + 3, 0x00)\r\n"
-    "    mem:write_u8(address + 4, marker)\r\n"
-    "    mem:write_u8(address + 5, 0xCC)\r\n"
-    "    mem:write_u8(address + 6, hi(idle))\r\n"
-    "    mem:write_u8(address + 7, lo(idle))\r\n"
+    "local function load_program(mem, address, bytes)\r\n"
+    "    for index, byte in ipairs(bytes) do mem:write_u8(address + index - 1, byte) end\r\n"
     "end\r\n"
     "emu.register_frame_done(function()\r\n"
     "    frames = frames + 1\r\n"
@@ -183,8 +193,8 @@ file(WRITE "${_interrupt_script}"
     "        result.t_default = read_word(mem, timer_hi, timer_lo)\r\n"
     "        result.e_default = read_word(mem, external_hi, external_lo)\r\n"
     "        result.jump = mem:read_u8(jump_opcode)\r\n"
-    "        install_handler(mem, timer_handler, 0xA5)\r\n"
-    "        install_handler(mem, external_handler, 0x5A)\r\n"
+    "        load_program(mem, timer_handler, timer_handler_program)\r\n"
+    "        load_program(mem, external_handler, external_handler_program)\r\n"
     "        mem:write_u8(marker, 0x00)\r\n"
     "        write_word(mem, timer_hi, timer_lo, timer_handler)\r\n"
     "        cpu.state[\"PC\"].value = tmr_disp\r\n"

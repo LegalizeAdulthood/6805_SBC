@@ -1,4 +1,4 @@
-foreach(_required_var IN ITEMS MONITOR_BINARY MONITOR_SYMBOLS MAME_EXE MAME_STAGE_DIR MONITOR_OUTPUT_DIR)
+foreach(_required_var IN ITEMS MONITOR_BINARY MONITOR_SYMBOLS BREAKPOINT_TEST_BINARY MAME_EXE MAME_STAGE_DIR MONITOR_OUTPUT_DIR)
     if(NOT DEFINED ${_required_var} OR "${${_required_var}}" STREQUAL "")
         message(FATAL_ERROR "${_required_var} is required")
     endif()
@@ -17,15 +17,26 @@ set(STOP_BREAK "05")
 
 get_filename_component(_monitor_binary "${MONITOR_BINARY}" ABSOLUTE)
 get_filename_component(_monitor_symbols "${MONITOR_SYMBOLS}" ABSOLUTE)
+get_filename_component(_breakpoint_test_binary "${BREAKPOINT_TEST_BINARY}" ABSOLUTE)
 get_filename_component(_mame_exe "${MAME_EXE}" ABSOLUTE)
 get_filename_component(_monitor_output_dir "${MONITOR_OUTPUT_DIR}" ABSOLUTE)
 get_filename_component(_stage_dir "${MAME_STAGE_DIR}" ABSOLUTE BASE_DIR "${_monitor_output_dir}")
 
-foreach(_path_var IN ITEMS _monitor_binary _monitor_symbols _mame_exe)
+foreach(_path_var IN ITEMS _monitor_binary _monitor_symbols _breakpoint_test_binary _mame_exe)
     if(NOT EXISTS "${${_path_var}}")
         message(FATAL_ERROR "required input does not exist: ${${_path_var}}")
     endif()
 endforeach()
+
+function(_binary_as_lua _out_var _path)
+    file(READ "${_path}" _bytes_hex HEX)
+    string(REGEX REPLACE "([0-9A-Fa-f][0-9A-Fa-f])" "0x\\1;" _byte_list "${_bytes_hex}")
+    string(REGEX REPLACE ";$" "" _byte_list "${_byte_list}")
+    string(REPLACE ";" ", " _lua_bytes "${_byte_list}")
+    set(${_out_var} "${_lua_bytes}" PARENT_SCOPE)
+endfunction()
+
+_binary_as_lua(_breakpoint_program "${_breakpoint_test_binary}")
 
 file(TO_CMAKE_PATH "${_monitor_output_dir}" _monitor_output_cmp)
 file(TO_CMAKE_PATH "${_stage_dir}" _stage_cmp)
@@ -116,7 +127,7 @@ file(WRITE "${_breakpoint_script}"
     "    return mem:read_u8(high_addr) * 256 + mem:read_u8(low_addr)\r\n"
     "end\r\n"
     "local function load_program()\r\n"
-    "    local program = {0xae, 0x34, 0xa6, 0x56, 0x9d, 0x9d, 0x9d, 0x9d, 0x9d, 0x9d, 0x9d, 0x9d, 0xae, 0x78, 0x9d, 0x9d, 0x9d, 0x9d, 0x9d, 0x9d, 0x9d, 0x9d, 0x83}\r\n"
+    "    local program = { ${_breakpoint_program} }\r\n"
     "    for index, byte in ipairs(program) do mem:write_u8(program_start + index - 1, byte) end\r\n"
     "end\r\n"
     "emu.register_frame_done(function()\r\n"

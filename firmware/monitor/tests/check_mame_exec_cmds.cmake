@@ -1,4 +1,4 @@
-foreach(_required_var IN ITEMS MONITOR_BINARY MONITOR_SYMBOLS MAME_EXE MAME_STAGE_DIR MONITOR_OUTPUT_DIR)
+foreach(_required_var IN ITEMS MONITOR_BINARY MONITOR_SYMBOLS EXEC_GO_TEST_BINARY EXEC_STEP_TEST_BINARY EXEC_TRACE_TEST_BINARY MAME_EXE MAME_STAGE_DIR MONITOR_OUTPUT_DIR)
     if(NOT DEFINED ${_required_var} OR "${${_required_var}}" STREQUAL "")
         message(FATAL_ERROR "${_required_var} is required")
     endif()
@@ -16,15 +16,30 @@ set(STOP_STEP "04")
 
 get_filename_component(_monitor_binary "${MONITOR_BINARY}" ABSOLUTE)
 get_filename_component(_monitor_symbols "${MONITOR_SYMBOLS}" ABSOLUTE)
+get_filename_component(_exec_go_test_binary "${EXEC_GO_TEST_BINARY}" ABSOLUTE)
+get_filename_component(_exec_step_test_binary "${EXEC_STEP_TEST_BINARY}" ABSOLUTE)
+get_filename_component(_exec_trace_test_binary "${EXEC_TRACE_TEST_BINARY}" ABSOLUTE)
 get_filename_component(_mame_exe "${MAME_EXE}" ABSOLUTE)
 get_filename_component(_monitor_output_dir "${MONITOR_OUTPUT_DIR}" ABSOLUTE)
 get_filename_component(_stage_dir "${MAME_STAGE_DIR}" ABSOLUTE BASE_DIR "${_monitor_output_dir}")
 
-foreach(_path_var IN ITEMS _monitor_binary _monitor_symbols _mame_exe)
+foreach(_path_var IN ITEMS _monitor_binary _monitor_symbols _exec_go_test_binary _exec_step_test_binary _exec_trace_test_binary _mame_exe)
     if(NOT EXISTS "${${_path_var}}")
         message(FATAL_ERROR "required input does not exist: ${${_path_var}}")
     endif()
 endforeach()
+
+function(_binary_as_lua _out_var _path)
+    file(READ "${_path}" _bytes_hex HEX)
+    string(REGEX REPLACE "([0-9A-Fa-f][0-9A-Fa-f])" "0x\\1;" _byte_list "${_bytes_hex}")
+    string(REGEX REPLACE ";$" "" _byte_list "${_byte_list}")
+    string(REPLACE ";" ", " _lua_bytes "${_byte_list}")
+    set(${_out_var} "${_lua_bytes}" PARENT_SCOPE)
+endfunction()
+
+_binary_as_lua(_go_program "${_exec_go_test_binary}")
+_binary_as_lua(_step_program "${_exec_step_test_binary}")
+_binary_as_lua(_trace_program "${_exec_trace_test_binary}")
 
 file(TO_CMAKE_PATH "${_monitor_output_dir}" _monitor_output_cmp)
 file(TO_CMAKE_PATH "${_stage_dir}" _stage_cmp)
@@ -100,6 +115,9 @@ file(WRITE "${_exec_cmds_script}"
     "local stp_cmd = 0x${SYM_stp_cmd}\r\n"
     "local trc_cmd = 0x${SYM_trc_cmd}\r\n"
     "local program_start = ${PROGRAM_START}\r\n"
+    "local go_program = { ${_go_program} }\r\n"
+    "local step_program = { ${_step_program} }\r\n"
+    "local trace_program = { ${_trace_program} }\r\n"
     "local frames = 0\r\n"
     "local phase = \"wait_reset\"\r\n"
     "local results = {}\r\n"
@@ -143,7 +161,7 @@ file(WRITE "${_exec_cmds_script}"
     "    mem = cpu.spaces[\"program\"]\r\n"
     "    if phase == \"wait_reset\" then\r\n"
     "        if cpu.state[\"PC\"].value ~= monitor_idle and frames < 60 then return end\r\n"
-    "        load_program({0xae, 0x34, 0xa6, 0x56, 0x83})\r\n"
+    "        load_program(go_program)\r\n"
     "        seed_saved(program_start, 0x12, 0x00, 0x${CC_MASKED})\r\n"
     "        cpu.state[\"PC\"].value = go_cmd\r\n"
     "        phase = \"wait_go\"\r\n"
@@ -152,7 +170,7 @@ file(WRITE "${_exec_cmds_script}"
     "    if phase == \"wait_go\" then\r\n"
     "        if cpu.state[\"PC\"].value ~= monitor_idle and frames < 240 then return end\r\n"
     "        capture(\"go\")\r\n"
-    "        load_program({0xa6, 0x22, 0x9d, 0x83})\r\n"
+    "        load_program(step_program)\r\n"
     "        seed_saved(program_start, 0x11, 0x44, 0x${CC_MASKED})\r\n"
     "        write_word(0x${SYM_disasm_pc_hi}, 0x${SYM_disasm_pc_lo}, 0x2222)\r\n"
     "        cpu.state[\"PC\"].value = stp_cmd\r\n"
@@ -162,7 +180,7 @@ file(WRITE "${_exec_cmds_script}"
     "    if phase == \"wait_step\" then\r\n"
     "        if cpu.state[\"PC\"].value ~= monitor_idle and frames < 420 then return end\r\n"
     "        capture(\"step\")\r\n"
-    "        load_program({0xa6, 0x11, 0xa6, 0x12, 0xa6, 0x13, 0x83})\r\n"
+    "        load_program(trace_program)\r\n"
     "        seed_saved(program_start, 0x10, 0x55, 0x${CC_CLEAR})\r\n"
     "        write_word(0x${SYM_disasm_pc_hi}, 0x${SYM_disasm_pc_lo}, 0x3333)\r\n"
     "        cpu.state[\"PC\"].value = trc_cmd\r\n"
