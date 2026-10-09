@@ -3,5 +3,8 @@ U1,MC146805E2,MC146805E2,Package_DIP:DIP-40_W15.24mm,confirmed,docs/MC146805E2_1
 U2,MC6850,MC6850,Package_DIP:DIP-24_W15.24mm,confirmed,docs/MC6850.pdf,ACIA
 U3,MC14411,MC14411,Package_DIP:DIP-24_W15.24mm,confirmed,docs/MC14411.pdf,Baud-rate generator
 U4,74153,74153,Package_DIP:DIP-16_W7.62mm,inferred,design/baud-rate.md,Dual mux for ACIA receive and transmit baud clocks
+U5,AM2732,Am2732,Package_DIP:DIP-24_W15.24mm,confirmed,docs/memory-map.txt,4Kx8 ROM at $1000-$1FFF using inventory Am2732
+U6,HM6116,HM6116,Package_DIP:DIP-24_W7.62mm,confirmed,docs/memory-map.txt,2Kx8 RAM 1 at $0110-$07FF using inventory HM6116
+U7,HM6116,HM6116,Package_DIP:DIP-24_W7.62mm,confirmed,docs/memory-map.txt,2Kx8 RAM 2 at $0800-$0FFF using inventory HM6116
 Y1,XTAL_CPU_5MHZ,5 MHz,Crystal:Crystal_HC49-U_Vertical,confirmed,https://www.digikey.com/en/products/detail/w%C3%BCrth-elektronik/830003119B/13900107,CPU crystal
 Y2,XTAL_1_8432MHZ,1.8432 MHz,Crystal:Crystal_HC49-U_Vertical,confirmed,https://www.digikey.com/en/products/detail/raltron-electronics/A-1-8432-18/10246237,MC14411 baud-rate crystal

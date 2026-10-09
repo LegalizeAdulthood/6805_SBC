@@ -33,6 +33,54 @@ MC14411,24,VDD,power_in,false,MCU_Motorola_6800.kicad_sym,Power
 74153,14,A,input,false,https://www.ti.com/lit/ds/symlink/sn74ls153.pdf,Shared select input A
 74153,15,~2G,input,true,https://www.ti.com/lit/ds/symlink/sn74ls153.pdf,Section 2 active-low strobe/enable
 74153,16,VCC,power_in,false,https://www.ti.com/lit/ds/symlink/sn74ls153.pdf,Power
+AM2732,1,A7,input,false,docs/Am2732-AMD.pdf,Address input
+AM2732,2,A6,input,false,docs/Am2732-AMD.pdf,Address input
+AM2732,3,A5,input,false,docs/Am2732-AMD.pdf,Address input
+AM2732,4,A4,input,false,docs/Am2732-AMD.pdf,Address input
+AM2732,5,A3,input,false,docs/Am2732-AMD.pdf,Address input
+AM2732,6,A2,input,false,docs/Am2732-AMD.pdf,Address input
+AM2732,7,A1,input,false,docs/Am2732-AMD.pdf,Address input
+AM2732,8,A0,input,false,docs/Am2732-AMD.pdf,Address input
+AM2732,9,O0,output,false,docs/Am2732-AMD.pdf,Data output
+AM2732,10,O1,output,false,docs/Am2732-AMD.pdf,Data output
+AM2732,11,O2,output,false,docs/Am2732-AMD.pdf,Data output
+AM2732,12,GND,power_in,false,docs/Am2732-AMD.pdf,Ground
+AM2732,13,O3,output,false,docs/Am2732-AMD.pdf,Data output
+AM2732,14,O4,output,false,docs/Am2732-AMD.pdf,Data output
+AM2732,15,O5,output,false,docs/Am2732-AMD.pdf,Data output
+AM2732,16,O6,output,false,docs/Am2732-AMD.pdf,Data output
+AM2732,17,O7,output,false,docs/Am2732-AMD.pdf,Data output
+AM2732,18,~CE/PGM,input,true,docs/Am2732-AMD.pdf,Chip enable/program input
+AM2732,19,A10,input,false,docs/Am2732-AMD.pdf,Address input
+AM2732,20,~OE/VPP,input,true,docs/Am2732-AMD.pdf,Output enable/programming voltage input
+AM2732,21,A11,input,false,docs/Am2732-AMD.pdf,Address input
+AM2732,22,A9,input,false,docs/Am2732-AMD.pdf,Address input
+AM2732,23,A8,input,false,docs/Am2732-AMD.pdf,Address input
+AM2732,24,VCC,power_in,false,docs/Am2732-AMD.pdf,Power
+HM6116,1,A7,input,false,docs/IDT_6116.pdf,Address input
+HM6116,2,A6,input,false,docs/IDT_6116.pdf,Address input
+HM6116,3,A5,input,false,docs/IDT_6116.pdf,Address input
+HM6116,4,A4,input,false,docs/IDT_6116.pdf,Address input
+HM6116,5,A3,input,false,docs/IDT_6116.pdf,Address input
+HM6116,6,A2,input,false,docs/IDT_6116.pdf,Address input
+HM6116,7,A1,input,false,docs/IDT_6116.pdf,Address input
+HM6116,8,A0,input,false,docs/IDT_6116.pdf,Address input
+HM6116,9,I/O0,bidirectional,false,docs/IDT_6116.pdf,Data input/output
+HM6116,10,I/O1,bidirectional,false,docs/IDT_6116.pdf,Data input/output
+HM6116,11,I/O2,bidirectional,false,docs/IDT_6116.pdf,Data input/output
+HM6116,12,GND,power_in,false,docs/IDT_6116.pdf,Ground
+HM6116,13,I/O3,bidirectional,false,docs/IDT_6116.pdf,Data input/output
+HM6116,14,I/O4,bidirectional,false,docs/IDT_6116.pdf,Data input/output
+HM6116,15,I/O5,bidirectional,false,docs/IDT_6116.pdf,Data input/output
+HM6116,16,I/O6,bidirectional,false,docs/IDT_6116.pdf,Data input/output
+HM6116,17,I/O7,bidirectional,false,docs/IDT_6116.pdf,Data input/output
+HM6116,18,~CS,input,true,docs/IDT_6116.pdf,Chip select
+HM6116,19,A10,input,false,docs/IDT_6116.pdf,Address input
+HM6116,20,~OE,input,true,docs/IDT_6116.pdf,Output enable
+HM6116,21,~WE,input,true,docs/IDT_6116.pdf,Write enable
+HM6116,22,A9,input,false,docs/IDT_6116.pdf,Address input
+HM6116,23,A8,input,false,docs/IDT_6116.pdf,Address input
+HM6116,24,VCC,power_in,false,docs/IDT_6116.pdf,Power
 XTAL_CPU_5MHZ,1,1,passive,false,https://www.digikey.com/en/products/detail/w%C3%BCrth-elektronik/830003119B/13900107,Crystal terminal
 XTAL_CPU_5MHZ,2,2,passive,false,https://www.digikey.com/en/products/detail/w%C3%BCrth-elektronik/830003119B/13900107,Crystal terminal
 XTAL_1_8432MHZ,1,1,passive,false,https://www.digikey.com/en/products/detail/raltron-electronics/A-1-8432-18/10246237,Crystal terminal

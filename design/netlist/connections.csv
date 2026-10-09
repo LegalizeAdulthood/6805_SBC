@@ -37,3 +37,75 @@ BAUD_F8,U4,12,2C2,inferred,design/baud-rate.md,Provisional C2 assignment; mirror
 BAUD_F9,U4,13,2C3,inferred,design/baud-rate.md,Provisional C3 assignment; mirrors receive-clock mux
 ACIA_RXCLK,U4,7,1Y,inferred,design/baud-rate.md,Section 1 output assigned to ACIA receive clock
 ACIA_TXCLK,U4,9,2Y,inferred,design/baud-rate.md,Section 2 output assigned to ACIA transmit clock
+5V0,U5,24,VCC,inferred,docs/Am2732-AMD.pdf,ROM power
+GND,U5,12,GND,inferred,docs/Am2732-AMD.pdf,ROM ground
+A0,U5,8,A0,inferred,docs/Am2732-AMD.pdf,ROM address bit 0
+A1,U5,7,A1,inferred,docs/Am2732-AMD.pdf,ROM address bit 1
+A2,U5,6,A2,inferred,docs/Am2732-AMD.pdf,ROM address bit 2
+A3,U5,5,A3,inferred,docs/Am2732-AMD.pdf,ROM address bit 3
+A4,U5,4,A4,inferred,docs/Am2732-AMD.pdf,ROM address bit 4
+A5,U5,3,A5,inferred,docs/Am2732-AMD.pdf,ROM address bit 5
+A6,U5,2,A6,inferred,docs/Am2732-AMD.pdf,ROM address bit 6
+A7,U5,1,A7,inferred,docs/Am2732-AMD.pdf,ROM address bit 7
+A8,U5,23,A8,inferred,docs/Am2732-AMD.pdf,ROM address bit 8
+A9,U5,22,A9,inferred,docs/Am2732-AMD.pdf,ROM address bit 9
+A10,U5,19,A10,inferred,docs/Am2732-AMD.pdf,ROM address bit 10
+A11,U5,21,A11,inferred,docs/Am2732-AMD.pdf,ROM address bit 11
+D0,U5,9,O0,inferred,docs/Am2732-AMD.pdf,ROM data output bit 0
+D1,U5,10,O1,inferred,docs/Am2732-AMD.pdf,ROM data output bit 1
+D2,U5,11,O2,inferred,docs/Am2732-AMD.pdf,ROM data output bit 2
+D3,U5,13,O3,inferred,docs/Am2732-AMD.pdf,ROM data output bit 3
+D4,U5,14,O4,inferred,docs/Am2732-AMD.pdf,ROM data output bit 4
+D5,U5,15,O5,inferred,docs/Am2732-AMD.pdf,ROM data output bit 5
+D6,U5,16,O6,inferred,docs/Am2732-AMD.pdf,ROM data output bit 6
+D7,U5,17,O7,inferred,docs/Am2732-AMD.pdf,ROM data output bit 7
+~ROMCS,U5,18,~CE/PGM,inferred,docs/memory-map.txt,ROM chip select
+~MEMRD,U5,20,~OE/VPP,todo,docs/Am2732-AMD.pdf,ROM output enable during reads
+5V0,U6,24,VCC,inferred,docs/IDT_6116.pdf,RAM 1 power
+GND,U6,12,GND,inferred,docs/IDT_6116.pdf,RAM 1 ground
+A0,U6,8,A0,inferred,docs/IDT_6116.pdf,RAM 1 address bit 0
+A1,U6,7,A1,inferred,docs/IDT_6116.pdf,RAM 1 address bit 1
+A2,U6,6,A2,inferred,docs/IDT_6116.pdf,RAM 1 address bit 2
+A3,U6,5,A3,inferred,docs/IDT_6116.pdf,RAM 1 address bit 3
+A4,U6,4,A4,inferred,docs/IDT_6116.pdf,RAM 1 address bit 4
+A5,U6,3,A5,inferred,docs/IDT_6116.pdf,RAM 1 address bit 5
+A6,U6,2,A6,inferred,docs/IDT_6116.pdf,RAM 1 address bit 6
+A7,U6,1,A7,inferred,docs/IDT_6116.pdf,RAM 1 address bit 7
+A8,U6,23,A8,inferred,docs/IDT_6116.pdf,RAM 1 address bit 8
+A9,U6,22,A9,inferred,docs/IDT_6116.pdf,RAM 1 address bit 9
+A10,U6,19,A10,inferred,docs/IDT_6116.pdf,RAM 1 address bit 10
+D0,U6,9,I/O0,inferred,docs/IDT_6116.pdf,RAM 1 data bit 0
+D1,U6,10,I/O1,inferred,docs/IDT_6116.pdf,RAM 1 data bit 1
+D2,U6,11,I/O2,inferred,docs/IDT_6116.pdf,RAM 1 data bit 2
+D3,U6,13,I/O3,inferred,docs/IDT_6116.pdf,RAM 1 data bit 3
+D4,U6,14,I/O4,inferred,docs/IDT_6116.pdf,RAM 1 data bit 4
+D5,U6,15,I/O5,inferred,docs/IDT_6116.pdf,RAM 1 data bit 5
+D6,U6,16,I/O6,inferred,docs/IDT_6116.pdf,RAM 1 data bit 6
+D7,U6,17,I/O7,inferred,docs/IDT_6116.pdf,RAM 1 data bit 7
+~RAM1CS,U6,18,~CS,inferred,docs/memory-map.txt,RAM 1 chip select
+~MEMRD,U6,20,~OE,todo,docs/IDT_6116.pdf,RAM 1 output enable during reads
+~RAMWE,U6,21,~WE,todo,docs/IDT_6116.pdf,RAM 1 write enable during writes
+5V0,U7,24,VCC,inferred,docs/IDT_6116.pdf,RAM 2 power
+GND,U7,12,GND,inferred,docs/IDT_6116.pdf,RAM 2 ground
+A0,U7,8,A0,inferred,docs/IDT_6116.pdf,RAM 2 address bit 0
+A1,U7,7,A1,inferred,docs/IDT_6116.pdf,RAM 2 address bit 1
+A2,U7,6,A2,inferred,docs/IDT_6116.pdf,RAM 2 address bit 2
+A3,U7,5,A3,inferred,docs/IDT_6116.pdf,RAM 2 address bit 3
+A4,U7,4,A4,inferred,docs/IDT_6116.pdf,RAM 2 address bit 4
+A5,U7,3,A5,inferred,docs/IDT_6116.pdf,RAM 2 address bit 5
+A6,U7,2,A6,inferred,docs/IDT_6116.pdf,RAM 2 address bit 6
+A7,U7,1,A7,inferred,docs/IDT_6116.pdf,RAM 2 address bit 7
+A8,U7,23,A8,inferred,docs/IDT_6116.pdf,RAM 2 address bit 8
+A9,U7,22,A9,inferred,docs/IDT_6116.pdf,RAM 2 address bit 9
+A10,U7,19,A10,inferred,docs/IDT_6116.pdf,RAM 2 address bit 10
+D0,U7,9,I/O0,inferred,docs/IDT_6116.pdf,RAM 2 data bit 0
+D1,U7,10,I/O1,inferred,docs/IDT_6116.pdf,RAM 2 data bit 1
+D2,U7,11,I/O2,inferred,docs/IDT_6116.pdf,RAM 2 data bit 2
+D3,U7,13,I/O3,inferred,docs/IDT_6116.pdf,RAM 2 data bit 3
+D4,U7,14,I/O4,inferred,docs/IDT_6116.pdf,RAM 2 data bit 4
+D5,U7,15,I/O5,inferred,docs/IDT_6116.pdf,RAM 2 data bit 5
+D6,U7,16,I/O6,inferred,docs/IDT_6116.pdf,RAM 2 data bit 6
+D7,U7,17,I/O7,inferred,docs/IDT_6116.pdf,RAM 2 data bit 7
+~RAM2CS,U7,18,~CS,inferred,docs/memory-map.txt,RAM 2 chip select
+~MEMRD,U7,20,~OE,todo,docs/IDT_6116.pdf,RAM 2 output enable during reads
+~RAMWE,U7,21,~WE,todo,docs/IDT_6116.pdf,RAM 2 write enable during writes

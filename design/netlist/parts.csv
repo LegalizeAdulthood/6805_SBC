@@ -4,6 +4,8 @@ MC6850,Motorola,MC6850,Asynchronous communications interface adapter,,Package_DI
 MSM58321,OKI,MSM58321,Real-time clock calendar,MCU_Motorola_6800:MSM58321,Package_DIP:DIP-16_W7.62mm,docs/MSM58321.pdf,Local KiCad symbol exists
 MC14411,Motorola,MC14411,Baud-rate generator,MCU_Motorola_6800:MC14411,Package_DIP:DIP-24_W15.24mm,docs/MC14411.pdf,Local KiCad symbol exists
 74153,,74153,Dual 4-to-1 data selector/multiplexer,,Package_DIP:DIP-16_W7.62mm,design/baud-rate.md,Exact logic family and KiCad symbol still TBD; standard 74153 pinout used for staging
+AM2732,AMD,Am2732,4Kx8 UV erasable PROM,,Package_DIP:DIP-24_W15.24mm,docs/Am2732-AMD.pdf,Selected from inventory; KiCad symbol still needs to be selected or created
+HM6116,,HM6116,2Kx8 static RAM,,Package_DIP:DIP-24_W7.62mm,docs/IDT_6116.pdf,Selected from inventory; IDT6116 datasheet used for 6116-class pinout
 XTAL_CPU_5MHZ,Wurth Elektronik,830003119B,5 MHz 30 pF CPU crystal,Device:Crystal,Crystal:Crystal_HC49-U_Vertical,https://www.digikey.com/en/products/detail/w%C3%BCrth-elektronik/830003119B/13900107,HC-49/US through-hole; 130 ohm ESR; +/-30 ppm tolerance; +/-50 ppm stability
 XTAL_1_8432MHZ,Raltron Electronics,A-1.8432-18,1.8432 MHz 18 pF baud-rate crystal,Device:Crystal,Crystal:Crystal_HC49-U_Vertical,https://www.digikey.com/en/products/detail/raltron-electronics/A-1-8432-18/10246237,Selected for MC14411 clock; HC-49/U through-hole; 700 ohm ESR; +/-30 ppm tolerance; +/-50 ppm stability
 XTAL_32_768KHZ,,32.768 kHz,RTC timebase crystal,Device:Crystal,,docs/MSM58321.pdf,MSM58321 requires 32.768 kHz crystal with impedance 30 kohm or less; exact package TBD

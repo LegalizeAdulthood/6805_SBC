@@ -1,6 +1,35 @@
 net,kind,status,source,notes
 5V0,power,confirmed,docs/MC146805E2_1983.pdf,5.0 V logic supply
 GND,power,confirmed,docs/MC146805E2_1983.pdf,Logic ground
+A0,address,confirmed,docs/memory-map.txt,External address bus bit 0
+A1,address,confirmed,docs/memory-map.txt,External address bus bit 1
+A2,address,confirmed,docs/memory-map.txt,External address bus bit 2
+A3,address,confirmed,docs/memory-map.txt,External address bus bit 3
+A4,address,confirmed,docs/memory-map.txt,External address bus bit 4
+A5,address,confirmed,docs/memory-map.txt,External address bus bit 5
+A6,address,confirmed,docs/memory-map.txt,External address bus bit 6
+A7,address,confirmed,docs/memory-map.txt,External address bus bit 7
+A8,address,confirmed,docs/memory-map.txt,External address bus bit 8
+A9,address,confirmed,docs/memory-map.txt,External address bus bit 9
+A10,address,confirmed,docs/memory-map.txt,External address bus bit 10
+A11,address,confirmed,docs/memory-map.txt,External address bus bit 11
+A12,address,confirmed,docs/memory-map.txt,External address bus bit 12 used by address decode
+D0,data,confirmed,docs/memory-map.txt,External data bus bit 0
+D1,data,confirmed,docs/memory-map.txt,External data bus bit 1
+D2,data,confirmed,docs/memory-map.txt,External data bus bit 2
+D3,data,confirmed,docs/memory-map.txt,External data bus bit 3
+D4,data,confirmed,docs/memory-map.txt,External data bus bit 4
+D5,data,confirmed,docs/memory-map.txt,External data bus bit 5
+D6,data,confirmed,docs/memory-map.txt,External data bus bit 6
+D7,data,confirmed,docs/memory-map.txt,External data bus bit 7
+AS,control,confirmed,design/Address_Latch.dig,Address strobe used to latch multiplexed low address byte
+DS,control,confirmed,design/rtc.md,Data strobe used during external data phase
+R/~W,control,confirmed,design/rtc.md,CPU read/write direction signal
+~ROMCS,control,confirmed,docs/memory-map.txt,Active-low ROM chip select for $1000-$1FFF
+~RAM1CS,control,confirmed,docs/memory-map.txt,Active-low RAM 1 chip select for $0110-$07FF
+~RAM2CS,control,confirmed,docs/memory-map.txt,Active-low RAM 2 chip select for $0800-$0FFF
+~MEMRD,control,todo,docs/Am2732-AMD.pdf,Active-low memory output enable; exact derivation from DS and R/~W TBD
+~RAMWE,control,todo,docs/IDT_6116.pdf,Active-low RAM write enable; exact derivation from DS and R/~W TBD
 CPU_OSC1,clock,confirmed,docs/MC146805E2_1983.pdf,CPU crystal connection
 CPU_OSC2,clock,confirmed,docs/MC146805E2_1983.pdf,CPU crystal connection
 BAUD_XTAL_IN,clock,confirmed,docs/MC14411.pdf,MC14411 crystal input connection

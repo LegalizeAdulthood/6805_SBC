@@ -1,5 +1,9 @@
 source_id,path,kind,title,notes
 cpu_datasheet,docs/MC146805E2_1983.pdf,datasheet,MC146805E2 data sheet,CPU pin and oscillator information
+chip_inventory,docs/chip-inventory.csv,inventory,Chip inventory,Available Am2732 and HM6116 memory devices
+memory_map,docs/memory-map.txt,design note,Memory map,External ROM and RAM address ranges plus chip-select names
+rom_datasheet,docs/Am2732-AMD.pdf,datasheet,Am2732 data sheet,4Kx8 EPROM pinout and operating controls
+ram_datasheet,docs/IDT_6116.pdf,datasheet,IDT6116 data sheet,6116-class 2Kx8 SRAM pinout and operating controls
 acia_datasheet,docs/MC6850.pdf,datasheet,MC6850 data sheet,ACIA clock and power pins
 baud_generator_datasheet,docs/MC14411.pdf,datasheet,MC14411 data sheet,Baud generator pinout and output clocks
 baud_design,design/baud-rate.md,design note,Baud-rate selection,Selected MC14411 outputs and ACIA clock path
