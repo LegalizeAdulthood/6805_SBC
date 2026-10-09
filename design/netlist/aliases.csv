@@ -1,1 +1,17 @@
 alias,canonical,context,status,source,notes
++5V,5V0,legacy 5 V net name,confirmed,design/netlist,Older staging name for 5.0 V logic supply
+VCC,5V0,logic supply,confirmed,docs/MC6850.pdf,ACIA and 74153 use VCC for 5.0 V supply
+VDD,5V0,logic supply,confirmed,docs/MC146805E2_1983.pdf,CPU and MC14411 use VDD for 5.0 V supply
+VSS,GND,logic ground,confirmed,docs/MC146805E2_1983.pdf,CPU ACIA and MC14411 ground naming
+Receive Clock,RxCLK,MC6850 pin 3,confirmed,docs/MC6850.pdf,Datasheet descriptive name for receive clock pin
+Transmit Clock,TxCLK,MC6850 pin 4,confirmed,docs/MC6850.pdf,Datasheet descriptive name for transmit clock pin
+receive-clock output of baud mux,ACIA_RXCLK,baud-rate clock path,inferred,design/baud-rate.md,U4 section 1 output staged as ACIA receive-clock net
+transmit-clock output of baud mux,ACIA_TXCLK,baud-rate clock path,inferred,design/baud-rate.md,U4 section 2 output staged as ACIA transmit-clock net
+F1,BAUD_F1,MC14411 baud output,confirmed,design/baud-rate.md,614.4 kHz candidate clock in X64 range
+F3,BAUD_F3,MC14411 baud output,confirmed,design/baud-rate.md,307.2 kHz candidate clock in X64 range
+F8,BAUD_F8,MC14411 baud output,confirmed,design/baud-rate.md,38.4 kHz candidate clock in X64 range
+F9,BAUD_F9,MC14411 baud output,confirmed,design/baud-rate.md,19.2 kHz candidate clock in X64 range
+1G,~1G,74153 pin 1,confirmed,https://www.ti.com/lit/ds/symlink/sn74ls153.pdf,TI pin label represented as active-low enable in staging
+2G,~2G,74153 pin 15,confirmed,https://www.ti.com/lit/ds/symlink/sn74ls153.pdf,TI pin label represented as active-low enable in staging
+Select A,BAUD_SEL_A,74153 shared select input,todo,design/baud-rate.md,Driving source still open
+Select B,BAUD_SEL_B,74153 shared select input,todo,design/baud-rate.md,Driving source still open

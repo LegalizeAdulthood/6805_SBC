@@ -1,1 +1,39 @@
 part_id,pin_number,pin_name,electrical_type,active_low,source,notes
+MC146805E2,20,VSS,power_in,false,MCU_Motorola_6800.kicad_sym,Ground
+MC146805E2,38,OSC2,input,false,MCU_Motorola_6800.kicad_sym,Crystal oscillator pin
+MC146805E2,39,OSC1,input,false,MCU_Motorola_6800.kicad_sym,Crystal oscillator pin
+MC146805E2,40,VDD,power_in,false,MCU_Motorola_6800.kicad_sym,Power
+MC6850,1,VSS,power_in,false,docs/MC6850.pdf,Ground
+MC6850,3,RxCLK,input,false,docs/MC6850.pdf,Receive clock input
+MC6850,4,TxCLK,input,false,docs/MC6850.pdf,Transmit clock input
+MC6850,12,VCC,power_in,false,docs/MC6850.pdf,Power
+MC14411,1,F1,output,false,MCU_Motorola_6800.kicad_sym,Baud clock output
+MC14411,2,F3,output,false,MCU_Motorola_6800.kicad_sym,Baud clock output
+MC14411,5,F8,output,false,MCU_Motorola_6800.kicad_sym,Baud clock output
+MC14411,7,F9,output,false,MCU_Motorola_6800.kicad_sym,Baud clock output
+MC14411,12,VSS,power_in,false,MCU_Motorola_6800.kicad_sym,Ground
+MC14411,20,XTAL_OUT,input,false,MCU_Motorola_6800.kicad_sym,Crystal oscillator pin
+MC14411,21,XTAL_IN,input,false,MCU_Motorola_6800.kicad_sym,Crystal oscillator pin
+MC14411,22,RSB,input,false,MCU_Motorola_6800.kicad_sym,Rate select input fixed high for X64 range
+MC14411,23,RSA,input,false,MCU_Motorola_6800.kicad_sym,Rate select input fixed high for X64 range
+MC14411,24,VDD,power_in,false,MCU_Motorola_6800.kicad_sym,Power
+74153,1,~1G,input,true,https://www.ti.com/lit/ds/symlink/sn74ls153.pdf,Section 1 active-low strobe/enable
+74153,2,B,input,false,https://www.ti.com/lit/ds/symlink/sn74ls153.pdf,Shared select input B
+74153,3,1C3,input,false,https://www.ti.com/lit/ds/symlink/sn74ls153.pdf,Section 1 data input 3
+74153,4,1C2,input,false,https://www.ti.com/lit/ds/symlink/sn74ls153.pdf,Section 1 data input 2
+74153,5,1C1,input,false,https://www.ti.com/lit/ds/symlink/sn74ls153.pdf,Section 1 data input 1
+74153,6,1C0,input,false,https://www.ti.com/lit/ds/symlink/sn74ls153.pdf,Section 1 data input 0
+74153,7,1Y,output,false,https://www.ti.com/lit/ds/symlink/sn74ls153.pdf,Section 1 output
+74153,8,GND,power_in,false,https://www.ti.com/lit/ds/symlink/sn74ls153.pdf,Ground
+74153,9,2Y,output,false,https://www.ti.com/lit/ds/symlink/sn74ls153.pdf,Section 2 output
+74153,10,2C0,input,false,https://www.ti.com/lit/ds/symlink/sn74ls153.pdf,Section 2 data input 0
+74153,11,2C1,input,false,https://www.ti.com/lit/ds/symlink/sn74ls153.pdf,Section 2 data input 1
+74153,12,2C2,input,false,https://www.ti.com/lit/ds/symlink/sn74ls153.pdf,Section 2 data input 2
+74153,13,2C3,input,false,https://www.ti.com/lit/ds/symlink/sn74ls153.pdf,Section 2 data input 3
+74153,14,A,input,false,https://www.ti.com/lit/ds/symlink/sn74ls153.pdf,Shared select input A
+74153,15,~2G,input,true,https://www.ti.com/lit/ds/symlink/sn74ls153.pdf,Section 2 active-low strobe/enable
+74153,16,VCC,power_in,false,https://www.ti.com/lit/ds/symlink/sn74ls153.pdf,Power
+XTAL_CPU_5MHZ,1,1,passive,false,https://www.digikey.com/en/products/detail/w%C3%BCrth-elektronik/830003119B/13900107,Crystal terminal
+XTAL_CPU_5MHZ,2,2,passive,false,https://www.digikey.com/en/products/detail/w%C3%BCrth-elektronik/830003119B/13900107,Crystal terminal
+XTAL_1_8432MHZ,1,1,passive,false,https://www.digikey.com/en/products/detail/raltron-electronics/A-1-8432-18/10246237,Crystal terminal
+XTAL_1_8432MHZ,2,2,passive,false,https://www.digikey.com/en/products/detail/raltron-electronics/A-1-8432-18/10246237,Crystal terminal

@@ -1,1 +1,15 @@
 net,kind,status,source,notes
+5V0,power,confirmed,docs/MC146805E2_1983.pdf,5.0 V logic supply
+GND,power,confirmed,docs/MC146805E2_1983.pdf,Logic ground
+CPU_OSC1,clock,confirmed,docs/MC146805E2_1983.pdf,CPU crystal connection
+CPU_OSC2,clock,confirmed,docs/MC146805E2_1983.pdf,CPU crystal connection
+BAUD_XTAL_IN,clock,confirmed,docs/MC14411.pdf,MC14411 crystal input connection
+BAUD_XTAL_OUT,clock,confirmed,docs/MC14411.pdf,MC14411 crystal output connection
+BAUD_F1,clock,confirmed,design/baud-rate.md,MC14411 F1 candidate clock for baud mux
+BAUD_F3,clock,confirmed,design/baud-rate.md,MC14411 F3 candidate clock for baud mux
+BAUD_F8,clock,confirmed,design/baud-rate.md,MC14411 F8 candidate clock for baud mux
+BAUD_F9,clock,confirmed,design/baud-rate.md,MC14411 F9 candidate clock for baud mux
+BAUD_SEL_A,control,todo,design/baud-rate.md,Shared 74153 select input A; source still TBD
+BAUD_SEL_B,control,todo,design/baud-rate.md,Shared 74153 select input B; source still TBD
+ACIA_RXCLK,clock,inferred,design/baud-rate.md,Driven by section 1 of baud mux
+ACIA_TXCLK,clock,inferred,design/baud-rate.md,Driven by section 2 of baud mux

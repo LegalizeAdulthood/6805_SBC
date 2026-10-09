@@ -1,1 +1,39 @@
 net,refdes,pin_number,pin_name,status,source,notes
+5V0,U1,40,VDD,confirmed,MCU_Motorola_6800.kicad_sym,CPU power
+GND,U1,20,VSS,confirmed,MCU_Motorola_6800.kicad_sym,CPU ground
+CPU_OSC1,U1,39,OSC1,confirmed,MCU_Motorola_6800.kicad_sym,CPU oscillator input
+CPU_OSC1,Y1,1,1,confirmed,https://www.digikey.com/en/products/detail/w%C3%BCrth-elektronik/830003119B/13900107,CPU crystal terminal
+CPU_OSC2,U1,38,OSC2,confirmed,MCU_Motorola_6800.kicad_sym,CPU oscillator output
+CPU_OSC2,Y1,2,2,confirmed,https://www.digikey.com/en/products/detail/w%C3%BCrth-elektronik/830003119B/13900107,CPU crystal terminal
+5V0,U2,12,VCC,confirmed,docs/MC6850.pdf,ACIA power
+GND,U2,1,VSS,confirmed,docs/MC6850.pdf,ACIA ground
+ACIA_RXCLK,U2,3,RxCLK,inferred,design/baud-rate.md,Receive clock from section 1 of baud mux
+ACIA_TXCLK,U2,4,TxCLK,inferred,design/baud-rate.md,Transmit clock from section 2 of baud mux
+5V0,U3,24,VDD,confirmed,MCU_Motorola_6800.kicad_sym,MC14411 power
+GND,U3,12,VSS,confirmed,MCU_Motorola_6800.kicad_sym,MC14411 ground
+5V0,U3,23,RSA,confirmed,design/baud-rate.md,Fixed high for X64 output range
+5V0,U3,22,RSB,confirmed,design/baud-rate.md,Fixed high for X64 output range
+BAUD_XTAL_IN,U3,21,XTAL_IN,confirmed,MCU_Motorola_6800.kicad_sym,MC14411 crystal input
+BAUD_XTAL_IN,Y2,1,1,confirmed,https://www.digikey.com/en/products/detail/raltron-electronics/A-1-8432-18/10246237,Baud crystal terminal
+BAUD_XTAL_OUT,U3,20,XTAL_OUT,confirmed,MCU_Motorola_6800.kicad_sym,MC14411 crystal output
+BAUD_XTAL_OUT,Y2,2,2,confirmed,https://www.digikey.com/en/products/detail/raltron-electronics/A-1-8432-18/10246237,Baud crystal terminal
+BAUD_F1,U3,1,F1,confirmed,design/baud-rate.md,614.4 kHz candidate clock for baud mux in X64 range
+BAUD_F3,U3,2,F3,confirmed,design/baud-rate.md,307.2 kHz candidate clock for baud mux in X64 range
+BAUD_F8,U3,5,F8,confirmed,design/baud-rate.md,38.4 kHz candidate clock for baud mux in X64 range
+BAUD_F9,U3,7,F9,confirmed,design/baud-rate.md,19.2 kHz candidate clock for baud mux in X64 range
+5V0,U4,16,VCC,confirmed,https://www.ti.com/lit/ds/symlink/sn74ls153.pdf,74153 power
+GND,U4,8,GND,confirmed,https://www.ti.com/lit/ds/symlink/sn74ls153.pdf,74153 ground
+GND,U4,1,~1G,inferred,design/baud-rate.md,Enable receive-clock mux section
+GND,U4,15,~2G,inferred,design/baud-rate.md,Enable transmit-clock mux section
+BAUD_SEL_B,U4,2,B,todo,design/baud-rate.md,Shared select input; driving source still TBD
+BAUD_SEL_A,U4,14,A,todo,design/baud-rate.md,Shared select input; driving source still TBD
+BAUD_F1,U4,6,1C0,inferred,design/baud-rate.md,Provisional C0 assignment; confirm power-on default
+BAUD_F3,U4,5,1C1,inferred,design/baud-rate.md,Provisional C1 assignment
+BAUD_F8,U4,4,1C2,inferred,design/baud-rate.md,Provisional C2 assignment
+BAUD_F9,U4,3,1C3,inferred,design/baud-rate.md,Provisional C3 assignment
+BAUD_F1,U4,10,2C0,inferred,design/baud-rate.md,Provisional C0 assignment; mirrors receive-clock mux
+BAUD_F3,U4,11,2C1,inferred,design/baud-rate.md,Provisional C1 assignment; mirrors receive-clock mux
+BAUD_F8,U4,12,2C2,inferred,design/baud-rate.md,Provisional C2 assignment; mirrors receive-clock mux
+BAUD_F9,U4,13,2C3,inferred,design/baud-rate.md,Provisional C3 assignment; mirrors receive-clock mux
+ACIA_RXCLK,U4,7,1Y,inferred,design/baud-rate.md,Section 1 output assigned to ACIA receive clock
+ACIA_TXCLK,U4,9,2Y,inferred,design/baud-rate.md,Section 2 output assigned to ACIA transmit clock
