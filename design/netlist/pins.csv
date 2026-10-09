@@ -81,7 +81,25 @@ HM6116,21,~WE,input,true,docs/IDT_6116.pdf,Write enable
 HM6116,22,A9,input,false,docs/IDT_6116.pdf,Address input
 HM6116,23,A8,input,false,docs/IDT_6116.pdf,Address input
 HM6116,24,VCC,power_in,false,docs/IDT_6116.pdf,Power
+MSM58321,1,CS2,input,false,MCU_Motorola_6800.kicad_sym,Chip select input
+MSM58321,2,WRITE,input,false,MCU_Motorola_6800.kicad_sym,Active-high write input
+MSM58321,3,READ,input,false,MCU_Motorola_6800.kicad_sym,Active-high read input
+MSM58321,4,D0,bidirectional,false,MCU_Motorola_6800.kicad_sym,Data input/output bit 0
+MSM58321,5,D1,bidirectional,false,MCU_Motorola_6800.kicad_sym,Data input/output bit 1
+MSM58321,6,D2,bidirectional,false,MCU_Motorola_6800.kicad_sym,Data input/output bit 2
+MSM58321,7,D3,bidirectional,false,MCU_Motorola_6800.kicad_sym,Data input/output bit 3
+MSM58321,8,GND,power_in,false,MCU_Motorola_6800.kicad_sym,Ground
+MSM58321,9,ADDRESS_WRITE,input,false,MCU_Motorola_6800.kicad_sym,Active-high address latch input
+MSM58321,10,~BUSY,output,true,MCU_Motorola_6800.kicad_sym,Open-drain busy output
+MSM58321,11,STOP,input,false,MCU_Motorola_6800.kicad_sym,Clock stop input
+MSM58321,12,TEST,input,false,MCU_Motorola_6800.kicad_sym,Test input
+MSM58321,13,CS1,input,false,MCU_Motorola_6800.kicad_sym,Chip select input
+MSM58321,14,~XT,input,true,MCU_Motorola_6800.kicad_sym,Crystal oscillator pin
+MSM58321,15,XT,input,false,MCU_Motorola_6800.kicad_sym,Crystal oscillator pin
+MSM58321,16,VDD,power_in,false,MCU_Motorola_6800.kicad_sym,Power
 XTAL_CPU_5MHZ,1,1,passive,false,https://www.digikey.com/en/products/detail/w%C3%BCrth-elektronik/830003119B/13900107,Crystal terminal
 XTAL_CPU_5MHZ,2,2,passive,false,https://www.digikey.com/en/products/detail/w%C3%BCrth-elektronik/830003119B/13900107,Crystal terminal
 XTAL_1_8432MHZ,1,1,passive,false,https://www.digikey.com/en/products/detail/raltron-electronics/A-1-8432-18/10246237,Crystal terminal
 XTAL_1_8432MHZ,2,2,passive,false,https://www.digikey.com/en/products/detail/raltron-electronics/A-1-8432-18/10246237,Crystal terminal
+XTAL_32_768KHZ,1,1,passive,false,docs/MSM58321.pdf,Crystal terminal
+XTAL_32_768KHZ,2,2,passive,false,docs/MSM58321.pdf,Crystal terminal

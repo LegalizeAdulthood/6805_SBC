@@ -4,10 +4,12 @@ chip_inventory,docs/chip-inventory.csv,inventory,Chip inventory,Available Am2732
 memory_map,docs/memory-map.txt,design note,Memory map,External ROM and RAM address ranges plus chip-select names
 rom_datasheet,docs/Am2732-AMD.pdf,datasheet,Am2732 data sheet,4Kx8 EPROM pinout and operating controls
 ram_datasheet,docs/IDT_6116.pdf,datasheet,IDT6116 data sheet,6116-class 2Kx8 SRAM pinout and operating controls
+rtc_design,design/rtc.md,design note,MSM58321 bus interface,RTC address range data bus width and intended control relationships
+rtc_datasheet,docs/MSM58321.pdf,datasheet,MSM58321 data sheet,RTC pinout crystal and timing information
 acia_datasheet,docs/MC6850.pdf,datasheet,MC6850 data sheet,ACIA clock and power pins
 baud_generator_datasheet,docs/MC14411.pdf,datasheet,MC14411 data sheet,Baud generator pinout and output clocks
 baud_design,design/baud-rate.md,design note,Baud-rate selection,Selected MC14411 outputs and ACIA clock path
 mux_datasheet,https://www.ti.com/lit/ds/symlink/sn74ls153.pdf,datasheet,SN74153/SN74LS153 data sheet,74153-compatible dual mux pinout and function table
-local_symbols,C:/code/6805_sbc/MCU_Motorola_6800.kicad_sym,kicad symbol library,Local Motorola symbol library,CPU and MC14411 pin numbers
+local_symbols,C:/code/6805_sbc/MCU_Motorola_6800.kicad_sym,kicad symbol library,Local Motorola symbol library,CPU MC14411 and MSM58321 pin numbers
 cpu_crystal_digikey,https://www.digikey.com/en/products/detail/w%C3%BCrth-elektronik/830003119B/13900107,supplier page,Wurth Elektronik 830003119B,5 MHz CPU crystal
 baud_crystal_digikey,https://www.digikey.com/en/products/detail/raltron-electronics/A-1-8432-18/10246237,supplier page,Raltron A-1.8432-18,1.8432 MHz baud-rate crystal

@@ -109,3 +109,21 @@ D7,U7,17,I/O7,inferred,docs/IDT_6116.pdf,RAM 2 data bit 7
 ~RAM2CS,U7,18,~CS,inferred,docs/memory-map.txt,RAM 2 chip select
 ~MEMRD,U7,20,~OE,todo,docs/IDT_6116.pdf,RAM 2 output enable during reads
 ~RAMWE,U7,21,~WE,todo,docs/IDT_6116.pdf,RAM 2 write enable during writes
+RTC_VDD,U8,16,VDD,todo,docs/MSM58321.pdf,RTC power; backup/direct 5V source TBD
+GND,U8,8,GND,confirmed,MCU_Motorola_6800.kicad_sym,RTC ground
+D0,U8,4,D0,confirmed,design/rtc.md,RTC 4-bit data bus bit 0
+D1,U8,5,D1,confirmed,design/rtc.md,RTC 4-bit data bus bit 1
+D2,U8,6,D2,confirmed,design/rtc.md,RTC 4-bit data bus bit 2
+D3,U8,7,D3,confirmed,design/rtc.md,RTC 4-bit data bus bit 3
+RTC_SELECT,U8,13,CS1,todo,design/rtc.md,Final select must be held for complete RTC bus cycle
+RTC_SELECT,U8,1,CS2,todo,design/rtc.md,Final select must be held for complete RTC bus cycle
+RTC_ADDRESS_WRITE,U8,9,ADDRESS_WRITE,todo,design/rtc.md,Assert for address phase on both reads and writes
+RTC_READ,U8,3,READ,todo,design/rtc.md,Active-high RTC read strobe from selected DS read cycle
+RTC_WRITE,U8,2,WRITE,todo,design/rtc.md,Active-high RTC write strobe from selected DS write cycle
+GND,U8,12,TEST,inferred,docs/MSM58321.pdf,Datasheet recommends tying TEST to GND
+RTC_STOP,U8,11,STOP,todo,docs/MSM58321.pdf,Normal low versus controlled STOP still TBD
+RTC_BUSY,U8,10,~BUSY,todo,docs/MSM58321.pdf,Open-drain BUSY output consumer and pull-up TBD
+RTC_XT,U8,15,XT,confirmed,docs/MSM58321.pdf,RTC crystal oscillator pin
+RTC_XT,Y3,1,1,confirmed,docs/MSM58321.pdf,RTC crystal terminal
+RTC_XT_N,U8,14,~XT,confirmed,docs/MSM58321.pdf,RTC crystal oscillator pin
+RTC_XT_N,Y3,2,2,confirmed,docs/MSM58321.pdf,RTC crystal terminal

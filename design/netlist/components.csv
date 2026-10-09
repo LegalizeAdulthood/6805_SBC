@@ -6,5 +6,7 @@ U4,74153,74153,Package_DIP:DIP-16_W7.62mm,inferred,design/baud-rate.md,Dual mux 
 U5,AM2732,Am2732,Package_DIP:DIP-24_W15.24mm,confirmed,docs/memory-map.txt,4Kx8 ROM at $1000-$1FFF using inventory Am2732
 U6,HM6116,HM6116,Package_DIP:DIP-24_W7.62mm,confirmed,docs/memory-map.txt,2Kx8 RAM 1 at $0110-$07FF using inventory HM6116
 U7,HM6116,HM6116,Package_DIP:DIP-24_W7.62mm,confirmed,docs/memory-map.txt,2Kx8 RAM 2 at $0800-$0FFF using inventory HM6116
+U8,MSM58321,MSM58321,Package_DIP:DIP-16_W7.62mm,confirmed,design/rtc.md,Real-time clock at $0100-$010F
 Y1,XTAL_CPU_5MHZ,5 MHz,Crystal:Crystal_HC49-U_Vertical,confirmed,https://www.digikey.com/en/products/detail/w%C3%BCrth-elektronik/830003119B/13900107,CPU crystal
 Y2,XTAL_1_8432MHZ,1.8432 MHz,Crystal:Crystal_HC49-U_Vertical,confirmed,https://www.digikey.com/en/products/detail/raltron-electronics/A-1-8432-18/10246237,MC14411 baud-rate crystal
+Y3,XTAL_32_768KHZ,32.768 kHz,,todo,docs/MSM58321.pdf,RTC timebase crystal; exact part and package TBD
