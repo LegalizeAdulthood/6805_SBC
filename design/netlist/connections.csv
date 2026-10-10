@@ -32,6 +32,7 @@ net,refdes,pin_number,pin_name,status,source,notes
 5V0,U11,16,VCC,confirmed,docs/sn74ls138.pdf,Page decoder power
 5V0,U12,16,VCC,confirmed,docs/sn74ls138.pdf,Low peripheral decoder power
 5V0,U13,14,VCC,confirmed,https://www.ti.com/lit/ds/symlink/sn74ls08.pdf,AND gate package power
+5V0,U14,5,2C,inferred,current_user_direction,Tie spare 3-input AND gate input high for two-input RAMWE active-write gate
 5V0,U14,14,VCC,confirmed,https://www.ti.com/lit/ds/symlink/sn74ls11.pdf,Three-input AND package power
 5V0,U15,14,VCC,confirmed,https://www.ti.com/lit/ds/symlink/sn74ls32.pdf,OR gate package power
 5V0,U16,14,VCC,confirmed,https://www.ti.com/lit/ds/symlink/sn74ls32.pdf,OR gate package power
@@ -197,6 +198,7 @@ CPU_WRITE,U25,2,1B,inferred,rtc_adapter_design,Write qualifier for RTC address l
 CPU_WRITE,U25,4,2B,inferred,rtc_adapter_design,Write qualifier for RTC data latch
 CPU_WRITE,U25,10,3B,inferred,rtc_adapter_design,Write qualifier for RTC command trigger
 CPU_WRITE,U27,2,1Y,inferred,rtc_adapter_design,Active-high write qualifier
+CPU_WRITE,U14,4,2B,inferred,current_user_direction,Memory write-direction input for RAMWE active-write gate
 D0,J3,2,PB0,inferred,gpio_header_design_chat,Port B bit 0 exposed on J3; canonical net is D0
 D0,U1,36,PB0,confirmed,design/Address_Latch.dig,CPU multiplexed address/data bus bit 0
 D0,U2,22,D0,inferred,docs/MC6850.pdf,ACIA data bus bit 0
@@ -282,6 +284,8 @@ D7,U22,19,8Q,inferred,rtc_adapter_design,RTC status high bit forced low onto CPU
 DS,TP6,1,1,inferred,test_pad_design_chat,CPU data-strobe observation test point
 DS,U1,4,DS,confirmed,MCU_Motorola_6800.kicad_sym,CPU data strobe
 DS,U2,13,E,inferred,docs/MC6850.pdf,ACIA enable driven from CPU data strobe
+DS,U13,12,4A,inferred,current_user_direction,Memory read data-strobe qualifier
+DS,U14,3,2A,inferred,current_user_direction,Memory write data-strobe qualifier
 DS,U25,1,1A,inferred,rtc_adapter_design,CPU data strobe qualifies RTC address latch writes
 DS,U25,3,2A,inferred,rtc_adapter_design,CPU data strobe qualifies RTC data latch writes
 DS,U25,9,3A,inferred,rtc_adapter_design,CPU data strobe qualifies RTC command writes
@@ -350,11 +354,6 @@ GND,U12,4,~G2A,inferred,docs/sn74ls138.pdf,Enable low peripheral decoder
 GND,U12,5,~G2B,inferred,docs/sn74ls138.pdf,Enable low peripheral decoder
 GND,U12,8,GND,confirmed,docs/sn74ls138.pdf,Low peripheral decoder ground
 GND,U13,7,GND,confirmed,https://www.ti.com/lit/ds/symlink/sn74ls08.pdf,AND gate package ground
-GND,U13,12,4A,inferred,design/New_Address_Decode.dig,Tie unused AND input low
-GND,U13,13,4B,inferred,design/New_Address_Decode.dig,Tie unused AND input low
-GND,U14,3,2A,inferred,design/New_Address_Decode.dig,Tie unused AND input low
-GND,U14,4,2B,inferred,design/New_Address_Decode.dig,Tie unused AND input low
-GND,U14,5,2C,inferred,design/New_Address_Decode.dig,Tie unused AND input low
 GND,U14,7,GND,confirmed,https://www.ti.com/lit/ds/symlink/sn74ls11.pdf,Three-input AND package ground
 GND,U14,9,3A,inferred,design/New_Address_Decode.dig,Tie unused AND input low
 GND,U14,10,3B,inferred,design/New_Address_Decode.dig,Tie unused AND input low
@@ -423,8 +422,6 @@ GND,U30,17,7D,inferred,rtc_adapter_design,Tie unused command latch input low
 GND,U30,18,8D,inferred,rtc_adapter_design,Tie unused command latch input low
 GND,U31,7,GND,inferred,rtc_adapter_design,RTC read/write steering gate ground
 GND,U32,7,GND,inferred,rtc_adapter_design,RTC output-enable inverter ground
-GND,U32,9,4A,inferred,rtc_adapter_design,Tie unused inverter input low
-GND,U32,13,6A,inferred,rtc_adapter_design,Tie unused inverter input low
 GND,U33,7,GND,inferred,rtc_adapter_design,RTC sequencer OR gate ground
 IRQ,J4,2,IRQ,inferred,timer_header_design_chat,Optional shared IRQ access on TIMER header
 IRQ,R8,2,2,inferred,irq_design_chat,Shared IRQ pull-up output
@@ -446,6 +443,8 @@ MAX232_VMINUS,C15,1,1,todo,serial_design_chat,MAX232 negative charge-pump reserv
 MAX232_VMINUS,U18,6,V-,todo,serial_design_chat,MAX232 negative charge-pump reservoir pin
 MAX232_VPLUS,C14,1,1,todo,serial_design_chat,MAX232 positive charge-pump reservoir capacitor
 MAX232_VPLUS,U18,2,V+,todo,serial_design_chat,MAX232 positive charge-pump reservoir pin
+MEMRD_ACTIVE,U13,11,4Y,inferred,current_user_direction,Active-high memory read transfer enable before inversion
+MEMRD_ACTIVE,U32,9,4A,inferred,current_user_direction,Invert active-high memory read transfer enable
 NC,J1,A2,TX1+,inferred,usb_c_design_chat,Unused SuperSpeed pair for power-only sink
 NC,J1,A3,TX1-,inferred,usb_c_design_chat,Unused SuperSpeed pair for power-only sink
 NC,J1,A6,D+,inferred,usb_c_design_chat,Unused USB 2.0 data pin for power-only sink
@@ -499,8 +498,6 @@ NC,U30,12,5Q,inferred,rtc_adapter_design,Unused command latch output
 NC,U30,15,6Q,inferred,rtc_adapter_design,Unused command latch output
 NC,U30,16,7Q,inferred,rtc_adapter_design,Unused command latch output
 NC,U30,19,8Q,inferred,rtc_adapter_design,Unused command latch output
-NC,U32,8,4Y,inferred,rtc_adapter_design,Unused inverter output
-NC,U32,12,6Y,inferred,rtc_adapter_design,Unused inverter output
 PA0,J3,1,PA0,inferred,gpio_header_design_chat,Port A bit 0 exposed on J3
 PA0,U1,14,PA0,confirmed,MCU_Motorola_6800.kicad_sym,CPU Port A bit 0
 PA1,J3,3,PA1,inferred,gpio_header_design_chat,Port A bit 1 exposed on J3
@@ -524,11 +521,14 @@ PAGE_0100_01FF,U17,8,4Y,inferred,design/New_Address_Decode.dig,Active-high RTC p
 R/~W,TP7,1,1,inferred,test_pad_design_chat,CPU read/write direction observation test point
 R/~W,U1,5,R/~W,confirmed,MCU_Motorola_6800.kicad_sym,CPU read/write direction
 R/~W,U2,14,R/~W,inferred,docs/MC6850.pdf,ACIA read/write direction
+R/~W,U13,13,4B,inferred,current_user_direction,Memory read-direction input for MEMRD active-read gate
 R/~W,U26,2,1B,inferred,rtc_adapter_design,CPU read direction qualifies RTC data-port reads
 R/~W,U26,4,2B,inferred,rtc_adapter_design,CPU read direction qualifies RTC status reads
 R/~W,U27,1,1A,inferred,rtc_adapter_design,Invert CPU read/write direction into CPU_WRITE
 RAM1_ACTIVE,U14,12,1Y,inferred,design/New_Address_Decode.dig,Active-high RAM1 select before inversion
 RAM1_ACTIVE,U17,13,6A,inferred,design/New_Address_Decode.dig,Invert active-high RAM1 select
+RAMWE_ACTIVE,U14,6,2Y,inferred,current_user_direction,Active-high RAM write transfer enable before inversion
+RAMWE_ACTIVE,U32,13,6A,inferred,current_user_direction,Invert active-high RAM write transfer enable
 RESET,C4,1,1,inferred,cpu_user_manual,Reset RC timing node
 RESET,R4,2,2,inferred,current_user_direction,Reset pull-up output node
 RESET,SW1,1,1,inferred,current_user_direction,Manual reset pushbutton pulls RESET low
@@ -676,9 +676,10 @@ USB_VBUS,J1,B9,VBUS,inferred,usb_c_design_chat,USB-C raw VBUS contact
 ~DEC_HIGH_Q5,U10,10,~Y5,confirmed,design/New_Address_Decode.dig,Unused high decoder output
 ~DEC_HIGH_Q6,U10,9,~Y6,confirmed,design/New_Address_Decode.dig,Unused high decoder output
 ~DEC_HIGH_Q7,U10,7,~Y7,confirmed,design/New_Address_Decode.dig,Unused high decoder output
-~MEMRD,U5,20,~OE/VPP,todo,docs/Am2732-AMD.pdf,ROM output enable during reads
-~MEMRD,U6,20,~OE,todo,docs/IDT_6116.pdf,RAM 1 output enable during reads
-~MEMRD,U7,20,~OE,todo,docs/IDT_6116.pdf,RAM 2 output enable during reads
+~MEMRD,U5,20,~OE/VPP,inferred,current_user_direction,DS-qualified ROM output enable during reads
+~MEMRD,U6,20,~OE,inferred,current_user_direction,DS-qualified RAM 1 output enable during reads
+~MEMRD,U7,20,~OE,inferred,current_user_direction,DS-qualified RAM 2 output enable during reads
+~MEMRD,U32,8,4Y,inferred,current_user_direction,Active-low memory read enable generated from DS and R/~W
 ~P1EN,U12,14,~Y1,confirmed,design/New_Address_Decode.dig,Low pair decode output
 ~P2EN,U12,10,~Y5,confirmed,design/New_Address_Decode.dig,Low pair decode output
 ~P3EN,U12,9,~Y6,confirmed,design/New_Address_Decode.dig,Low pair decode output
@@ -699,8 +700,9 @@ USB_VBUS,J1,B9,VBUS,inferred,usb_c_design_chat,USB-C raw VBUS contact
 ~RAM2CS,TP11,1,1,inferred,test_pad_design_chat,RAM 2 chip-select observation test point
 ~RAM2CS,U7,18,~CS,inferred,docs/memory-map.txt,RAM 2 chip select
 ~RAM2CS,U10,14,~Y1,inferred,design/New_Address_Decode.dig,Decode for $0800-$0FFF RAM2 bank
-~RAMWE,U6,21,~WE,todo,docs/IDT_6116.pdf,RAM 1 write enable during writes
-~RAMWE,U7,21,~WE,todo,docs/IDT_6116.pdf,RAM 2 write enable during writes
+~RAMWE,U6,21,~WE,inferred,current_user_direction,DS-qualified RAM 1 write enable during writes
+~RAMWE,U7,21,~WE,inferred,current_user_direction,DS-qualified RAM 2 write enable during writes
+~RAMWE,U32,12,6Y,inferred,current_user_direction,Active-low RAM write enable generated from DS and CPU_WRITE
 ~ROM_HICS,U10,12,~Y3,inferred,design/New_Address_Decode.dig,Other half of ROM decode
 ~ROM_HICS,U13,2,1B,inferred,design/New_Address_Decode.dig,AND active-low ROM half selects
 ~ROM_LOCS,U10,13,~Y2,inferred,design/New_Address_Decode.dig,One half of ROM decode

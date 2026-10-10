@@ -58,6 +58,7 @@ MAX232_C2N,charge-pump,todo,serial_design_chat,MAX232 C2 negative flying-capacit
 MAX232_C2P,charge-pump,todo,serial_design_chat,MAX232 C2 positive flying-capacitor terminal
 MAX232_VMINUS,charge-pump,todo,serial_design_chat,MAX232 negative charge-pump reservoir
 MAX232_VPLUS,charge-pump,todo,serial_design_chat,MAX232 positive charge-pump reservoir
+MEMRD_ACTIVE,control,inferred,current_user_direction,Active-high intermediate for DS-qualified memory reads before inversion to ~MEMRD
 NC,no-connect,inferred,design/netlist,Intentional no-connect pins for unused connector and device pins
 PA0,gpio,confirmed,MCU_Motorola_6800.kicad_sym,CPU Port A bit 0 exposed on J3
 PA1,gpio,confirmed,MCU_Motorola_6800.kicad_sym,CPU Port A bit 1 exposed on J3
@@ -71,6 +72,7 @@ PAGE_0000_00FF,control,inferred,design/New_Address_Decode.dig,Active-high comple
 PAGE_0100_01FF,control,inferred,design/New_Address_Decode.dig,Active-high complement of $0100-$01FF page decode
 R/~W,control,confirmed,design/rtc.md,CPU read/write direction signal
 RAM1_ACTIVE,control,inferred,design/New_Address_Decode.dig,Active-high RAM1 select before inversion
+RAMWE_ACTIVE,control,inferred,current_user_direction,Active-high intermediate for DS-qualified RAM writes before inversion to ~RAMWE
 RESET,control,inferred,reset_design_chat,Active-low CPU reset net driven by RC pull-up network and manual pushbutton
 RS232_RXD,data,inferred,serial_design_chat,RS-232 receive data from DE-9 pin 2 into MAX232 R1IN
 RS232_TXD,data,inferred,serial_design_chat,RS-232 transmit data from MAX232 T1OUT to DE-9 pin 3
@@ -123,7 +125,7 @@ USB_VBUS,power,inferred,usb_c_design_chat,Raw USB-C VBUS before input fuse and p
 ~DEC_HIGH_Q5,control,confirmed,design/New_Address_Decode.dig,Unused active-low high decoder output Q5
 ~DEC_HIGH_Q6,control,confirmed,design/New_Address_Decode.dig,Unused active-low high decoder output Q6
 ~DEC_HIGH_Q7,control,confirmed,design/New_Address_Decode.dig,Unused active-low high decoder output Q7
-~MEMRD,control,todo,docs/Am2732-AMD.pdf,Active-low memory output enable; exact derivation from DS and R/~W TBD
+~MEMRD,control,inferred,current_user_direction,Active-low memory output enable generated as NOT of DS AND R/~W
 ~P1EN,control,confirmed,design/New_Address_Decode.dig,Active-low low peripheral decoder output for $0002-$0003
 ~P2EN,control,confirmed,design/New_Address_Decode.dig,Active-low low peripheral decoder output for $000A-$000B
 ~P3EN,control,confirmed,design/New_Address_Decode.dig,Active-low low peripheral decoder output for $000C-$000D
@@ -138,7 +140,7 @@ USB_VBUS,power,inferred,usb_c_design_chat,Raw USB-C VBUS before input fuse and p
 ~PAGE_0700_07FF,control,inferred,design/New_Address_Decode.dig,Active-low page decode for $0700-$07FF inside bank 0
 ~RAM1CS,control,confirmed,docs/memory-map.txt,Active-low RAM 1 chip select for $0110-$07FF
 ~RAM2CS,control,confirmed,docs/memory-map.txt,Active-low RAM 2 chip select for $0800-$0FFF
-~RAMWE,control,todo,docs/IDT_6116.pdf,Active-low RAM write enable; exact derivation from DS and R/~W TBD
+~RAMWE,control,inferred,current_user_direction,Active-low RAM write enable generated as NOT of DS AND CPU_WRITE
 ~ROM_HICS,control,inferred,design/New_Address_Decode.dig,Active-low high address decoder output for the other ROM half
 ~ROM_LOCS,control,inferred,design/New_Address_Decode.dig,Active-low high address decoder output for one ROM half
 ~ROMCS,control,confirmed,docs/memory-map.txt,Active-low ROM chip select for $1000-$1FFF

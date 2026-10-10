@@ -75,8 +75,8 @@ U9,74373,74373,Package_DIP:DIP-20_W7.62mm,confirmed,design/Address_Latch.dig,Low
 U10,74138,74138,Package_DIP:DIP-16_W7.62mm,confirmed,design/New_Address_Decode.dig,MX1 high address decoder for RAM1 RAM2 and ROM banks
 U11,74138,74138,Package_DIP:DIP-16_W7.62mm,confirmed,design/New_Address_Decode.dig,MX2 page decoder inside the RAM1 bank
 U12,74138,74138,Package_DIP:DIP-16_W7.62mm,confirmed,design/New_Address_Decode.dig,MX3 low peripheral pair decoder
-U13,7408,7408,Package_DIP:DIP-14_W7.62mm,inferred,design/New_Address_Decode.dig,Two-input AND gates for ROM RTC and low I/O decode
-U14,7411,7411,Package_DIP:DIP-14_W7.62mm,inferred,design/New_Address_Decode.dig,Three-input AND gate for RAM1 active decode
+U13,7408,7408,Package_DIP:DIP-14_W7.62mm,inferred,design/New_Address_Decode.dig,Two-input AND gates for ROM RTC low I/O and MEMRD active-read decode
+U14,7411,7411,Package_DIP:DIP-14_W7.62mm,inferred,design/New_Address_Decode.dig,Three-input AND gates for RAM1 active decode and RAMWE active-write decode
 U15,7432,7432,Package_DIP:DIP-14_W7.62mm,inferred,design/New_Address_Decode.dig,OR gates for low-nibble and RAM1 decode terms
 U16,7432,7432,Package_DIP:DIP-14_W7.62mm,inferred,design/New_Address_Decode.dig,OR gates for RAM1 nonzero address term
 U17,7404,7404,Package_DIP:DIP-14_W7.62mm,inferred,design/New_Address_Decode.dig,Inverters for active-low decode outputs and RAM1 select
@@ -94,7 +94,7 @@ U28,74174,74174,Package_DIP:DIP-16_W7.62mm,inferred,rtc_adapter_design,MC14411-c
 U29,7474,7474,Package_DIP:DIP-14_W7.62mm,inferred,rtc_adapter_design,Dual flip-flop for RTC sequencer start request and CPU-side RTC_CYCLE hold
 U30,74373,74373,Package_DIP:DIP-20_W7.62mm,inferred,rtc_adapter_design,RTC command latch captures the read versus write command bit during command writes
 U31,7408,7408,Package_DIP:DIP-14_W7.62mm,inferred,rtc_adapter_design,AND gates steering the sequenced data pulse to RTC_READ or RTC_WRITE
-U32,7404,7404,Package_DIP:DIP-14_W7.62mm,inferred,rtc_adapter_design,Inverters for RTC latch output enables and command read complement
+U32,7404,7404,Package_DIP:DIP-14_W7.62mm,inferred,rtc_adapter_design,Inverters for RTC latch output enables command read complement AS complement and memory control outputs
 U33,7432,7432,Package_DIP:DIP-14_W7.62mm,inferred,rtc_adapter_design,OR gates combining RTC sequencer phases into select data-strobe and cycle-clear terms
 Y1,XTAL_CPU_5MHZ,5 MHz,Crystal:Crystal_HC49-U_Vertical,confirmed,https://www.digikey.com/en/products/detail/w%C3%BCrth-elektronik/830003119B/13900107,CPU crystal
 Y2,XTAL_1_8432MHZ,1.8432 MHz,Crystal:Crystal_HC49-U_Vertical,confirmed,https://www.digikey.com/en/products/detail/raltron-electronics/A-1-8432-18/10246237,MC14411 baud-rate crystal
