@@ -55,6 +55,22 @@ part_id,pin_number,pin_name,electrical_type,active_low,source,notes
 7432,12,4A,input,false,https://www.ti.com/lit/ds/symlink/sn74ls32.pdf,Gate 4 input A
 7432,13,4B,input,false,https://www.ti.com/lit/ds/symlink/sn74ls32.pdf,Gate 4 input B
 7432,14,VCC,power_in,false,https://www.ti.com/lit/ds/symlink/sn74ls32.pdf,Power
+74123,1,1A,input,true,one_shot_datasheet,Channel 1 low-level active trigger input
+74123,2,1B,input,false,one_shot_datasheet,Channel 1 high-level active trigger input
+74123,3,~1CLR,input,true,one_shot_datasheet,Channel 1 overriding clear input
+74123,4,~1Q,output,true,one_shot_datasheet,Channel 1 complementary output
+74123,5,2Q,output,false,one_shot_datasheet,Channel 2 true output
+74123,6,2CEXT,passive,false,one_shot_datasheet,Channel 2 external timing capacitor pin
+74123,7,2REXT/CEXT,passive,false,one_shot_datasheet,Channel 2 external timing resistor capacitor pin
+74123,8,GND,power_in,false,one_shot_datasheet,Ground
+74123,9,2A,input,true,one_shot_datasheet,Channel 2 low-level active trigger input
+74123,10,2B,input,false,one_shot_datasheet,Channel 2 high-level active trigger input
+74123,11,~2CLR,input,true,one_shot_datasheet,Channel 2 overriding clear input
+74123,12,~2Q,output,true,one_shot_datasheet,Channel 2 complementary output
+74123,13,1Q,output,false,one_shot_datasheet,Channel 1 true output
+74123,14,1CEXT,passive,false,one_shot_datasheet,Channel 1 external timing capacitor pin
+74123,15,1REXT/CEXT,passive,false,one_shot_datasheet,Channel 1 external timing resistor capacitor pin
+74123,16,VCC,power_in,false,one_shot_datasheet,Power
 74138,1,A,input,false,docs/sn74ls138.pdf,Select input A
 74138,2,B,input,false,docs/sn74ls138.pdf,Select input B
 74138,3,C,input,false,docs/sn74ls138.pdf,Select input C
@@ -147,6 +163,8 @@ CAP_INPUT_BULK,1,1,passive,false,usb_c_design_chat,Capacitor positive terminal f
 CAP_INPUT_BULK,2,2,passive,false,usb_c_design_chat,Capacitor ground terminal
 CAP_MAX232_CHARGE,1,1,passive,false,serial_design_chat,Charge-pump capacitor terminal
 CAP_MAX232_CHARGE,2,2,passive,false,serial_design_chat,Charge-pump capacitor terminal
+CAP_RTC_TIMING,1,1,passive,false,rtc_adapter_design,Timing capacitor terminal
+CAP_RTC_TIMING,2,2,passive,false,rtc_adapter_design,Timing capacitor terminal
 CR2032_HOLDER,1,+,passive,false,rtc_backup_design_chat,Coin-cell positive terminal
 CR2032_HOLDER,2,-,passive,false,rtc_backup_design_chat,Coin-cell negative terminal
 DE9_DTE_SERIAL,1,DCD,passive,false,serial_design_chat,DTE-style carrier-detect pin staged NC
@@ -316,8 +334,18 @@ RES_10M,1,1,passive,false,cpu_oscillator_design_chat,Resistor terminal
 RES_10M,2,2,passive,false,cpu_oscillator_design_chat,Resistor terminal
 RES_15M,1,1,passive,false,serial_design_chat,Resistor terminal
 RES_15M,2,2,passive,false,serial_design_chat,Resistor terminal
+RES_BAUD_PULLDOWN,1,1,passive,false,current_user_direction,Pull-down resistor terminal at select net
+RES_BAUD_PULLDOWN,2,2,passive,false,current_user_direction,Pull-down resistor terminal at ground
 RES_IRQ_PULLUP,1,1,passive,false,irq_design_chat,Pull-up resistor terminal at 5V0
 RES_IRQ_PULLUP,2,2,passive,false,irq_design_chat,Pull-up resistor terminal at IRQ
+RES_RTC_BUSY_PULLUP,1,1,passive,false,rtc_adapter_design,Pull-up resistor terminal at 5V0
+RES_RTC_BUSY_PULLUP,2,2,passive,false,rtc_adapter_design,Pull-up resistor terminal at RTC_BUSY
+RES_RTC_TIMING,1,1,passive,false,rtc_adapter_design,Timing resistor terminal at 5V0
+RES_RTC_TIMING,2,2,passive,false,rtc_adapter_design,Timing resistor terminal at one-shot RC node
+SW_DIP_2,1,1A,passive,false,current_user_direction,Switch 1 high-side terminal
+SW_DIP_2,2,1B,passive,false,current_user_direction,Switch 1 output terminal
+SW_DIP_2,3,2A,passive,false,current_user_direction,Switch 2 high-side terminal
+SW_DIP_2,4,2B,passive,false,current_user_direction,Switch 2 output terminal
 SW_PUSH_NO,1,1,passive,false,current_user_direction,Switch terminal
 SW_PUSH_NO,2,2,passive,false,current_user_direction,Switch terminal
 TEST_PAD,1,1,passive,false,test_pad_design_chat,Single test pad terminal

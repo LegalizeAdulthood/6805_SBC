@@ -30,7 +30,7 @@ The highest selected clock, 614.4 kHz, is below the MC6850's 0.8 MHz
 maximum serial data-clock frequency for /16 and /64 operation.
 
 The two halves of a 74153 dual 4-to-1 multiplexer select the same one of
-F1, F3, F8, and F9.  One multiplexer output drives the MC6850 receive
+F9, F8, F3, and F1.  One multiplexer output drives the MC6850 receive
 clock and the other drives its transmit clock.  The halves share the
 same two select signals, so receive and transmit always operate at the
 same baud rate.  The MC6850 divider then selects one of the two rates in
@@ -41,12 +41,24 @@ The [MC14411 data sheet](MC14411.pdf),
 [MC146805E2 data sheet](MC146805E2_1983.pdf), and
 [chip inventory](chip-inventory.csv) provide the component details.
 
-## Alternative 1: Manual Selection
+## Selected Manual Selection
 
 A DIP switch drives the two 74153 select inputs.  Pull-up or pull-down
 resistors give both inputs defined logic levels when a switch is open.
-The four switch settings select F1, F3, F8, or F9; the MC6850 control
-register selects /16 or /64 for a total of eight available baud rates.
+The staged circuit uses pull-downs, so an open switch is logic `0` and a
+closed switch is logic `1`.  `BAUD_SEL_A` is the low bit and
+`BAUD_SEL_B` is the high bit.
+
+The four switch settings select F9, F8, F3, or F1 in increasing bit-pattern
+order.  The MC6850 control register selects /16 or /64 for a total of eight
+available baud rates:
+
+| BAUD_SEL_B | BAUD_SEL_A | 74153 input | MC14411 output | MC6850 /64 | MC6850 /16 |
+| ---: | ---: | --- | --- | ---: | ---: |
+| 0 | 0 | C0 | F9 | 300 baud | 1,200 baud |
+| 0 | 1 | C1 | F8 | 600 baud | 2,400 baud |
+| 1 | 0 | C2 | F3 | 4,800 baud | 19,200 baud |
+| 1 | 1 | C3 | F1 | 9,600 baud | 38,400 baud |
 
 The DIP switch changes only the clock range.  It requires no memory-map
 entry or address-decode logic.  Because changing the select inputs while
@@ -55,7 +67,7 @@ should be changed while the system is reset or while the MC6850 is held
 in master reset.  The MC6850 must then be initialized with the desired
 divider.
 
-## Alternative 2: Software Selection
+## Unselected Alternative: Software Selection
 
 A 7474 dual D-type flip-flop stores the two software-controlled select
 bits.  CPU data bits D0 and D1 drive its D inputs, and its Q outputs drive
@@ -83,7 +95,7 @@ This alternative provides all eight rates without opening the enclosure,
 at the cost of the 7474, a memory-mapped register, and its address-decode
 and write-strobe logic.
 
-## Alternative 3: I2C Software Selection
+## Unselected Alternative: I2C Software Selection
 
 Two outputs from a suitable I2C GPIO expander drive the shared 74153
 select inputs.  The expander's output latch stores the selection, so this
@@ -109,7 +121,7 @@ expander's remaining outputs for other purposes.  It avoids decode logic
 dedicated solely to baud-rate selection, but makes baud-rate control
 dependent on the I2C subsystem.
 
-## Alternative 4: CPU Port Selection
+## Unselected Alternative: CPU Port Selection
 
 Two otherwise-unused output bits from either CPU port A or CPU port B
 drive the shared 74153 select inputs directly.  Both select bits should
@@ -137,13 +149,6 @@ baud-rate selection bits.
 
 ## Open Decisions
 
-- Choose DIP-switch, directly memory-mapped, I2C-controlled, or CPU-port
-  selection.
-- Assign F1, F3, F8, and F9 to the four 74153 input positions, including
-  the desired `00` reset selection.
-- If direct software selection is chosen, assign the register address and
-  define its address-decode and write-strobe logic in the SBC design.
-- If I2C software selection is chosen, select a compatible GPIO expander
-  and define its reset behavior and I2C address.
-- If CPU port selection is chosen, assign two bits from port A or port B
-  and define their reset pull resistors.
+The baud mux control source and input order are resolved.  The remaining
+implementation choices are the exact DIP switch footprint and the
+pull-down resistor value after the final 74153 logic family is chosen.

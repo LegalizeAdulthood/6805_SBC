@@ -11,8 +11,8 @@ ACIA Rx Data,ACIA_RXD_TTL,MC6850 serial data path,inferred,serial_design_chat,TT
 ACIA Tx Data,ACIA_TXD_TTL,MC6850 serial data path,inferred,serial_design_chat,TTL transmit-data net between MC6850 TxD and MAX232 T1IN
 ADDRESS WRITE,RTC_ADDRESS_WRITE,MSM58321 control input,confirmed,design/rtc.md,Active-high RTC address latch strobe
 CC,CC1,USB-C connector symbol,inferred,usb_c_design_chat,Simplified connector label for first configuration channel
-CS1,RTC_SELECT,MSM58321 chip select,todo,design/rtc.md,Final select source must be held for complete transaction
-CS2,RTC_SELECT,MSM58321 chip select,todo,design/rtc.md,Final select source must be held for complete transaction
+CS1,RTC_SELECT,MSM58321 chip select,inferred,rtc_adapter_design,Driven by stretched RTC_SELECT from the trigger and read-back adapter
+CS2,RTC_SELECT,MSM58321 chip select,inferred,rtc_adapter_design,Driven by stretched RTC_SELECT from the trigger and read-back adapter
 F1,BAUD_F1,MC14411 baud output,confirmed,design/baud-rate.md,614.4 kHz candidate clock in X64 range
 F3,BAUD_F3,MC14411 baud output,confirmed,design/baud-rate.md,307.2 kHz candidate clock in X64 range
 F8,BAUD_F8,MC14411 baud output,confirmed,design/baud-rate.md,38.4 kHz candidate clock in X64 range
@@ -64,8 +64,8 @@ RTC VDD,RTC_VDD,MSM58321 power pin,inferred,rtc_backup_design_chat,Battery-backe
 Rx Data,ACIA_RXD_TTL,MC6850 pin 6,confirmed,docs/MC6850.pdf,Datasheet descriptive name for receive data pin
 RXD,RS232_RXD,DE-9 signal,inferred,serial_design_chat,DTE-style DE-9 pin 2 signal into SBC receiver
 SBC_TIMER,TIMER,timer header signal,inferred,timer_header_design_chat,External timer injection signal name
-Select A,BAUD_SEL_A,74153 shared select input,todo,design/baud-rate.md,Driving source still open
-Select B,BAUD_SEL_B,74153 shared select input,todo,design/baud-rate.md,Driving source still open
+Select A,BAUD_SEL_A,74153 shared select input,inferred,current_user_direction,Low-order DIP switch baud-select bit
+Select B,BAUD_SEL_B,74153 shared select input,inferred,current_user_direction,High-order DIP switch baud-select bit
 SHIELD,USB_SHIELD,USB-C connector shield,todo,usb_c_design_chat,Connector shell or shield net name before final grounding decision
 Timer,TIMER,MC146805E2 timer input,confirmed,MCU_Motorola_6800.kicad_sym,CPU timer input pin
 Transmit Clock,TxCLK,MC6850 pin 4,confirmed,docs/MC6850.pdf,Datasheet descriptive name for transmit clock pin

@@ -11,6 +11,13 @@ net,refdes,pin_number,pin_name,status,source,notes
 5V0,J3,18,5V0,inferred,gpio_header_design_chat,J3 second 5V0 utility pin
 5V0,R4,1,1,inferred,current_user_direction,Reset pull-up source
 5V0,R8,1,1,inferred,irq_design_chat,Shared IRQ pull-up source
+5V0,R11,1,1,inferred,rtc_adapter_design,RTC BUSY pull-up source
+5V0,R12,1,1,inferred,rtc_adapter_design,RTC_SELECT one-shot timing resistor source
+5V0,R13,1,1,inferred,rtc_adapter_design,RTC_ADDRESS_WRITE one-shot timing resistor source
+5V0,R14,1,1,inferred,rtc_adapter_design,RTC data-strobe one-shot timing resistor source
+5V0,R15,1,1,inferred,rtc_adapter_design,RTC CPU-cycle hold one-shot timing resistor source
+5V0,SW2,1,1A,inferred,current_user_direction,BAUD_SEL_A switch high side
+5V0,SW2,3,2A,inferred,current_user_direction,BAUD_SEL_B switch high side
 5V0,TP1,1,1,inferred,test_pad_design_chat,Power rail bring-up test point
 5V0,U1,40,VDD,confirmed,MCU_Motorola_6800.kicad_sym,CPU power
 5V0,U2,8,CS0,inferred,docs/memory-map.txt,Hold ACIA positive chip select asserted
@@ -33,16 +40,34 @@ net,refdes,pin_number,pin_name,status,source,notes
 5V0,U16,14,VCC,confirmed,https://www.ti.com/lit/ds/symlink/sn74ls32.pdf,OR gate package power
 5V0,U17,14,VCC,confirmed,https://www.ti.com/lit/ds/symlink/sn74ls04.pdf,Inverter package power
 5V0,U18,16,VCC,inferred,serial_design_chat,MAX232 logic supply
+5V0,U19,20,VCC,inferred,rtc_adapter_design,RTC address latch power
+5V0,U20,20,VCC,inferred,rtc_adapter_design,RTC write-data latch power
+5V0,U21,20,VCC,inferred,rtc_adapter_design,RTC readback latch power
+5V0,U22,11,LE,inferred,rtc_adapter_design,Hold status buffer transparent
+5V0,U22,20,VCC,inferred,rtc_adapter_design,RTC status buffer power
+5V0,U23,20,VCC,inferred,rtc_adapter_design,RTC subregister address latch power
+5V0,U24,16,VCC,inferred,rtc_adapter_design,RTC subregister decoder power
+5V0,U25,14,VCC,inferred,rtc_adapter_design,RTC write strobe AND gate power
+5V0,U26,14,VCC,inferred,rtc_adapter_design,RTC read strobe AND gate power
+5V0,U27,14,VCC,inferred,rtc_adapter_design,RTC register inverter power
+5V0,U28,16,VCC,inferred,rtc_adapter_design,RTC select and address one-shot power
+5V0,U29,2,1B,inferred,rtc_adapter_design,Hold data one-shot B input high for falling-edge A trigger
+5V0,U29,16,VCC,inferred,rtc_adapter_design,RTC data one-shot power
+5V0,U30,20,VCC,inferred,rtc_adapter_design,RTC command latch power
+5V0,U31,14,VCC,inferred,rtc_adapter_design,RTC read/write steering gate power
+5V0,U32,14,VCC,inferred,rtc_adapter_design,RTC output-enable inverter power
 A0,U2,11,RS,inferred,docs/memory-map.txt,ACIA register select for $0006 versus $0007
 A0,U5,8,A0,inferred,docs/Am2732-AMD.pdf,ROM address bit 0
 A0,U6,8,A0,inferred,docs/IDT_6116.pdf,RAM 1 address bit 0
 A0,U7,8,A0,inferred,docs/IDT_6116.pdf,RAM 2 address bit 0
 A0,U9,2,1Q,confirmed,design/Address_Latch.dig,Latched low address bit 0
+A0,U23,4,2D,inferred,rtc_adapter_design,Latch adapter subregister address bit 0 during AS
 A1,U5,7,A1,inferred,docs/Am2732-AMD.pdf,ROM address bit 1
 A1,U6,7,A1,inferred,docs/IDT_6116.pdf,RAM 1 address bit 1
 A1,U7,7,A1,inferred,docs/IDT_6116.pdf,RAM 2 address bit 1
 A1,U9,5,2Q,confirmed,design/Address_Latch.dig,Latched low address bit 1
 A1,U12,1,A,inferred,design/New_Address_Decode.dig,Low peripheral pair decoder select bit A1
+A1,U23,7,3D,inferred,rtc_adapter_design,Latch adapter subregister address bit 1 during AS
 A2,U5,6,A2,inferred,docs/Am2732-AMD.pdf,ROM address bit 2
 A2,U6,6,A2,inferred,docs/IDT_6116.pdf,RAM 1 address bit 2
 A2,U7,6,A2,inferred,docs/IDT_6116.pdf,RAM 2 address bit 2
@@ -124,25 +149,30 @@ AS,TP5,1,1,inferred,test_pad_design_chat,CPU address-strobe observation test poi
 AS,U1,6,AS,confirmed,MCU_Motorola_6800.kicad_sym,CPU address strobe
 AS,U9,11,LE,confirmed,design/Address_Latch.dig,Latch PB0-PB7 while AS is asserted
 AS,U10,6,G1,inferred,design/New_Address_Decode.dig,AS qualifies high address decode
+AS,U23,11,LE,inferred,rtc_adapter_design,Latch adapter subregister address while AS is asserted
 BANK0_0000_07FF,U11,6,G1,inferred,design/New_Address_Decode.dig,Enable page decode inside the $0000-$07FF bank
 BANK0_0000_07FF,U14,1,1A,inferred,design/New_Address_Decode.dig,RAM1 active decode term
 BANK0_0000_07FF,U17,2,1Y,inferred,design/New_Address_Decode.dig,Active-high bank decode
 BANK0_ADDR_NONZERO,U14,2,1B,inferred,design/New_Address_Decode.dig,RAM1 active decode term
 BANK0_ADDR_NONZERO,U16,6,2Y,inferred,design/New_Address_Decode.dig,High for bank 0 addresses at or above $0080
 BAUD_F1,U3,1,F1,confirmed,design/baud-rate.md,614.4 kHz candidate clock for baud mux in X64 range
-BAUD_F1,U4,6,1C0,inferred,design/baud-rate.md,Provisional C0 assignment; confirm power-on default
-BAUD_F1,U4,10,2C0,inferred,design/baud-rate.md,Provisional C0 assignment; mirrors receive-clock mux
+BAUD_F1,U4,3,1C3,inferred,current_user_direction,C3 assignment for highest switch setting
+BAUD_F1,U4,13,2C3,inferred,current_user_direction,C3 assignment mirrors receive-clock mux
 BAUD_F3,U3,2,F3,confirmed,design/baud-rate.md,307.2 kHz candidate clock for baud mux in X64 range
-BAUD_F3,U4,5,1C1,inferred,design/baud-rate.md,Provisional C1 assignment
-BAUD_F3,U4,11,2C1,inferred,design/baud-rate.md,Provisional C1 assignment; mirrors receive-clock mux
+BAUD_F3,U4,4,1C2,inferred,current_user_direction,C2 assignment for select code 10
+BAUD_F3,U4,12,2C2,inferred,current_user_direction,C2 assignment mirrors receive-clock mux
 BAUD_F8,U3,5,F8,confirmed,design/baud-rate.md,38.4 kHz candidate clock for baud mux in X64 range
-BAUD_F8,U4,4,1C2,inferred,design/baud-rate.md,Provisional C2 assignment
-BAUD_F8,U4,12,2C2,inferred,design/baud-rate.md,Provisional C2 assignment; mirrors receive-clock mux
+BAUD_F8,U4,5,1C1,inferred,current_user_direction,C1 assignment for select code 01
+BAUD_F8,U4,11,2C1,inferred,current_user_direction,C1 assignment mirrors receive-clock mux
 BAUD_F9,U3,7,F9,confirmed,design/baud-rate.md,19.2 kHz candidate clock for baud mux in X64 range
-BAUD_F9,U4,3,1C3,inferred,design/baud-rate.md,Provisional C3 assignment
-BAUD_F9,U4,13,2C3,inferred,design/baud-rate.md,Provisional C3 assignment; mirrors receive-clock mux
-BAUD_SEL_A,U4,14,A,todo,design/baud-rate.md,Shared select input; driving source still TBD
-BAUD_SEL_B,U4,2,B,todo,design/baud-rate.md,Shared select input; driving source still TBD
+BAUD_F9,U4,6,1C0,inferred,current_user_direction,C0 assignment for lowest switch setting
+BAUD_F9,U4,10,2C0,inferred,current_user_direction,C0 assignment mirrors receive-clock mux
+BAUD_SEL_A,R9,1,1,inferred,current_user_direction,BAUD_SEL_A pull-down node
+BAUD_SEL_A,SW2,2,1B,inferred,current_user_direction,Low-order baud-select DIP switch output
+BAUD_SEL_A,U4,14,A,inferred,current_user_direction,Shared select input A driven by DIP switch low bit
+BAUD_SEL_B,R10,1,1,inferred,current_user_direction,BAUD_SEL_B pull-down node
+BAUD_SEL_B,SW2,4,2B,inferred,current_user_direction,High-order baud-select DIP switch output
+BAUD_SEL_B,U4,2,B,inferred,current_user_direction,Shared select input B driven by DIP switch high bit
 BAUD_XTAL_IN,C17,1,1,todo,serial_design_chat,MC14411 XTAL_IN load capacitor on baud crystal
 BAUD_XTAL_IN,R7,1,1,inferred,serial_design_chat,MC14411 Rt feedback resistor terminal
 BAUD_XTAL_IN,U3,21,XTAL_IN,confirmed,MCU_Motorola_6800.kicad_sym,MC14411 crystal input
@@ -163,38 +193,56 @@ CPU_OSC2,C6,1,1,inferred,cpu_oscillator_design_chat,CPU oscillator load capacito
 CPU_OSC2,R5,2,2,inferred,cpu_oscillator_design_chat,Feedback resistor terminal at OSC2
 CPU_OSC2,U1,38,OSC2,confirmed,MCU_Motorola_6800.kicad_sym,CPU oscillator output
 CPU_OSC2,Y1,2,2,confirmed,https://www.digikey.com/en/products/detail/w%C3%BCrth-elektronik/830003119B/13900107,CPU crystal terminal
+CPU_WRITE,U25,2,1B,inferred,rtc_adapter_design,Write qualifier for RTC address latch
+CPU_WRITE,U25,4,2B,inferred,rtc_adapter_design,Write qualifier for RTC data latch
+CPU_WRITE,U25,10,3B,inferred,rtc_adapter_design,Write qualifier for RTC command trigger
+CPU_WRITE,U27,2,1Y,inferred,rtc_adapter_design,Active-high write qualifier
 D0,J3,2,PB0,inferred,gpio_header_design_chat,Port B bit 0 exposed on J3; canonical net is D0
 D0,U1,36,PB0,confirmed,design/Address_Latch.dig,CPU multiplexed address/data bus bit 0
 D0,U2,22,D0,inferred,docs/MC6850.pdf,ACIA data bus bit 0
 D0,U5,9,O0,inferred,docs/Am2732-AMD.pdf,ROM data output bit 0
 D0,U6,9,I/O0,inferred,docs/IDT_6116.pdf,RAM 1 data bit 0
 D0,U7,9,I/O0,inferred,docs/IDT_6116.pdf,RAM 2 data bit 0
-D0,U8,4,D0,confirmed,design/rtc.md,RTC 4-bit data bus bit 0
 D0,U9,3,1D,confirmed,design/Address_Latch.dig,Low address/data bit 0 latch input
+D0,U19,3,1D,inferred,rtc_adapter_design,RTC address latch input bit 0
+D0,U20,3,1D,inferred,rtc_adapter_design,RTC write-data latch input bit 0
+D0,U21,2,1Q,inferred,rtc_adapter_design,RTC readback output bit 0 onto CPU data bus
+D0,U22,2,1Q,inferred,rtc_adapter_design,RTC status output bit 0 onto CPU data bus
+D0,U30,3,1D,inferred,rtc_adapter_design,Command bit 0 sampled for future start-bit policy
 D1,J3,4,PB1,inferred,gpio_header_design_chat,Port B bit 1 exposed on J3; canonical net is D1
 D1,U1,35,PB1,confirmed,design/Address_Latch.dig,CPU multiplexed address/data bus bit 1
 D1,U2,21,D1,inferred,docs/MC6850.pdf,ACIA data bus bit 1
 D1,U5,10,O1,inferred,docs/Am2732-AMD.pdf,ROM data output bit 1
 D1,U6,10,I/O1,inferred,docs/IDT_6116.pdf,RAM 1 data bit 1
 D1,U7,10,I/O1,inferred,docs/IDT_6116.pdf,RAM 2 data bit 1
-D1,U8,5,D1,confirmed,design/rtc.md,RTC 4-bit data bus bit 1
 D1,U9,4,2D,confirmed,design/Address_Latch.dig,Low address/data bit 1 latch input
+D1,U19,4,2D,inferred,rtc_adapter_design,RTC address latch input bit 1
+D1,U20,4,2D,inferred,rtc_adapter_design,RTC write-data latch input bit 1
+D1,U21,5,2Q,inferred,rtc_adapter_design,RTC readback output bit 1 onto CPU data bus
+D1,U22,5,2Q,inferred,rtc_adapter_design,RTC status output bit 1 onto CPU data bus
+D1,U30,4,2D,inferred,rtc_adapter_design,Command bit 1 selects write when high and read when low
 D2,J3,6,PB2,inferred,gpio_header_design_chat,Port B bit 2 exposed on J3; canonical net is D2
 D2,U1,34,PB2,confirmed,design/Address_Latch.dig,CPU multiplexed address/data bus bit 2
 D2,U2,20,D2,inferred,docs/MC6850.pdf,ACIA data bus bit 2
 D2,U5,11,O2,inferred,docs/Am2732-AMD.pdf,ROM data output bit 2
 D2,U6,11,I/O2,inferred,docs/IDT_6116.pdf,RAM 1 data bit 2
 D2,U7,11,I/O2,inferred,docs/IDT_6116.pdf,RAM 2 data bit 2
-D2,U8,6,D2,confirmed,design/rtc.md,RTC 4-bit data bus bit 2
 D2,U9,7,3D,confirmed,design/Address_Latch.dig,Low address/data bit 2 latch input
+D2,U19,7,3D,inferred,rtc_adapter_design,RTC address latch input bit 2
+D2,U20,7,3D,inferred,rtc_adapter_design,RTC write-data latch input bit 2
+D2,U21,6,3Q,inferred,rtc_adapter_design,RTC readback output bit 2 onto CPU data bus
+D2,U22,6,3Q,inferred,rtc_adapter_design,RTC status output bit 2 onto CPU data bus
 D3,J3,8,PB3,inferred,gpio_header_design_chat,Port B bit 3 exposed on J3; canonical net is D3
 D3,U1,33,PB3,confirmed,design/Address_Latch.dig,CPU multiplexed address/data bus bit 3
 D3,U2,19,D3,inferred,docs/MC6850.pdf,ACIA data bus bit 3
 D3,U5,13,O3,inferred,docs/Am2732-AMD.pdf,ROM data output bit 3
 D3,U6,13,I/O3,inferred,docs/IDT_6116.pdf,RAM 1 data bit 3
 D3,U7,13,I/O3,inferred,docs/IDT_6116.pdf,RAM 2 data bit 3
-D3,U8,7,D3,confirmed,design/rtc.md,RTC 4-bit data bus bit 3
 D3,U9,8,4D,confirmed,design/Address_Latch.dig,Low address/data bit 3 latch input
+D3,U19,8,4D,inferred,rtc_adapter_design,RTC address latch input bit 3
+D3,U20,8,4D,inferred,rtc_adapter_design,RTC write-data latch input bit 3
+D3,U21,9,4Q,inferred,rtc_adapter_design,RTC readback output bit 3 onto CPU data bus
+D3,U22,9,4Q,inferred,rtc_adapter_design,RTC status output bit 3 onto CPU data bus
 D4,J3,10,PB4,inferred,gpio_header_design_chat,Port B bit 4 exposed on J3; canonical net is D4
 D4,U1,32,PB4,confirmed,design/Address_Latch.dig,CPU multiplexed address/data bus bit 4
 D4,U2,18,D4,inferred,docs/MC6850.pdf,ACIA data bus bit 4
@@ -202,6 +250,8 @@ D4,U5,14,O4,inferred,docs/Am2732-AMD.pdf,ROM data output bit 4
 D4,U6,14,I/O4,inferred,docs/IDT_6116.pdf,RAM 1 data bit 4
 D4,U7,14,I/O4,inferred,docs/IDT_6116.pdf,RAM 2 data bit 4
 D4,U9,13,5D,confirmed,design/Address_Latch.dig,Low address/data bit 4 latch input
+D4,U21,12,5Q,inferred,rtc_adapter_design,RTC readback high bit forced low onto CPU data bus
+D4,U22,12,5Q,inferred,rtc_adapter_design,RTC status high bit forced low onto CPU data bus
 D5,J3,12,PB5,inferred,gpio_header_design_chat,Port B bit 5 exposed on J3; canonical net is D5
 D5,U1,31,PB5,confirmed,design/Address_Latch.dig,CPU multiplexed address/data bus bit 5
 D5,U2,17,D5,inferred,docs/MC6850.pdf,ACIA data bus bit 5
@@ -209,6 +259,8 @@ D5,U5,15,O5,inferred,docs/Am2732-AMD.pdf,ROM data output bit 5
 D5,U6,15,I/O5,inferred,docs/IDT_6116.pdf,RAM 1 data bit 5
 D5,U7,15,I/O5,inferred,docs/IDT_6116.pdf,RAM 2 data bit 5
 D5,U9,14,6D,confirmed,design/Address_Latch.dig,Low address/data bit 5 latch input
+D5,U21,15,6Q,inferred,rtc_adapter_design,RTC readback high bit forced low onto CPU data bus
+D5,U22,15,6Q,inferred,rtc_adapter_design,RTC status high bit forced low onto CPU data bus
 D6,J3,14,PB6,inferred,gpio_header_design_chat,Port B bit 6 exposed on J3; canonical net is D6
 D6,U1,30,PB6,confirmed,design/Address_Latch.dig,CPU multiplexed address/data bus bit 6
 D6,U2,16,D6,inferred,docs/MC6850.pdf,ACIA data bus bit 6
@@ -216,6 +268,8 @@ D6,U5,16,O6,inferred,docs/Am2732-AMD.pdf,ROM data output bit 6
 D6,U6,16,I/O6,inferred,docs/IDT_6116.pdf,RAM 1 data bit 6
 D6,U7,16,I/O6,inferred,docs/IDT_6116.pdf,RAM 2 data bit 6
 D6,U9,17,7D,confirmed,design/Address_Latch.dig,Low address/data bit 6 latch input
+D6,U21,16,7Q,inferred,rtc_adapter_design,RTC readback high bit forced low onto CPU data bus
+D6,U22,16,7Q,inferred,rtc_adapter_design,RTC status high bit forced low onto CPU data bus
 D7,J3,16,PB7,inferred,gpio_header_design_chat,Port B bit 7 exposed on J3; canonical net is D7
 D7,U1,29,PB7,confirmed,design/Address_Latch.dig,CPU multiplexed address/data bus bit 7
 D7,U2,15,D7,inferred,docs/MC6850.pdf,ACIA data bus bit 7
@@ -223,9 +277,16 @@ D7,U5,17,O7,inferred,docs/Am2732-AMD.pdf,ROM data output bit 7
 D7,U6,17,I/O7,inferred,docs/IDT_6116.pdf,RAM 1 data bit 7
 D7,U7,17,I/O7,inferred,docs/IDT_6116.pdf,RAM 2 data bit 7
 D7,U9,18,8D,confirmed,design/Address_Latch.dig,Low address/data bit 7 latch input
+D7,U21,19,8Q,inferred,rtc_adapter_design,RTC readback high bit forced low onto CPU data bus
+D7,U22,19,8Q,inferred,rtc_adapter_design,RTC status high bit forced low onto CPU data bus
 DS,TP6,1,1,inferred,test_pad_design_chat,CPU data-strobe observation test point
 DS,U1,4,DS,confirmed,MCU_Motorola_6800.kicad_sym,CPU data strobe
 DS,U2,13,E,inferred,docs/MC6850.pdf,ACIA enable driven from CPU data strobe
+DS,U25,1,1A,inferred,rtc_adapter_design,CPU data strobe qualifies RTC address latch writes
+DS,U25,3,2A,inferred,rtc_adapter_design,CPU data strobe qualifies RTC data latch writes
+DS,U25,9,3A,inferred,rtc_adapter_design,CPU data strobe qualifies RTC command writes
+DS,U26,1,1A,inferred,rtc_adapter_design,CPU data strobe qualifies RTC data-port reads
+DS,U26,3,2A,inferred,rtc_adapter_design,CPU data strobe qualifies RTC status reads
 GND,BT1,2,-,inferred,rtc_backup_design_chat,RTC backup coin-cell negative terminal
 GND,C1,2,2,todo,usb_c_design_chat,Input bulk capacitor return
 GND,C2,2,2,inferred,usb_c_design_chat,Input bypass capacitor return
@@ -258,6 +319,8 @@ GND,J4,3,GND,inferred,timer_header_design_chat,TIMER/IRQ header ground
 GND,R1,2,2,inferred,usb_c_design_chat,CC1 Rd pull-down return
 GND,R2,2,2,inferred,usb_c_design_chat,CC2 Rd pull-down return
 GND,R3,2,2,todo,usb_c_design_chat,Optional shield bleed path return
+GND,R9,2,2,inferred,current_user_direction,BAUD_SEL_A pull-down return
+GND,R10,2,2,inferred,current_user_direction,BAUD_SEL_B pull-down return
 GND,SW1,2,2,inferred,current_user_direction,Manual reset pushbutton return
 GND,TP2,1,1,inferred,test_pad_design_chat,Ground bring-up test point
 GND,U1,20,VSS,confirmed,MCU_Motorola_6800.kicad_sym,CPU ground
@@ -272,6 +335,7 @@ GND,U5,12,GND,inferred,docs/Am2732-AMD.pdf,ROM ground
 GND,U6,12,GND,inferred,docs/IDT_6116.pdf,RAM 1 ground
 GND,U7,12,GND,inferred,docs/IDT_6116.pdf,RAM 2 ground
 GND,U8,8,GND,confirmed,MCU_Motorola_6800.kicad_sym,RTC ground
+GND,U8,11,STOP,inferred,current_user_direction,Tie MSM58321 STOP low for normal always-running RTC operation
 GND,U8,12,TEST,inferred,docs/MSM58321.pdf,Datasheet recommends tying TEST to GND
 GND,U9,1,~OE,inferred,design/Address_Latch.dig,Enable address latch outputs
 GND,U9,10,GND,confirmed,https://www.ti.com/lit/ds/symlink/sn74ls373.pdf,Address latch ground
@@ -305,6 +369,67 @@ GND,U17,7,GND,confirmed,https://www.ti.com/lit/ds/symlink/sn74ls04.pdf,Inverter 
 GND,U18,8,R2IN,todo,serial_design_chat,Tie unused second receiver input to ground unless the channel is exposed
 GND,U18,10,T2IN,todo,serial_design_chat,Tie unused second driver input low unless the channel is exposed
 GND,U18,15,GND,inferred,serial_design_chat,MAX232 ground
+GND,U19,10,GND,inferred,rtc_adapter_design,RTC address latch ground
+GND,U19,13,5D,inferred,rtc_adapter_design,Tie unused latch input low
+GND,U19,14,6D,inferred,rtc_adapter_design,Tie unused latch input low
+GND,U19,17,7D,inferred,rtc_adapter_design,Tie unused latch input low
+GND,U19,18,8D,inferred,rtc_adapter_design,Tie unused latch input low
+GND,U20,10,GND,inferred,rtc_adapter_design,RTC write-data latch ground
+GND,U20,13,5D,inferred,rtc_adapter_design,Tie unused latch input low
+GND,U20,14,6D,inferred,rtc_adapter_design,Tie unused latch input low
+GND,U20,17,7D,inferred,rtc_adapter_design,Tie unused latch input low
+GND,U20,18,8D,inferred,rtc_adapter_design,Tie unused latch input low
+GND,U21,10,GND,inferred,rtc_adapter_design,RTC readback latch ground
+GND,U21,13,5D,inferred,rtc_adapter_design,Drive readback high bits as zero
+GND,U21,14,6D,inferred,rtc_adapter_design,Drive readback high bits as zero
+GND,U21,17,7D,inferred,rtc_adapter_design,Drive readback high bits as zero
+GND,U21,18,8D,inferred,rtc_adapter_design,Drive readback high bits as zero
+GND,U22,8,4D,inferred,rtc_adapter_design,Drive status high bits as zero
+GND,U22,10,GND,inferred,rtc_adapter_design,RTC status buffer ground
+GND,U22,13,5D,inferred,rtc_adapter_design,Drive status high bits as zero
+GND,U22,14,6D,inferred,rtc_adapter_design,Drive status high bits as zero
+GND,U22,17,7D,inferred,rtc_adapter_design,Drive status high bits as zero
+GND,U22,18,8D,inferred,rtc_adapter_design,Drive status high bits as zero
+GND,U23,1,~OE,inferred,rtc_adapter_design,Enable subregister address latch outputs
+GND,U23,3,1D,inferred,rtc_adapter_design,Tie unused latch input low
+GND,U23,8,4D,inferred,rtc_adapter_design,Tie unused latch input low
+GND,U23,10,GND,inferred,rtc_adapter_design,RTC subregister address latch ground
+GND,U23,13,5D,inferred,rtc_adapter_design,Tie unused latch input low
+GND,U23,14,6D,inferred,rtc_adapter_design,Tie unused latch input low
+GND,U23,17,7D,inferred,rtc_adapter_design,Tie unused latch input low
+GND,U23,18,8D,inferred,rtc_adapter_design,Tie unused latch input low
+GND,U24,3,C,inferred,rtc_adapter_design,Decode only four adapter subregisters
+GND,U24,4,~G2A,inferred,rtc_adapter_design,Enable RTC subregister decoder
+GND,U24,5,~G2B,inferred,rtc_adapter_design,Enable RTC subregister decoder
+GND,U24,8,GND,inferred,rtc_adapter_design,RTC subregister decoder ground
+GND,U25,7,GND,inferred,rtc_adapter_design,RTC write strobe AND gate ground
+GND,U26,7,GND,inferred,rtc_adapter_design,RTC read strobe AND gate ground
+GND,U26,9,3A,inferred,rtc_adapter_design,Tie unused AND input low
+GND,U26,10,3B,inferred,rtc_adapter_design,Tie unused AND input low
+GND,U26,11,3C,inferred,rtc_adapter_design,Tie unused AND input low
+GND,U27,7,GND,inferred,rtc_adapter_design,RTC register inverter ground
+GND,U28,1,1A,inferred,rtc_adapter_design,Use B input to trigger RTC_SELECT channel
+GND,U28,8,GND,inferred,rtc_adapter_design,RTC select and address one-shot ground
+GND,U28,9,2A,inferred,rtc_adapter_design,Use B input to trigger ADDRESS_WRITE channel
+GND,U29,8,GND,inferred,rtc_adapter_design,RTC data one-shot ground
+GND,U29,9,2A,inferred,rtc_adapter_design,Use B input to trigger RTC_CYCLE hold channel
+GND,U30,1,~OE,inferred,rtc_adapter_design,Enable command latch outputs
+GND,U30,7,3D,inferred,rtc_adapter_design,Tie unused command latch input low
+GND,U30,8,4D,inferred,rtc_adapter_design,Tie unused command latch input low
+GND,U30,10,GND,inferred,rtc_adapter_design,RTC command latch ground
+GND,U30,13,5D,inferred,rtc_adapter_design,Tie unused command latch input low
+GND,U30,14,6D,inferred,rtc_adapter_design,Tie unused command latch input low
+GND,U30,17,7D,inferred,rtc_adapter_design,Tie unused command latch input low
+GND,U30,18,8D,inferred,rtc_adapter_design,Tie unused command latch input low
+GND,U31,7,GND,inferred,rtc_adapter_design,RTC read/write steering gate ground
+GND,U31,9,3A,inferred,rtc_adapter_design,Tie unused AND input low
+GND,U31,10,3B,inferred,rtc_adapter_design,Tie unused AND input low
+GND,U31,12,4A,inferred,rtc_adapter_design,Tie unused AND input low
+GND,U31,13,4B,inferred,rtc_adapter_design,Tie unused AND input low
+GND,U32,7,GND,inferred,rtc_adapter_design,RTC output-enable inverter ground
+GND,U32,9,4A,inferred,rtc_adapter_design,Tie unused inverter input low
+GND,U32,11,5A,inferred,rtc_adapter_design,Tie unused inverter input low
+GND,U32,13,6A,inferred,rtc_adapter_design,Tie unused inverter input low
 IRQ,J4,2,IRQ,inferred,timer_header_design_chat,Optional shared IRQ access on TIMER header
 IRQ,R8,2,2,inferred,irq_design_chat,Shared IRQ pull-up output
 IRQ,TP4,1,1,inferred,test_pad_design_chat,Shared active-low IRQ observation test point
@@ -348,6 +473,41 @@ NC,J2,9,RI,todo,serial_design_chat,No-flow-control policy leaves DE-9 RI unconne
 NC,U2,5,RTS,todo,serial_design_chat,No-flow-control policy leaves ACIA RTS unconnected unless later exposed on a test pad
 NC,U18,7,T2OUT,todo,serial_design_chat,Unused second MAX232 driver output
 NC,U18,9,R2OUT,todo,serial_design_chat,Unused second MAX232 receiver output
+NC,U19,12,5Q,inferred,rtc_adapter_design,Unused high address latch output
+NC,U19,15,6Q,inferred,rtc_adapter_design,Unused high address latch output
+NC,U19,16,7Q,inferred,rtc_adapter_design,Unused high address latch output
+NC,U19,19,8Q,inferred,rtc_adapter_design,Unused high address latch output
+NC,U20,12,5Q,inferred,rtc_adapter_design,Unused high data latch output
+NC,U20,15,6Q,inferred,rtc_adapter_design,Unused high data latch output
+NC,U20,16,7Q,inferred,rtc_adapter_design,Unused high data latch output
+NC,U20,19,8Q,inferred,rtc_adapter_design,Unused high data latch output
+NC,U23,9,4Q,inferred,rtc_adapter_design,Unused latched adapter address output
+NC,U23,12,5Q,inferred,rtc_adapter_design,Unused address latch output
+NC,U23,15,6Q,inferred,rtc_adapter_design,Unused address latch output
+NC,U23,16,7Q,inferred,rtc_adapter_design,Unused address latch output
+NC,U23,19,8Q,inferred,rtc_adapter_design,Unused address latch output
+NC,U24,7,~Y7,inferred,rtc_adapter_design,Unused adapter subregister decode output
+NC,U24,9,~Y6,inferred,rtc_adapter_design,Unused adapter subregister decode output
+NC,U24,10,~Y5,inferred,rtc_adapter_design,Unused adapter subregister decode output
+NC,U24,11,~Y4,inferred,rtc_adapter_design,Unused adapter subregister decode output
+NC,U24,12,~Y3,inferred,rtc_adapter_design,Unused adapter subregister decode output
+NC,U26,8,3Y,inferred,rtc_adapter_design,Unused AND output
+NC,U28,4,~1Q,inferred,rtc_adapter_design,Unused complementary select pulse output
+NC,U28,12,~2Q,inferred,rtc_adapter_design,Unused complementary address pulse output
+NC,U29,4,~1Q,inferred,rtc_adapter_design,Unused complementary data pulse output
+NC,U29,12,~2Q,inferred,rtc_adapter_design,Unused second one-shot complementary output
+NC,U30,2,1Q,inferred,rtc_adapter_design,Unused latched command start output
+NC,U30,6,3Q,inferred,rtc_adapter_design,Unused command latch output
+NC,U30,9,4Q,inferred,rtc_adapter_design,Unused command latch output
+NC,U30,12,5Q,inferred,rtc_adapter_design,Unused command latch output
+NC,U30,15,6Q,inferred,rtc_adapter_design,Unused command latch output
+NC,U30,16,7Q,inferred,rtc_adapter_design,Unused command latch output
+NC,U30,19,8Q,inferred,rtc_adapter_design,Unused command latch output
+NC,U31,8,3Y,inferred,rtc_adapter_design,Unused AND output
+NC,U31,11,4Y,inferred,rtc_adapter_design,Unused AND output
+NC,U32,8,4Y,inferred,rtc_adapter_design,Unused inverter output
+NC,U32,10,5Y,inferred,rtc_adapter_design,Unused inverter output
+NC,U32,12,6Y,inferred,rtc_adapter_design,Unused inverter output
 PA0,J3,1,PA0,inferred,gpio_header_design_chat,Port A bit 0 exposed on J3
 PA0,U1,14,PA0,confirmed,MCU_Motorola_6800.kicad_sym,CPU Port A bit 0
 PA1,J3,3,PA1,inferred,gpio_header_design_chat,Port A bit 1 exposed on J3
@@ -371,6 +531,9 @@ PAGE_0100_01FF,U17,8,4Y,inferred,design/New_Address_Decode.dig,Active-high RTC p
 R/~W,TP7,1,1,inferred,test_pad_design_chat,CPU read/write direction observation test point
 R/~W,U1,5,R/~W,confirmed,MCU_Motorola_6800.kicad_sym,CPU read/write direction
 R/~W,U2,14,R/~W,inferred,docs/MC6850.pdf,ACIA read/write direction
+R/~W,U26,2,1B,inferred,rtc_adapter_design,CPU read direction qualifies RTC data-port reads
+R/~W,U26,4,2B,inferred,rtc_adapter_design,CPU read direction qualifies RTC status reads
+R/~W,U27,1,1A,inferred,rtc_adapter_design,Invert CPU read/write direction into CPU_WRITE
 RAM1_ACTIVE,U14,12,1Y,inferred,design/New_Address_Decode.dig,Active-high RAM1 select before inversion
 RAM1_ACTIVE,U17,13,6A,inferred,design/New_Address_Decode.dig,Invert active-high RAM1 select
 RESET,C4,1,1,inferred,cpu_user_manual,Reset RC timing node
@@ -378,29 +541,114 @@ RESET,R4,2,2,inferred,current_user_direction,Reset pull-up output node
 RESET,SW1,1,1,inferred,current_user_direction,Manual reset pushbutton pulls RESET low
 RESET,TP3,1,1,inferred,test_pad_design_chat,Reset net bring-up test point
 RESET,U1,1,~RESET,confirmed,MCU_Motorola_6800.kicad_sym,CPU active-low reset input
+RESET,U28,3,~1CLR,inferred,rtc_adapter_design,Clear RTC_SELECT one-shot during reset
+RESET,U28,11,~2CLR,inferred,rtc_adapter_design,Clear RTC_ADDRESS_WRITE one-shot during reset
+RESET,U29,3,~1CLR,inferred,rtc_adapter_design,Clear RTC data-strobe one-shot during reset
+RESET,U29,11,~2CLR,inferred,rtc_adapter_design,Clear RTC CPU-cycle hold one-shot during reset
 RS232_RXD,J2,2,RXD,inferred,serial_design_chat,DE-9 pin 2 into SBC receiver
 RS232_RXD,U18,13,R1IN,inferred,serial_design_chat,MAX232 receiver input from DE-9 pin 2
 RS232_TXD,J2,3,TXD,inferred,serial_design_chat,DTE-style SBC TX on DE-9 pin 3
 RS232_TXD,U18,14,T1OUT,inferred,serial_design_chat,RS-232 driver output for DTE-style TX
-RTC_ADDRESS_WRITE,TP16,1,1,todo,test_pad_design_chat,RTC address-write timing observation test point
-RTC_ADDRESS_WRITE,U8,9,ADDRESS_WRITE,todo,design/rtc.md,Assert for address phase on both reads and writes
+RTC_ADDR_123_CEXT,C23,1,1,todo,rtc_adapter_design,ADDRESS_WRITE timing capacitor Cext terminal
+RTC_ADDR_123_CEXT,U28,6,2CEXT,todo,rtc_adapter_design,ADDRESS_WRITE timing capacitor pin
+RTC_ADDR_123_REXT_CEXT,C23,2,2,todo,rtc_adapter_design,ADDRESS_WRITE timing capacitor R/C terminal
+RTC_ADDR_123_REXT_CEXT,R13,2,2,todo,rtc_adapter_design,ADDRESS_WRITE timing resistor R/C terminal
+RTC_ADDR_123_REXT_CEXT,U28,7,2REXT/CEXT,todo,rtc_adapter_design,ADDRESS_WRITE timing resistor capacitor pin
+RTC_ADDR_LE,U19,11,LE,inferred,rtc_adapter_design,Load RTC address nibble latch
+RTC_ADDR_LE,U25,12,1Y,inferred,rtc_adapter_design,Decoded address-register write strobe
+RTC_ADDRESS_WRITE,TP16,1,1,inferred,rtc_adapter_design,RTC address-write timing observation test point
+RTC_ADDRESS_WRITE,U8,9,ADDRESS_WRITE,inferred,rtc_adapter_design,Stretched address-write pulse into MSM58321
+RTC_ADDRESS_WRITE,U28,5,2Q,inferred,rtc_adapter_design,ADDRESS_WRITE one-shot output
+RTC_ADDRESS_WRITE,U29,1,1A,inferred,rtc_adapter_design,Trigger data-strobe one-shot on ADDRESS_WRITE falling edge
+RTC_ADDRESS_WRITE,U32,1,1A,inferred,rtc_adapter_design,Invert ADDRESS_WRITE for address latch output enable
 RTC_BAT,BT1,1,+,inferred,rtc_backup_design_chat,RTC backup coin-cell positive terminal
 RTC_BAT,D4,2,A,inferred,rtc_backup_design_chat,CR2032 feed into RTC_VDD diode-OR
-RTC_BUSY,TP20,1,1,todo,test_pad_design_chat,RTC BUSY status observation test point kept separate from IRQ
-RTC_BUSY,U8,10,~BUSY,todo,irq_design_chat,Open-drain BUSY output remains separate from IRQ unless deliberately promoted
-RTC_READ,TP17,1,1,todo,test_pad_design_chat,RTC read strobe timing observation test point
-RTC_READ,U8,3,READ,todo,design/rtc.md,Active-high RTC read strobe from selected DS read cycle
-RTC_SELECT,TP19,1,1,todo,test_pad_design_chat,RTC select timing observation test point
-RTC_SELECT,U8,1,CS2,todo,design/rtc.md,Final select must be held for complete RTC bus cycle
-RTC_SELECT,U8,13,CS1,todo,design/rtc.md,Final select must be held for complete RTC bus cycle
-RTC_STOP,U8,11,STOP,todo,docs/MSM58321.pdf,Normal low versus controlled STOP still TBD
+RTC_BUSY,R11,2,2,inferred,rtc_adapter_design,Main-rail pull-up output for MSM58321 open-drain BUSY
+RTC_BUSY,TP20,1,1,inferred,rtc_adapter_design,RTC BUSY status observation test point kept separate from IRQ
+RTC_BUSY,U8,10,~BUSY,inferred,rtc_adapter_design,Open-drain BUSY output remains separate from IRQ
+RTC_BUSY,U22,4,2D,inferred,rtc_adapter_design,Expose raw active-low BUSY in status bit 1
+RTC_CMD_READ,U31,2,1B,inferred,rtc_adapter_design,Select RTC read pulse when command write bit is low
+RTC_CMD_READ,U32,6,3Y,inferred,rtc_adapter_design,Complement of latched command write bit
+RTC_CMD_TRIGGER,U25,8,3Y,inferred,rtc_adapter_design,Decoded command-register write strobe
+RTC_CMD_TRIGGER,U28,2,1B,inferred,rtc_adapter_design,Trigger RTC_SELECT one-shot on command write
+RTC_CMD_TRIGGER,U28,10,2B,inferred,rtc_adapter_design,Trigger RTC_ADDRESS_WRITE one-shot on command write
+RTC_CMD_TRIGGER,U30,11,LE,inferred,rtc_adapter_design,Latch command bits during command write
+RTC_CMD_WRITE,U22,7,3D,inferred,rtc_adapter_design,Expose last command direction in status bit 2
+RTC_CMD_WRITE,U30,5,2Q,inferred,rtc_adapter_design,Latched command write direction bit
+RTC_CMD_WRITE,U31,5,2B,inferred,rtc_adapter_design,Select RTC write pulse when command write bit is high
+RTC_CMD_WRITE,U32,5,3A,inferred,rtc_adapter_design,Invert command write bit for read-pulse gate
+RTC_CYCLE,U24,6,G1,inferred,rtc_adapter_design,Enable RTC subregister decode during selected cycles
+RTC_CYCLE,U29,5,2Q,inferred,rtc_adapter_design,CPU-side RTC_CYCLE hold one-shot output
+RTC_CYCLE_123_CEXT,C25,1,1,todo,rtc_adapter_design,CPU-cycle hold timing capacitor Cext terminal
+RTC_CYCLE_123_CEXT,U29,6,2CEXT,todo,rtc_adapter_design,CPU-cycle hold timing capacitor pin
+RTC_CYCLE_123_REXT_CEXT,C25,2,2,todo,rtc_adapter_design,CPU-cycle hold timing capacitor R/C terminal
+RTC_CYCLE_123_REXT_CEXT,R15,2,2,todo,rtc_adapter_design,CPU-cycle hold timing resistor R/C terminal
+RTC_CYCLE_123_REXT_CEXT,U29,7,2REXT/CEXT,todo,rtc_adapter_design,CPU-cycle hold timing resistor capacitor pin
+RTC_DATA_123_CEXT,C24,1,1,todo,rtc_adapter_design,Data-strobe timing capacitor Cext terminal
+RTC_DATA_123_CEXT,U29,14,1CEXT,todo,rtc_adapter_design,Data-strobe timing capacitor pin
+RTC_DATA_123_REXT_CEXT,C24,2,2,todo,rtc_adapter_design,Data-strobe timing capacitor R/C terminal
+RTC_DATA_123_REXT_CEXT,R14,2,2,todo,rtc_adapter_design,Data-strobe timing resistor R/C terminal
+RTC_DATA_123_REXT_CEXT,U29,15,1REXT/CEXT,todo,rtc_adapter_design,Data-strobe timing resistor capacitor pin
+RTC_DATA_STROBE,U29,13,1Q,inferred,rtc_adapter_design,Delayed one-shot data pulse after address write
+RTC_DATA_STROBE,U31,1,1A,inferred,rtc_adapter_design,Common read/write data pulse input
+RTC_DATA_STROBE,U31,4,2A,inferred,rtc_adapter_design,Common read/write data pulse input
+RTC_IO0,U8,4,D0,inferred,rtc_adapter_design,MSM58321 private data bit 0
+RTC_IO0,U19,2,1Q,inferred,rtc_adapter_design,Address latch driver bit 0
+RTC_IO0,U20,2,1Q,inferred,rtc_adapter_design,Write-data latch driver bit 0
+RTC_IO0,U21,3,1D,inferred,rtc_adapter_design,Readback latch input bit 0
+RTC_IO1,U8,5,D1,inferred,rtc_adapter_design,MSM58321 private data bit 1
+RTC_IO1,U19,5,2Q,inferred,rtc_adapter_design,Address latch driver bit 1
+RTC_IO1,U20,5,2Q,inferred,rtc_adapter_design,Write-data latch driver bit 1
+RTC_IO1,U21,4,2D,inferred,rtc_adapter_design,Readback latch input bit 1
+RTC_IO2,U8,6,D2,inferred,rtc_adapter_design,MSM58321 private data bit 2
+RTC_IO2,U19,6,3Q,inferred,rtc_adapter_design,Address latch driver bit 2
+RTC_IO2,U20,6,3Q,inferred,rtc_adapter_design,Write-data latch driver bit 2
+RTC_IO2,U21,7,3D,inferred,rtc_adapter_design,Readback latch input bit 2
+RTC_IO3,U8,7,D3,inferred,rtc_adapter_design,MSM58321 private data bit 3
+RTC_IO3,U19,9,4Q,inferred,rtc_adapter_design,Address latch driver bit 3
+RTC_IO3,U20,9,4Q,inferred,rtc_adapter_design,Write-data latch driver bit 3
+RTC_IO3,U21,8,4D,inferred,rtc_adapter_design,Readback latch input bit 3
+RTC_RDATA_RD,U26,12,1Y,inferred,rtc_adapter_design,Decoded CPU readback data-port read strobe
+RTC_RDATA_RD,U27,11,5A,inferred,rtc_adapter_design,Invert data-port read strobe for latch output enable
+RTC_READ,TP17,1,1,inferred,rtc_adapter_design,RTC read strobe timing observation test point
+RTC_READ,U8,3,READ,inferred,rtc_adapter_design,Stretched active-high RTC read strobe
+RTC_READ,U21,11,LE,inferred,rtc_adapter_design,Latch readback nibble while RTC_READ is asserted
+RTC_READ,U31,3,1Y,inferred,rtc_adapter_design,Stretched read pulse selected by command bit
+RTC_REG0,U25,13,1C,inferred,rtc_adapter_design,Decoded adapter address register select
+RTC_REG0,U27,4,2Y,inferred,rtc_adapter_design,Active-high adapter address register select
+RTC_REG1,U25,5,2C,inferred,rtc_adapter_design,Decoded adapter data register select for writes
+RTC_REG1,U26,13,1C,inferred,rtc_adapter_design,Decoded adapter data register select for reads
+RTC_REG1,U27,6,3Y,inferred,rtc_adapter_design,Active-high adapter data register select
+RTC_REG2,U25,11,3C,inferred,rtc_adapter_design,Decoded adapter command register select for writes
+RTC_REG2,U26,5,2C,inferred,rtc_adapter_design,Decoded adapter status register select for reads
+RTC_REG2,U27,8,4Y,inferred,rtc_adapter_design,Active-high adapter command or status register select
+RTC_REG_A0,U23,5,2Q,inferred,rtc_adapter_design,Latched adapter subregister address bit 0
+RTC_REG_A0,U24,1,A,inferred,rtc_adapter_design,RTC subregister decoder bit A
+RTC_REG_A1,U23,6,3Q,inferred,rtc_adapter_design,Latched adapter subregister address bit 1
+RTC_REG_A1,U24,2,B,inferred,rtc_adapter_design,RTC subregister decoder bit B
+RTC_SEL_123_CEXT,C22,1,1,todo,rtc_adapter_design,RTC_SELECT timing capacitor Cext terminal
+RTC_SEL_123_CEXT,U28,14,1CEXT,todo,rtc_adapter_design,RTC_SELECT timing capacitor pin
+RTC_SEL_123_REXT_CEXT,C22,2,2,todo,rtc_adapter_design,RTC_SELECT timing capacitor R/C terminal
+RTC_SEL_123_REXT_CEXT,R12,2,2,todo,rtc_adapter_design,RTC_SELECT timing resistor R/C terminal
+RTC_SEL_123_REXT_CEXT,U28,15,1REXT/CEXT,todo,rtc_adapter_design,RTC_SELECT timing resistor capacitor pin
+RTC_SELECT,TP19,1,1,inferred,rtc_adapter_design,RTC select timing observation test point
+RTC_SELECT,U8,1,CS2,inferred,rtc_adapter_design,Stretched select pulse held for complete RTC transaction
+RTC_SELECT,U8,13,CS1,inferred,rtc_adapter_design,Stretched select pulse held for complete RTC transaction
+RTC_SELECT,U22,3,1D,inferred,rtc_adapter_design,Expose adapter busy state in status bit 0
+RTC_SELECT,U28,13,1Q,inferred,rtc_adapter_design,RTC_SELECT one-shot output
+RTC_STATUS_RD,U26,6,2Y,inferred,rtc_adapter_design,Decoded CPU status-port read strobe
+RTC_STATUS_RD,U27,13,6A,inferred,rtc_adapter_design,Invert status-port read strobe for buffer output enable
 RTC_VDD,C10,1,1,inferred,rtc_backup_design_chat,RTC_VDD backup bulk capacitor
 RTC_VDD,C11,1,1,inferred,rtc_backup_design_chat,RTC_VDD local bypass capacitor
 RTC_VDD,D3,1,K,inferred,rtc_backup_design_chat,Main 5V0 Schottky cathode at backed-up RTC supply
 RTC_VDD,D4,1,K,inferred,rtc_backup_design_chat,CR2032 Schottky cathode at backed-up RTC supply
 RTC_VDD,U8,16,VDD,inferred,rtc_backup_design_chat,RTC backed-up VDD supply
-RTC_WRITE,TP18,1,1,todo,test_pad_design_chat,RTC write strobe timing observation test point
-RTC_WRITE,U8,2,WRITE,todo,design/rtc.md,Active-high RTC write strobe from selected DS write cycle
+RTC_WDATA_LE,U20,11,LE,inferred,rtc_adapter_design,Load RTC write-data nibble latch
+RTC_WDATA_LE,U25,6,2Y,inferred,rtc_adapter_design,Decoded data-register write strobe
+RTC_WRITE,TP18,1,1,inferred,rtc_adapter_design,RTC write strobe timing observation test point
+RTC_WRITE,U8,2,WRITE,inferred,rtc_adapter_design,Stretched active-high RTC write strobe
+RTC_WRITE,U31,6,2Y,inferred,rtc_adapter_design,Stretched write pulse selected by command bit
+RTC_WRITE,U32,3,2A,inferred,rtc_adapter_design,Invert RTC_WRITE for write-data latch output enable
 RTC_XT,C7,1,1,inferred,rtc_backup_design_chat,RTC crystal load capacitor on XT
 RTC_XT,C9,1,1,todo,rtc_backup_design_chat,Optional RTC oscillator trimmer footprint on XT
 RTC_XT,R6,1,1,inferred,rtc_backup_design_chat,RTC oscillator feedback resistor terminal at XT
@@ -413,6 +661,7 @@ RTC_XT_N,Y3,2,2,confirmed,docs/MSM58321.pdf,RTC crystal terminal
 RTCCS,TP13,1,1,inferred,test_pad_design_chat,RTC address-decode observation test point
 RTCCS,U13,8,3Y,inferred,design/New_Address_Decode.dig,AS-qualified RTC address decode
 RTCCS,U17,11,5A,inferred,design/New_Address_Decode.dig,Invert RTC select for RAM1 exclusion
+RTCCS,U29,10,2B,inferred,rtc_adapter_design,Trigger CPU-side RTC_CYCLE hold pulse from AS-qualified RTC decode
 SYSCLK,TP8,1,1,todo,test_pad_design_chat,Buffered system clock observation test point; driver source TBD
 TIMER,J4,1,TIMER,inferred,timer_header_design_chat,External TIMER injection header pin
 TIMER,U1,37,TIMER,confirmed,MCU_Motorola_6800.kicad_sym,CPU TIMER input
@@ -469,5 +718,19 @@ USB_VBUS,J1,B9,VBUS,inferred,usb_c_design_chat,USB-C raw VBUS contact
 ~ROMCS,TP9,1,1,inferred,test_pad_design_chat,ROM chip-select observation test point
 ~ROMCS,U5,18,~CE/PGM,inferred,docs/memory-map.txt,ROM chip select
 ~ROMCS,U13,3,1Y,inferred,design/New_Address_Decode.dig,Combined ROM chip select
+~RTC_ADDR_OE,U19,1,~OE,inferred,rtc_adapter_design,Enable RTC address latch only during ADDRESS_WRITE pulse
+~RTC_ADDR_OE,U32,2,1Y,inferred,rtc_adapter_design,Inverted RTC_ADDRESS_WRITE pulse
+~RTC_RDATA_OE,U21,1,~OE,inferred,rtc_adapter_design,Enable RTC readback latch onto CPU data bus
+~RTC_RDATA_OE,U27,10,5Y,inferred,rtc_adapter_design,Active-low readback latch output enable
+~RTC_REG0,U24,15,~Y0,inferred,rtc_adapter_design,Active-low adapter address register decode
+~RTC_REG0,U27,3,2A,inferred,rtc_adapter_design,Invert address register decode
+~RTC_REG1,U24,14,~Y1,inferred,rtc_adapter_design,Active-low adapter data register decode
+~RTC_REG1,U27,5,3A,inferred,rtc_adapter_design,Invert data register decode
+~RTC_REG2,U24,13,~Y2,inferred,rtc_adapter_design,Active-low adapter command or status register decode
+~RTC_REG2,U27,9,4A,inferred,rtc_adapter_design,Invert command or status register decode
+~RTC_STATUS_OE,U22,1,~OE,inferred,rtc_adapter_design,Enable RTC status buffer onto CPU data bus
+~RTC_STATUS_OE,U27,12,6Y,inferred,rtc_adapter_design,Active-low status buffer output enable
+~RTC_WDATA_OE,U20,1,~OE,inferred,rtc_adapter_design,Enable RTC write-data latch only during WRITE pulse
+~RTC_WDATA_OE,U32,4,2Y,inferred,rtc_adapter_design,Inverted RTC_WRITE pulse
 ~RTCCS,U14,13,1C,inferred,design/New_Address_Decode.dig,RAM1 active decode term
 ~RTCCS,U17,10,5Y,inferred,design/New_Address_Decode.dig,Active-low RTC select complement

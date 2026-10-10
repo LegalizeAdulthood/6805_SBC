@@ -30,14 +30,15 @@ BAUD_F1,clock,confirmed,design/baud-rate.md,MC14411 F1 candidate clock for baud 
 BAUD_F3,clock,confirmed,design/baud-rate.md,MC14411 F3 candidate clock for baud mux
 BAUD_F8,clock,confirmed,design/baud-rate.md,MC14411 F8 candidate clock for baud mux
 BAUD_F9,clock,confirmed,design/baud-rate.md,MC14411 F9 candidate clock for baud mux
-BAUD_SEL_A,control,todo,design/baud-rate.md,Shared 74153 select input A; source still TBD
-BAUD_SEL_B,control,todo,design/baud-rate.md,Shared 74153 select input B; source still TBD
+BAUD_SEL_A,control,inferred,current_user_direction,Shared 74153 select input A; low-order DIP switch bit
+BAUD_SEL_B,control,inferred,current_user_direction,Shared 74153 select input B; high-order DIP switch bit
 BAUD_XTAL_IN,clock,confirmed,docs/MC14411.pdf,MC14411 crystal input connection
 BAUD_XTAL_OUT,clock,confirmed,docs/MC14411.pdf,MC14411 crystal output connection
 CC1,control,inferred,usb_c_design_chat,USB-C configuration channel 1 with Rd pull-down
 CC2,control,inferred,usb_c_design_chat,USB-C configuration channel 2 with Rd pull-down
 CPU_OSC1,clock,confirmed,docs/MC146805E2_1983.pdf,CPU crystal connection
 CPU_OSC2,clock,confirmed,docs/MC146805E2_1983.pdf,CPU crystal connection
+CPU_WRITE,control,inferred,rtc_adapter_design,Active-high CPU write qualifier inverted from R/~W
 D0,data,confirmed,docs/memory-map.txt,External data bus bit 0
 D1,data,confirmed,docs/memory-map.txt,External data bus bit 1
 D2,data,confirmed,docs/memory-map.txt,External data bus bit 2
@@ -72,14 +73,39 @@ RAM1_ACTIVE,control,inferred,design/New_Address_Decode.dig,Active-high RAM1 sele
 RESET,control,inferred,reset_design_chat,Active-low CPU reset net driven by RC pull-up network and manual pushbutton
 RS232_RXD,data,inferred,serial_design_chat,RS-232 receive data from DE-9 pin 2 into MAX232 R1IN
 RS232_TXD,data,inferred,serial_design_chat,RS-232 transmit data from MAX232 T1OUT to DE-9 pin 3
-RTC_ADDRESS_WRITE,control,todo,design/rtc.md,RTC_SELECT AND AS
+RTC_ADDR_123_CEXT,timing,todo,rtc_adapter_design,74123 ADDRESS_WRITE channel timing capacitor Cext node
+RTC_ADDR_123_REXT_CEXT,timing,todo,rtc_adapter_design,74123 ADDRESS_WRITE channel timing resistor capacitor node
+RTC_ADDR_LE,control,inferred,rtc_adapter_design,Loads CPU D0-D3 into the RTC address nibble latch on adapter address-port writes
+RTC_ADDRESS_WRITE,control,inferred,rtc_adapter_design,Stretched active-high MSM58321 address-write pulse from U28 one-shot
 RTC_BAT,power,inferred,rtc_backup_design_chat,CR2032 positive terminal before Schottky isolation diode
-RTC_BUSY,control,todo,irq_design_chat,Open-drain MSM58321 busy output; keep separate from IRQ unless deliberately promoted to status or interrupt use
-RTC_READ,control,todo,design/rtc.md,RTC_SELECT AND DS AND R/~W
-RTC_SELECT,control,todo,design/rtc.md,RTC decode held for the complete bus cycle
-RTC_STOP,control,todo,docs/MSM58321.pdf,RTC STOP input handling TBD
+RTC_BUSY,control,inferred,rtc_adapter_design,Open-drain MSM58321 busy output pulled up to main 5V0 and exposed in adapter status
+RTC_CMD_READ,control,inferred,rtc_adapter_design,Complement of RTC_CMD_WRITE used to steer the stretched data pulse to RTC_READ
+RTC_CMD_TRIGGER,control,inferred,rtc_adapter_design,CPU write to the adapter command register starts the one-shot RTC transaction
+RTC_CMD_WRITE,control,inferred,rtc_adapter_design,Latched command bit high for RTC write transactions and low for RTC read transactions
+RTC_CYCLE,control,inferred,rtc_adapter_design,Stretched CPU-side RTC register select pulse triggered by AS-qualified RTCCS and held through DS
+RTC_CYCLE_123_CEXT,timing,todo,rtc_adapter_design,74123 CPU-cycle hold channel timing capacitor Cext node
+RTC_CYCLE_123_REXT_CEXT,timing,todo,rtc_adapter_design,74123 CPU-cycle hold channel timing resistor capacitor node
+RTC_DATA_123_CEXT,timing,todo,rtc_adapter_design,74123 data-strobe channel timing capacitor Cext node
+RTC_DATA_123_REXT_CEXT,timing,todo,rtc_adapter_design,74123 data-strobe channel timing resistor capacitor node
+RTC_DATA_STROBE,control,inferred,rtc_adapter_design,Delayed stretched data pulse after RTC_ADDRESS_WRITE used for either RTC_READ or RTC_WRITE
+RTC_IO0,data,inferred,rtc_adapter_design,Private RTC adapter data bit 0 between latch drivers readback latch and MSM58321
+RTC_IO1,data,inferred,rtc_adapter_design,Private RTC adapter data bit 1 between latch drivers readback latch and MSM58321
+RTC_IO2,data,inferred,rtc_adapter_design,Private RTC adapter data bit 2 between latch drivers readback latch and MSM58321
+RTC_IO3,data,inferred,rtc_adapter_design,Private RTC adapter data bit 3 between latch drivers readback latch and MSM58321
+RTC_RDATA_RD,control,inferred,rtc_adapter_design,Active-high CPU read qualifier for the adapter readback data port
+RTC_READ,control,inferred,rtc_adapter_design,Stretched active-high MSM58321 read pulse generated from adapter command state
+RTC_REG0,control,inferred,rtc_adapter_design,Active-high decoded adapter address register select
+RTC_REG1,control,inferred,rtc_adapter_design,Active-high decoded adapter data register select
+RTC_REG2,control,inferred,rtc_adapter_design,Active-high decoded adapter command or status register select
+RTC_REG_A0,control,inferred,rtc_adapter_design,Latched adapter subregister address bit 0
+RTC_REG_A1,control,inferred,rtc_adapter_design,Latched adapter subregister address bit 1
+RTC_SEL_123_CEXT,timing,todo,rtc_adapter_design,74123 RTC_SELECT channel timing capacitor Cext node
+RTC_SEL_123_REXT_CEXT,timing,todo,rtc_adapter_design,74123 RTC_SELECT channel timing resistor capacitor node
+RTC_SELECT,control,inferred,rtc_adapter_design,Stretched MSM58321 CS1 and CS2 select hold pulse covering the slow RTC transaction
+RTC_STATUS_RD,control,inferred,rtc_adapter_design,Active-high CPU read qualifier for the adapter status port
 RTC_VDD,power,inferred,rtc_backup_design_chat,Battery-backed RTC supply after 5V0 and CR2032 Schottky diode-OR
-RTC_WRITE,control,todo,design/rtc.md,RTC_SELECT AND DS AND NOT R/~W
+RTC_WDATA_LE,control,inferred,rtc_adapter_design,Loads CPU D0-D3 into the RTC write-data latch on adapter data-port writes
+RTC_WRITE,control,inferred,rtc_adapter_design,Stretched active-high MSM58321 write pulse generated from adapter command state
 RTC_XT,clock,confirmed,docs/MSM58321.pdf,MSM58321 32.768 kHz crystal connection
 RTC_XT_N,clock,confirmed,docs/MSM58321.pdf,MSM58321 32.768 kHz crystal connection
 RTCCS,control,confirmed,design/New_Address_Decode.dig,AS-qualified RTC decode for $0100-$010F; not a complete transaction select
@@ -115,4 +141,11 @@ USB_VBUS,power,inferred,usb_c_design_chat,Raw USB-C VBUS before input fuse and p
 ~ROM_HICS,control,inferred,design/New_Address_Decode.dig,Active-low high address decoder output for the other ROM half
 ~ROM_LOCS,control,inferred,design/New_Address_Decode.dig,Active-low high address decoder output for one ROM half
 ~ROMCS,control,confirmed,docs/memory-map.txt,Active-low ROM chip select for $1000-$1FFF
+~RTC_ADDR_OE,control,inferred,rtc_adapter_design,Active-low output enable for the RTC address latch driver
+~RTC_RDATA_OE,control,inferred,rtc_adapter_design,Active-low output enable for the RTC readback latch onto CPU D0-D7
+~RTC_REG0,control,inferred,rtc_adapter_design,Active-low 74138 decoded adapter address register select
+~RTC_REG1,control,inferred,rtc_adapter_design,Active-low 74138 decoded adapter data register select
+~RTC_REG2,control,inferred,rtc_adapter_design,Active-low 74138 decoded adapter command or status register select
+~RTC_STATUS_OE,control,inferred,rtc_adapter_design,Active-low output enable for the RTC status buffer onto CPU D0-D7
+~RTC_WDATA_OE,control,inferred,rtc_adapter_design,Active-low output enable for the RTC write-data latch driver
 ~RTCCS,control,inferred,design/New_Address_Decode.dig,Active-low complement of RTCCS for RAM1 exclusion

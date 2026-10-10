@@ -5,14 +5,14 @@ address_latch_design,design/Address_Latch.dig,design note,Low-address latch,7437
 and3_gate_datasheet,https://www.ti.com/lit/ds/symlink/sn74ls11.pdf,datasheet,SN74LS11 data sheet,7411 triple three-input AND gate pinout
 and_gate_datasheet,https://www.ti.com/lit/ds/symlink/sn74ls08.pdf,datasheet,SN74LS08 data sheet,7408 quad AND gate pinout
 baud_crystal_digikey,https://www.digikey.com/en/products/detail/raltron-electronics/A-1-8432-18/10246237,supplier page,Raltron A-1.8432-18,1.8432 MHz baud-rate crystal
-baud_design,design/baud-rate.md,design note,Baud-rate selection,Selected MC14411 outputs and ACIA clock path
+baud_design,design/baud-rate.md,design note,Baud-rate selection,Selected MC14411 outputs ACIA clock path DIP switch mux control and increasing bit-pattern input order
 baud_generator_datasheet,docs/MC14411.pdf,datasheet,MC14411 data sheet,Baud generator pinout and output clocks
-chip_inventory,docs/chip-inventory.csv,inventory,Chip inventory,Available Am2732 and HM6116 memory devices
+chip_inventory,docs/chip-inventory.csv,inventory,Chip inventory,Available inventory logic and memory devices including 74373 74123 74138 7404 7408 7411 Am2732 HM6116 MAX232 and MSM58321
 cpu_crystal_digikey,https://www.digikey.com/en/products/detail/w%C3%BCrth-elektronik/830003119B/13900107,supplier page,Wurth Elektronik 830003119B,5 MHz CPU crystal
 cpu_datasheet,docs/MC146805E2_1983.pdf,datasheet,MC146805E2 data sheet,CPU pin and oscillator information
 cpu_oscillator_design_chat,https://chatgpt.com/share/6ac9862d-b16c-83e8-946e-75dec9cc5bbd,design note,CPU oscillator notes,5 MHz crystal feedback resistor load capacitors and layout guidance
 cpu_user_manual,docs/6805_Users_Manual_2ed_1983.pdf,user manual,M6805 Family user manual,Figure 4-4 shows the power-up reset delay circuit with a 1.0 uF typical reset capacitor; reset input is Schmitt-triggered
-current_user_direction,current conversation,user direction,Current user direction,PA0 LED jumper and resistor network intentionally omitted from slice 9; serial baud conflict resolved in favor of the later X64 choice; reset finalized as 10 kohm and 1.0 uF RC plus pushbutton with no brownout supervisor
+current_user_direction,current conversation,user direction,Current user direction,PA0 LED jumper and resistor network intentionally omitted from slice 9; serial baud conflict resolved in favor of the later X64 choice; reset finalized as 10 kohm and 1.0 uF RC plus pushbutton with no brownout supervisor; baud mux control finalized as DIP switch with increasing select codes choosing increasing baud rates; MSM58321 STOP tied low for normal always-running RTC operation
 decoder_datasheet,docs/sn74ls138.pdf,datasheet,SN74LS138 data sheet,74138 pinout and active-low output behavior
 gpio_header_design_chat,https://chatgpt.com/share/6ac9862d-b16c-83e8-946e-75dec9cc5bbd,design note,Port A/B GPIO header notes,Right-angle 2x10 0.1 inch PA/PB GPIO breakout with 5V0 and GND; boxed or shrouded IDC preferred if board space allows
 inverter_datasheet,https://www.ti.com/lit/ds/symlink/sn74ls04.pdf,datasheet,SN74LS04 data sheet,7404 hex inverter pinout
@@ -21,10 +21,12 @@ latch_datasheet,https://www.ti.com/lit/ds/symlink/sn74ls373.pdf,datasheet,SN74LS
 local_symbols,C:/code/6805_sbc/MCU_Motorola_6800.kicad_sym,kicad symbol library,Local Motorola symbol library,CPU MC14411 and MSM58321 pin numbers
 memory_map,docs/memory-map.txt,design note,Memory map,External ROM and RAM address ranges plus chip-select names
 mux_datasheet,https://www.ti.com/lit/ds/symlink/sn74ls153.pdf,datasheet,SN74153/SN74LS153 data sheet,74153-compatible dual mux pinout and function table
+one_shot_datasheet,https://www.ti.com/lit/ds/symlink/sn74123.pdf,datasheet,SN74123 data sheet,74123-compatible dual retriggerable monostable pinout and timing network
 or_gate_datasheet,https://www.ti.com/lit/ds/symlink/sn74ls32.pdf,datasheet,SN74LS32 data sheet,7432 quad OR gate pinout
 ram_datasheet,docs/IDT_6116.pdf,datasheet,IDT6116 data sheet,6116-class 2Kx8 SRAM pinout and operating controls
 reset_design_chat,https://chatgpt.com/share/6ac9862d-b16c-83e8-946e-75dec9cc5bbd,design note,Reset circuit notes,Initial active-low MC146805E2 reset options; final netlist now uses simple RC plus pushbutton without optional discharge diode 7414 cleanup or brownout supervisor
 rom_datasheet,docs/Am2732-AMD.pdf,datasheet,Am2732 data sheet,4Kx8 EPROM pinout and operating controls
+rtc_adapter_design,current conversation,user direction,RTC latch adapter,Latch-based trigger and read-back adapter between the fast 6805 bus and the slower MSM58321 timing
 rtc_backup_design_chat,https://chatgpt.com/share/6ac9862d-b16c-83e8-946e-75dec9cc5bbd,design note,RTC backup and oscillator notes,CR2032 diode-OR backup RTC crystal passives pull-up supply and power-off isolation guidance
 rtc_datasheet,docs/MSM58321.pdf,datasheet,MSM58321 data sheet,RTC pinout crystal and timing information
 rtc_design,design/rtc.md,design note,MSM58321 bus interface,RTC address range data bus width and intended control relationships
