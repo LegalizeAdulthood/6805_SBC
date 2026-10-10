@@ -158,8 +158,6 @@ DE9_DTE_SERIAL,6,DSR,passive,false,serial_design_chat,DTE-style data-set-ready p
 DE9_DTE_SERIAL,7,RTS,passive,false,serial_design_chat,DTE-style request-to-send pin staged NC
 DE9_DTE_SERIAL,8,CTS,passive,false,serial_design_chat,DTE-style clear-to-send pin staged NC
 DE9_DTE_SERIAL,9,RI,passive,false,serial_design_chat,DTE-style ring-indicator pin staged NC
-DIODE_1N4148,1,K,passive,false,reset_design_chat,Diode cathode
-DIODE_1N4148,2,A,passive,false,reset_design_chat,Diode anode
 DIODE_SCHOTTKY_RTC,1,K,passive,false,rtc_backup_design_chat,Schottky diode cathode
 DIODE_SCHOTTKY_RTC,2,A,passive,false,rtc_backup_design_chat,Schottky diode anode
 HEADER_PORT_AB_2X10,1,PA0,passive,false,gpio_header_design_chat,J3 odd row Port A bit 0
@@ -312,16 +310,16 @@ RES_1M,1,1,passive,false,usb_c_design_chat,Resistor terminal
 RES_1M,2,2,passive,false,usb_c_design_chat,Resistor terminal
 RES_5K1,1,1,passive,false,usb_c_design_chat,Resistor terminal
 RES_5K1,2,2,passive,false,usb_c_design_chat,Resistor terminal
-RES_10K,1,1,passive,false,reset_design_chat,Resistor terminal
-RES_10K,2,2,passive,false,reset_design_chat,Resistor terminal
+RES_10K,1,1,passive,false,current_user_direction,Resistor terminal
+RES_10K,2,2,passive,false,current_user_direction,Resistor terminal
 RES_10M,1,1,passive,false,cpu_oscillator_design_chat,Resistor terminal
 RES_10M,2,2,passive,false,cpu_oscillator_design_chat,Resistor terminal
 RES_15M,1,1,passive,false,serial_design_chat,Resistor terminal
 RES_15M,2,2,passive,false,serial_design_chat,Resistor terminal
 RES_IRQ_PULLUP,1,1,passive,false,irq_design_chat,Pull-up resistor terminal at 5V0
 RES_IRQ_PULLUP,2,2,passive,false,irq_design_chat,Pull-up resistor terminal at IRQ
-SW_PUSH_NO,1,1,passive,false,reset_design_chat,Switch terminal
-SW_PUSH_NO,2,2,passive,false,reset_design_chat,Switch terminal
+SW_PUSH_NO,1,1,passive,false,current_user_direction,Switch terminal
+SW_PUSH_NO,2,2,passive,false,current_user_direction,Switch terminal
 TEST_PAD,1,1,passive,false,test_pad_design_chat,Single test pad terminal
 TRIMCAP_RTC,1,1,passive,false,rtc_backup_design_chat,Trimmer capacitor terminal
 TRIMCAP_RTC,2,2,passive,false,rtc_backup_design_chat,Trimmer capacitor terminal

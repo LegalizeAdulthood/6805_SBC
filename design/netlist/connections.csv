@@ -5,12 +5,11 @@ net,refdes,pin_number,pin_name,status,source,notes
 5V0,C19,1,1,inferred,serial_design_chat,ACIA local bypass capacitor
 5V0,C20,1,1,inferred,serial_design_chat,MC14411 local bypass capacitor
 5V0,C21,1,1,inferred,serial_design_chat,Baud mux local bypass capacitor
-5V0,D2,1,K,todo,reset_design_chat,Optional reset capacitor discharge diode cathode
 5V0,D3,2,A,inferred,rtc_backup_design_chat,Main 5V0 feed into RTC_VDD diode-OR
 5V0,F1,2,OUT,inferred,usb_c_design_chat,Protected 5V0 rail after input PPTC
 5V0,J3,17,5V0,inferred,gpio_header_design_chat,J3 5V0 utility pin
 5V0,J3,18,5V0,inferred,gpio_header_design_chat,J3 second 5V0 utility pin
-5V0,R4,1,1,inferred,reset_design_chat,Reset pull-up source
+5V0,R4,1,1,inferred,current_user_direction,Reset pull-up source
 5V0,R8,1,1,inferred,irq_design_chat,Shared IRQ pull-up source
 5V0,TP1,1,1,inferred,test_pad_design_chat,Power rail bring-up test point
 5V0,U1,40,VDD,confirmed,MCU_Motorola_6800.kicad_sym,CPU power
@@ -231,7 +230,7 @@ GND,BT1,2,-,inferred,rtc_backup_design_chat,RTC backup coin-cell negative termin
 GND,C1,2,2,todo,usb_c_design_chat,Input bulk capacitor return
 GND,C2,2,2,inferred,usb_c_design_chat,Input bypass capacitor return
 GND,C3,2,2,todo,usb_c_design_chat,Optional shield coupling path return
-GND,C4,2,2,inferred,reset_design_chat,Reset timing capacitor return
+GND,C4,2,2,inferred,cpu_user_manual,Reset timing capacitor return
 GND,C5,2,2,inferred,cpu_oscillator_design_chat,CPU_OSC1 load capacitor return
 GND,C6,2,2,inferred,cpu_oscillator_design_chat,CPU_OSC2 load capacitor return
 GND,C7,2,2,inferred,rtc_backup_design_chat,RTC_XT load capacitor return
@@ -259,7 +258,7 @@ GND,J4,3,GND,inferred,timer_header_design_chat,TIMER/IRQ header ground
 GND,R1,2,2,inferred,usb_c_design_chat,CC1 Rd pull-down return
 GND,R2,2,2,inferred,usb_c_design_chat,CC2 Rd pull-down return
 GND,R3,2,2,todo,usb_c_design_chat,Optional shield bleed path return
-GND,SW1,2,2,inferred,reset_design_chat,Manual reset pushbutton return
+GND,SW1,2,2,inferred,current_user_direction,Manual reset pushbutton return
 GND,TP2,1,1,inferred,test_pad_design_chat,Ground bring-up test point
 GND,U1,20,VSS,confirmed,MCU_Motorola_6800.kicad_sym,CPU ground
 GND,U2,1,VSS,confirmed,docs/MC6850.pdf,ACIA ground
@@ -374,10 +373,9 @@ R/~W,U1,5,R/~W,confirmed,MCU_Motorola_6800.kicad_sym,CPU read/write direction
 R/~W,U2,14,R/~W,inferred,docs/MC6850.pdf,ACIA read/write direction
 RAM1_ACTIVE,U14,12,1Y,inferred,design/New_Address_Decode.dig,Active-high RAM1 select before inversion
 RAM1_ACTIVE,U17,13,6A,inferred,design/New_Address_Decode.dig,Invert active-high RAM1 select
-RESET,C4,1,1,inferred,reset_design_chat,Reset RC timing node
-RESET,D2,2,A,todo,reset_design_chat,Optional reset capacitor discharge diode anode
-RESET,R4,2,2,inferred,reset_design_chat,Reset pull-up output node
-RESET,SW1,1,1,inferred,reset_design_chat,Manual reset pushbutton pulls RESET low
+RESET,C4,1,1,inferred,cpu_user_manual,Reset RC timing node
+RESET,R4,2,2,inferred,current_user_direction,Reset pull-up output node
+RESET,SW1,1,1,inferred,current_user_direction,Manual reset pushbutton pulls RESET low
 RESET,TP3,1,1,inferred,test_pad_design_chat,Reset net bring-up test point
 RESET,U1,1,~RESET,confirmed,MCU_Motorola_6800.kicad_sym,CPU active-low reset input
 RS232_RXD,J2,2,RXD,inferred,serial_design_chat,DE-9 pin 2 into SBC receiver

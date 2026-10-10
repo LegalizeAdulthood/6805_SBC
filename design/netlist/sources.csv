@@ -11,7 +11,8 @@ chip_inventory,docs/chip-inventory.csv,inventory,Chip inventory,Available Am2732
 cpu_crystal_digikey,https://www.digikey.com/en/products/detail/w%C3%BCrth-elektronik/830003119B/13900107,supplier page,Wurth Elektronik 830003119B,5 MHz CPU crystal
 cpu_datasheet,docs/MC146805E2_1983.pdf,datasheet,MC146805E2 data sheet,CPU pin and oscillator information
 cpu_oscillator_design_chat,https://chatgpt.com/share/6ac9862d-b16c-83e8-946e-75dec9cc5bbd,design note,CPU oscillator notes,5 MHz crystal feedback resistor load capacitors and layout guidance
-current_user_direction,current conversation,user direction,Current user direction,PA0 LED jumper and resistor network intentionally omitted from slice 9; serial baud conflict resolved in favor of the later X64 choice
+cpu_user_manual,docs/6805_Users_Manual_2ed_1983.pdf,user manual,M6805 Family user manual,Figure 4-4 shows the power-up reset delay circuit with a 1.0 uF typical reset capacitor; reset input is Schmitt-triggered
+current_user_direction,current conversation,user direction,Current user direction,PA0 LED jumper and resistor network intentionally omitted from slice 9; serial baud conflict resolved in favor of the later X64 choice; reset finalized as 10 kohm and 1.0 uF RC plus pushbutton with no brownout supervisor
 decoder_datasheet,docs/sn74ls138.pdf,datasheet,SN74LS138 data sheet,74138 pinout and active-low output behavior
 gpio_header_design_chat,https://chatgpt.com/share/6ac9862d-b16c-83e8-946e-75dec9cc5bbd,design note,Port A/B GPIO header notes,Right-angle 2x10 0.1 inch PA/PB GPIO breakout with 5V0 and GND; boxed or shrouded IDC preferred if board space allows
 inverter_datasheet,https://www.ti.com/lit/ds/symlink/sn74ls04.pdf,datasheet,SN74LS04 data sheet,7404 hex inverter pinout
@@ -22,7 +23,7 @@ memory_map,docs/memory-map.txt,design note,Memory map,External ROM and RAM addre
 mux_datasheet,https://www.ti.com/lit/ds/symlink/sn74ls153.pdf,datasheet,SN74153/SN74LS153 data sheet,74153-compatible dual mux pinout and function table
 or_gate_datasheet,https://www.ti.com/lit/ds/symlink/sn74ls32.pdf,datasheet,SN74LS32 data sheet,7432 quad OR gate pinout
 ram_datasheet,docs/IDT_6116.pdf,datasheet,IDT6116 data sheet,6116-class 2Kx8 SRAM pinout and operating controls
-reset_design_chat,https://chatgpt.com/share/6ac9862d-b16c-83e8-946e-75dec9cc5bbd,design note,Reset circuit notes,Active-low MC146805E2 reset RC values optional discharge diode and 7414 cleanup option
+reset_design_chat,https://chatgpt.com/share/6ac9862d-b16c-83e8-946e-75dec9cc5bbd,design note,Reset circuit notes,Initial active-low MC146805E2 reset options; final netlist now uses simple RC plus pushbutton without optional discharge diode 7414 cleanup or brownout supervisor
 rom_datasheet,docs/Am2732-AMD.pdf,datasheet,Am2732 data sheet,4Kx8 EPROM pinout and operating controls
 rtc_backup_design_chat,https://chatgpt.com/share/6ac9862d-b16c-83e8-946e-75dec9cc5bbd,design note,RTC backup and oscillator notes,CR2032 diode-OR backup RTC crystal passives pull-up supply and power-off isolation guidance
 rtc_datasheet,docs/MSM58321.pdf,datasheet,MSM58321 data sheet,RTC pinout crystal and timing information

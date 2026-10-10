@@ -3,7 +3,7 @@ BT1,CR2032_HOLDER,CR2032,,todo,rtc_backup_design_chat,RTC backup coin-cell holde
 C1,CAP_INPUT_BULK,10-47 uF,,todo,usb_c_design_chat,Input bulk capacitor on protected 5V0 rail; exact value and footprint TBD
 C2,CAP_100NF,0.1 uF,,inferred,usb_c_design_chat,Input bypass capacitor on protected 5V0 rail
 C3,CAP_1NF,1 nF,,todo,usb_c_design_chat,Optional shield-to-ground coupling capacitor; populate only if selected
-C4,CAP_1UF,1 uF,,inferred,reset_design_chat,Reset timing capacitor from RESET to GND for roughly 10 ms RC
+C4,CAP_1UF,1 uF,,inferred,cpu_user_manual,Reset timing capacitor from RESET to GND for roughly 10 ms RC
 C5,CAP_18PF,18 pF,,inferred,cpu_oscillator_design_chat,CPU_OSC1 load capacitor; NP0/C0G initial build value
 C6,CAP_18PF,18 pF,,inferred,cpu_oscillator_design_chat,CPU_OSC2 load capacitor; NP0/C0G initial build value
 C7,CAP_18PF,18 pF,,inferred,rtc_backup_design_chat,RTC_XT load capacitor; NP0/C0G initial build value
@@ -22,7 +22,6 @@ C19,CAP_100NF,0.1 uF,,inferred,serial_design_chat,ACIA local ceramic bypass capa
 C20,CAP_100NF,0.1 uF,,inferred,serial_design_chat,MC14411 local ceramic bypass capacitor
 C21,CAP_100NF,0.1 uF,,inferred,serial_design_chat,Baud mux local ceramic bypass capacitor
 D1,TVS_5V_UNIDIR,SMBJ5.0A,Diode_SMD:D_SMB,todo,usb_c_design_chat,Unidirectional VBUS TVS near USB-C connector; cathode stripe to USB_VBUS and anode to GND; connector side of fuse
-D2,DIODE_1N4148,1N4148,,todo,reset_design_chat,Optional reset capacitor discharge diode; anode to RESET and cathode to 5V0
 D3,DIODE_SCHOTTKY_RTC,BAT54 or 1N5817-class,,todo,rtc_backup_design_chat,5V0 isolation diode to RTC_VDD; exact Schottky part and footprint TBD
 D4,DIODE_SCHOTTKY_RTC,BAT54 or 1N5817-class,,todo,rtc_backup_design_chat,CR2032 isolation diode to RTC_VDD; exact Schottky part and footprint TBD
 F1,PPTC_USB_INPUT,1.1 A hold,,todo,usb_c_design_chat,Resettable input fuse between raw USB VBUS and protected 5V0 rail; about 2.2 A trip; >=6 V with 16 V preferred; exact JLC/LCSC or radial part TBD
@@ -33,12 +32,12 @@ J4,HEADER_TIMER_IRQ,TIMER/IRQ header,,todo,timer_header_design_chat,Small servic
 R1,RES_5K1,5.1 kohm,,inferred,usb_c_design_chat,CC1 Rd pull-down
 R2,RES_5K1,5.1 kohm,,inferred,usb_c_design_chat,CC2 Rd pull-down
 R3,RES_1M,1 Mohm,,todo,usb_c_design_chat,Optional shield-to-ground bleed resistor; populate only if selected
-R4,RES_10K,10 kohm,,inferred,reset_design_chat,Reset pull-up from RESET to 5V0
+R4,RES_10K,10 kohm,,inferred,current_user_direction,Reset pull-up from RESET to 5V0
 R5,RES_10M,10 Mohm,,inferred,cpu_oscillator_design_chat,CPU oscillator feedback resistor across CPU_OSC1 and CPU_OSC2
 R6,RES_10M,10 Mohm,,inferred,rtc_backup_design_chat,RTC oscillator feedback resistor across RTC_XT and RTC_XT_N
 R7,RES_15M,15 Mohm,,inferred,serial_design_chat,MC14411 crystal oscillator feedback resistor Rt across XTAL_IN and XTAL_OUT
 R8,RES_IRQ_PULLUP,4.7-10 kohm,,todo,irq_design_chat,Shared IRQ pull-up to 5V0; exact value TBD
-SW1,SW_PUSH_NO,Reset,,inferred,reset_design_chat,Normally-open manual reset pushbutton from RESET to GND
+SW1,SW_PUSH_NO,Reset,,inferred,current_user_direction,Normally-open manual reset pushbutton from RESET to GND
 TP1,TEST_PAD,5V0 test pad,,inferred,test_pad_design_chat,Power rail bring-up test point
 TP2,TEST_PAD,GND test pad,,inferred,test_pad_design_chat,Ground bring-up test point
 TP3,TEST_PAD,RESET test pad,,inferred,test_pad_design_chat,Reset net bring-up test point
