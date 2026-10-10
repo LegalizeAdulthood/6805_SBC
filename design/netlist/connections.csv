@@ -1,319 +1,319 @@
 net,refdes,pin_number,pin_name,status,source,notes
+5V0,C1,1,1,todo,usb_c_design_chat,Input bulk capacitor on protected 5V0 rail; exact value TBD
+5V0,C2,1,1,inferred,usb_c_design_chat,Input bypass capacitor on protected 5V0 rail
+5V0,F1,2,OUT,inferred,usb_c_design_chat,Protected 5V0 rail after input PPTC
 5V0,U1,40,VDD,confirmed,MCU_Motorola_6800.kicad_sym,CPU power
-GND,U1,20,VSS,confirmed,MCU_Motorola_6800.kicad_sym,CPU ground
-CPU_OSC1,U1,39,OSC1,confirmed,MCU_Motorola_6800.kicad_sym,CPU oscillator input
-CPU_OSC1,Y1,1,1,confirmed,https://www.digikey.com/en/products/detail/w%C3%BCrth-elektronik/830003119B/13900107,CPU crystal terminal
-CPU_OSC2,U1,38,OSC2,confirmed,MCU_Motorola_6800.kicad_sym,CPU oscillator output
-CPU_OSC2,Y1,2,2,confirmed,https://www.digikey.com/en/products/detail/w%C3%BCrth-elektronik/830003119B/13900107,CPU crystal terminal
-AS,U1,6,AS,confirmed,MCU_Motorola_6800.kicad_sym,CPU address strobe
-DS,U1,4,DS,confirmed,MCU_Motorola_6800.kicad_sym,CPU data strobe
-R/~W,U1,5,R/~W,confirmed,MCU_Motorola_6800.kicad_sym,CPU read/write direction
-D0,U1,36,PB0,confirmed,design/Address_Latch.dig,CPU multiplexed address/data bus bit 0
-D1,U1,35,PB1,confirmed,design/Address_Latch.dig,CPU multiplexed address/data bus bit 1
-D2,U1,34,PB2,confirmed,design/Address_Latch.dig,CPU multiplexed address/data bus bit 2
-D3,U1,33,PB3,confirmed,design/Address_Latch.dig,CPU multiplexed address/data bus bit 3
-D4,U1,32,PB4,confirmed,design/Address_Latch.dig,CPU multiplexed address/data bus bit 4
-D5,U1,31,PB5,confirmed,design/Address_Latch.dig,CPU multiplexed address/data bus bit 5
-D6,U1,30,PB6,confirmed,design/Address_Latch.dig,CPU multiplexed address/data bus bit 6
-D7,U1,29,PB7,confirmed,design/Address_Latch.dig,CPU multiplexed address/data bus bit 7
+5V0,U2,8,CS0,inferred,docs/memory-map.txt,Hold ACIA positive chip select asserted
+5V0,U2,10,CS1,inferred,docs/memory-map.txt,Hold ACIA positive chip select asserted
 5V0,U2,12,VCC,confirmed,docs/MC6850.pdf,ACIA power
-GND,U2,1,VSS,confirmed,docs/MC6850.pdf,ACIA ground
-ACIA_RXCLK,U2,3,RxCLK,inferred,design/baud-rate.md,Receive clock from section 1 of baud mux
-ACIA_TXCLK,U2,4,TxCLK,inferred,design/baud-rate.md,Transmit clock from section 2 of baud mux
-5V0,U3,24,VDD,confirmed,MCU_Motorola_6800.kicad_sym,MC14411 power
-GND,U3,12,VSS,confirmed,MCU_Motorola_6800.kicad_sym,MC14411 ground
-5V0,U3,23,RSA,confirmed,design/baud-rate.md,Fixed high for X64 output range
 5V0,U3,22,RSB,confirmed,design/baud-rate.md,Fixed high for X64 output range
+5V0,U3,23,RSA,confirmed,design/baud-rate.md,Fixed high for X64 output range
+5V0,U3,24,VDD,confirmed,MCU_Motorola_6800.kicad_sym,MC14411 power
+5V0,U4,16,VCC,confirmed,https://www.ti.com/lit/ds/symlink/sn74ls153.pdf,74153 power
+5V0,U5,24,VCC,inferred,docs/Am2732-AMD.pdf,ROM power
+5V0,U6,24,VCC,inferred,docs/IDT_6116.pdf,RAM 1 power
+5V0,U7,24,VCC,inferred,docs/IDT_6116.pdf,RAM 2 power
+5V0,U9,20,VCC,confirmed,https://www.ti.com/lit/ds/symlink/sn74ls373.pdf,Address latch power
+5V0,U10,16,VCC,confirmed,docs/sn74ls138.pdf,High address decoder power
+5V0,U11,16,VCC,confirmed,docs/sn74ls138.pdf,Page decoder power
+5V0,U12,16,VCC,confirmed,docs/sn74ls138.pdf,Low peripheral decoder power
+5V0,U13,14,VCC,confirmed,https://www.ti.com/lit/ds/symlink/sn74ls08.pdf,AND gate package power
+5V0,U14,14,VCC,confirmed,https://www.ti.com/lit/ds/symlink/sn74ls11.pdf,Three-input AND package power
+5V0,U15,14,VCC,confirmed,https://www.ti.com/lit/ds/symlink/sn74ls32.pdf,OR gate package power
+5V0,U16,14,VCC,confirmed,https://www.ti.com/lit/ds/symlink/sn74ls32.pdf,OR gate package power
+5V0,U17,14,VCC,confirmed,https://www.ti.com/lit/ds/symlink/sn74ls04.pdf,Inverter package power
+A0,U2,11,RS,inferred,docs/memory-map.txt,ACIA register select for $0006 versus $0007
+A0,U5,8,A0,inferred,docs/Am2732-AMD.pdf,ROM address bit 0
+A0,U6,8,A0,inferred,docs/IDT_6116.pdf,RAM 1 address bit 0
+A0,U7,8,A0,inferred,docs/IDT_6116.pdf,RAM 2 address bit 0
+A0,U9,2,1Q,confirmed,design/Address_Latch.dig,Latched low address bit 0
+A1,U5,7,A1,inferred,docs/Am2732-AMD.pdf,ROM address bit 1
+A1,U6,7,A1,inferred,docs/IDT_6116.pdf,RAM 1 address bit 1
+A1,U7,7,A1,inferred,docs/IDT_6116.pdf,RAM 2 address bit 1
+A1,U9,5,2Q,confirmed,design/Address_Latch.dig,Latched low address bit 1
+A1,U12,1,A,inferred,design/New_Address_Decode.dig,Low peripheral pair decoder select bit A1
+A2,U5,6,A2,inferred,docs/Am2732-AMD.pdf,ROM address bit 2
+A2,U6,6,A2,inferred,docs/IDT_6116.pdf,RAM 1 address bit 2
+A2,U7,6,A2,inferred,docs/IDT_6116.pdf,RAM 2 address bit 2
+A2,U9,6,3Q,confirmed,design/Address_Latch.dig,Latched low address bit 2
+A2,U12,2,B,inferred,design/New_Address_Decode.dig,Low peripheral pair decoder select bit A2
+A3,U5,5,A3,inferred,docs/Am2732-AMD.pdf,ROM address bit 3
+A3,U6,5,A3,inferred,docs/IDT_6116.pdf,RAM 1 address bit 3
+A3,U7,5,A3,inferred,docs/IDT_6116.pdf,RAM 2 address bit 3
+A3,U9,9,4Q,confirmed,design/Address_Latch.dig,Latched low address bit 3
+A3,U12,3,C,inferred,design/New_Address_Decode.dig,Low peripheral pair decoder select bit A3
+A4,U5,4,A4,inferred,docs/Am2732-AMD.pdf,ROM address bit 4
+A4,U6,4,A4,inferred,docs/IDT_6116.pdf,RAM 1 address bit 4
+A4,U7,4,A4,inferred,docs/IDT_6116.pdf,RAM 2 address bit 4
+A4,U9,12,5Q,confirmed,design/Address_Latch.dig,Latched low address bit 4
+A4,U15,1,1A,inferred,design/New_Address_Decode.dig,Low-nibble high zero term
+A4_A7_NONZERO,U15,8,3Y,inferred,design/New_Address_Decode.dig,High when A4-A7 are not all zero
+A4_A7_NONZERO,U17,3,2A,inferred,design/New_Address_Decode.dig,Invert lower address nonzero term
+A4_A7_ZERO,U13,5,2B,inferred,design/New_Address_Decode.dig,Low I/O decode lower address term
+A4_A7_ZERO,U13,10,3B,inferred,design/New_Address_Decode.dig,RTC decode lower address term
+A4_A7_ZERO,U17,4,2Y,inferred,design/New_Address_Decode.dig,Lower address zero term
+A4_OR_A5,U15,3,1Y,inferred,design/New_Address_Decode.dig,Intermediate lower address OR
+A4_OR_A5,U15,9,3A,inferred,design/New_Address_Decode.dig,Combine lower address OR terms
+A5,U5,3,A5,inferred,docs/Am2732-AMD.pdf,ROM address bit 5
+A5,U6,3,A5,inferred,docs/IDT_6116.pdf,RAM 1 address bit 5
+A5,U7,3,A5,inferred,docs/IDT_6116.pdf,RAM 2 address bit 5
+A5,U9,15,6Q,confirmed,design/Address_Latch.dig,Latched low address bit 5
+A5,U15,2,1B,inferred,design/New_Address_Decode.dig,Low-nibble high zero term
+A6,U5,2,A6,inferred,docs/Am2732-AMD.pdf,ROM address bit 6
+A6,U6,2,A6,inferred,docs/IDT_6116.pdf,RAM 1 address bit 6
+A6,U7,2,A6,inferred,docs/IDT_6116.pdf,RAM 2 address bit 6
+A6,U9,16,7Q,confirmed,design/Address_Latch.dig,Latched low address bit 6
+A6,U15,4,2A,inferred,design/New_Address_Decode.dig,Low-nibble high zero term
+A6_OR_A7,U15,6,2Y,inferred,design/New_Address_Decode.dig,Intermediate lower address OR
+A6_OR_A7,U15,10,3B,inferred,design/New_Address_Decode.dig,Combine lower address OR terms
+A7,U5,1,A7,inferred,docs/Am2732-AMD.pdf,ROM address bit 7
+A7,U6,1,A7,inferred,docs/IDT_6116.pdf,RAM 1 address bit 7
+A7,U7,1,A7,inferred,docs/IDT_6116.pdf,RAM 2 address bit 7
+A7,U9,19,8Q,confirmed,design/Address_Latch.dig,Latched low address bit 7
+A7,U15,5,2B,inferred,design/New_Address_Decode.dig,Low-nibble high zero term
+A7,U15,12,4A,inferred,design/New_Address_Decode.dig,RAM1 nonzero address term
+A7_OR_A8,U15,11,4Y,inferred,design/New_Address_Decode.dig,Intermediate RAM1 nonzero address term
+A7_OR_A8,U16,4,2A,inferred,design/New_Address_Decode.dig,Combine RAM1 nonzero address terms
+A8,U1,19,A8,confirmed,MCU_Motorola_6800.kicad_sym,CPU high address bit 8
+A8,U5,23,A8,inferred,docs/Am2732-AMD.pdf,ROM address bit 8
+A8,U6,23,A8,inferred,docs/IDT_6116.pdf,RAM 1 address bit 8
+A8,U7,23,A8,inferred,docs/IDT_6116.pdf,RAM 2 address bit 8
+A8,U11,1,A,inferred,design/New_Address_Decode.dig,Page decoder select bit A8
+A8,U15,13,4B,inferred,design/New_Address_Decode.dig,RAM1 nonzero address term
+A9,U1,18,A9,confirmed,MCU_Motorola_6800.kicad_sym,CPU high address bit 9
+A9,U5,22,A9,inferred,docs/Am2732-AMD.pdf,ROM address bit 9
+A9,U6,22,A9,inferred,docs/IDT_6116.pdf,RAM 1 address bit 9
+A9,U7,22,A9,inferred,docs/IDT_6116.pdf,RAM 2 address bit 9
+A9,U11,2,B,inferred,design/New_Address_Decode.dig,Page decoder select bit A9
+A9,U16,1,1A,inferred,design/New_Address_Decode.dig,RAM1 nonzero address term
+A9_OR_A10,U16,3,1Y,inferred,design/New_Address_Decode.dig,Intermediate RAM1 nonzero address term
+A9_OR_A10,U16,5,2B,inferred,design/New_Address_Decode.dig,Combine RAM1 nonzero address terms
+A10,U1,17,A10,confirmed,MCU_Motorola_6800.kicad_sym,CPU high address bit 10
+A10,U5,19,A10,inferred,docs/Am2732-AMD.pdf,ROM address bit 10
+A10,U6,19,A10,inferred,docs/IDT_6116.pdf,RAM 1 address bit 10
+A10,U7,19,A10,inferred,docs/IDT_6116.pdf,RAM 2 address bit 10
+A10,U11,3,C,inferred,design/New_Address_Decode.dig,Page decoder select bit A10
+A10,U16,2,1B,inferred,design/New_Address_Decode.dig,RAM1 nonzero address term
+A11,U1,16,A11,confirmed,MCU_Motorola_6800.kicad_sym,CPU high address bit 11
+A11,U5,21,A11,inferred,docs/Am2732-AMD.pdf,ROM address bit 11
+A11,U10,1,A,inferred,design/New_Address_Decode.dig,High address decoder low select bit
+A12,U1,15,A12,confirmed,MCU_Motorola_6800.kicad_sym,CPU high address bit 12
+A12,U10,2,B,inferred,design/New_Address_Decode.dig,High address decoder high select bit
+ACIA_RXCLK,U2,3,RxCLK,inferred,design/baud-rate.md,Receive clock from section 1 of baud mux
+ACIA_RXCLK,U4,7,1Y,inferred,design/baud-rate.md,Section 1 output assigned to ACIA receive clock
+ACIA_TXCLK,U2,4,TxCLK,inferred,design/baud-rate.md,Transmit clock from section 2 of baud mux
+ACIA_TXCLK,U4,9,2Y,inferred,design/baud-rate.md,Section 2 output assigned to ACIA transmit clock
+AS,U1,6,AS,confirmed,MCU_Motorola_6800.kicad_sym,CPU address strobe
+AS,U9,11,LE,confirmed,design/Address_Latch.dig,Latch PB0-PB7 while AS is asserted
+AS,U10,6,G1,inferred,design/New_Address_Decode.dig,AS qualifies high address decode
+BANK0_0000_07FF,U11,6,G1,inferred,design/New_Address_Decode.dig,Enable page decode inside the $0000-$07FF bank
+BANK0_0000_07FF,U14,1,1A,inferred,design/New_Address_Decode.dig,RAM1 active decode term
+BANK0_0000_07FF,U17,2,1Y,inferred,design/New_Address_Decode.dig,Active-high bank decode
+BANK0_ADDR_NONZERO,U14,2,1B,inferred,design/New_Address_Decode.dig,RAM1 active decode term
+BANK0_ADDR_NONZERO,U16,6,2Y,inferred,design/New_Address_Decode.dig,High for bank 0 addresses at or above $0080
+BAUD_F1,U3,1,F1,confirmed,design/baud-rate.md,614.4 kHz candidate clock for baud mux in X64 range
+BAUD_F1,U4,6,1C0,inferred,design/baud-rate.md,Provisional C0 assignment; confirm power-on default
+BAUD_F1,U4,10,2C0,inferred,design/baud-rate.md,Provisional C0 assignment; mirrors receive-clock mux
+BAUD_F3,U3,2,F3,confirmed,design/baud-rate.md,307.2 kHz candidate clock for baud mux in X64 range
+BAUD_F3,U4,5,1C1,inferred,design/baud-rate.md,Provisional C1 assignment
+BAUD_F3,U4,11,2C1,inferred,design/baud-rate.md,Provisional C1 assignment; mirrors receive-clock mux
+BAUD_F8,U3,5,F8,confirmed,design/baud-rate.md,38.4 kHz candidate clock for baud mux in X64 range
+BAUD_F8,U4,4,1C2,inferred,design/baud-rate.md,Provisional C2 assignment
+BAUD_F8,U4,12,2C2,inferred,design/baud-rate.md,Provisional C2 assignment; mirrors receive-clock mux
+BAUD_F9,U3,7,F9,confirmed,design/baud-rate.md,19.2 kHz candidate clock for baud mux in X64 range
+BAUD_F9,U4,3,1C3,inferred,design/baud-rate.md,Provisional C3 assignment
+BAUD_F9,U4,13,2C3,inferred,design/baud-rate.md,Provisional C3 assignment; mirrors receive-clock mux
+BAUD_SEL_A,U4,14,A,todo,design/baud-rate.md,Shared select input; driving source still TBD
+BAUD_SEL_B,U4,2,B,todo,design/baud-rate.md,Shared select input; driving source still TBD
 BAUD_XTAL_IN,U3,21,XTAL_IN,confirmed,MCU_Motorola_6800.kicad_sym,MC14411 crystal input
 BAUD_XTAL_IN,Y2,1,1,confirmed,https://www.digikey.com/en/products/detail/raltron-electronics/A-1-8432-18/10246237,Baud crystal terminal
 BAUD_XTAL_OUT,U3,20,XTAL_OUT,confirmed,MCU_Motorola_6800.kicad_sym,MC14411 crystal output
 BAUD_XTAL_OUT,Y2,2,2,confirmed,https://www.digikey.com/en/products/detail/raltron-electronics/A-1-8432-18/10246237,Baud crystal terminal
-BAUD_F1,U3,1,F1,confirmed,design/baud-rate.md,614.4 kHz candidate clock for baud mux in X64 range
-BAUD_F3,U3,2,F3,confirmed,design/baud-rate.md,307.2 kHz candidate clock for baud mux in X64 range
-BAUD_F8,U3,5,F8,confirmed,design/baud-rate.md,38.4 kHz candidate clock for baud mux in X64 range
-BAUD_F9,U3,7,F9,confirmed,design/baud-rate.md,19.2 kHz candidate clock for baud mux in X64 range
-5V0,U4,16,VCC,confirmed,https://www.ti.com/lit/ds/symlink/sn74ls153.pdf,74153 power
-GND,U4,8,GND,confirmed,https://www.ti.com/lit/ds/symlink/sn74ls153.pdf,74153 ground
-GND,U4,1,~1G,inferred,design/baud-rate.md,Enable receive-clock mux section
-GND,U4,15,~2G,inferred,design/baud-rate.md,Enable transmit-clock mux section
-BAUD_SEL_B,U4,2,B,todo,design/baud-rate.md,Shared select input; driving source still TBD
-BAUD_SEL_A,U4,14,A,todo,design/baud-rate.md,Shared select input; driving source still TBD
-BAUD_F1,U4,6,1C0,inferred,design/baud-rate.md,Provisional C0 assignment; confirm power-on default
-BAUD_F3,U4,5,1C1,inferred,design/baud-rate.md,Provisional C1 assignment
-BAUD_F8,U4,4,1C2,inferred,design/baud-rate.md,Provisional C2 assignment
-BAUD_F9,U4,3,1C3,inferred,design/baud-rate.md,Provisional C3 assignment
-BAUD_F1,U4,10,2C0,inferred,design/baud-rate.md,Provisional C0 assignment; mirrors receive-clock mux
-BAUD_F3,U4,11,2C1,inferred,design/baud-rate.md,Provisional C1 assignment; mirrors receive-clock mux
-BAUD_F8,U4,12,2C2,inferred,design/baud-rate.md,Provisional C2 assignment; mirrors receive-clock mux
-BAUD_F9,U4,13,2C3,inferred,design/baud-rate.md,Provisional C3 assignment; mirrors receive-clock mux
-ACIA_RXCLK,U4,7,1Y,inferred,design/baud-rate.md,Section 1 output assigned to ACIA receive clock
-ACIA_TXCLK,U4,9,2Y,inferred,design/baud-rate.md,Section 2 output assigned to ACIA transmit clock
-5V0,U5,24,VCC,inferred,docs/Am2732-AMD.pdf,ROM power
-GND,U5,12,GND,inferred,docs/Am2732-AMD.pdf,ROM ground
-A0,U5,8,A0,inferred,docs/Am2732-AMD.pdf,ROM address bit 0
-A1,U5,7,A1,inferred,docs/Am2732-AMD.pdf,ROM address bit 1
-A2,U5,6,A2,inferred,docs/Am2732-AMD.pdf,ROM address bit 2
-A3,U5,5,A3,inferred,docs/Am2732-AMD.pdf,ROM address bit 3
-A4,U5,4,A4,inferred,docs/Am2732-AMD.pdf,ROM address bit 4
-A5,U5,3,A5,inferred,docs/Am2732-AMD.pdf,ROM address bit 5
-A6,U5,2,A6,inferred,docs/Am2732-AMD.pdf,ROM address bit 6
-A7,U5,1,A7,inferred,docs/Am2732-AMD.pdf,ROM address bit 7
-A8,U5,23,A8,inferred,docs/Am2732-AMD.pdf,ROM address bit 8
-A9,U5,22,A9,inferred,docs/Am2732-AMD.pdf,ROM address bit 9
-A10,U5,19,A10,inferred,docs/Am2732-AMD.pdf,ROM address bit 10
-A11,U5,21,A11,inferred,docs/Am2732-AMD.pdf,ROM address bit 11
+CC1,J1,A5,CC1,inferred,usb_c_design_chat,USB-C configuration channel 1
+CC1,R1,1,1,inferred,usb_c_design_chat,CC1 Rd pull-down
+CC2,J1,B5,CC2,inferred,usb_c_design_chat,USB-C configuration channel 2
+CC2,R2,1,1,inferred,usb_c_design_chat,CC2 Rd pull-down
+CPU_OSC1,U1,39,OSC1,confirmed,MCU_Motorola_6800.kicad_sym,CPU oscillator input
+CPU_OSC1,Y1,1,1,confirmed,https://www.digikey.com/en/products/detail/w%C3%BCrth-elektronik/830003119B/13900107,CPU crystal terminal
+CPU_OSC2,U1,38,OSC2,confirmed,MCU_Motorola_6800.kicad_sym,CPU oscillator output
+CPU_OSC2,Y1,2,2,confirmed,https://www.digikey.com/en/products/detail/w%C3%BCrth-elektronik/830003119B/13900107,CPU crystal terminal
+D0,U1,36,PB0,confirmed,design/Address_Latch.dig,CPU multiplexed address/data bus bit 0
+D0,U2,22,D0,inferred,docs/MC6850.pdf,ACIA data bus bit 0
 D0,U5,9,O0,inferred,docs/Am2732-AMD.pdf,ROM data output bit 0
-D1,U5,10,O1,inferred,docs/Am2732-AMD.pdf,ROM data output bit 1
-D2,U5,11,O2,inferred,docs/Am2732-AMD.pdf,ROM data output bit 2
-D3,U5,13,O3,inferred,docs/Am2732-AMD.pdf,ROM data output bit 3
-D4,U5,14,O4,inferred,docs/Am2732-AMD.pdf,ROM data output bit 4
-D5,U5,15,O5,inferred,docs/Am2732-AMD.pdf,ROM data output bit 5
-D6,U5,16,O6,inferred,docs/Am2732-AMD.pdf,ROM data output bit 6
-D7,U5,17,O7,inferred,docs/Am2732-AMD.pdf,ROM data output bit 7
-~ROMCS,U5,18,~CE/PGM,inferred,docs/memory-map.txt,ROM chip select
-~MEMRD,U5,20,~OE/VPP,todo,docs/Am2732-AMD.pdf,ROM output enable during reads
-5V0,U6,24,VCC,inferred,docs/IDT_6116.pdf,RAM 1 power
-GND,U6,12,GND,inferred,docs/IDT_6116.pdf,RAM 1 ground
-A0,U6,8,A0,inferred,docs/IDT_6116.pdf,RAM 1 address bit 0
-A1,U6,7,A1,inferred,docs/IDT_6116.pdf,RAM 1 address bit 1
-A2,U6,6,A2,inferred,docs/IDT_6116.pdf,RAM 1 address bit 2
-A3,U6,5,A3,inferred,docs/IDT_6116.pdf,RAM 1 address bit 3
-A4,U6,4,A4,inferred,docs/IDT_6116.pdf,RAM 1 address bit 4
-A5,U6,3,A5,inferred,docs/IDT_6116.pdf,RAM 1 address bit 5
-A6,U6,2,A6,inferred,docs/IDT_6116.pdf,RAM 1 address bit 6
-A7,U6,1,A7,inferred,docs/IDT_6116.pdf,RAM 1 address bit 7
-A8,U6,23,A8,inferred,docs/IDT_6116.pdf,RAM 1 address bit 8
-A9,U6,22,A9,inferred,docs/IDT_6116.pdf,RAM 1 address bit 9
-A10,U6,19,A10,inferred,docs/IDT_6116.pdf,RAM 1 address bit 10
 D0,U6,9,I/O0,inferred,docs/IDT_6116.pdf,RAM 1 data bit 0
-D1,U6,10,I/O1,inferred,docs/IDT_6116.pdf,RAM 1 data bit 1
-D2,U6,11,I/O2,inferred,docs/IDT_6116.pdf,RAM 1 data bit 2
-D3,U6,13,I/O3,inferred,docs/IDT_6116.pdf,RAM 1 data bit 3
-D4,U6,14,I/O4,inferred,docs/IDT_6116.pdf,RAM 1 data bit 4
-D5,U6,15,I/O5,inferred,docs/IDT_6116.pdf,RAM 1 data bit 5
-D6,U6,16,I/O6,inferred,docs/IDT_6116.pdf,RAM 1 data bit 6
-D7,U6,17,I/O7,inferred,docs/IDT_6116.pdf,RAM 1 data bit 7
-~RAM1CS,U6,18,~CS,inferred,docs/memory-map.txt,RAM 1 chip select
-~MEMRD,U6,20,~OE,todo,docs/IDT_6116.pdf,RAM 1 output enable during reads
-~RAMWE,U6,21,~WE,todo,docs/IDT_6116.pdf,RAM 1 write enable during writes
-5V0,U7,24,VCC,inferred,docs/IDT_6116.pdf,RAM 2 power
-GND,U7,12,GND,inferred,docs/IDT_6116.pdf,RAM 2 ground
-A0,U7,8,A0,inferred,docs/IDT_6116.pdf,RAM 2 address bit 0
-A1,U7,7,A1,inferred,docs/IDT_6116.pdf,RAM 2 address bit 1
-A2,U7,6,A2,inferred,docs/IDT_6116.pdf,RAM 2 address bit 2
-A3,U7,5,A3,inferred,docs/IDT_6116.pdf,RAM 2 address bit 3
-A4,U7,4,A4,inferred,docs/IDT_6116.pdf,RAM 2 address bit 4
-A5,U7,3,A5,inferred,docs/IDT_6116.pdf,RAM 2 address bit 5
-A6,U7,2,A6,inferred,docs/IDT_6116.pdf,RAM 2 address bit 6
-A7,U7,1,A7,inferred,docs/IDT_6116.pdf,RAM 2 address bit 7
-A8,U7,23,A8,inferred,docs/IDT_6116.pdf,RAM 2 address bit 8
-A9,U7,22,A9,inferred,docs/IDT_6116.pdf,RAM 2 address bit 9
-A10,U7,19,A10,inferred,docs/IDT_6116.pdf,RAM 2 address bit 10
 D0,U7,9,I/O0,inferred,docs/IDT_6116.pdf,RAM 2 data bit 0
-D1,U7,10,I/O1,inferred,docs/IDT_6116.pdf,RAM 2 data bit 1
-D2,U7,11,I/O2,inferred,docs/IDT_6116.pdf,RAM 2 data bit 2
-D3,U7,13,I/O3,inferred,docs/IDT_6116.pdf,RAM 2 data bit 3
-D4,U7,14,I/O4,inferred,docs/IDT_6116.pdf,RAM 2 data bit 4
-D5,U7,15,I/O5,inferred,docs/IDT_6116.pdf,RAM 2 data bit 5
-D6,U7,16,I/O6,inferred,docs/IDT_6116.pdf,RAM 2 data bit 6
-D7,U7,17,I/O7,inferred,docs/IDT_6116.pdf,RAM 2 data bit 7
-~RAM2CS,U7,18,~CS,inferred,docs/memory-map.txt,RAM 2 chip select
-~MEMRD,U7,20,~OE,todo,docs/IDT_6116.pdf,RAM 2 output enable during reads
-~RAMWE,U7,21,~WE,todo,docs/IDT_6116.pdf,RAM 2 write enable during writes
-RTC_VDD,U8,16,VDD,todo,docs/MSM58321.pdf,RTC power; backup/direct 5V source TBD
-GND,U8,8,GND,confirmed,MCU_Motorola_6800.kicad_sym,RTC ground
 D0,U8,4,D0,confirmed,design/rtc.md,RTC 4-bit data bus bit 0
+D0,U9,3,1D,confirmed,design/Address_Latch.dig,Low address/data bit 0 latch input
+D1,U1,35,PB1,confirmed,design/Address_Latch.dig,CPU multiplexed address/data bus bit 1
+D1,U2,21,D1,inferred,docs/MC6850.pdf,ACIA data bus bit 1
+D1,U5,10,O1,inferred,docs/Am2732-AMD.pdf,ROM data output bit 1
+D1,U6,10,I/O1,inferred,docs/IDT_6116.pdf,RAM 1 data bit 1
+D1,U7,10,I/O1,inferred,docs/IDT_6116.pdf,RAM 2 data bit 1
 D1,U8,5,D1,confirmed,design/rtc.md,RTC 4-bit data bus bit 1
+D1,U9,4,2D,confirmed,design/Address_Latch.dig,Low address/data bit 1 latch input
+D2,U1,34,PB2,confirmed,design/Address_Latch.dig,CPU multiplexed address/data bus bit 2
+D2,U2,20,D2,inferred,docs/MC6850.pdf,ACIA data bus bit 2
+D2,U5,11,O2,inferred,docs/Am2732-AMD.pdf,ROM data output bit 2
+D2,U6,11,I/O2,inferred,docs/IDT_6116.pdf,RAM 1 data bit 2
+D2,U7,11,I/O2,inferred,docs/IDT_6116.pdf,RAM 2 data bit 2
 D2,U8,6,D2,confirmed,design/rtc.md,RTC 4-bit data bus bit 2
+D2,U9,7,3D,confirmed,design/Address_Latch.dig,Low address/data bit 2 latch input
+D3,U1,33,PB3,confirmed,design/Address_Latch.dig,CPU multiplexed address/data bus bit 3
+D3,U2,19,D3,inferred,docs/MC6850.pdf,ACIA data bus bit 3
+D3,U5,13,O3,inferred,docs/Am2732-AMD.pdf,ROM data output bit 3
+D3,U6,13,I/O3,inferred,docs/IDT_6116.pdf,RAM 1 data bit 3
+D3,U7,13,I/O3,inferred,docs/IDT_6116.pdf,RAM 2 data bit 3
 D3,U8,7,D3,confirmed,design/rtc.md,RTC 4-bit data bus bit 3
-RTC_SELECT,U8,13,CS1,todo,design/rtc.md,Final select must be held for complete RTC bus cycle
-RTC_SELECT,U8,1,CS2,todo,design/rtc.md,Final select must be held for complete RTC bus cycle
-RTC_ADDRESS_WRITE,U8,9,ADDRESS_WRITE,todo,design/rtc.md,Assert for address phase on both reads and writes
-RTC_READ,U8,3,READ,todo,design/rtc.md,Active-high RTC read strobe from selected DS read cycle
-RTC_WRITE,U8,2,WRITE,todo,design/rtc.md,Active-high RTC write strobe from selected DS write cycle
+D3,U9,8,4D,confirmed,design/Address_Latch.dig,Low address/data bit 3 latch input
+D4,U1,32,PB4,confirmed,design/Address_Latch.dig,CPU multiplexed address/data bus bit 4
+D4,U2,18,D4,inferred,docs/MC6850.pdf,ACIA data bus bit 4
+D4,U5,14,O4,inferred,docs/Am2732-AMD.pdf,ROM data output bit 4
+D4,U6,14,I/O4,inferred,docs/IDT_6116.pdf,RAM 1 data bit 4
+D4,U7,14,I/O4,inferred,docs/IDT_6116.pdf,RAM 2 data bit 4
+D4,U9,13,5D,confirmed,design/Address_Latch.dig,Low address/data bit 4 latch input
+D5,U1,31,PB5,confirmed,design/Address_Latch.dig,CPU multiplexed address/data bus bit 5
+D5,U2,17,D5,inferred,docs/MC6850.pdf,ACIA data bus bit 5
+D5,U5,15,O5,inferred,docs/Am2732-AMD.pdf,ROM data output bit 5
+D5,U6,15,I/O5,inferred,docs/IDT_6116.pdf,RAM 1 data bit 5
+D5,U7,15,I/O5,inferred,docs/IDT_6116.pdf,RAM 2 data bit 5
+D5,U9,14,6D,confirmed,design/Address_Latch.dig,Low address/data bit 5 latch input
+D6,U1,30,PB6,confirmed,design/Address_Latch.dig,CPU multiplexed address/data bus bit 6
+D6,U2,16,D6,inferred,docs/MC6850.pdf,ACIA data bus bit 6
+D6,U5,16,O6,inferred,docs/Am2732-AMD.pdf,ROM data output bit 6
+D6,U6,16,I/O6,inferred,docs/IDT_6116.pdf,RAM 1 data bit 6
+D6,U7,16,I/O6,inferred,docs/IDT_6116.pdf,RAM 2 data bit 6
+D6,U9,17,7D,confirmed,design/Address_Latch.dig,Low address/data bit 6 latch input
+D7,U1,29,PB7,confirmed,design/Address_Latch.dig,CPU multiplexed address/data bus bit 7
+D7,U2,15,D7,inferred,docs/MC6850.pdf,ACIA data bus bit 7
+D7,U5,17,O7,inferred,docs/Am2732-AMD.pdf,ROM data output bit 7
+D7,U6,17,I/O7,inferred,docs/IDT_6116.pdf,RAM 1 data bit 7
+D7,U7,17,I/O7,inferred,docs/IDT_6116.pdf,RAM 2 data bit 7
+D7,U9,18,8D,confirmed,design/Address_Latch.dig,Low address/data bit 7 latch input
+DS,U1,4,DS,confirmed,MCU_Motorola_6800.kicad_sym,CPU data strobe
+DS,U2,13,E,inferred,docs/MC6850.pdf,ACIA enable driven from CPU data strobe
+GND,C1,2,2,todo,usb_c_design_chat,Input bulk capacitor return
+GND,C2,2,2,inferred,usb_c_design_chat,Input bypass capacitor return
+GND,C3,2,2,todo,usb_c_design_chat,Optional shield coupling path return
+GND,D1,2,A,inferred,usb_c_design_chat,TVS anode to ground
+GND,J1,A1,GND,inferred,usb_c_design_chat,USB-C ground contact
+GND,J1,A12,GND,inferred,usb_c_design_chat,USB-C ground contact
+GND,J1,B1,GND,inferred,usb_c_design_chat,USB-C ground contact
+GND,J1,B12,GND,inferred,usb_c_design_chat,USB-C ground contact
+GND,R1,2,2,inferred,usb_c_design_chat,CC1 Rd pull-down return
+GND,R2,2,2,inferred,usb_c_design_chat,CC2 Rd pull-down return
+GND,R3,2,2,todo,usb_c_design_chat,Optional shield bleed path return
+GND,U1,20,VSS,confirmed,MCU_Motorola_6800.kicad_sym,CPU ground
+GND,U2,1,VSS,confirmed,docs/MC6850.pdf,ACIA ground
+GND,U3,12,VSS,confirmed,MCU_Motorola_6800.kicad_sym,MC14411 ground
+GND,U4,1,~1G,inferred,design/baud-rate.md,Enable receive-clock mux section
+GND,U4,8,GND,confirmed,https://www.ti.com/lit/ds/symlink/sn74ls153.pdf,74153 ground
+GND,U4,15,~2G,inferred,design/baud-rate.md,Enable transmit-clock mux section
+GND,U5,12,GND,inferred,docs/Am2732-AMD.pdf,ROM ground
+GND,U6,12,GND,inferred,docs/IDT_6116.pdf,RAM 1 ground
+GND,U7,12,GND,inferred,docs/IDT_6116.pdf,RAM 2 ground
+GND,U8,8,GND,confirmed,MCU_Motorola_6800.kicad_sym,RTC ground
 GND,U8,12,TEST,inferred,docs/MSM58321.pdf,Datasheet recommends tying TEST to GND
-RTC_STOP,U8,11,STOP,todo,docs/MSM58321.pdf,Normal low versus controlled STOP still TBD
+GND,U9,1,~OE,inferred,design/Address_Latch.dig,Enable address latch outputs
+GND,U9,10,GND,confirmed,https://www.ti.com/lit/ds/symlink/sn74ls373.pdf,Address latch ground
+GND,U10,3,C,inferred,design/New_Address_Decode.dig,Grounded select bit leaves outputs Q4-Q7 unused
+GND,U10,4,~G2A,inferred,docs/sn74ls138.pdf,Enable high address decoder
+GND,U10,5,~G2B,inferred,docs/sn74ls138.pdf,Enable high address decoder
+GND,U10,8,GND,confirmed,docs/sn74ls138.pdf,High address decoder ground
+GND,U11,4,~G2A,inferred,docs/sn74ls138.pdf,Enable page decoder
+GND,U11,5,~G2B,inferred,docs/sn74ls138.pdf,Enable page decoder
+GND,U11,8,GND,confirmed,docs/sn74ls138.pdf,Page decoder ground
+GND,U12,4,~G2A,inferred,docs/sn74ls138.pdf,Enable low peripheral decoder
+GND,U12,5,~G2B,inferred,docs/sn74ls138.pdf,Enable low peripheral decoder
+GND,U12,8,GND,confirmed,docs/sn74ls138.pdf,Low peripheral decoder ground
+GND,U13,7,GND,confirmed,https://www.ti.com/lit/ds/symlink/sn74ls08.pdf,AND gate package ground
+GND,U13,12,4A,inferred,design/New_Address_Decode.dig,Tie unused AND input low
+GND,U13,13,4B,inferred,design/New_Address_Decode.dig,Tie unused AND input low
+GND,U14,3,2A,inferred,design/New_Address_Decode.dig,Tie unused AND input low
+GND,U14,4,2B,inferred,design/New_Address_Decode.dig,Tie unused AND input low
+GND,U14,5,2C,inferred,design/New_Address_Decode.dig,Tie unused AND input low
+GND,U14,7,GND,confirmed,https://www.ti.com/lit/ds/symlink/sn74ls11.pdf,Three-input AND package ground
+GND,U14,9,3A,inferred,design/New_Address_Decode.dig,Tie unused AND input low
+GND,U14,10,3B,inferred,design/New_Address_Decode.dig,Tie unused AND input low
+GND,U14,11,3C,inferred,design/New_Address_Decode.dig,Tie unused AND input low
+GND,U15,7,GND,confirmed,https://www.ti.com/lit/ds/symlink/sn74ls32.pdf,OR gate package ground
+GND,U16,7,GND,confirmed,https://www.ti.com/lit/ds/symlink/sn74ls32.pdf,OR gate package ground
+GND,U16,9,3A,inferred,design/New_Address_Decode.dig,Tie unused OR input low
+GND,U16,10,3B,inferred,design/New_Address_Decode.dig,Tie unused OR input low
+GND,U16,12,4A,inferred,design/New_Address_Decode.dig,Tie unused OR input low
+GND,U16,13,4B,inferred,design/New_Address_Decode.dig,Tie unused OR input low
+GND,U17,7,GND,confirmed,https://www.ti.com/lit/ds/symlink/sn74ls04.pdf,Inverter package ground
+LOW_0000_000F,U12,6,G1,inferred,design/New_Address_Decode.dig,Enable decode for $0000-$000F
+LOW_0000_000F,U13,6,2Y,inferred,design/New_Address_Decode.dig,Enable low peripheral pair decoder
+PAGE_0000_00FF,U13,4,2A,inferred,design/New_Address_Decode.dig,Low I/O decode page term
+PAGE_0000_00FF,U17,6,3Y,inferred,design/New_Address_Decode.dig,Active-high page decode
+PAGE_0100_01FF,U13,9,3A,inferred,design/New_Address_Decode.dig,RTC decode page term
+PAGE_0100_01FF,U17,8,4Y,inferred,design/New_Address_Decode.dig,Active-high RTC page decode
+R/~W,U1,5,R/~W,confirmed,MCU_Motorola_6800.kicad_sym,CPU read/write direction
+R/~W,U2,14,R/~W,inferred,docs/MC6850.pdf,ACIA read/write direction
+RAM1_ACTIVE,U14,12,1Y,inferred,design/New_Address_Decode.dig,Active-high RAM1 select before inversion
+RAM1_ACTIVE,U17,13,6A,inferred,design/New_Address_Decode.dig,Invert active-high RAM1 select
+RTC_ADDRESS_WRITE,U8,9,ADDRESS_WRITE,todo,design/rtc.md,Assert for address phase on both reads and writes
 RTC_BUSY,U8,10,~BUSY,todo,docs/MSM58321.pdf,Open-drain BUSY output consumer and pull-up TBD
+RTC_READ,U8,3,READ,todo,design/rtc.md,Active-high RTC read strobe from selected DS read cycle
+RTC_SELECT,U8,1,CS2,todo,design/rtc.md,Final select must be held for complete RTC bus cycle
+RTC_SELECT,U8,13,CS1,todo,design/rtc.md,Final select must be held for complete RTC bus cycle
+RTC_STOP,U8,11,STOP,todo,docs/MSM58321.pdf,Normal low versus controlled STOP still TBD
+RTC_VDD,U8,16,VDD,todo,docs/MSM58321.pdf,RTC power; backup/direct 5V source TBD
+RTC_WRITE,U8,2,WRITE,todo,design/rtc.md,Active-high RTC write strobe from selected DS write cycle
 RTC_XT,U8,15,XT,confirmed,docs/MSM58321.pdf,RTC crystal oscillator pin
 RTC_XT,Y3,1,1,confirmed,docs/MSM58321.pdf,RTC crystal terminal
 RTC_XT_N,U8,14,~XT,confirmed,docs/MSM58321.pdf,RTC crystal oscillator pin
 RTC_XT_N,Y3,2,2,confirmed,docs/MSM58321.pdf,RTC crystal terminal
-5V0,U9,20,VCC,confirmed,https://www.ti.com/lit/ds/symlink/sn74ls373.pdf,Address latch power
-GND,U9,10,GND,confirmed,https://www.ti.com/lit/ds/symlink/sn74ls373.pdf,Address latch ground
-GND,U9,1,~OE,inferred,design/Address_Latch.dig,Enable address latch outputs
-AS,U9,11,LE,confirmed,design/Address_Latch.dig,Latch PB0-PB7 while AS is asserted
-D0,U9,3,1D,confirmed,design/Address_Latch.dig,Low address/data bit 0 latch input
-A0,U9,2,1Q,confirmed,design/Address_Latch.dig,Latched low address bit 0
-D1,U9,4,2D,confirmed,design/Address_Latch.dig,Low address/data bit 1 latch input
-A1,U9,5,2Q,confirmed,design/Address_Latch.dig,Latched low address bit 1
-D2,U9,7,3D,confirmed,design/Address_Latch.dig,Low address/data bit 2 latch input
-A2,U9,6,3Q,confirmed,design/Address_Latch.dig,Latched low address bit 2
-D3,U9,8,4D,confirmed,design/Address_Latch.dig,Low address/data bit 3 latch input
-A3,U9,9,4Q,confirmed,design/Address_Latch.dig,Latched low address bit 3
-D4,U9,13,5D,confirmed,design/Address_Latch.dig,Low address/data bit 4 latch input
-A4,U9,12,5Q,confirmed,design/Address_Latch.dig,Latched low address bit 4
-D5,U9,14,6D,confirmed,design/Address_Latch.dig,Low address/data bit 5 latch input
-A5,U9,15,6Q,confirmed,design/Address_Latch.dig,Latched low address bit 5
-D6,U9,17,7D,confirmed,design/Address_Latch.dig,Low address/data bit 6 latch input
-A6,U9,16,7Q,confirmed,design/Address_Latch.dig,Latched low address bit 6
-D7,U9,18,8D,confirmed,design/Address_Latch.dig,Low address/data bit 7 latch input
-A7,U9,19,8Q,confirmed,design/Address_Latch.dig,Latched low address bit 7
-A8,U1,19,A8,confirmed,MCU_Motorola_6800.kicad_sym,CPU high address bit 8
-A9,U1,18,A9,confirmed,MCU_Motorola_6800.kicad_sym,CPU high address bit 9
-A10,U1,17,A10,confirmed,MCU_Motorola_6800.kicad_sym,CPU high address bit 10
-A11,U1,16,A11,confirmed,MCU_Motorola_6800.kicad_sym,CPU high address bit 11
-A12,U1,15,A12,confirmed,MCU_Motorola_6800.kicad_sym,CPU high address bit 12
-D0,U2,22,D0,inferred,docs/MC6850.pdf,ACIA data bus bit 0
-D1,U2,21,D1,inferred,docs/MC6850.pdf,ACIA data bus bit 1
-D2,U2,20,D2,inferred,docs/MC6850.pdf,ACIA data bus bit 2
-D3,U2,19,D3,inferred,docs/MC6850.pdf,ACIA data bus bit 3
-D4,U2,18,D4,inferred,docs/MC6850.pdf,ACIA data bus bit 4
-D5,U2,17,D5,inferred,docs/MC6850.pdf,ACIA data bus bit 5
-D6,U2,16,D6,inferred,docs/MC6850.pdf,ACIA data bus bit 6
-D7,U2,15,D7,inferred,docs/MC6850.pdf,ACIA data bus bit 7
-A0,U2,11,RS,inferred,docs/memory-map.txt,ACIA register select for $0006 versus $0007
-DS,U2,13,E,inferred,docs/MC6850.pdf,ACIA enable driven from CPU data strobe
-R/~W,U2,14,R/~W,inferred,docs/MC6850.pdf,ACIA read/write direction
-5V0,U2,8,CS0,inferred,docs/memory-map.txt,Hold ACIA positive chip select asserted
-5V0,U2,10,CS1,inferred,docs/memory-map.txt,Hold ACIA positive chip select asserted
+RTCCS,U13,8,3Y,inferred,design/New_Address_Decode.dig,AS-qualified RTC address decode
+RTCCS,U17,11,5A,inferred,design/New_Address_Decode.dig,Invert RTC select for RAM1 exclusion
+USB_SHIELD,C3,1,1,todo,usb_c_design_chat,Optional shield coupling path; final shield treatment TBD
+USB_SHIELD,J1,SH,SHIELD,todo,usb_c_design_chat,Connector shield pin name depends on selected footprint
+USB_SHIELD,R3,1,1,todo,usb_c_design_chat,Optional shield bleed path; final shield treatment TBD
+USB_VBUS,D1,1,K,inferred,usb_c_design_chat,TVS cathode on connector side of fuse
+USB_VBUS,F1,1,IN,inferred,usb_c_design_chat,Raw VBUS into input PPTC
+USB_VBUS,J1,A4,VBUS,inferred,usb_c_design_chat,USB-C raw VBUS contact
+USB_VBUS,J1,A9,VBUS,inferred,usb_c_design_chat,USB-C raw VBUS contact
+USB_VBUS,J1,B4,VBUS,inferred,usb_c_design_chat,USB-C raw VBUS contact
+USB_VBUS,J1,B9,VBUS,inferred,usb_c_design_chat,USB-C raw VBUS contact
 ~ACIAEN,U2,9,~CS2,inferred,design/New_Address_Decode.dig,Active-low ACIA chip select from address decode
-5V0,U10,16,VCC,confirmed,docs/sn74ls138.pdf,High address decoder power
-GND,U10,8,GND,confirmed,docs/sn74ls138.pdf,High address decoder ground
-A11,U10,1,A,inferred,design/New_Address_Decode.dig,High address decoder low select bit
-A12,U10,2,B,inferred,design/New_Address_Decode.dig,High address decoder high select bit
-GND,U10,3,C,inferred,design/New_Address_Decode.dig,Grounded select bit leaves outputs Q4-Q7 unused
-GND,U10,4,~G2A,inferred,docs/sn74ls138.pdf,Enable high address decoder
-GND,U10,5,~G2B,inferred,docs/sn74ls138.pdf,Enable high address decoder
-AS,U10,6,G1,inferred,design/New_Address_Decode.dig,AS qualifies high address decode
+~ACIAEN,U12,12,~Y3,confirmed,design/New_Address_Decode.dig,ACIA decode output
+~ADDR_0000_0001,U12,15,~Y0,confirmed,design/New_Address_Decode.dig,Low pair decode output
+~ADDR_0004_0005,U12,13,~Y2,confirmed,design/New_Address_Decode.dig,Low pair decode output
+~ADDR_0008_0009,U12,11,~Y4,inferred,design/Address_Decode.dig,Low pair decode output
 ~BANK0_0000_07FF,U10,15,~Y0,inferred,design/New_Address_Decode.dig,Decode for $0000-$07FF bank
-~RAM2CS,U10,14,~Y1,inferred,design/New_Address_Decode.dig,Decode for $0800-$0FFF RAM2 bank
-~ROM_LOCS,U10,13,~Y2,inferred,design/New_Address_Decode.dig,One half of ROM decode
-~ROM_HICS,U10,12,~Y3,inferred,design/New_Address_Decode.dig,Other half of ROM decode
+~BANK0_0000_07FF,U17,1,1A,inferred,design/New_Address_Decode.dig,Invert active-low bank decode
 ~DEC_HIGH_Q4,U10,11,~Y4,confirmed,design/New_Address_Decode.dig,Unused high decoder output
 ~DEC_HIGH_Q5,U10,10,~Y5,confirmed,design/New_Address_Decode.dig,Unused high decoder output
 ~DEC_HIGH_Q6,U10,9,~Y6,confirmed,design/New_Address_Decode.dig,Unused high decoder output
 ~DEC_HIGH_Q7,U10,7,~Y7,confirmed,design/New_Address_Decode.dig,Unused high decoder output
-5V0,U13,14,VCC,confirmed,https://www.ti.com/lit/ds/symlink/sn74ls08.pdf,AND gate package power
-GND,U13,7,GND,confirmed,https://www.ti.com/lit/ds/symlink/sn74ls08.pdf,AND gate package ground
-~ROM_LOCS,U13,1,1A,inferred,design/New_Address_Decode.dig,AND active-low ROM half selects
-~ROM_HICS,U13,2,1B,inferred,design/New_Address_Decode.dig,AND active-low ROM half selects
-~ROMCS,U13,3,1Y,inferred,design/New_Address_Decode.dig,Combined ROM chip select
-PAGE_0000_00FF,U13,4,2A,inferred,design/New_Address_Decode.dig,Low I/O decode page term
-A4_A7_ZERO,U13,5,2B,inferred,design/New_Address_Decode.dig,Low I/O decode lower address term
-LOW_0000_000F,U13,6,2Y,inferred,design/New_Address_Decode.dig,Enable low peripheral pair decoder
-PAGE_0100_01FF,U13,9,3A,inferred,design/New_Address_Decode.dig,RTC decode page term
-A4_A7_ZERO,U13,10,3B,inferred,design/New_Address_Decode.dig,RTC decode lower address term
-RTCCS,U13,8,3Y,inferred,design/New_Address_Decode.dig,AS-qualified RTC address decode
-GND,U13,12,4A,inferred,design/New_Address_Decode.dig,Tie unused AND input low
-GND,U13,13,4B,inferred,design/New_Address_Decode.dig,Tie unused AND input low
-5V0,U17,14,VCC,confirmed,https://www.ti.com/lit/ds/symlink/sn74ls04.pdf,Inverter package power
-GND,U17,7,GND,confirmed,https://www.ti.com/lit/ds/symlink/sn74ls04.pdf,Inverter package ground
-~BANK0_0000_07FF,U17,1,1A,inferred,design/New_Address_Decode.dig,Invert active-low bank decode
-BANK0_0000_07FF,U17,2,1Y,inferred,design/New_Address_Decode.dig,Active-high bank decode
-A4_A7_NONZERO,U17,3,2A,inferred,design/New_Address_Decode.dig,Invert lower address nonzero term
-A4_A7_ZERO,U17,4,2Y,inferred,design/New_Address_Decode.dig,Lower address zero term
-~PAGE_0000_00FF,U17,5,3A,inferred,design/New_Address_Decode.dig,Invert active-low page decode
-PAGE_0000_00FF,U17,6,3Y,inferred,design/New_Address_Decode.dig,Active-high page decode
-~PAGE_0100_01FF,U17,9,4A,inferred,design/New_Address_Decode.dig,Invert active-low RTC page decode
-PAGE_0100_01FF,U17,8,4Y,inferred,design/New_Address_Decode.dig,Active-high RTC page decode
-RTCCS,U17,11,5A,inferred,design/New_Address_Decode.dig,Invert RTC select for RAM1 exclusion
-~RTCCS,U17,10,5Y,inferred,design/New_Address_Decode.dig,Active-low RTC select complement
-RAM1_ACTIVE,U17,13,6A,inferred,design/New_Address_Decode.dig,Invert active-high RAM1 select
-~RAM1CS,U17,12,6Y,inferred,design/New_Address_Decode.dig,Active-low RAM1 chip select
-5V0,U11,16,VCC,confirmed,docs/sn74ls138.pdf,Page decoder power
-GND,U11,8,GND,confirmed,docs/sn74ls138.pdf,Page decoder ground
-A8,U11,1,A,inferred,design/New_Address_Decode.dig,Page decoder select bit A8
-A9,U11,2,B,inferred,design/New_Address_Decode.dig,Page decoder select bit A9
-A10,U11,3,C,inferred,design/New_Address_Decode.dig,Page decoder select bit A10
-GND,U11,4,~G2A,inferred,docs/sn74ls138.pdf,Enable page decoder
-GND,U11,5,~G2B,inferred,docs/sn74ls138.pdf,Enable page decoder
-BANK0_0000_07FF,U11,6,G1,inferred,design/New_Address_Decode.dig,Enable page decode inside the $0000-$07FF bank
+~MEMRD,U5,20,~OE/VPP,todo,docs/Am2732-AMD.pdf,ROM output enable during reads
+~MEMRD,U6,20,~OE,todo,docs/IDT_6116.pdf,RAM 1 output enable during reads
+~MEMRD,U7,20,~OE,todo,docs/IDT_6116.pdf,RAM 2 output enable during reads
+~P1EN,U12,14,~Y1,confirmed,design/New_Address_Decode.dig,Low pair decode output
+~P2EN,U12,10,~Y5,confirmed,design/New_Address_Decode.dig,Low pair decode output
+~P3EN,U12,9,~Y6,confirmed,design/New_Address_Decode.dig,Low pair decode output
+~P4EN,U12,7,~Y7,confirmed,design/New_Address_Decode.dig,Low pair decode output
 ~PAGE_0000_00FF,U11,15,~Y0,inferred,design/New_Address_Decode.dig,Page decode for $0000-$00FF
+~PAGE_0000_00FF,U17,5,3A,inferred,design/New_Address_Decode.dig,Invert active-low page decode
 ~PAGE_0100_01FF,U11,14,~Y1,inferred,design/New_Address_Decode.dig,Page decode for $0100-$01FF
+~PAGE_0100_01FF,U17,9,4A,inferred,design/New_Address_Decode.dig,Invert active-low RTC page decode
 ~PAGE_0200_02FF,U11,13,~Y2,inferred,design/New_Address_Decode.dig,Page decode for $0200-$02FF
 ~PAGE_0300_03FF,U11,12,~Y3,inferred,design/New_Address_Decode.dig,Page decode for $0300-$03FF
 ~PAGE_0400_04FF,U11,11,~Y4,inferred,design/New_Address_Decode.dig,Page decode for $0400-$04FF
 ~PAGE_0500_05FF,U11,10,~Y5,inferred,design/New_Address_Decode.dig,Page decode for $0500-$05FF
 ~PAGE_0600_06FF,U11,9,~Y6,inferred,design/New_Address_Decode.dig,Page decode for $0600-$06FF
 ~PAGE_0700_07FF,U11,7,~Y7,inferred,design/New_Address_Decode.dig,Page decode for $0700-$07FF
-5V0,U15,14,VCC,confirmed,https://www.ti.com/lit/ds/symlink/sn74ls32.pdf,OR gate package power
-GND,U15,7,GND,confirmed,https://www.ti.com/lit/ds/symlink/sn74ls32.pdf,OR gate package ground
-A4,U15,1,1A,inferred,design/New_Address_Decode.dig,Low-nibble high zero term
-A5,U15,2,1B,inferred,design/New_Address_Decode.dig,Low-nibble high zero term
-A4_OR_A5,U15,3,1Y,inferred,design/New_Address_Decode.dig,Intermediate lower address OR
-A6,U15,4,2A,inferred,design/New_Address_Decode.dig,Low-nibble high zero term
-A7,U15,5,2B,inferred,design/New_Address_Decode.dig,Low-nibble high zero term
-A6_OR_A7,U15,6,2Y,inferred,design/New_Address_Decode.dig,Intermediate lower address OR
-A4_OR_A5,U15,9,3A,inferred,design/New_Address_Decode.dig,Combine lower address OR terms
-A6_OR_A7,U15,10,3B,inferred,design/New_Address_Decode.dig,Combine lower address OR terms
-A4_A7_NONZERO,U15,8,3Y,inferred,design/New_Address_Decode.dig,High when A4-A7 are not all zero
-A7,U15,12,4A,inferred,design/New_Address_Decode.dig,RAM1 nonzero address term
-A8,U15,13,4B,inferred,design/New_Address_Decode.dig,RAM1 nonzero address term
-A7_OR_A8,U15,11,4Y,inferred,design/New_Address_Decode.dig,Intermediate RAM1 nonzero address term
-5V0,U16,14,VCC,confirmed,https://www.ti.com/lit/ds/symlink/sn74ls32.pdf,OR gate package power
-GND,U16,7,GND,confirmed,https://www.ti.com/lit/ds/symlink/sn74ls32.pdf,OR gate package ground
-A9,U16,1,1A,inferred,design/New_Address_Decode.dig,RAM1 nonzero address term
-A10,U16,2,1B,inferred,design/New_Address_Decode.dig,RAM1 nonzero address term
-A9_OR_A10,U16,3,1Y,inferred,design/New_Address_Decode.dig,Intermediate RAM1 nonzero address term
-A7_OR_A8,U16,4,2A,inferred,design/New_Address_Decode.dig,Combine RAM1 nonzero address terms
-A9_OR_A10,U16,5,2B,inferred,design/New_Address_Decode.dig,Combine RAM1 nonzero address terms
-BANK0_ADDR_NONZERO,U16,6,2Y,inferred,design/New_Address_Decode.dig,High for bank 0 addresses at or above $0080
-GND,U16,9,3A,inferred,design/New_Address_Decode.dig,Tie unused OR input low
-GND,U16,10,3B,inferred,design/New_Address_Decode.dig,Tie unused OR input low
-GND,U16,12,4A,inferred,design/New_Address_Decode.dig,Tie unused OR input low
-GND,U16,13,4B,inferred,design/New_Address_Decode.dig,Tie unused OR input low
-5V0,U14,14,VCC,confirmed,https://www.ti.com/lit/ds/symlink/sn74ls11.pdf,Three-input AND package power
-GND,U14,7,GND,confirmed,https://www.ti.com/lit/ds/symlink/sn74ls11.pdf,Three-input AND package ground
-BANK0_0000_07FF,U14,1,1A,inferred,design/New_Address_Decode.dig,RAM1 active decode term
-BANK0_ADDR_NONZERO,U14,2,1B,inferred,design/New_Address_Decode.dig,RAM1 active decode term
+~RAM1CS,U6,18,~CS,inferred,docs/memory-map.txt,RAM 1 chip select
+~RAM1CS,U17,12,6Y,inferred,design/New_Address_Decode.dig,Active-low RAM1 chip select
+~RAM2CS,U7,18,~CS,inferred,docs/memory-map.txt,RAM 2 chip select
+~RAM2CS,U10,14,~Y1,inferred,design/New_Address_Decode.dig,Decode for $0800-$0FFF RAM2 bank
+~RAMWE,U6,21,~WE,todo,docs/IDT_6116.pdf,RAM 1 write enable during writes
+~RAMWE,U7,21,~WE,todo,docs/IDT_6116.pdf,RAM 2 write enable during writes
+~ROM_HICS,U10,12,~Y3,inferred,design/New_Address_Decode.dig,Other half of ROM decode
+~ROM_HICS,U13,2,1B,inferred,design/New_Address_Decode.dig,AND active-low ROM half selects
+~ROM_LOCS,U10,13,~Y2,inferred,design/New_Address_Decode.dig,One half of ROM decode
+~ROM_LOCS,U13,1,1A,inferred,design/New_Address_Decode.dig,AND active-low ROM half selects
+~ROMCS,U5,18,~CE/PGM,inferred,docs/memory-map.txt,ROM chip select
+~ROMCS,U13,3,1Y,inferred,design/New_Address_Decode.dig,Combined ROM chip select
 ~RTCCS,U14,13,1C,inferred,design/New_Address_Decode.dig,RAM1 active decode term
-RAM1_ACTIVE,U14,12,1Y,inferred,design/New_Address_Decode.dig,Active-high RAM1 select before inversion
-GND,U14,3,2A,inferred,design/New_Address_Decode.dig,Tie unused AND input low
-GND,U14,4,2B,inferred,design/New_Address_Decode.dig,Tie unused AND input low
-GND,U14,5,2C,inferred,design/New_Address_Decode.dig,Tie unused AND input low
-GND,U14,9,3A,inferred,design/New_Address_Decode.dig,Tie unused AND input low
-GND,U14,10,3B,inferred,design/New_Address_Decode.dig,Tie unused AND input low
-GND,U14,11,3C,inferred,design/New_Address_Decode.dig,Tie unused AND input low
-5V0,U12,16,VCC,confirmed,docs/sn74ls138.pdf,Low peripheral decoder power
-GND,U12,8,GND,confirmed,docs/sn74ls138.pdf,Low peripheral decoder ground
-A1,U12,1,A,inferred,design/New_Address_Decode.dig,Low peripheral pair decoder select bit A1
-A2,U12,2,B,inferred,design/New_Address_Decode.dig,Low peripheral pair decoder select bit A2
-A3,U12,3,C,inferred,design/New_Address_Decode.dig,Low peripheral pair decoder select bit A3
-GND,U12,4,~G2A,inferred,docs/sn74ls138.pdf,Enable low peripheral decoder
-GND,U12,5,~G2B,inferred,docs/sn74ls138.pdf,Enable low peripheral decoder
-LOW_0000_000F,U12,6,G1,inferred,design/New_Address_Decode.dig,Enable decode for $0000-$000F
-~ADDR_0000_0001,U12,15,~Y0,confirmed,design/New_Address_Decode.dig,Low pair decode output
-~P1EN,U12,14,~Y1,confirmed,design/New_Address_Decode.dig,Low pair decode output
-~ADDR_0004_0005,U12,13,~Y2,confirmed,design/New_Address_Decode.dig,Low pair decode output
-~ACIAEN,U12,12,~Y3,confirmed,design/New_Address_Decode.dig,ACIA decode output
-~ADDR_0008_0009,U12,11,~Y4,inferred,design/Address_Decode.dig,Low pair decode output
-~P2EN,U12,10,~Y5,confirmed,design/New_Address_Decode.dig,Low pair decode output
-~P3EN,U12,9,~Y6,confirmed,design/New_Address_Decode.dig,Low pair decode output
-~P4EN,U12,7,~Y7,confirmed,design/New_Address_Decode.dig,Low pair decode output
-USB_VBUS,J1,A4,VBUS,inferred,usb_c_design_chat,USB-C raw VBUS contact
-USB_VBUS,J1,A9,VBUS,inferred,usb_c_design_chat,USB-C raw VBUS contact
-USB_VBUS,J1,B4,VBUS,inferred,usb_c_design_chat,USB-C raw VBUS contact
-USB_VBUS,J1,B9,VBUS,inferred,usb_c_design_chat,USB-C raw VBUS contact
-GND,J1,A1,GND,inferred,usb_c_design_chat,USB-C ground contact
-GND,J1,A12,GND,inferred,usb_c_design_chat,USB-C ground contact
-GND,J1,B1,GND,inferred,usb_c_design_chat,USB-C ground contact
-GND,J1,B12,GND,inferred,usb_c_design_chat,USB-C ground contact
-CC1,J1,A5,CC1,inferred,usb_c_design_chat,USB-C configuration channel 1
-CC2,J1,B5,CC2,inferred,usb_c_design_chat,USB-C configuration channel 2
-USB_SHIELD,J1,SH,SHIELD,todo,usb_c_design_chat,Connector shield pin name depends on selected footprint
-CC1,R1,1,1,inferred,usb_c_design_chat,CC1 Rd pull-down
-GND,R1,2,2,inferred,usb_c_design_chat,CC1 Rd pull-down return
-CC2,R2,1,1,inferred,usb_c_design_chat,CC2 Rd pull-down
-GND,R2,2,2,inferred,usb_c_design_chat,CC2 Rd pull-down return
-USB_VBUS,F1,1,IN,inferred,usb_c_design_chat,Raw VBUS into input PPTC
-5V0,F1,2,OUT,inferred,usb_c_design_chat,Protected 5V0 rail after input PPTC
-USB_VBUS,D1,1,K,inferred,usb_c_design_chat,TVS cathode on connector side of fuse
-GND,D1,2,A,inferred,usb_c_design_chat,TVS anode to ground
-5V0,C1,1,1,todo,usb_c_design_chat,Input bulk capacitor on protected 5V0 rail; exact value TBD
-GND,C1,2,2,todo,usb_c_design_chat,Input bulk capacitor return
-5V0,C2,1,1,inferred,usb_c_design_chat,Input bypass capacitor on protected 5V0 rail
-GND,C2,2,2,inferred,usb_c_design_chat,Input bypass capacitor return
-USB_SHIELD,R3,1,1,todo,usb_c_design_chat,Optional shield bleed path; final shield treatment TBD
-GND,R3,2,2,todo,usb_c_design_chat,Optional shield bleed path return
-USB_SHIELD,C3,1,1,todo,usb_c_design_chat,Optional shield coupling path; final shield treatment TBD
-GND,C3,2,2,todo,usb_c_design_chat,Optional shield coupling path return
+~RTCCS,U17,10,5Y,inferred,design/New_Address_Decode.dig,Active-low RTC select complement

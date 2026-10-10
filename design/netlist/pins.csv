@@ -1,104 +1,18 @@
 part_id,pin_number,pin_name,electrical_type,active_low,source,notes
-MC146805E2,20,VSS,power_in,false,MCU_Motorola_6800.kicad_sym,Ground
-MC146805E2,4,DS,output,false,MCU_Motorola_6800.kicad_sym,Data strobe
-MC146805E2,5,R/~W,output,false,MCU_Motorola_6800.kicad_sym,Read/write direction
-MC146805E2,6,AS,output,false,MCU_Motorola_6800.kicad_sym,Address strobe
-MC146805E2,29,PB7,bidirectional,false,MCU_Motorola_6800.kicad_sym,Multiplexed address/data bus bit 7
-MC146805E2,30,PB6,bidirectional,false,MCU_Motorola_6800.kicad_sym,Multiplexed address/data bus bit 6
-MC146805E2,31,PB5,bidirectional,false,MCU_Motorola_6800.kicad_sym,Multiplexed address/data bus bit 5
-MC146805E2,32,PB4,bidirectional,false,MCU_Motorola_6800.kicad_sym,Multiplexed address/data bus bit 4
-MC146805E2,33,PB3,bidirectional,false,MCU_Motorola_6800.kicad_sym,Multiplexed address/data bus bit 3
-MC146805E2,34,PB2,bidirectional,false,MCU_Motorola_6800.kicad_sym,Multiplexed address/data bus bit 2
-MC146805E2,35,PB1,bidirectional,false,MCU_Motorola_6800.kicad_sym,Multiplexed address/data bus bit 1
-MC146805E2,36,PB0,bidirectional,false,MCU_Motorola_6800.kicad_sym,Multiplexed address/data bus bit 0
-MC146805E2,38,OSC2,input,false,MCU_Motorola_6800.kicad_sym,Crystal oscillator pin
-MC146805E2,39,OSC1,input,false,MCU_Motorola_6800.kicad_sym,Crystal oscillator pin
-MC146805E2,40,VDD,power_in,false,MCU_Motorola_6800.kicad_sym,Power
-MC146805E2,15,A12,output,false,MCU_Motorola_6800.kicad_sym,External address bus bit 12
-MC146805E2,16,A11,output,false,MCU_Motorola_6800.kicad_sym,External address bus bit 11
-MC146805E2,17,A10,output,false,MCU_Motorola_6800.kicad_sym,External address bus bit 10
-MC146805E2,18,A9,output,false,MCU_Motorola_6800.kicad_sym,External address bus bit 9
-MC146805E2,19,A8,output,false,MCU_Motorola_6800.kicad_sym,External address bus bit 8
-MC6850,1,VSS,power_in,false,docs/MC6850.pdf,Ground
-MC6850,3,RxCLK,input,false,docs/MC6850.pdf,Receive clock input
-MC6850,4,TxCLK,input,false,docs/MC6850.pdf,Transmit clock input
-MC6850,12,VCC,power_in,false,docs/MC6850.pdf,Power
-MC6850,8,CS0,input,false,docs/MC6850.pdf,Chip select input
-MC6850,9,~CS2,input,true,docs/MC6850.pdf,Active-low chip select input
-MC6850,10,CS1,input,false,docs/MC6850.pdf,Chip select input
-MC6850,11,RS,input,false,docs/MC6850.pdf,Register select input
-MC6850,13,E,input,false,docs/MC6850.pdf,Enable input
-MC6850,14,R/~W,input,false,docs/MC6850.pdf,Read/write input
-MC6850,15,D7,bidirectional,false,docs/MC6850.pdf,Data bus bit 7
-MC6850,16,D6,bidirectional,false,docs/MC6850.pdf,Data bus bit 6
-MC6850,17,D5,bidirectional,false,docs/MC6850.pdf,Data bus bit 5
-MC6850,18,D4,bidirectional,false,docs/MC6850.pdf,Data bus bit 4
-MC6850,19,D3,bidirectional,false,docs/MC6850.pdf,Data bus bit 3
-MC6850,20,D2,bidirectional,false,docs/MC6850.pdf,Data bus bit 2
-MC6850,21,D1,bidirectional,false,docs/MC6850.pdf,Data bus bit 1
-MC6850,22,D0,bidirectional,false,docs/MC6850.pdf,Data bus bit 0
-MC14411,1,F1,output,false,MCU_Motorola_6800.kicad_sym,Baud clock output
-MC14411,2,F3,output,false,MCU_Motorola_6800.kicad_sym,Baud clock output
-MC14411,5,F8,output,false,MCU_Motorola_6800.kicad_sym,Baud clock output
-MC14411,7,F9,output,false,MCU_Motorola_6800.kicad_sym,Baud clock output
-MC14411,12,VSS,power_in,false,MCU_Motorola_6800.kicad_sym,Ground
-MC14411,20,XTAL_OUT,input,false,MCU_Motorola_6800.kicad_sym,Crystal oscillator pin
-MC14411,21,XTAL_IN,input,false,MCU_Motorola_6800.kicad_sym,Crystal oscillator pin
-MC14411,22,RSB,input,false,MCU_Motorola_6800.kicad_sym,Rate select input fixed high for X64 range
-MC14411,23,RSA,input,false,MCU_Motorola_6800.kicad_sym,Rate select input fixed high for X64 range
-MC14411,24,VDD,power_in,false,MCU_Motorola_6800.kicad_sym,Power
-74153,1,~1G,input,true,https://www.ti.com/lit/ds/symlink/sn74ls153.pdf,Section 1 active-low strobe/enable
-74153,2,B,input,false,https://www.ti.com/lit/ds/symlink/sn74ls153.pdf,Shared select input B
-74153,3,1C3,input,false,https://www.ti.com/lit/ds/symlink/sn74ls153.pdf,Section 1 data input 3
-74153,4,1C2,input,false,https://www.ti.com/lit/ds/symlink/sn74ls153.pdf,Section 1 data input 2
-74153,5,1C1,input,false,https://www.ti.com/lit/ds/symlink/sn74ls153.pdf,Section 1 data input 1
-74153,6,1C0,input,false,https://www.ti.com/lit/ds/symlink/sn74ls153.pdf,Section 1 data input 0
-74153,7,1Y,output,false,https://www.ti.com/lit/ds/symlink/sn74ls153.pdf,Section 1 output
-74153,8,GND,power_in,false,https://www.ti.com/lit/ds/symlink/sn74ls153.pdf,Ground
-74153,9,2Y,output,false,https://www.ti.com/lit/ds/symlink/sn74ls153.pdf,Section 2 output
-74153,10,2C0,input,false,https://www.ti.com/lit/ds/symlink/sn74ls153.pdf,Section 2 data input 0
-74153,11,2C1,input,false,https://www.ti.com/lit/ds/symlink/sn74ls153.pdf,Section 2 data input 1
-74153,12,2C2,input,false,https://www.ti.com/lit/ds/symlink/sn74ls153.pdf,Section 2 data input 2
-74153,13,2C3,input,false,https://www.ti.com/lit/ds/symlink/sn74ls153.pdf,Section 2 data input 3
-74153,14,A,input,false,https://www.ti.com/lit/ds/symlink/sn74ls153.pdf,Shared select input A
-74153,15,~2G,input,true,https://www.ti.com/lit/ds/symlink/sn74ls153.pdf,Section 2 active-low strobe/enable
-74153,16,VCC,power_in,false,https://www.ti.com/lit/ds/symlink/sn74ls153.pdf,Power
-74373,1,~OE,input,true,https://www.ti.com/lit/ds/symlink/sn74ls373.pdf,Active-low output control
-74373,2,1Q,output,false,https://www.ti.com/lit/ds/symlink/sn74ls373.pdf,Latch output 1
-74373,3,1D,input,false,https://www.ti.com/lit/ds/symlink/sn74ls373.pdf,Latch input 1
-74373,4,2D,input,false,https://www.ti.com/lit/ds/symlink/sn74ls373.pdf,Latch input 2
-74373,5,2Q,output,false,https://www.ti.com/lit/ds/symlink/sn74ls373.pdf,Latch output 2
-74373,6,3Q,output,false,https://www.ti.com/lit/ds/symlink/sn74ls373.pdf,Latch output 3
-74373,7,3D,input,false,https://www.ti.com/lit/ds/symlink/sn74ls373.pdf,Latch input 3
-74373,8,4D,input,false,https://www.ti.com/lit/ds/symlink/sn74ls373.pdf,Latch input 4
-74373,9,4Q,output,false,https://www.ti.com/lit/ds/symlink/sn74ls373.pdf,Latch output 4
-74373,10,GND,power_in,false,https://www.ti.com/lit/ds/symlink/sn74ls373.pdf,Ground
-74373,11,LE,input,false,https://www.ti.com/lit/ds/symlink/sn74ls373.pdf,Latch enable
-74373,12,5Q,output,false,https://www.ti.com/lit/ds/symlink/sn74ls373.pdf,Latch output 5
-74373,13,5D,input,false,https://www.ti.com/lit/ds/symlink/sn74ls373.pdf,Latch input 5
-74373,14,6D,input,false,https://www.ti.com/lit/ds/symlink/sn74ls373.pdf,Latch input 6
-74373,15,6Q,output,false,https://www.ti.com/lit/ds/symlink/sn74ls373.pdf,Latch output 6
-74373,16,7Q,output,false,https://www.ti.com/lit/ds/symlink/sn74ls373.pdf,Latch output 7
-74373,17,7D,input,false,https://www.ti.com/lit/ds/symlink/sn74ls373.pdf,Latch input 7
-74373,18,8D,input,false,https://www.ti.com/lit/ds/symlink/sn74ls373.pdf,Latch input 8
-74373,19,8Q,output,false,https://www.ti.com/lit/ds/symlink/sn74ls373.pdf,Latch output 8
-74373,20,VCC,power_in,false,https://www.ti.com/lit/ds/symlink/sn74ls373.pdf,Power
-74138,1,A,input,false,docs/sn74ls138.pdf,Select input A
-74138,2,B,input,false,docs/sn74ls138.pdf,Select input B
-74138,3,C,input,false,docs/sn74ls138.pdf,Select input C
-74138,4,~G2A,input,true,docs/sn74ls138.pdf,Active-low enable input
-74138,5,~G2B,input,true,docs/sn74ls138.pdf,Active-low enable input
-74138,6,G1,input,false,docs/sn74ls138.pdf,Active-high enable input
-74138,7,~Y7,output,true,docs/sn74ls138.pdf,Active-low output 7
-74138,8,GND,power_in,false,docs/sn74ls138.pdf,Ground
-74138,9,~Y6,output,true,docs/sn74ls138.pdf,Active-low output 6
-74138,10,~Y5,output,true,docs/sn74ls138.pdf,Active-low output 5
-74138,11,~Y4,output,true,docs/sn74ls138.pdf,Active-low output 4
-74138,12,~Y3,output,true,docs/sn74ls138.pdf,Active-low output 3
-74138,13,~Y2,output,true,docs/sn74ls138.pdf,Active-low output 2
-74138,14,~Y1,output,true,docs/sn74ls138.pdf,Active-low output 1
-74138,15,~Y0,output,true,docs/sn74ls138.pdf,Active-low output 0
-74138,16,VCC,power_in,false,docs/sn74ls138.pdf,Power
+7404,1,1A,input,false,https://www.ti.com/lit/ds/symlink/sn74ls04.pdf,Gate 1 input
+7404,2,1Y,output,false,https://www.ti.com/lit/ds/symlink/sn74ls04.pdf,Gate 1 output
+7404,3,2A,input,false,https://www.ti.com/lit/ds/symlink/sn74ls04.pdf,Gate 2 input
+7404,4,2Y,output,false,https://www.ti.com/lit/ds/symlink/sn74ls04.pdf,Gate 2 output
+7404,5,3A,input,false,https://www.ti.com/lit/ds/symlink/sn74ls04.pdf,Gate 3 input
+7404,6,3Y,output,false,https://www.ti.com/lit/ds/symlink/sn74ls04.pdf,Gate 3 output
+7404,7,GND,power_in,false,https://www.ti.com/lit/ds/symlink/sn74ls04.pdf,Ground
+7404,8,4Y,output,false,https://www.ti.com/lit/ds/symlink/sn74ls04.pdf,Gate 4 output
+7404,9,4A,input,false,https://www.ti.com/lit/ds/symlink/sn74ls04.pdf,Gate 4 input
+7404,10,5Y,output,false,https://www.ti.com/lit/ds/symlink/sn74ls04.pdf,Gate 5 output
+7404,11,5A,input,false,https://www.ti.com/lit/ds/symlink/sn74ls04.pdf,Gate 5 input
+7404,12,6Y,output,false,https://www.ti.com/lit/ds/symlink/sn74ls04.pdf,Gate 6 output
+7404,13,6A,input,false,https://www.ti.com/lit/ds/symlink/sn74ls04.pdf,Gate 6 input
+7404,14,VCC,power_in,false,https://www.ti.com/lit/ds/symlink/sn74ls04.pdf,Power
 7408,1,1A,input,false,https://www.ti.com/lit/ds/symlink/sn74ls08.pdf,Gate 1 input A
 7408,2,1B,input,false,https://www.ti.com/lit/ds/symlink/sn74ls08.pdf,Gate 1 input B
 7408,3,1Y,output,false,https://www.ti.com/lit/ds/symlink/sn74ls08.pdf,Gate 1 output
@@ -141,20 +55,58 @@ MC14411,24,VDD,power_in,false,MCU_Motorola_6800.kicad_sym,Power
 7432,12,4A,input,false,https://www.ti.com/lit/ds/symlink/sn74ls32.pdf,Gate 4 input A
 7432,13,4B,input,false,https://www.ti.com/lit/ds/symlink/sn74ls32.pdf,Gate 4 input B
 7432,14,VCC,power_in,false,https://www.ti.com/lit/ds/symlink/sn74ls32.pdf,Power
-7404,1,1A,input,false,https://www.ti.com/lit/ds/symlink/sn74ls04.pdf,Gate 1 input
-7404,2,1Y,output,false,https://www.ti.com/lit/ds/symlink/sn74ls04.pdf,Gate 1 output
-7404,3,2A,input,false,https://www.ti.com/lit/ds/symlink/sn74ls04.pdf,Gate 2 input
-7404,4,2Y,output,false,https://www.ti.com/lit/ds/symlink/sn74ls04.pdf,Gate 2 output
-7404,5,3A,input,false,https://www.ti.com/lit/ds/symlink/sn74ls04.pdf,Gate 3 input
-7404,6,3Y,output,false,https://www.ti.com/lit/ds/symlink/sn74ls04.pdf,Gate 3 output
-7404,7,GND,power_in,false,https://www.ti.com/lit/ds/symlink/sn74ls04.pdf,Ground
-7404,8,4Y,output,false,https://www.ti.com/lit/ds/symlink/sn74ls04.pdf,Gate 4 output
-7404,9,4A,input,false,https://www.ti.com/lit/ds/symlink/sn74ls04.pdf,Gate 4 input
-7404,10,5Y,output,false,https://www.ti.com/lit/ds/symlink/sn74ls04.pdf,Gate 5 output
-7404,11,5A,input,false,https://www.ti.com/lit/ds/symlink/sn74ls04.pdf,Gate 5 input
-7404,12,6Y,output,false,https://www.ti.com/lit/ds/symlink/sn74ls04.pdf,Gate 6 output
-7404,13,6A,input,false,https://www.ti.com/lit/ds/symlink/sn74ls04.pdf,Gate 6 input
-7404,14,VCC,power_in,false,https://www.ti.com/lit/ds/symlink/sn74ls04.pdf,Power
+74138,1,A,input,false,docs/sn74ls138.pdf,Select input A
+74138,2,B,input,false,docs/sn74ls138.pdf,Select input B
+74138,3,C,input,false,docs/sn74ls138.pdf,Select input C
+74138,4,~G2A,input,true,docs/sn74ls138.pdf,Active-low enable input
+74138,5,~G2B,input,true,docs/sn74ls138.pdf,Active-low enable input
+74138,6,G1,input,false,docs/sn74ls138.pdf,Active-high enable input
+74138,7,~Y7,output,true,docs/sn74ls138.pdf,Active-low output 7
+74138,8,GND,power_in,false,docs/sn74ls138.pdf,Ground
+74138,9,~Y6,output,true,docs/sn74ls138.pdf,Active-low output 6
+74138,10,~Y5,output,true,docs/sn74ls138.pdf,Active-low output 5
+74138,11,~Y4,output,true,docs/sn74ls138.pdf,Active-low output 4
+74138,12,~Y3,output,true,docs/sn74ls138.pdf,Active-low output 3
+74138,13,~Y2,output,true,docs/sn74ls138.pdf,Active-low output 2
+74138,14,~Y1,output,true,docs/sn74ls138.pdf,Active-low output 1
+74138,15,~Y0,output,true,docs/sn74ls138.pdf,Active-low output 0
+74138,16,VCC,power_in,false,docs/sn74ls138.pdf,Power
+74153,1,~1G,input,true,https://www.ti.com/lit/ds/symlink/sn74ls153.pdf,Section 1 active-low strobe/enable
+74153,2,B,input,false,https://www.ti.com/lit/ds/symlink/sn74ls153.pdf,Shared select input B
+74153,3,1C3,input,false,https://www.ti.com/lit/ds/symlink/sn74ls153.pdf,Section 1 data input 3
+74153,4,1C2,input,false,https://www.ti.com/lit/ds/symlink/sn74ls153.pdf,Section 1 data input 2
+74153,5,1C1,input,false,https://www.ti.com/lit/ds/symlink/sn74ls153.pdf,Section 1 data input 1
+74153,6,1C0,input,false,https://www.ti.com/lit/ds/symlink/sn74ls153.pdf,Section 1 data input 0
+74153,7,1Y,output,false,https://www.ti.com/lit/ds/symlink/sn74ls153.pdf,Section 1 output
+74153,8,GND,power_in,false,https://www.ti.com/lit/ds/symlink/sn74ls153.pdf,Ground
+74153,9,2Y,output,false,https://www.ti.com/lit/ds/symlink/sn74ls153.pdf,Section 2 output
+74153,10,2C0,input,false,https://www.ti.com/lit/ds/symlink/sn74ls153.pdf,Section 2 data input 0
+74153,11,2C1,input,false,https://www.ti.com/lit/ds/symlink/sn74ls153.pdf,Section 2 data input 1
+74153,12,2C2,input,false,https://www.ti.com/lit/ds/symlink/sn74ls153.pdf,Section 2 data input 2
+74153,13,2C3,input,false,https://www.ti.com/lit/ds/symlink/sn74ls153.pdf,Section 2 data input 3
+74153,14,A,input,false,https://www.ti.com/lit/ds/symlink/sn74ls153.pdf,Shared select input A
+74153,15,~2G,input,true,https://www.ti.com/lit/ds/symlink/sn74ls153.pdf,Section 2 active-low strobe/enable
+74153,16,VCC,power_in,false,https://www.ti.com/lit/ds/symlink/sn74ls153.pdf,Power
+74373,1,~OE,input,true,https://www.ti.com/lit/ds/symlink/sn74ls373.pdf,Active-low output control
+74373,2,1Q,output,false,https://www.ti.com/lit/ds/symlink/sn74ls373.pdf,Latch output 1
+74373,3,1D,input,false,https://www.ti.com/lit/ds/symlink/sn74ls373.pdf,Latch input 1
+74373,4,2D,input,false,https://www.ti.com/lit/ds/symlink/sn74ls373.pdf,Latch input 2
+74373,5,2Q,output,false,https://www.ti.com/lit/ds/symlink/sn74ls373.pdf,Latch output 2
+74373,6,3Q,output,false,https://www.ti.com/lit/ds/symlink/sn74ls373.pdf,Latch output 3
+74373,7,3D,input,false,https://www.ti.com/lit/ds/symlink/sn74ls373.pdf,Latch input 3
+74373,8,4D,input,false,https://www.ti.com/lit/ds/symlink/sn74ls373.pdf,Latch input 4
+74373,9,4Q,output,false,https://www.ti.com/lit/ds/symlink/sn74ls373.pdf,Latch output 4
+74373,10,GND,power_in,false,https://www.ti.com/lit/ds/symlink/sn74ls373.pdf,Ground
+74373,11,LE,input,false,https://www.ti.com/lit/ds/symlink/sn74ls373.pdf,Latch enable
+74373,12,5Q,output,false,https://www.ti.com/lit/ds/symlink/sn74ls373.pdf,Latch output 5
+74373,13,5D,input,false,https://www.ti.com/lit/ds/symlink/sn74ls373.pdf,Latch input 5
+74373,14,6D,input,false,https://www.ti.com/lit/ds/symlink/sn74ls373.pdf,Latch input 6
+74373,15,6Q,output,false,https://www.ti.com/lit/ds/symlink/sn74ls373.pdf,Latch output 6
+74373,16,7Q,output,false,https://www.ti.com/lit/ds/symlink/sn74ls373.pdf,Latch output 7
+74373,17,7D,input,false,https://www.ti.com/lit/ds/symlink/sn74ls373.pdf,Latch input 7
+74373,18,8D,input,false,https://www.ti.com/lit/ds/symlink/sn74ls373.pdf,Latch input 8
+74373,19,8Q,output,false,https://www.ti.com/lit/ds/symlink/sn74ls373.pdf,Latch output 8
+74373,20,VCC,power_in,false,https://www.ti.com/lit/ds/symlink/sn74ls373.pdf,Power
 AM2732,1,A7,input,false,docs/Am2732-AMD.pdf,Address input
 AM2732,2,A6,input,false,docs/Am2732-AMD.pdf,Address input
 AM2732,3,A5,input,false,docs/Am2732-AMD.pdf,Address input
@@ -179,6 +131,12 @@ AM2732,21,A11,input,false,docs/Am2732-AMD.pdf,Address input
 AM2732,22,A9,input,false,docs/Am2732-AMD.pdf,Address input
 AM2732,23,A8,input,false,docs/Am2732-AMD.pdf,Address input
 AM2732,24,VCC,power_in,false,docs/Am2732-AMD.pdf,Power
+CAP_1NF,1,1,passive,false,usb_c_design_chat,Capacitor terminal
+CAP_1NF,2,2,passive,false,usb_c_design_chat,Capacitor terminal
+CAP_100NF,1,1,passive,false,usb_c_design_chat,Capacitor terminal
+CAP_100NF,2,2,passive,false,usb_c_design_chat,Capacitor terminal
+CAP_INPUT_BULK,1,1,passive,false,usb_c_design_chat,Capacitor positive terminal for polarized bulk option
+CAP_INPUT_BULK,2,2,passive,false,usb_c_design_chat,Capacitor ground terminal
 HM6116,1,A7,input,false,docs/IDT_6116.pdf,Address input
 HM6116,2,A6,input,false,docs/IDT_6116.pdf,Address input
 HM6116,3,A5,input,false,docs/IDT_6116.pdf,Address input
@@ -203,6 +161,54 @@ HM6116,21,~WE,input,true,docs/IDT_6116.pdf,Write enable
 HM6116,22,A9,input,false,docs/IDT_6116.pdf,Address input
 HM6116,23,A8,input,false,docs/IDT_6116.pdf,Address input
 HM6116,24,VCC,power_in,false,docs/IDT_6116.pdf,Power
+MC6850,1,VSS,power_in,false,docs/MC6850.pdf,Ground
+MC6850,3,RxCLK,input,false,docs/MC6850.pdf,Receive clock input
+MC6850,4,TxCLK,input,false,docs/MC6850.pdf,Transmit clock input
+MC6850,8,CS0,input,false,docs/MC6850.pdf,Chip select input
+MC6850,9,~CS2,input,true,docs/MC6850.pdf,Active-low chip select input
+MC6850,10,CS1,input,false,docs/MC6850.pdf,Chip select input
+MC6850,11,RS,input,false,docs/MC6850.pdf,Register select input
+MC6850,12,VCC,power_in,false,docs/MC6850.pdf,Power
+MC6850,13,E,input,false,docs/MC6850.pdf,Enable input
+MC6850,14,R/~W,input,false,docs/MC6850.pdf,Read/write input
+MC6850,15,D7,bidirectional,false,docs/MC6850.pdf,Data bus bit 7
+MC6850,16,D6,bidirectional,false,docs/MC6850.pdf,Data bus bit 6
+MC6850,17,D5,bidirectional,false,docs/MC6850.pdf,Data bus bit 5
+MC6850,18,D4,bidirectional,false,docs/MC6850.pdf,Data bus bit 4
+MC6850,19,D3,bidirectional,false,docs/MC6850.pdf,Data bus bit 3
+MC6850,20,D2,bidirectional,false,docs/MC6850.pdf,Data bus bit 2
+MC6850,21,D1,bidirectional,false,docs/MC6850.pdf,Data bus bit 1
+MC6850,22,D0,bidirectional,false,docs/MC6850.pdf,Data bus bit 0
+MC14411,1,F1,output,false,MCU_Motorola_6800.kicad_sym,Baud clock output
+MC14411,2,F3,output,false,MCU_Motorola_6800.kicad_sym,Baud clock output
+MC14411,5,F8,output,false,MCU_Motorola_6800.kicad_sym,Baud clock output
+MC14411,7,F9,output,false,MCU_Motorola_6800.kicad_sym,Baud clock output
+MC14411,12,VSS,power_in,false,MCU_Motorola_6800.kicad_sym,Ground
+MC14411,20,XTAL_OUT,input,false,MCU_Motorola_6800.kicad_sym,Crystal oscillator pin
+MC14411,21,XTAL_IN,input,false,MCU_Motorola_6800.kicad_sym,Crystal oscillator pin
+MC14411,22,RSB,input,false,MCU_Motorola_6800.kicad_sym,Rate select input fixed high for X64 range
+MC14411,23,RSA,input,false,MCU_Motorola_6800.kicad_sym,Rate select input fixed high for X64 range
+MC14411,24,VDD,power_in,false,MCU_Motorola_6800.kicad_sym,Power
+MC146805E2,4,DS,output,false,MCU_Motorola_6800.kicad_sym,Data strobe
+MC146805E2,5,R/~W,output,false,MCU_Motorola_6800.kicad_sym,Read/write direction
+MC146805E2,6,AS,output,false,MCU_Motorola_6800.kicad_sym,Address strobe
+MC146805E2,15,A12,output,false,MCU_Motorola_6800.kicad_sym,External address bus bit 12
+MC146805E2,16,A11,output,false,MCU_Motorola_6800.kicad_sym,External address bus bit 11
+MC146805E2,17,A10,output,false,MCU_Motorola_6800.kicad_sym,External address bus bit 10
+MC146805E2,18,A9,output,false,MCU_Motorola_6800.kicad_sym,External address bus bit 9
+MC146805E2,19,A8,output,false,MCU_Motorola_6800.kicad_sym,External address bus bit 8
+MC146805E2,20,VSS,power_in,false,MCU_Motorola_6800.kicad_sym,Ground
+MC146805E2,29,PB7,bidirectional,false,MCU_Motorola_6800.kicad_sym,Multiplexed address/data bus bit 7
+MC146805E2,30,PB6,bidirectional,false,MCU_Motorola_6800.kicad_sym,Multiplexed address/data bus bit 6
+MC146805E2,31,PB5,bidirectional,false,MCU_Motorola_6800.kicad_sym,Multiplexed address/data bus bit 5
+MC146805E2,32,PB4,bidirectional,false,MCU_Motorola_6800.kicad_sym,Multiplexed address/data bus bit 4
+MC146805E2,33,PB3,bidirectional,false,MCU_Motorola_6800.kicad_sym,Multiplexed address/data bus bit 3
+MC146805E2,34,PB2,bidirectional,false,MCU_Motorola_6800.kicad_sym,Multiplexed address/data bus bit 2
+MC146805E2,35,PB1,bidirectional,false,MCU_Motorola_6800.kicad_sym,Multiplexed address/data bus bit 1
+MC146805E2,36,PB0,bidirectional,false,MCU_Motorola_6800.kicad_sym,Multiplexed address/data bus bit 0
+MC146805E2,38,OSC2,input,false,MCU_Motorola_6800.kicad_sym,Crystal oscillator pin
+MC146805E2,39,OSC1,input,false,MCU_Motorola_6800.kicad_sym,Crystal oscillator pin
+MC146805E2,40,VDD,power_in,false,MCU_Motorola_6800.kicad_sym,Power
 MSM58321,1,CS2,input,false,MCU_Motorola_6800.kicad_sym,Chip select input
 MSM58321,2,WRITE,input,false,MCU_Motorola_6800.kicad_sym,Active-high write input
 MSM58321,3,READ,input,false,MCU_Motorola_6800.kicad_sym,Active-high read input
@@ -219,34 +225,28 @@ MSM58321,13,CS1,input,false,MCU_Motorola_6800.kicad_sym,Chip select input
 MSM58321,14,~XT,input,true,MCU_Motorola_6800.kicad_sym,Crystal oscillator pin
 MSM58321,15,XT,input,false,MCU_Motorola_6800.kicad_sym,Crystal oscillator pin
 MSM58321,16,VDD,power_in,false,MCU_Motorola_6800.kicad_sym,Power
-XTAL_CPU_5MHZ,1,1,passive,false,https://www.digikey.com/en/products/detail/w%C3%BCrth-elektronik/830003119B/13900107,Crystal terminal
-XTAL_CPU_5MHZ,2,2,passive,false,https://www.digikey.com/en/products/detail/w%C3%BCrth-elektronik/830003119B/13900107,Crystal terminal
+PPTC_USB_INPUT,1,IN,passive,false,usb_c_design_chat,Fuse input terminal from raw VBUS
+PPTC_USB_INPUT,2,OUT,passive,false,usb_c_design_chat,Fuse output terminal to protected 5V0 rail
+RES_1M,1,1,passive,false,usb_c_design_chat,Resistor terminal
+RES_1M,2,2,passive,false,usb_c_design_chat,Resistor terminal
+RES_5K1,1,1,passive,false,usb_c_design_chat,Resistor terminal
+RES_5K1,2,2,passive,false,usb_c_design_chat,Resistor terminal
+TVS_5V_UNIDIR,1,K,passive,false,usb_c_design_chat,TVS cathode
+TVS_5V_UNIDIR,2,A,passive,false,usb_c_design_chat,TVS anode to ground
+USB_C_RECEPTACLE_POWER,A1,GND,power_in,false,usb_c_design_chat,USB-C ground contact
+USB_C_RECEPTACLE_POWER,A4,VBUS,power_in,false,usb_c_design_chat,USB-C VBUS contact
+USB_C_RECEPTACLE_POWER,A5,CC1,input,false,usb_c_design_chat,Configuration channel 1
+USB_C_RECEPTACLE_POWER,A9,VBUS,power_in,false,usb_c_design_chat,USB-C VBUS contact
+USB_C_RECEPTACLE_POWER,A12,GND,power_in,false,usb_c_design_chat,USB-C ground contact
+USB_C_RECEPTACLE_POWER,B1,GND,power_in,false,usb_c_design_chat,USB-C ground contact
+USB_C_RECEPTACLE_POWER,B4,VBUS,power_in,false,usb_c_design_chat,USB-C VBUS contact
+USB_C_RECEPTACLE_POWER,B5,CC2,input,false,usb_c_design_chat,Configuration channel 2
+USB_C_RECEPTACLE_POWER,B9,VBUS,power_in,false,usb_c_design_chat,USB-C VBUS contact
+USB_C_RECEPTACLE_POWER,B12,GND,power_in,false,usb_c_design_chat,USB-C ground contact
+USB_C_RECEPTACLE_POWER,SH,SHIELD,passive,false,usb_c_design_chat,Connector shell or shield contact; exact footprint pin name TBD
 XTAL_1_8432MHZ,1,1,passive,false,https://www.digikey.com/en/products/detail/raltron-electronics/A-1-8432-18/10246237,Crystal terminal
 XTAL_1_8432MHZ,2,2,passive,false,https://www.digikey.com/en/products/detail/raltron-electronics/A-1-8432-18/10246237,Crystal terminal
 XTAL_32_768KHZ,1,1,passive,false,docs/MSM58321.pdf,Crystal terminal
 XTAL_32_768KHZ,2,2,passive,false,docs/MSM58321.pdf,Crystal terminal
-USB_C_RECEPTACLE_POWER,A4,VBUS,power_in,false,usb_c_design_chat,USB-C VBUS contact
-USB_C_RECEPTACLE_POWER,A9,VBUS,power_in,false,usb_c_design_chat,USB-C VBUS contact
-USB_C_RECEPTACLE_POWER,B4,VBUS,power_in,false,usb_c_design_chat,USB-C VBUS contact
-USB_C_RECEPTACLE_POWER,B9,VBUS,power_in,false,usb_c_design_chat,USB-C VBUS contact
-USB_C_RECEPTACLE_POWER,A1,GND,power_in,false,usb_c_design_chat,USB-C ground contact
-USB_C_RECEPTACLE_POWER,A12,GND,power_in,false,usb_c_design_chat,USB-C ground contact
-USB_C_RECEPTACLE_POWER,B1,GND,power_in,false,usb_c_design_chat,USB-C ground contact
-USB_C_RECEPTACLE_POWER,B12,GND,power_in,false,usb_c_design_chat,USB-C ground contact
-USB_C_RECEPTACLE_POWER,A5,CC1,input,false,usb_c_design_chat,Configuration channel 1
-USB_C_RECEPTACLE_POWER,B5,CC2,input,false,usb_c_design_chat,Configuration channel 2
-USB_C_RECEPTACLE_POWER,SH,SHIELD,passive,false,usb_c_design_chat,Connector shell or shield contact; exact footprint pin name TBD
-RES_5K1,1,1,passive,false,usb_c_design_chat,Resistor terminal
-RES_5K1,2,2,passive,false,usb_c_design_chat,Resistor terminal
-PPTC_USB_INPUT,1,IN,passive,false,usb_c_design_chat,Fuse input terminal from raw VBUS
-PPTC_USB_INPUT,2,OUT,passive,false,usb_c_design_chat,Fuse output terminal to protected 5V0 rail
-TVS_5V_UNIDIR,1,K,passive,false,usb_c_design_chat,TVS cathode
-TVS_5V_UNIDIR,2,A,passive,false,usb_c_design_chat,TVS anode to ground
-CAP_INPUT_BULK,1,1,passive,false,usb_c_design_chat,Capacitor positive terminal for polarized bulk option
-CAP_INPUT_BULK,2,2,passive,false,usb_c_design_chat,Capacitor ground terminal
-CAP_100NF,1,1,passive,false,usb_c_design_chat,Capacitor terminal
-CAP_100NF,2,2,passive,false,usb_c_design_chat,Capacitor terminal
-CAP_1NF,1,1,passive,false,usb_c_design_chat,Capacitor terminal
-CAP_1NF,2,2,passive,false,usb_c_design_chat,Capacitor terminal
-RES_1M,1,1,passive,false,usb_c_design_chat,Resistor terminal
-RES_1M,2,2,passive,false,usb_c_design_chat,Resistor terminal
+XTAL_CPU_5MHZ,1,1,passive,false,https://www.digikey.com/en/products/detail/w%C3%BCrth-elektronik/830003119B/13900107,Crystal terminal
+XTAL_CPU_5MHZ,2,2,passive,false,https://www.digikey.com/en/products/detail/w%C3%BCrth-elektronik/830003119B/13900107,Crystal terminal

@@ -1,25 +1,25 @@
 part_id,manufacturer,mpn,description,default_symbol,default_footprint,source,notes
-MC146805E2,Motorola,MC146805E2,6805 CPU with external bus,MCU_Motorola_6800:MC146805E2,Package_DIP:DIP-40_W15.24mm,docs/MC146805E2_1983.pdf,Local KiCad symbol exists
-MC6850,Motorola,MC6850,Asynchronous communications interface adapter,,Package_DIP:DIP-24_W15.24mm,docs/MC6850.pdf,Symbol still needs to be selected or created
-MSM58321,OKI,MSM58321,Real-time clock calendar,MCU_Motorola_6800:MSM58321,Package_DIP:DIP-16_W7.62mm,docs/MSM58321.pdf,Local KiCad symbol exists
-MC14411,Motorola,MC14411,Baud-rate generator,MCU_Motorola_6800:MC14411,Package_DIP:DIP-24_W15.24mm,docs/MC14411.pdf,Local KiCad symbol exists
-74153,,74153,Dual 4-to-1 data selector/multiplexer,,Package_DIP:DIP-16_W7.62mm,design/baud-rate.md,Exact logic family and KiCad symbol still TBD; standard 74153 pinout used for staging
-74373,,74373,Octal transparent latch with tri-state outputs,,Package_DIP:DIP-20_W7.62mm,design/Address_Latch.dig,Selected from inventory for low-address demultiplexing; exact KiCad symbol still TBD
-74138,,74138,3-to-8 line decoder with active-low outputs,,Package_DIP:DIP-16_W7.62mm,docs/sn74ls138.pdf,Selected from inventory for address decode; standard 74138 pinout used for staging
+7404,,7404,Hex inverter,,Package_DIP:DIP-14_W7.62mm,https://www.ti.com/lit/ds/symlink/sn74ls04.pdf,Selected from inventory for address decode gate packing
 7408,,7408,Quad 2-input AND gate,,Package_DIP:DIP-14_W7.62mm,https://www.ti.com/lit/ds/symlink/sn74ls08.pdf,Selected from inventory for address decode gate packing
 7411,,7411,Triple 3-input AND gate,,Package_DIP:DIP-14_W7.62mm,https://www.ti.com/lit/ds/symlink/sn74ls11.pdf,Selected from inventory for address decode gate packing
 7432,,7432,Quad 2-input OR gate,,Package_DIP:DIP-14_W7.62mm,https://www.ti.com/lit/ds/symlink/sn74ls32.pdf,Selected from inventory for address decode gate packing
-7404,,7404,Hex inverter,,Package_DIP:DIP-14_W7.62mm,https://www.ti.com/lit/ds/symlink/sn74ls04.pdf,Selected from inventory for address decode gate packing
+74138,,74138,3-to-8 line decoder with active-low outputs,,Package_DIP:DIP-16_W7.62mm,docs/sn74ls138.pdf,Selected from inventory for address decode; standard 74138 pinout used for staging
+74153,,74153,Dual 4-to-1 data selector/multiplexer,,Package_DIP:DIP-16_W7.62mm,design/baud-rate.md,Exact logic family and KiCad symbol still TBD; standard 74153 pinout used for staging
+74373,,74373,Octal transparent latch with tri-state outputs,,Package_DIP:DIP-20_W7.62mm,design/Address_Latch.dig,Selected from inventory for low-address demultiplexing; exact KiCad symbol still TBD
 AM2732,AMD,Am2732,4Kx8 UV erasable PROM,,Package_DIP:DIP-24_W15.24mm,docs/Am2732-AMD.pdf,Selected from inventory; KiCad symbol still needs to be selected or created
+CAP_1NF,,,1 nF capacitor,Device:C,,usb_c_design_chat,Optional USB shield coupling capacitor; final shield treatment TBD
+CAP_100NF,,,0.1 uF ceramic capacitor,Device:C,,usb_c_design_chat,Input bypass capacitor
+CAP_INPUT_BULK,,,10-47 uF input bulk capacitor,Device:C_Polarized,,usb_c_design_chat,Input bulk capacitance range from USB-C power notes; exact value TBD
 HM6116,,HM6116,2Kx8 static RAM,,Package_DIP:DIP-24_W7.62mm,docs/IDT_6116.pdf,Selected from inventory; IDT6116 datasheet used for 6116-class pinout
-XTAL_CPU_5MHZ,Wurth Elektronik,830003119B,5 MHz 30 pF CPU crystal,Device:Crystal,Crystal:Crystal_HC49-U_Vertical,https://www.digikey.com/en/products/detail/w%C3%BCrth-elektronik/830003119B/13900107,HC-49/US through-hole; 130 ohm ESR; +/-30 ppm tolerance; +/-50 ppm stability
+MC6850,Motorola,MC6850,Asynchronous communications interface adapter,,Package_DIP:DIP-24_W15.24mm,docs/MC6850.pdf,Symbol still needs to be selected or created
+MC14411,Motorola,MC14411,Baud-rate generator,MCU_Motorola_6800:MC14411,Package_DIP:DIP-24_W15.24mm,docs/MC14411.pdf,Local KiCad symbol exists
+MC146805E2,Motorola,MC146805E2,6805 CPU with external bus,MCU_Motorola_6800:MC146805E2,Package_DIP:DIP-40_W15.24mm,docs/MC146805E2_1983.pdf,Local KiCad symbol exists
+MSM58321,OKI,MSM58321,Real-time clock calendar,MCU_Motorola_6800:MSM58321,Package_DIP:DIP-16_W7.62mm,docs/MSM58321.pdf,Local KiCad symbol exists
+PPTC_USB_INPUT,,,USB input resettable PPTC fuse,Device:Fuse,,usb_c_design_chat,Target 1.1 A hold current and at least 6 V rating; exact package TBD
+RES_1M,,,1 Mohm resistor,Device:R,,usb_c_design_chat,Optional USB shield bleed resistor; final shield treatment TBD
+RES_5K1,,,5.1 kohm resistor,Device:R,,usb_c_design_chat,USB-C Rd pull-down for CC pins
+TVS_5V_UNIDIR,,,5 V unidirectional TVS diode,Device:D_TVS,,usb_c_design_chat,VBUS transient clamp near connector; exact part TBD
+USB_C_RECEPTACLE_POWER,,,USB-C receptacle for power-only 5 V sink,Connector:USB_C_Receptacle_USB2.0,,usb_c_design_chat,Exact connector footprint and shield pin mapping TBD
 XTAL_1_8432MHZ,Raltron Electronics,A-1.8432-18,1.8432 MHz 18 pF baud-rate crystal,Device:Crystal,Crystal:Crystal_HC49-U_Vertical,https://www.digikey.com/en/products/detail/raltron-electronics/A-1-8432-18/10246237,Selected for MC14411 clock; HC-49/U through-hole; 700 ohm ESR; +/-30 ppm tolerance; +/-50 ppm stability
 XTAL_32_768KHZ,,32.768 kHz,RTC timebase crystal,Device:Crystal,,docs/MSM58321.pdf,MSM58321 requires 32.768 kHz crystal with impedance 30 kohm or less; exact package TBD
-USB_C_RECEPTACLE_POWER,,,USB-C receptacle for power-only 5 V sink,Connector:USB_C_Receptacle_USB2.0,,usb_c_design_chat,Exact connector footprint and shield pin mapping TBD
-RES_5K1,,,5.1 kohm resistor,Device:R,,usb_c_design_chat,USB-C Rd pull-down for CC pins
-PPTC_USB_INPUT,,,USB input resettable PPTC fuse,Device:Fuse,,usb_c_design_chat,Target 1.1 A hold current and at least 6 V rating; exact package TBD
-TVS_5V_UNIDIR,,,5 V unidirectional TVS diode,Device:D_TVS,,usb_c_design_chat,VBUS transient clamp near connector; exact part TBD
-CAP_INPUT_BULK,,,10-47 uF input bulk capacitor,Device:C_Polarized,,usb_c_design_chat,Input bulk capacitance range from USB-C power notes; exact value TBD
-CAP_100NF,,,0.1 uF ceramic capacitor,Device:C,,usb_c_design_chat,Input bypass capacitor
-CAP_1NF,,,1 nF capacitor,Device:C,,usb_c_design_chat,Optional USB shield coupling capacitor; final shield treatment TBD
-RES_1M,,,1 Mohm resistor,Device:R,,usb_c_design_chat,Optional USB shield bleed resistor; final shield treatment TBD
+XTAL_CPU_5MHZ,Wurth Elektronik,830003119B,5 MHz 30 pF CPU crystal,Device:Crystal,Crystal:Crystal_HC49-U_Vertical,https://www.digikey.com/en/products/detail/w%C3%BCrth-elektronik/830003119B/13900107,HC-49/US through-hole; 130 ohm ESR; +/-30 ppm tolerance; +/-50 ppm stability

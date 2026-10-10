@@ -1,19 +1,41 @@
 net,kind,status,source,notes
 5V0,power,confirmed,docs/MC146805E2_1983.pdf,5.0 V logic supply
-GND,power,confirmed,docs/MC146805E2_1983.pdf,Logic ground
 A0,address,confirmed,docs/memory-map.txt,External address bus bit 0
 A1,address,confirmed,docs/memory-map.txt,External address bus bit 1
 A2,address,confirmed,docs/memory-map.txt,External address bus bit 2
 A3,address,confirmed,docs/memory-map.txt,External address bus bit 3
 A4,address,confirmed,docs/memory-map.txt,External address bus bit 4
+A4_A7_NONZERO,control,inferred,design/New_Address_Decode.dig,High when any of A4-A7 is asserted
+A4_A7_ZERO,control,inferred,design/New_Address_Decode.dig,High when A4-A7 are all zero
+A4_OR_A5,control,inferred,design/New_Address_Decode.dig,Intermediate OR term for low-nibble high decode
 A5,address,confirmed,docs/memory-map.txt,External address bus bit 5
 A6,address,confirmed,docs/memory-map.txt,External address bus bit 6
+A6_OR_A7,control,inferred,design/New_Address_Decode.dig,Intermediate OR term for low-nibble high decode
 A7,address,confirmed,docs/memory-map.txt,External address bus bit 7
+A7_OR_A8,control,inferred,design/New_Address_Decode.dig,Intermediate OR term for RAM1 select
 A8,address,confirmed,docs/memory-map.txt,External address bus bit 8
 A9,address,confirmed,docs/memory-map.txt,External address bus bit 9
+A9_OR_A10,control,inferred,design/New_Address_Decode.dig,Intermediate OR term for RAM1 select
 A10,address,confirmed,docs/memory-map.txt,External address bus bit 10
 A11,address,confirmed,docs/memory-map.txt,External address bus bit 11
 A12,address,confirmed,docs/memory-map.txt,External address bus bit 12 used by address decode
+ACIA_RXCLK,clock,inferred,design/baud-rate.md,Driven by section 1 of baud mux
+ACIA_TXCLK,clock,inferred,design/baud-rate.md,Driven by section 2 of baud mux
+AS,control,confirmed,design/Address_Latch.dig,Address strobe used to latch multiplexed low address byte
+BANK0_0000_07FF,control,inferred,design/New_Address_Decode.dig,Active-high complement of the $0000-$07FF bank decode
+BANK0_ADDR_NONZERO,control,inferred,design/New_Address_Decode.dig,High for bank 0 addresses at or above $0080
+BAUD_F1,clock,confirmed,design/baud-rate.md,MC14411 F1 candidate clock for baud mux
+BAUD_F3,clock,confirmed,design/baud-rate.md,MC14411 F3 candidate clock for baud mux
+BAUD_F8,clock,confirmed,design/baud-rate.md,MC14411 F8 candidate clock for baud mux
+BAUD_F9,clock,confirmed,design/baud-rate.md,MC14411 F9 candidate clock for baud mux
+BAUD_SEL_A,control,todo,design/baud-rate.md,Shared 74153 select input A; source still TBD
+BAUD_SEL_B,control,todo,design/baud-rate.md,Shared 74153 select input B; source still TBD
+BAUD_XTAL_IN,clock,confirmed,docs/MC14411.pdf,MC14411 crystal input connection
+BAUD_XTAL_OUT,clock,confirmed,docs/MC14411.pdf,MC14411 crystal output connection
+CC1,control,inferred,usb_c_design_chat,USB-C configuration channel 1 with Rd pull-down
+CC2,control,inferred,usb_c_design_chat,USB-C configuration channel 2 with Rd pull-down
+CPU_OSC1,clock,confirmed,docs/MC146805E2_1983.pdf,CPU crystal connection
+CPU_OSC2,clock,confirmed,docs/MC146805E2_1983.pdf,CPU crystal connection
 D0,data,confirmed,docs/memory-map.txt,External data bus bit 0
 D1,data,confirmed,docs/memory-map.txt,External data bus bit 1
 D2,data,confirmed,docs/memory-map.txt,External data bus bit 2
@@ -22,73 +44,51 @@ D4,data,confirmed,docs/memory-map.txt,External data bus bit 4
 D5,data,confirmed,docs/memory-map.txt,External data bus bit 5
 D6,data,confirmed,docs/memory-map.txt,External data bus bit 6
 D7,data,confirmed,docs/memory-map.txt,External data bus bit 7
-AS,control,confirmed,design/Address_Latch.dig,Address strobe used to latch multiplexed low address byte
 DS,control,confirmed,design/rtc.md,Data strobe used during external data phase
+GND,power,confirmed,docs/MC146805E2_1983.pdf,Logic ground
+LOW_0000_000F,control,inferred,design/New_Address_Decode.dig,Active-high enable for low peripheral pair decoder
+PAGE_0000_00FF,control,inferred,design/New_Address_Decode.dig,Active-high complement of $0000-$00FF page decode
+PAGE_0100_01FF,control,inferred,design/New_Address_Decode.dig,Active-high complement of $0100-$01FF page decode
 R/~W,control,confirmed,design/rtc.md,CPU read/write direction signal
-RTC_VDD,power,todo,docs/MSM58321.pdf,RTC VDD supply; direct 5V0 versus backup supply TBD
-RTCCS,control,confirmed,design/New_Address_Decode.dig,AS-qualified RTC decode for $0100-$010F; not a complete transaction select
-RTC_SELECT,control,todo,design/rtc.md,RTC decode held for the complete bus cycle
+RAM1_ACTIVE,control,inferred,design/New_Address_Decode.dig,Active-high RAM1 select before inversion
 RTC_ADDRESS_WRITE,control,todo,design/rtc.md,RTC_SELECT AND AS
-RTC_READ,control,todo,design/rtc.md,RTC_SELECT AND DS AND R/~W
-RTC_WRITE,control,todo,design/rtc.md,RTC_SELECT AND DS AND NOT R/~W
 RTC_BUSY,control,todo,docs/MSM58321.pdf,Open-drain busy output handling and pull-up TBD
+RTC_READ,control,todo,design/rtc.md,RTC_SELECT AND DS AND R/~W
+RTC_SELECT,control,todo,design/rtc.md,RTC decode held for the complete bus cycle
 RTC_STOP,control,todo,docs/MSM58321.pdf,RTC STOP input handling TBD
-~ROMCS,control,confirmed,docs/memory-map.txt,Active-low ROM chip select for $1000-$1FFF
-~RAM1CS,control,confirmed,docs/memory-map.txt,Active-low RAM 1 chip select for $0110-$07FF
-~RAM2CS,control,confirmed,docs/memory-map.txt,Active-low RAM 2 chip select for $0800-$0FFF
-~MEMRD,control,todo,docs/Am2732-AMD.pdf,Active-low memory output enable; exact derivation from DS and R/~W TBD
-~RAMWE,control,todo,docs/IDT_6116.pdf,Active-low RAM write enable; exact derivation from DS and R/~W TBD
-CPU_OSC1,clock,confirmed,docs/MC146805E2_1983.pdf,CPU crystal connection
-CPU_OSC2,clock,confirmed,docs/MC146805E2_1983.pdf,CPU crystal connection
-BAUD_XTAL_IN,clock,confirmed,docs/MC14411.pdf,MC14411 crystal input connection
-BAUD_XTAL_OUT,clock,confirmed,docs/MC14411.pdf,MC14411 crystal output connection
+RTC_VDD,power,todo,docs/MSM58321.pdf,RTC VDD supply; direct 5V0 versus backup supply TBD
+RTC_WRITE,control,todo,design/rtc.md,RTC_SELECT AND DS AND NOT R/~W
 RTC_XT,clock,confirmed,docs/MSM58321.pdf,MSM58321 32.768 kHz crystal connection
 RTC_XT_N,clock,confirmed,docs/MSM58321.pdf,MSM58321 32.768 kHz crystal connection
-BAUD_F1,clock,confirmed,design/baud-rate.md,MC14411 F1 candidate clock for baud mux
-BAUD_F3,clock,confirmed,design/baud-rate.md,MC14411 F3 candidate clock for baud mux
-BAUD_F8,clock,confirmed,design/baud-rate.md,MC14411 F8 candidate clock for baud mux
-BAUD_F9,clock,confirmed,design/baud-rate.md,MC14411 F9 candidate clock for baud mux
-BAUD_SEL_A,control,todo,design/baud-rate.md,Shared 74153 select input A; source still TBD
-BAUD_SEL_B,control,todo,design/baud-rate.md,Shared 74153 select input B; source still TBD
-ACIA_RXCLK,clock,inferred,design/baud-rate.md,Driven by section 1 of baud mux
-ACIA_TXCLK,clock,inferred,design/baud-rate.md,Driven by section 2 of baud mux
+RTCCS,control,confirmed,design/New_Address_Decode.dig,AS-qualified RTC decode for $0100-$010F; not a complete transaction select
+USB_SHIELD,shield,todo,usb_c_design_chat,USB-C connector shell or shield net; final ground treatment TBD
+USB_VBUS,power,inferred,usb_c_design_chat,Raw USB-C VBUS before input fuse and protection
+~ACIAEN,control,confirmed,design/New_Address_Decode.dig,Active-low ACIA select for $0006-$0007
+~ADDR_0000_0001,control,confirmed,design/New_Address_Decode.dig,Active-low low peripheral decoder output for $0000-$0001
+~ADDR_0004_0005,control,confirmed,design/New_Address_Decode.dig,Active-low low peripheral decoder output for $0004-$0005
+~ADDR_0008_0009,control,inferred,design/Address_Decode.dig,Active-low low peripheral decoder output for $0008-$0009
 ~BANK0_0000_07FF,control,inferred,design/New_Address_Decode.dig,Active-low decode for $0000-$07FF while AS is asserted
-BANK0_0000_07FF,control,inferred,design/New_Address_Decode.dig,Active-high complement of the $0000-$07FF bank decode
-~ROM_LOCS,control,inferred,design/New_Address_Decode.dig,Active-low high address decoder output for one ROM half
-~ROM_HICS,control,inferred,design/New_Address_Decode.dig,Active-low high address decoder output for the other ROM half
 ~DEC_HIGH_Q4,control,confirmed,design/New_Address_Decode.dig,Unused active-low high decoder output Q4
 ~DEC_HIGH_Q5,control,confirmed,design/New_Address_Decode.dig,Unused active-low high decoder output Q5
 ~DEC_HIGH_Q6,control,confirmed,design/New_Address_Decode.dig,Unused active-low high decoder output Q6
 ~DEC_HIGH_Q7,control,confirmed,design/New_Address_Decode.dig,Unused active-low high decoder output Q7
+~MEMRD,control,todo,docs/Am2732-AMD.pdf,Active-low memory output enable; exact derivation from DS and R/~W TBD
+~P1EN,control,confirmed,design/New_Address_Decode.dig,Active-low low peripheral decoder output for $0002-$0003
+~P2EN,control,confirmed,design/New_Address_Decode.dig,Active-low low peripheral decoder output for $000A-$000B
+~P3EN,control,confirmed,design/New_Address_Decode.dig,Active-low low peripheral decoder output for $000C-$000D
+~P4EN,control,confirmed,design/New_Address_Decode.dig,Active-low low peripheral decoder output for $000E-$000F
 ~PAGE_0000_00FF,control,inferred,design/New_Address_Decode.dig,Active-low page decode for $0000-$00FF inside bank 0
-PAGE_0000_00FF,control,inferred,design/New_Address_Decode.dig,Active-high complement of $0000-$00FF page decode
 ~PAGE_0100_01FF,control,inferred,design/New_Address_Decode.dig,Active-low page decode for $0100-$01FF inside bank 0
-PAGE_0100_01FF,control,inferred,design/New_Address_Decode.dig,Active-high complement of $0100-$01FF page decode
 ~PAGE_0200_02FF,control,inferred,design/New_Address_Decode.dig,Active-low page decode for $0200-$02FF inside bank 0
 ~PAGE_0300_03FF,control,inferred,design/New_Address_Decode.dig,Active-low page decode for $0300-$03FF inside bank 0
 ~PAGE_0400_04FF,control,inferred,design/New_Address_Decode.dig,Active-low page decode for $0400-$04FF inside bank 0
 ~PAGE_0500_05FF,control,inferred,design/New_Address_Decode.dig,Active-low page decode for $0500-$05FF inside bank 0
 ~PAGE_0600_06FF,control,inferred,design/New_Address_Decode.dig,Active-low page decode for $0600-$06FF inside bank 0
 ~PAGE_0700_07FF,control,inferred,design/New_Address_Decode.dig,Active-low page decode for $0700-$07FF inside bank 0
-A4_OR_A5,control,inferred,design/New_Address_Decode.dig,Intermediate OR term for low-nibble high decode
-A6_OR_A7,control,inferred,design/New_Address_Decode.dig,Intermediate OR term for low-nibble high decode
-A4_A7_NONZERO,control,inferred,design/New_Address_Decode.dig,High when any of A4-A7 is asserted
-A4_A7_ZERO,control,inferred,design/New_Address_Decode.dig,High when A4-A7 are all zero
-A7_OR_A8,control,inferred,design/New_Address_Decode.dig,Intermediate OR term for RAM1 select
-A9_OR_A10,control,inferred,design/New_Address_Decode.dig,Intermediate OR term for RAM1 select
-BANK0_ADDR_NONZERO,control,inferred,design/New_Address_Decode.dig,High for bank 0 addresses at or above $0080
+~RAM1CS,control,confirmed,docs/memory-map.txt,Active-low RAM 1 chip select for $0110-$07FF
+~RAM2CS,control,confirmed,docs/memory-map.txt,Active-low RAM 2 chip select for $0800-$0FFF
+~RAMWE,control,todo,docs/IDT_6116.pdf,Active-low RAM write enable; exact derivation from DS and R/~W TBD
+~ROM_HICS,control,inferred,design/New_Address_Decode.dig,Active-low high address decoder output for the other ROM half
+~ROM_LOCS,control,inferred,design/New_Address_Decode.dig,Active-low high address decoder output for one ROM half
+~ROMCS,control,confirmed,docs/memory-map.txt,Active-low ROM chip select for $1000-$1FFF
 ~RTCCS,control,inferred,design/New_Address_Decode.dig,Active-low complement of RTCCS for RAM1 exclusion
-RAM1_ACTIVE,control,inferred,design/New_Address_Decode.dig,Active-high RAM1 select before inversion
-LOW_0000_000F,control,inferred,design/New_Address_Decode.dig,Active-high enable for low peripheral pair decoder
-~ADDR_0000_0001,control,confirmed,design/New_Address_Decode.dig,Active-low low peripheral decoder output for $0000-$0001
-~P1EN,control,confirmed,design/New_Address_Decode.dig,Active-low low peripheral decoder output for $0002-$0003
-~ADDR_0004_0005,control,confirmed,design/New_Address_Decode.dig,Active-low low peripheral decoder output for $0004-$0005
-~ACIAEN,control,confirmed,design/New_Address_Decode.dig,Active-low ACIA select for $0006-$0007
-~ADDR_0008_0009,control,inferred,design/Address_Decode.dig,Active-low low peripheral decoder output for $0008-$0009
-~P2EN,control,confirmed,design/New_Address_Decode.dig,Active-low low peripheral decoder output for $000A-$000B
-~P3EN,control,confirmed,design/New_Address_Decode.dig,Active-low low peripheral decoder output for $000C-$000D
-~P4EN,control,confirmed,design/New_Address_Decode.dig,Active-low low peripheral decoder output for $000E-$000F
-USB_VBUS,power,inferred,usb_c_design_chat,Raw USB-C VBUS before input fuse and protection
-CC1,control,inferred,usb_c_design_chat,USB-C configuration channel 1 with Rd pull-down
-CC2,control,inferred,usb_c_design_chat,USB-C configuration channel 2 with Rd pull-down
-USB_SHIELD,shield,todo,usb_c_design_chat,USB-C connector shell or shield net; final ground treatment TBD

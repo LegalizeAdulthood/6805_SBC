@@ -1,24 +1,24 @@
 source_id,path,kind,title,notes
-cpu_datasheet,docs/MC146805E2_1983.pdf,datasheet,MC146805E2 data sheet,CPU pin and oscillator information
-chip_inventory,docs/chip-inventory.csv,inventory,Chip inventory,Available Am2732 and HM6116 memory devices
-memory_map,docs/memory-map.txt,design note,Memory map,External ROM and RAM address ranges plus chip-select names
-address_latch_design,design/Address_Latch.dig,design note,Low-address latch,74373 demultiplexes CPU PB0-PB7 into latched A0-A7
-latch_datasheet,https://www.ti.com/lit/ds/symlink/sn74ls373.pdf,datasheet,SN74LS373 data sheet,74373-compatible transparent latch pinout and behavior
-rom_datasheet,docs/Am2732-AMD.pdf,datasheet,Am2732 data sheet,4Kx8 EPROM pinout and operating controls
-ram_datasheet,docs/IDT_6116.pdf,datasheet,IDT6116 data sheet,6116-class 2Kx8 SRAM pinout and operating controls
-rtc_design,design/rtc.md,design note,MSM58321 bus interface,RTC address range data bus width and intended control relationships
-rtc_datasheet,docs/MSM58321.pdf,datasheet,MSM58321 data sheet,RTC pinout crystal and timing information
 acia_datasheet,docs/MC6850.pdf,datasheet,MC6850 data sheet,ACIA clock and power pins
-baud_generator_datasheet,docs/MC14411.pdf,datasheet,MC14411 data sheet,Baud generator pinout and output clocks
-baud_design,design/baud-rate.md,design note,Baud-rate selection,Selected MC14411 outputs and ACIA clock path
-mux_datasheet,https://www.ti.com/lit/ds/symlink/sn74ls153.pdf,datasheet,SN74153/SN74LS153 data sheet,74153-compatible dual mux pinout and function table
-local_symbols,C:/code/6805_sbc/MCU_Motorola_6800.kicad_sym,kicad symbol library,Local Motorola symbol library,CPU MC14411 and MSM58321 pin numbers
-cpu_crystal_digikey,https://www.digikey.com/en/products/detail/w%C3%BCrth-elektronik/830003119B/13900107,supplier page,Wurth Elektronik 830003119B,5 MHz CPU crystal
-baud_crystal_digikey,https://www.digikey.com/en/products/detail/raltron-electronics/A-1-8432-18/10246237,supplier page,Raltron A-1.8432-18,1.8432 MHz baud-rate crystal
 address_decode_design,design/New_Address_Decode.dig,design note,Address decode logic,Final-board address decode for memory RTC ACIA and low peripheral selects
-decoder_datasheet,docs/sn74ls138.pdf,datasheet,SN74LS138 data sheet,74138 pinout and active-low output behavior
-and_gate_datasheet,https://www.ti.com/lit/ds/symlink/sn74ls08.pdf,datasheet,SN74LS08 data sheet,7408 quad AND gate pinout
+address_latch_design,design/Address_Latch.dig,design note,Low-address latch,74373 demultiplexes CPU PB0-PB7 into latched A0-A7
 and3_gate_datasheet,https://www.ti.com/lit/ds/symlink/sn74ls11.pdf,datasheet,SN74LS11 data sheet,7411 triple three-input AND gate pinout
-or_gate_datasheet,https://www.ti.com/lit/ds/symlink/sn74ls32.pdf,datasheet,SN74LS32 data sheet,7432 quad OR gate pinout
+and_gate_datasheet,https://www.ti.com/lit/ds/symlink/sn74ls08.pdf,datasheet,SN74LS08 data sheet,7408 quad AND gate pinout
+baud_crystal_digikey,https://www.digikey.com/en/products/detail/raltron-electronics/A-1-8432-18/10246237,supplier page,Raltron A-1.8432-18,1.8432 MHz baud-rate crystal
+baud_design,design/baud-rate.md,design note,Baud-rate selection,Selected MC14411 outputs and ACIA clock path
+baud_generator_datasheet,docs/MC14411.pdf,datasheet,MC14411 data sheet,Baud generator pinout and output clocks
+chip_inventory,docs/chip-inventory.csv,inventory,Chip inventory,Available Am2732 and HM6116 memory devices
+cpu_crystal_digikey,https://www.digikey.com/en/products/detail/w%C3%BCrth-elektronik/830003119B/13900107,supplier page,Wurth Elektronik 830003119B,5 MHz CPU crystal
+cpu_datasheet,docs/MC146805E2_1983.pdf,datasheet,MC146805E2 data sheet,CPU pin and oscillator information
+decoder_datasheet,docs/sn74ls138.pdf,datasheet,SN74LS138 data sheet,74138 pinout and active-low output behavior
 inverter_datasheet,https://www.ti.com/lit/ds/symlink/sn74ls04.pdf,datasheet,SN74LS04 data sheet,7404 hex inverter pinout
+latch_datasheet,https://www.ti.com/lit/ds/symlink/sn74ls373.pdf,datasheet,SN74LS373 data sheet,74373-compatible transparent latch pinout and behavior
+local_symbols,C:/code/6805_sbc/MCU_Motorola_6800.kicad_sym,kicad symbol library,Local Motorola symbol library,CPU MC14411 and MSM58321 pin numbers
+memory_map,docs/memory-map.txt,design note,Memory map,External ROM and RAM address ranges plus chip-select names
+mux_datasheet,https://www.ti.com/lit/ds/symlink/sn74ls153.pdf,datasheet,SN74153/SN74LS153 data sheet,74153-compatible dual mux pinout and function table
+or_gate_datasheet,https://www.ti.com/lit/ds/symlink/sn74ls32.pdf,datasheet,SN74LS32 data sheet,7432 quad OR gate pinout
+ram_datasheet,docs/IDT_6116.pdf,datasheet,IDT6116 data sheet,6116-class 2Kx8 SRAM pinout and operating controls
+rom_datasheet,docs/Am2732-AMD.pdf,datasheet,Am2732 data sheet,4Kx8 EPROM pinout and operating controls
+rtc_datasheet,docs/MSM58321.pdf,datasheet,MSM58321 data sheet,RTC pinout crystal and timing information
+rtc_design,design/rtc.md,design note,MSM58321 bus interface,RTC address range data bus width and intended control relationships
 usb_c_design_chat,https://chatgpt.com/share/6ac9862d-b16c-83e8-946e-75dec9cc5bbd,design note,USB-C power input notes,Power-only USB-C sink wiring with CC pull-downs PPTC fuse TVS protection input capacitors and shield options
