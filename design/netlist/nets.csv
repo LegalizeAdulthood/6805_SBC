@@ -52,6 +52,7 @@ PAGE_0000_00FF,control,inferred,design/New_Address_Decode.dig,Active-high comple
 PAGE_0100_01FF,control,inferred,design/New_Address_Decode.dig,Active-high complement of $0100-$01FF page decode
 R/~W,control,confirmed,design/rtc.md,CPU read/write direction signal
 RAM1_ACTIVE,control,inferred,design/New_Address_Decode.dig,Active-high RAM1 select before inversion
+RESET,control,inferred,reset_design_chat,Active-low CPU reset net driven by RC pull-up network and manual pushbutton
 RTC_ADDRESS_WRITE,control,todo,design/rtc.md,RTC_SELECT AND AS
 RTC_BUSY,control,todo,docs/MSM58321.pdf,Open-drain busy output handling and pull-up TBD
 RTC_READ,control,todo,design/rtc.md,RTC_SELECT AND DS AND R/~W

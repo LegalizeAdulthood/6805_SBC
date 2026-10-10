@@ -71,4 +71,6 @@ WRITE,RTC_WRITE,MSM58321 control input,confirmed,design/rtc.md,Active-high RTC w
 XT,RTC_XT,MSM58321 crystal pin,confirmed,docs/MSM58321.pdf,32.768 kHz crystal terminal
 ~1Q40006-0007,~ADDR_0008_0009,Digital output label,todo,design/New_Address_Decode.dig,Malformed label in New_Address_Decode.dig likely intended to name the $0008-$0009 output
 ~BUSY,RTC_BUSY,MSM58321 busy output,todo,docs/MSM58321.pdf,Open-drain busy output handling TBD
+~RESET,RESET,CPU reset pin,confirmed,MCU_Motorola_6800.kicad_sym,Local symbol names the active-low reset pin with an overbar
 ~XT,RTC_XT_N,MSM58321 crystal pin,confirmed,docs/MSM58321.pdf,32.768 kHz crystal terminal
+~{RESET},RESET,CPU reset pin,confirmed,MCU_Motorola_6800.kicad_sym,KiCad local symbol spelling for the active-low reset pin

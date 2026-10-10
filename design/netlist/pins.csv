@@ -133,10 +133,14 @@ AM2732,23,A8,input,false,docs/Am2732-AMD.pdf,Address input
 AM2732,24,VCC,power_in,false,docs/Am2732-AMD.pdf,Power
 CAP_1NF,1,1,passive,false,usb_c_design_chat,Capacitor terminal
 CAP_1NF,2,2,passive,false,usb_c_design_chat,Capacitor terminal
+CAP_1UF,1,1,passive,false,reset_design_chat,Capacitor terminal
+CAP_1UF,2,2,passive,false,reset_design_chat,Capacitor terminal
 CAP_100NF,1,1,passive,false,usb_c_design_chat,Capacitor terminal
 CAP_100NF,2,2,passive,false,usb_c_design_chat,Capacitor terminal
 CAP_INPUT_BULK,1,1,passive,false,usb_c_design_chat,Capacitor positive terminal for polarized bulk option
 CAP_INPUT_BULK,2,2,passive,false,usb_c_design_chat,Capacitor ground terminal
+DIODE_1N4148,1,K,passive,false,reset_design_chat,Diode cathode
+DIODE_1N4148,2,A,passive,false,reset_design_chat,Diode anode
 HM6116,1,A7,input,false,docs/IDT_6116.pdf,Address input
 HM6116,2,A6,input,false,docs/IDT_6116.pdf,Address input
 HM6116,3,A5,input,false,docs/IDT_6116.pdf,Address input
@@ -189,6 +193,7 @@ MC14411,21,XTAL_IN,input,false,MCU_Motorola_6800.kicad_sym,Crystal oscillator pi
 MC14411,22,RSB,input,false,MCU_Motorola_6800.kicad_sym,Rate select input fixed high for X64 range
 MC14411,23,RSA,input,false,MCU_Motorola_6800.kicad_sym,Rate select input fixed high for X64 range
 MC14411,24,VDD,power_in,false,MCU_Motorola_6800.kicad_sym,Power
+MC146805E2,1,~RESET,input,true,MCU_Motorola_6800.kicad_sym,Active-low Schmitt-triggered reset input
 MC146805E2,4,DS,output,false,MCU_Motorola_6800.kicad_sym,Data strobe
 MC146805E2,5,R/~W,output,false,MCU_Motorola_6800.kicad_sym,Read/write direction
 MC146805E2,6,AS,output,false,MCU_Motorola_6800.kicad_sym,Address strobe
@@ -231,6 +236,10 @@ RES_1M,1,1,passive,false,usb_c_design_chat,Resistor terminal
 RES_1M,2,2,passive,false,usb_c_design_chat,Resistor terminal
 RES_5K1,1,1,passive,false,usb_c_design_chat,Resistor terminal
 RES_5K1,2,2,passive,false,usb_c_design_chat,Resistor terminal
+RES_10K,1,1,passive,false,reset_design_chat,Resistor terminal
+RES_10K,2,2,passive,false,reset_design_chat,Resistor terminal
+SW_PUSH_NO,1,1,passive,false,reset_design_chat,Switch terminal
+SW_PUSH_NO,2,2,passive,false,reset_design_chat,Switch terminal
 TVS_5V_UNIDIR,1,K,passive,false,usb_c_design_chat,TVS cathode
 TVS_5V_UNIDIR,2,A,passive,false,usb_c_design_chat,TVS anode to ground
 USB_C_RECEPTACLE_POWER,A1,GND,power_in,false,usb_c_design_chat,USB-C ground contact

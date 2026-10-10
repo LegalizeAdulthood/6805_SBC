@@ -8,8 +8,10 @@ part_id,manufacturer,mpn,description,default_symbol,default_footprint,source,not
 74373,,74373,Octal transparent latch with tri-state outputs,,Package_DIP:DIP-20_W7.62mm,design/Address_Latch.dig,Selected from inventory for low-address demultiplexing; exact KiCad symbol still TBD
 AM2732,AMD,Am2732,4Kx8 UV erasable PROM,,Package_DIP:DIP-24_W15.24mm,docs/Am2732-AMD.pdf,Selected from inventory; KiCad symbol still needs to be selected or created
 CAP_1NF,,,1 nF capacitor,Device:C,,usb_c_design_chat,Optional USB shield coupling capacitor; final shield treatment TBD
+CAP_1UF,,,1 uF reset timing capacitor,Device:C,,reset_design_chat,Reset RC timing capacitor; exact dielectric and voltage rating TBD
 CAP_100NF,,,0.1 uF ceramic capacitor,Device:C,,usb_c_design_chat,Input bypass capacitor
 CAP_INPUT_BULK,,,10-47 uF input bulk capacitor,Device:C_Polarized,,usb_c_design_chat,Input bulk capacitance range from USB-C power notes; exact value TBD
+DIODE_1N4148,,1N4148,Small-signal switching diode,Device:D,,reset_design_chat,Optional reset capacitor discharge diode with anode on RESET and cathode on 5V0
 HM6116,,HM6116,2Kx8 static RAM,,Package_DIP:DIP-24_W7.62mm,docs/IDT_6116.pdf,Selected from inventory; IDT6116 datasheet used for 6116-class pinout
 MC6850,Motorola,MC6850,Asynchronous communications interface adapter,,Package_DIP:DIP-24_W15.24mm,docs/MC6850.pdf,Symbol still needs to be selected or created
 MC14411,Motorola,MC14411,Baud-rate generator,MCU_Motorola_6800:MC14411,Package_DIP:DIP-24_W15.24mm,docs/MC14411.pdf,Local KiCad symbol exists
@@ -18,6 +20,8 @@ MSM58321,OKI,MSM58321,Real-time clock calendar,MCU_Motorola_6800:MSM58321,Packag
 PPTC_USB_INPUT,,,USB input resettable PPTC fuse,Device:Fuse,,usb_c_design_chat,Target 1.1 A hold and about 2.2 A trip; >=6 V rating with 16 V preferred; SMD 1812 JLCPCB-assembled preferred; 1210 acceptable; avoid 0805; MF-R110-class radial 5.08 mm fallback
 RES_1M,,,1 Mohm resistor,Device:R,,usb_c_design_chat,Optional USB shield bleed resistor; final shield treatment TBD
 RES_5K1,,,5.1 kohm resistor,Device:R,,usb_c_design_chat,USB-C Rd pull-down for CC pins
+RES_10K,,,10 kohm resistor,Device:R,,reset_design_chat,Reset pull-up resistor
+SW_PUSH_NO,,,Normally-open pushbutton,Switch:SW_Push,,reset_design_chat,Manual reset pushbutton pulls RESET to GND when pressed
 TVS_5V_UNIDIR,,SMBJ5.0A,SMBJ5.0A-class 5 V unidirectional TVS diode,Device:D_TVS,Diode_SMD:D_SMB,usb_c_design_chat,Use reputable SMBJ5.0A vendor; SMAJ5.0A is smaller lower-surge option; 5.0 V standoff; do not use 3.3 V or 12 V TVS
 USB_C_RECEPTACLE_POWER,,,USB-C receptacle for power-only 5 V sink,Connector:USB_C_Receptacle_USB2.0,,usb_c_design_chat,Exact connector footprint and shield pin mapping TBD; full connector data SuperSpeed and SBU pins are staged NC for power-only use; some symbols label CC2 as VCONN
 XTAL_1_8432MHZ,Raltron Electronics,A-1.8432-18,1.8432 MHz 18 pF baud-rate crystal,Device:Crystal,Crystal:Crystal_HC49-U_Vertical,https://www.digikey.com/en/products/detail/raltron-electronics/A-1-8432-18/10246237,Selected for MC14411 clock; HC-49/U through-hole; 700 ohm ESR; +/-30 ppm tolerance; +/-50 ppm stability
