@@ -3,10 +3,11 @@ part_id,manufacturer,mpn,description,default_symbol,default_footprint,source,not
 7408,,7408,Quad 2-input AND gate,,Package_DIP:DIP-14_W7.62mm,https://www.ti.com/lit/ds/symlink/sn74ls08.pdf,Selected from inventory for address decode gate packing
 7411,,7411,Triple 3-input AND gate,,Package_DIP:DIP-14_W7.62mm,https://www.ti.com/lit/ds/symlink/sn74ls11.pdf,Selected from inventory for address decode gate packing
 7432,,7432,Quad 2-input OR gate,,Package_DIP:DIP-14_W7.62mm,https://www.ti.com/lit/ds/symlink/sn74ls32.pdf,Selected from inventory for address decode gate packing
-74123,,74123,Dual retriggerable monostable multivibrator,,Package_DIP:DIP-16_W7.62mm,https://www.ti.com/lit/ds/symlink/sn74123.pdf,Selected from inventory for stretched MSM58321 ADDRESS_WRITE READ WRITE and SELECT timing
 74138,,74138,3-to-8 line decoder with active-low outputs,,Package_DIP:DIP-16_W7.62mm,docs/sn74ls138.pdf,Selected from inventory for address decode; standard 74138 pinout used for staging
 74153,,74153,Dual 4-to-1 data selector/multiplexer,,Package_DIP:DIP-16_W7.62mm,design/baud-rate.md,Exact logic family and KiCad symbol still TBD; standard 74153 pinout used for staging
+74174,,74174,Hex D flip-flop with common clock and asynchronous clear,,Package_DIP:DIP-16_W7.62mm,docs/chip-inventory.csv,Selected from inventory for MC14411-clocked RTC one-hot sequencer
 74373,,74373,Octal transparent latch with tri-state outputs,,Package_DIP:DIP-20_W7.62mm,design/Address_Latch.dig,Selected from inventory for low-address demultiplexing; exact KiCad symbol still TBD
+7474,,7474,Dual D flip-flop with preset and clear,,Package_DIP:DIP-14_W7.62mm,docs/chip-inventory.csv,Selected from inventory for RTC start-request and CPU-cycle latches
 AM2732,AMD,Am2732,4Kx8 UV erasable PROM,,Package_DIP:DIP-24_W15.24mm,docs/Am2732-AMD.pdf,Selected from inventory; KiCad symbol still needs to be selected or created
 CAP_1NF,,,1 nF capacitor,Device:C,,usb_c_design_chat,Optional USB shield coupling capacitor; final shield treatment TBD
 CAP_1UF,,,1 uF reset timing capacitor,Device:C,,cpu_user_manual,Reset RC timing capacitor from Figure 4-4; exact dielectric and voltage rating TBD
@@ -16,7 +17,6 @@ CAP_100NF,,,0.1 uF ceramic capacitor,Device:C,,usb_c_design_chat,Input bypass ca
 CAP_BAUD_LOAD,,,MC14411 crystal load capacitor,Device:C,,serial_design_chat,Small baud-generator crystal load capacitor; value per MC14411 datasheet and selected crystal
 CAP_INPUT_BULK,,,10-47 uF input bulk capacitor,Device:C_Polarized,,usb_c_design_chat,Input bulk capacitance range from USB-C power notes; exact value TBD
 CAP_MAX232_CHARGE,,,MAX232 charge-pump capacitor,Device:C,,serial_design_chat,Charge-pump capacitor value depends on exact MAX232 variant; classic MAX232 often differs from MAX232A-class parts
-CAP_RTC_TIMING,,,74123 RTC timing capacitor,Device:C,,rtc_adapter_design,One-shot timing capacitor for RTC adapter pulses; exact value TBD
 CR2032_HOLDER,,,CR2032 coin-cell holder,Device:Battery_Cell,,rtc_backup_design_chat,RTC backup battery holder; exact footprint and retention style TBD
 DE9_DTE_SERIAL,,,DE-9 RS-232 console connector,Connector:DB9_Male,,serial_design_chat,DTE-style pinout staged with SBC TX on pin 3 RX on pin 2 and GND on pin 5; exact gender and footprint TBD
 DIODE_SCHOTTKY_RTC,,BAT54 or 1N5817-class,Schottky isolation diode,Device:D_Schottky,,rtc_backup_design_chat,RTC diode-OR isolation diode; use BAT54 or 1N5817-class and not 1N4148 to preserve battery margin
@@ -37,7 +37,6 @@ RES_15M,,,15 Mohm resistor,Device:R,,serial_design_chat,MC14411 crystal oscillat
 RES_BAUD_PULLDOWN,,,Baud select pull-down resistor,Device:R,,current_user_direction,Pull-down value TBD after final 74153 logic family is chosen
 RES_IRQ_PULLUP,,,4.7-10 kohm IRQ pull-up resistor,Device:R,,irq_design_chat,Shared active-low open-drain IRQ pull-up; exact value TBD
 RES_RTC_BUSY_PULLUP,,,RTC BUSY pull-up resistor,Device:R,,rtc_adapter_design,Pulls MSM58321 open-drain BUSY to the main 5V0 logic rail
-RES_RTC_TIMING,,,74123 RTC timing resistor,Device:R,,rtc_adapter_design,One-shot timing resistor for RTC adapter pulses; exact value TBD
 SW_DIP_2,,,Two-position DIP switch,Switch:SW_DIP_x02,,current_user_direction,Manual baud-rate range selector; closed switch drives the corresponding select bit high
 SW_PUSH_NO,,,Normally-open pushbutton,Switch:SW_Push,,current_user_direction,Manual reset pushbutton pulls RESET to GND when pressed
 TEST_PAD,,,Single-pin test pad,Connector:TestPoint,TestPoint:TestPoint_Pad_D1.0mm,test_pad_design_chat,Generic board bring-up test point; final pad diameter and style TBD

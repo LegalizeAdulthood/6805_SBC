@@ -21,10 +21,6 @@ C18,CAP_BAUD_LOAD,TBD,,todo,serial_design_chat,MC14411 XTAL_OUT load capacitor; 
 C19,CAP_100NF,0.1 uF,,inferred,serial_design_chat,ACIA local ceramic bypass capacitor
 C20,CAP_100NF,0.1 uF,,inferred,serial_design_chat,MC14411 local ceramic bypass capacitor
 C21,CAP_100NF,0.1 uF,,inferred,serial_design_chat,Baud mux local ceramic bypass capacitor
-C22,CAP_RTC_TIMING,TBD,,todo,rtc_adapter_design,74123 RTC_SELECT timing capacitor; choose for select pulse longer than address plus data strobes
-C23,CAP_RTC_TIMING,TBD,,todo,rtc_adapter_design,74123 RTC_ADDRESS_WRITE timing capacitor; target at least 0.5 us
-C24,CAP_RTC_TIMING,TBD,,todo,rtc_adapter_design,74123 RTC data-strobe timing capacitor; target at least 2 us
-C25,CAP_RTC_TIMING,TBD,,todo,rtc_adapter_design,74123 RTC CPU-cycle hold timing capacitor; choose to cover the CPU DS phase
 D1,TVS_5V_UNIDIR,SMBJ5.0A,Diode_SMD:D_SMB,todo,usb_c_design_chat,Unidirectional VBUS TVS near USB-C connector; cathode stripe to USB_VBUS and anode to GND; connector side of fuse
 D3,DIODE_SCHOTTKY_RTC,BAT54 or 1N5817-class,,todo,rtc_backup_design_chat,5V0 isolation diode to RTC_VDD; exact Schottky part and footprint TBD
 D4,DIODE_SCHOTTKY_RTC,BAT54 or 1N5817-class,,todo,rtc_backup_design_chat,CR2032 isolation diode to RTC_VDD; exact Schottky part and footprint TBD
@@ -44,10 +40,6 @@ R8,RES_IRQ_PULLUP,4.7-10 kohm,,todo,irq_design_chat,Shared IRQ pull-up to 5V0; e
 R9,RES_BAUD_PULLDOWN,TBD,,todo,current_user_direction,BAUD_SEL_A pull-down; exact value depends on final 74153 logic family
 R10,RES_BAUD_PULLDOWN,TBD,,todo,current_user_direction,BAUD_SEL_B pull-down; exact value depends on final 74153 logic family
 R11,RES_RTC_BUSY_PULLUP,10 kohm,,inferred,rtc_adapter_design,Pulls MSM58321 open-drain BUSY output to main 5V0 logic rail
-R12,RES_RTC_TIMING,TBD,,todo,rtc_adapter_design,74123 RTC_SELECT timing resistor; choose with C22 for complete adapter transaction
-R13,RES_RTC_TIMING,TBD,,todo,rtc_adapter_design,74123 RTC_ADDRESS_WRITE timing resistor; choose with C23 for at least 0.5 us
-R14,RES_RTC_TIMING,TBD,,todo,rtc_adapter_design,74123 RTC data-strobe timing resistor; choose with C24 for at least 2 us
-R15,RES_RTC_TIMING,TBD,,todo,rtc_adapter_design,74123 RTC CPU-cycle hold timing resistor; choose with C25 to cover the CPU DS phase
 SW1,SW_PUSH_NO,Reset,,inferred,current_user_direction,Normally-open manual reset pushbutton from RESET to GND
 SW2,SW_DIP_2,Baud select,,inferred,current_user_direction,Two-position DIP switch for BAUD_SEL_A and BAUD_SEL_B
 TP1,TEST_PAD,5V0 test pad,,inferred,test_pad_design_chat,Power rail bring-up test point
@@ -98,11 +90,12 @@ U24,74138,74138,Package_DIP:DIP-16_W7.62mm,inferred,rtc_adapter_design,RTC adapt
 U25,7411,7411,Package_DIP:DIP-14_W7.62mm,inferred,rtc_adapter_design,Three-input AND gates for RTC adapter write-side strobes
 U26,7411,7411,Package_DIP:DIP-14_W7.62mm,inferred,rtc_adapter_design,Three-input AND gates for RTC adapter read-side strobes
 U27,7404,7404,Package_DIP:DIP-14_W7.62mm,inferred,rtc_adapter_design,Inverters for RTC register decode CPU write and CPU read output enables
-U28,74123,74123,Package_DIP:DIP-16_W7.62mm,inferred,rtc_adapter_design,Dual one-shot for RTC_SELECT hold and RTC_ADDRESS_WRITE pulse stretching
-U29,74123,74123,Package_DIP:DIP-16_W7.62mm,inferred,rtc_adapter_design,Dual one-shot for delayed RTC data strobe and RTCCS CPU-cycle hold
+U28,74174,74174,Package_DIP:DIP-16_W7.62mm,inferred,rtc_adapter_design,MC14411-clocked one-hot sequencer for RTC transaction phases
+U29,7474,7474,Package_DIP:DIP-14_W7.62mm,inferred,rtc_adapter_design,Dual flip-flop for RTC sequencer start request and CPU-side RTC_CYCLE hold
 U30,74373,74373,Package_DIP:DIP-20_W7.62mm,inferred,rtc_adapter_design,RTC command latch captures the read versus write command bit during command writes
-U31,7408,7408,Package_DIP:DIP-14_W7.62mm,inferred,rtc_adapter_design,AND gates steering the stretched data pulse to RTC_READ or RTC_WRITE
+U31,7408,7408,Package_DIP:DIP-14_W7.62mm,inferred,rtc_adapter_design,AND gates steering the sequenced data pulse to RTC_READ or RTC_WRITE
 U32,7404,7404,Package_DIP:DIP-14_W7.62mm,inferred,rtc_adapter_design,Inverters for RTC latch output enables and command read complement
+U33,7432,7432,Package_DIP:DIP-14_W7.62mm,inferred,rtc_adapter_design,OR gates combining RTC sequencer phases into select data-strobe and cycle-clear terms
 Y1,XTAL_CPU_5MHZ,5 MHz,Crystal:Crystal_HC49-U_Vertical,confirmed,https://www.digikey.com/en/products/detail/w%C3%BCrth-elektronik/830003119B/13900107,CPU crystal
 Y2,XTAL_1_8432MHZ,1.8432 MHz,Crystal:Crystal_HC49-U_Vertical,confirmed,https://www.digikey.com/en/products/detail/raltron-electronics/A-1-8432-18/10246237,MC14411 baud-rate crystal
 Y3,XTAL_32_768KHZ,32.768 kHz,,todo,rtc_backup_design_chat,RTC timebase crystal; exact part and package TBD; impedance must be no more than 30 kohm

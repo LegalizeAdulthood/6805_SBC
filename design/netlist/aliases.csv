@@ -11,8 +11,8 @@ ACIA Rx Data,ACIA_RXD_TTL,MC6850 serial data path,inferred,serial_design_chat,TT
 ACIA Tx Data,ACIA_TXD_TTL,MC6850 serial data path,inferred,serial_design_chat,TTL transmit-data net between MC6850 TxD and MAX232 T1IN
 ADDRESS WRITE,RTC_ADDRESS_WRITE,MSM58321 control input,confirmed,design/rtc.md,Active-high RTC address latch strobe
 CC,CC1,USB-C connector symbol,inferred,usb_c_design_chat,Simplified connector label for first configuration channel
-CS1,RTC_SELECT,MSM58321 chip select,inferred,rtc_adapter_design,Driven by stretched RTC_SELECT from the trigger and read-back adapter
-CS2,RTC_SELECT,MSM58321 chip select,inferred,rtc_adapter_design,Driven by stretched RTC_SELECT from the trigger and read-back adapter
+CS1,RTC_SELECT,MSM58321 chip select,inferred,rtc_adapter_design,Driven by sequenced RTC_SELECT from the trigger and read-back adapter
+CS2,RTC_SELECT,MSM58321 chip select,inferred,rtc_adapter_design,Driven by sequenced RTC_SELECT from the trigger and read-back adapter
 F1,BAUD_F1,MC14411 baud output,confirmed,design/baud-rate.md,614.4 kHz candidate clock in X64 range
 F3,BAUD_F3,MC14411 baud output,confirmed,design/baud-rate.md,307.2 kHz candidate clock in X64 range
 F8,BAUD_F8,MC14411 baud output,confirmed,design/baud-rate.md,38.4 kHz candidate clock in X64 range
