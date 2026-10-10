@@ -4,6 +4,12 @@ MC6850,Motorola,MC6850,Asynchronous communications interface adapter,,Package_DI
 MSM58321,OKI,MSM58321,Real-time clock calendar,MCU_Motorola_6800:MSM58321,Package_DIP:DIP-16_W7.62mm,docs/MSM58321.pdf,Local KiCad symbol exists
 MC14411,Motorola,MC14411,Baud-rate generator,MCU_Motorola_6800:MC14411,Package_DIP:DIP-24_W15.24mm,docs/MC14411.pdf,Local KiCad symbol exists
 74153,,74153,Dual 4-to-1 data selector/multiplexer,,Package_DIP:DIP-16_W7.62mm,design/baud-rate.md,Exact logic family and KiCad symbol still TBD; standard 74153 pinout used for staging
+74373,,74373,Octal transparent latch with tri-state outputs,,Package_DIP:DIP-20_W7.62mm,design/Address_Latch.dig,Selected from inventory for low-address demultiplexing; exact KiCad symbol still TBD
+74138,,74138,3-to-8 line decoder with active-low outputs,,Package_DIP:DIP-16_W7.62mm,docs/sn74ls138.pdf,Selected from inventory for address decode; standard 74138 pinout used for staging
+7408,,7408,Quad 2-input AND gate,,Package_DIP:DIP-14_W7.62mm,https://www.ti.com/lit/ds/symlink/sn74ls08.pdf,Selected from inventory for address decode gate packing
+7411,,7411,Triple 3-input AND gate,,Package_DIP:DIP-14_W7.62mm,https://www.ti.com/lit/ds/symlink/sn74ls11.pdf,Selected from inventory for address decode gate packing
+7432,,7432,Quad 2-input OR gate,,Package_DIP:DIP-14_W7.62mm,https://www.ti.com/lit/ds/symlink/sn74ls32.pdf,Selected from inventory for address decode gate packing
+7404,,7404,Hex inverter,,Package_DIP:DIP-14_W7.62mm,https://www.ti.com/lit/ds/symlink/sn74ls04.pdf,Selected from inventory for address decode gate packing
 AM2732,AMD,Am2732,4Kx8 UV erasable PROM,,Package_DIP:DIP-24_W15.24mm,docs/Am2732-AMD.pdf,Selected from inventory; KiCad symbol still needs to be selected or created
 HM6116,,HM6116,2Kx8 static RAM,,Package_DIP:DIP-24_W7.62mm,docs/IDT_6116.pdf,Selected from inventory; IDT6116 datasheet used for 6116-class pinout
 XTAL_CPU_5MHZ,Wurth Elektronik,830003119B,5 MHz 30 pF CPU crystal,Device:Crystal,Crystal:Crystal_HC49-U_Vertical,https://www.digikey.com/en/products/detail/w%C3%BCrth-elektronik/830003119B/13900107,HC-49/US through-hole; 130 ohm ESR; +/-30 ppm tolerance; +/-50 ppm stability

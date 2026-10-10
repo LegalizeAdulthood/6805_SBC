@@ -5,6 +5,17 @@ CPU_OSC1,U1,39,OSC1,confirmed,MCU_Motorola_6800.kicad_sym,CPU oscillator input
 CPU_OSC1,Y1,1,1,confirmed,https://www.digikey.com/en/products/detail/w%C3%BCrth-elektronik/830003119B/13900107,CPU crystal terminal
 CPU_OSC2,U1,38,OSC2,confirmed,MCU_Motorola_6800.kicad_sym,CPU oscillator output
 CPU_OSC2,Y1,2,2,confirmed,https://www.digikey.com/en/products/detail/w%C3%BCrth-elektronik/830003119B/13900107,CPU crystal terminal
+AS,U1,6,AS,confirmed,MCU_Motorola_6800.kicad_sym,CPU address strobe
+DS,U1,4,DS,confirmed,MCU_Motorola_6800.kicad_sym,CPU data strobe
+R/~W,U1,5,R/~W,confirmed,MCU_Motorola_6800.kicad_sym,CPU read/write direction
+D0,U1,36,PB0,confirmed,design/Address_Latch.dig,CPU multiplexed address/data bus bit 0
+D1,U1,35,PB1,confirmed,design/Address_Latch.dig,CPU multiplexed address/data bus bit 1
+D2,U1,34,PB2,confirmed,design/Address_Latch.dig,CPU multiplexed address/data bus bit 2
+D3,U1,33,PB3,confirmed,design/Address_Latch.dig,CPU multiplexed address/data bus bit 3
+D4,U1,32,PB4,confirmed,design/Address_Latch.dig,CPU multiplexed address/data bus bit 4
+D5,U1,31,PB5,confirmed,design/Address_Latch.dig,CPU multiplexed address/data bus bit 5
+D6,U1,30,PB6,confirmed,design/Address_Latch.dig,CPU multiplexed address/data bus bit 6
+D7,U1,29,PB7,confirmed,design/Address_Latch.dig,CPU multiplexed address/data bus bit 7
 5V0,U2,12,VCC,confirmed,docs/MC6850.pdf,ACIA power
 GND,U2,1,VSS,confirmed,docs/MC6850.pdf,ACIA ground
 ACIA_RXCLK,U2,3,RxCLK,inferred,design/baud-rate.md,Receive clock from section 1 of baud mux
@@ -127,3 +138,155 @@ RTC_XT,U8,15,XT,confirmed,docs/MSM58321.pdf,RTC crystal oscillator pin
 RTC_XT,Y3,1,1,confirmed,docs/MSM58321.pdf,RTC crystal terminal
 RTC_XT_N,U8,14,~XT,confirmed,docs/MSM58321.pdf,RTC crystal oscillator pin
 RTC_XT_N,Y3,2,2,confirmed,docs/MSM58321.pdf,RTC crystal terminal
+5V0,U9,20,VCC,confirmed,https://www.ti.com/lit/ds/symlink/sn74ls373.pdf,Address latch power
+GND,U9,10,GND,confirmed,https://www.ti.com/lit/ds/symlink/sn74ls373.pdf,Address latch ground
+GND,U9,1,~OE,inferred,design/Address_Latch.dig,Enable address latch outputs
+AS,U9,11,LE,confirmed,design/Address_Latch.dig,Latch PB0-PB7 while AS is asserted
+D0,U9,3,1D,confirmed,design/Address_Latch.dig,Low address/data bit 0 latch input
+A0,U9,2,1Q,confirmed,design/Address_Latch.dig,Latched low address bit 0
+D1,U9,4,2D,confirmed,design/Address_Latch.dig,Low address/data bit 1 latch input
+A1,U9,5,2Q,confirmed,design/Address_Latch.dig,Latched low address bit 1
+D2,U9,7,3D,confirmed,design/Address_Latch.dig,Low address/data bit 2 latch input
+A2,U9,6,3Q,confirmed,design/Address_Latch.dig,Latched low address bit 2
+D3,U9,8,4D,confirmed,design/Address_Latch.dig,Low address/data bit 3 latch input
+A3,U9,9,4Q,confirmed,design/Address_Latch.dig,Latched low address bit 3
+D4,U9,13,5D,confirmed,design/Address_Latch.dig,Low address/data bit 4 latch input
+A4,U9,12,5Q,confirmed,design/Address_Latch.dig,Latched low address bit 4
+D5,U9,14,6D,confirmed,design/Address_Latch.dig,Low address/data bit 5 latch input
+A5,U9,15,6Q,confirmed,design/Address_Latch.dig,Latched low address bit 5
+D6,U9,17,7D,confirmed,design/Address_Latch.dig,Low address/data bit 6 latch input
+A6,U9,16,7Q,confirmed,design/Address_Latch.dig,Latched low address bit 6
+D7,U9,18,8D,confirmed,design/Address_Latch.dig,Low address/data bit 7 latch input
+A7,U9,19,8Q,confirmed,design/Address_Latch.dig,Latched low address bit 7
+A8,U1,19,A8,confirmed,MCU_Motorola_6800.kicad_sym,CPU high address bit 8
+A9,U1,18,A9,confirmed,MCU_Motorola_6800.kicad_sym,CPU high address bit 9
+A10,U1,17,A10,confirmed,MCU_Motorola_6800.kicad_sym,CPU high address bit 10
+A11,U1,16,A11,confirmed,MCU_Motorola_6800.kicad_sym,CPU high address bit 11
+A12,U1,15,A12,confirmed,MCU_Motorola_6800.kicad_sym,CPU high address bit 12
+D0,U2,22,D0,inferred,docs/MC6850.pdf,ACIA data bus bit 0
+D1,U2,21,D1,inferred,docs/MC6850.pdf,ACIA data bus bit 1
+D2,U2,20,D2,inferred,docs/MC6850.pdf,ACIA data bus bit 2
+D3,U2,19,D3,inferred,docs/MC6850.pdf,ACIA data bus bit 3
+D4,U2,18,D4,inferred,docs/MC6850.pdf,ACIA data bus bit 4
+D5,U2,17,D5,inferred,docs/MC6850.pdf,ACIA data bus bit 5
+D6,U2,16,D6,inferred,docs/MC6850.pdf,ACIA data bus bit 6
+D7,U2,15,D7,inferred,docs/MC6850.pdf,ACIA data bus bit 7
+A0,U2,11,RS,inferred,docs/memory-map.txt,ACIA register select for $0006 versus $0007
+DS,U2,13,E,inferred,docs/MC6850.pdf,ACIA enable driven from CPU data strobe
+R/~W,U2,14,R/~W,inferred,docs/MC6850.pdf,ACIA read/write direction
+5V0,U2,8,CS0,inferred,docs/memory-map.txt,Hold ACIA positive chip select asserted
+5V0,U2,10,CS1,inferred,docs/memory-map.txt,Hold ACIA positive chip select asserted
+~ACIAEN,U2,9,~CS2,inferred,design/New_Address_Decode.dig,Active-low ACIA chip select from address decode
+5V0,U10,16,VCC,confirmed,docs/sn74ls138.pdf,High address decoder power
+GND,U10,8,GND,confirmed,docs/sn74ls138.pdf,High address decoder ground
+A11,U10,1,A,inferred,design/New_Address_Decode.dig,High address decoder low select bit
+A12,U10,2,B,inferred,design/New_Address_Decode.dig,High address decoder high select bit
+GND,U10,3,C,inferred,design/New_Address_Decode.dig,Grounded select bit leaves outputs Q4-Q7 unused
+GND,U10,4,~G2A,inferred,docs/sn74ls138.pdf,Enable high address decoder
+GND,U10,5,~G2B,inferred,docs/sn74ls138.pdf,Enable high address decoder
+AS,U10,6,G1,inferred,design/New_Address_Decode.dig,AS qualifies high address decode
+~BANK0_0000_07FF,U10,15,~Y0,inferred,design/New_Address_Decode.dig,Decode for $0000-$07FF bank
+~RAM2CS,U10,14,~Y1,inferred,design/New_Address_Decode.dig,Decode for $0800-$0FFF RAM2 bank
+~ROM_LOCS,U10,13,~Y2,inferred,design/New_Address_Decode.dig,One half of ROM decode
+~ROM_HICS,U10,12,~Y3,inferred,design/New_Address_Decode.dig,Other half of ROM decode
+~DEC_HIGH_Q4,U10,11,~Y4,confirmed,design/New_Address_Decode.dig,Unused high decoder output
+~DEC_HIGH_Q5,U10,10,~Y5,confirmed,design/New_Address_Decode.dig,Unused high decoder output
+~DEC_HIGH_Q6,U10,9,~Y6,confirmed,design/New_Address_Decode.dig,Unused high decoder output
+~DEC_HIGH_Q7,U10,7,~Y7,confirmed,design/New_Address_Decode.dig,Unused high decoder output
+5V0,U13,14,VCC,confirmed,https://www.ti.com/lit/ds/symlink/sn74ls08.pdf,AND gate package power
+GND,U13,7,GND,confirmed,https://www.ti.com/lit/ds/symlink/sn74ls08.pdf,AND gate package ground
+~ROM_LOCS,U13,1,1A,inferred,design/New_Address_Decode.dig,AND active-low ROM half selects
+~ROM_HICS,U13,2,1B,inferred,design/New_Address_Decode.dig,AND active-low ROM half selects
+~ROMCS,U13,3,1Y,inferred,design/New_Address_Decode.dig,Combined ROM chip select
+PAGE_0000_00FF,U13,4,2A,inferred,design/New_Address_Decode.dig,Low I/O decode page term
+A4_A7_ZERO,U13,5,2B,inferred,design/New_Address_Decode.dig,Low I/O decode lower address term
+LOW_0000_000F,U13,6,2Y,inferred,design/New_Address_Decode.dig,Enable low peripheral pair decoder
+PAGE_0100_01FF,U13,9,3A,inferred,design/New_Address_Decode.dig,RTC decode page term
+A4_A7_ZERO,U13,10,3B,inferred,design/New_Address_Decode.dig,RTC decode lower address term
+RTCCS,U13,8,3Y,inferred,design/New_Address_Decode.dig,AS-qualified RTC address decode
+GND,U13,12,4A,inferred,design/New_Address_Decode.dig,Tie unused AND input low
+GND,U13,13,4B,inferred,design/New_Address_Decode.dig,Tie unused AND input low
+5V0,U17,14,VCC,confirmed,https://www.ti.com/lit/ds/symlink/sn74ls04.pdf,Inverter package power
+GND,U17,7,GND,confirmed,https://www.ti.com/lit/ds/symlink/sn74ls04.pdf,Inverter package ground
+~BANK0_0000_07FF,U17,1,1A,inferred,design/New_Address_Decode.dig,Invert active-low bank decode
+BANK0_0000_07FF,U17,2,1Y,inferred,design/New_Address_Decode.dig,Active-high bank decode
+A4_A7_NONZERO,U17,3,2A,inferred,design/New_Address_Decode.dig,Invert lower address nonzero term
+A4_A7_ZERO,U17,4,2Y,inferred,design/New_Address_Decode.dig,Lower address zero term
+~PAGE_0000_00FF,U17,5,3A,inferred,design/New_Address_Decode.dig,Invert active-low page decode
+PAGE_0000_00FF,U17,6,3Y,inferred,design/New_Address_Decode.dig,Active-high page decode
+~PAGE_0100_01FF,U17,9,4A,inferred,design/New_Address_Decode.dig,Invert active-low RTC page decode
+PAGE_0100_01FF,U17,8,4Y,inferred,design/New_Address_Decode.dig,Active-high RTC page decode
+RTCCS,U17,11,5A,inferred,design/New_Address_Decode.dig,Invert RTC select for RAM1 exclusion
+~RTCCS,U17,10,5Y,inferred,design/New_Address_Decode.dig,Active-low RTC select complement
+RAM1_ACTIVE,U17,13,6A,inferred,design/New_Address_Decode.dig,Invert active-high RAM1 select
+~RAM1CS,U17,12,6Y,inferred,design/New_Address_Decode.dig,Active-low RAM1 chip select
+5V0,U11,16,VCC,confirmed,docs/sn74ls138.pdf,Page decoder power
+GND,U11,8,GND,confirmed,docs/sn74ls138.pdf,Page decoder ground
+A8,U11,1,A,inferred,design/New_Address_Decode.dig,Page decoder select bit A8
+A9,U11,2,B,inferred,design/New_Address_Decode.dig,Page decoder select bit A9
+A10,U11,3,C,inferred,design/New_Address_Decode.dig,Page decoder select bit A10
+GND,U11,4,~G2A,inferred,docs/sn74ls138.pdf,Enable page decoder
+GND,U11,5,~G2B,inferred,docs/sn74ls138.pdf,Enable page decoder
+BANK0_0000_07FF,U11,6,G1,inferred,design/New_Address_Decode.dig,Enable page decode inside the $0000-$07FF bank
+~PAGE_0000_00FF,U11,15,~Y0,inferred,design/New_Address_Decode.dig,Page decode for $0000-$00FF
+~PAGE_0100_01FF,U11,14,~Y1,inferred,design/New_Address_Decode.dig,Page decode for $0100-$01FF
+~PAGE_0200_02FF,U11,13,~Y2,inferred,design/New_Address_Decode.dig,Page decode for $0200-$02FF
+~PAGE_0300_03FF,U11,12,~Y3,inferred,design/New_Address_Decode.dig,Page decode for $0300-$03FF
+~PAGE_0400_04FF,U11,11,~Y4,inferred,design/New_Address_Decode.dig,Page decode for $0400-$04FF
+~PAGE_0500_05FF,U11,10,~Y5,inferred,design/New_Address_Decode.dig,Page decode for $0500-$05FF
+~PAGE_0600_06FF,U11,9,~Y6,inferred,design/New_Address_Decode.dig,Page decode for $0600-$06FF
+~PAGE_0700_07FF,U11,7,~Y7,inferred,design/New_Address_Decode.dig,Page decode for $0700-$07FF
+5V0,U15,14,VCC,confirmed,https://www.ti.com/lit/ds/symlink/sn74ls32.pdf,OR gate package power
+GND,U15,7,GND,confirmed,https://www.ti.com/lit/ds/symlink/sn74ls32.pdf,OR gate package ground
+A4,U15,1,1A,inferred,design/New_Address_Decode.dig,Low-nibble high zero term
+A5,U15,2,1B,inferred,design/New_Address_Decode.dig,Low-nibble high zero term
+A4_OR_A5,U15,3,1Y,inferred,design/New_Address_Decode.dig,Intermediate lower address OR
+A6,U15,4,2A,inferred,design/New_Address_Decode.dig,Low-nibble high zero term
+A7,U15,5,2B,inferred,design/New_Address_Decode.dig,Low-nibble high zero term
+A6_OR_A7,U15,6,2Y,inferred,design/New_Address_Decode.dig,Intermediate lower address OR
+A4_OR_A5,U15,9,3A,inferred,design/New_Address_Decode.dig,Combine lower address OR terms
+A6_OR_A7,U15,10,3B,inferred,design/New_Address_Decode.dig,Combine lower address OR terms
+A4_A7_NONZERO,U15,8,3Y,inferred,design/New_Address_Decode.dig,High when A4-A7 are not all zero
+A7,U15,12,4A,inferred,design/New_Address_Decode.dig,RAM1 nonzero address term
+A8,U15,13,4B,inferred,design/New_Address_Decode.dig,RAM1 nonzero address term
+A7_OR_A8,U15,11,4Y,inferred,design/New_Address_Decode.dig,Intermediate RAM1 nonzero address term
+5V0,U16,14,VCC,confirmed,https://www.ti.com/lit/ds/symlink/sn74ls32.pdf,OR gate package power
+GND,U16,7,GND,confirmed,https://www.ti.com/lit/ds/symlink/sn74ls32.pdf,OR gate package ground
+A9,U16,1,1A,inferred,design/New_Address_Decode.dig,RAM1 nonzero address term
+A10,U16,2,1B,inferred,design/New_Address_Decode.dig,RAM1 nonzero address term
+A9_OR_A10,U16,3,1Y,inferred,design/New_Address_Decode.dig,Intermediate RAM1 nonzero address term
+A7_OR_A8,U16,4,2A,inferred,design/New_Address_Decode.dig,Combine RAM1 nonzero address terms
+A9_OR_A10,U16,5,2B,inferred,design/New_Address_Decode.dig,Combine RAM1 nonzero address terms
+BANK0_ADDR_NONZERO,U16,6,2Y,inferred,design/New_Address_Decode.dig,High for bank 0 addresses at or above $0080
+GND,U16,9,3A,inferred,design/New_Address_Decode.dig,Tie unused OR input low
+GND,U16,10,3B,inferred,design/New_Address_Decode.dig,Tie unused OR input low
+GND,U16,12,4A,inferred,design/New_Address_Decode.dig,Tie unused OR input low
+GND,U16,13,4B,inferred,design/New_Address_Decode.dig,Tie unused OR input low
+5V0,U14,14,VCC,confirmed,https://www.ti.com/lit/ds/symlink/sn74ls11.pdf,Three-input AND package power
+GND,U14,7,GND,confirmed,https://www.ti.com/lit/ds/symlink/sn74ls11.pdf,Three-input AND package ground
+BANK0_0000_07FF,U14,1,1A,inferred,design/New_Address_Decode.dig,RAM1 active decode term
+BANK0_ADDR_NONZERO,U14,2,1B,inferred,design/New_Address_Decode.dig,RAM1 active decode term
+~RTCCS,U14,13,1C,inferred,design/New_Address_Decode.dig,RAM1 active decode term
+RAM1_ACTIVE,U14,12,1Y,inferred,design/New_Address_Decode.dig,Active-high RAM1 select before inversion
+GND,U14,3,2A,inferred,design/New_Address_Decode.dig,Tie unused AND input low
+GND,U14,4,2B,inferred,design/New_Address_Decode.dig,Tie unused AND input low
+GND,U14,5,2C,inferred,design/New_Address_Decode.dig,Tie unused AND input low
+GND,U14,9,3A,inferred,design/New_Address_Decode.dig,Tie unused AND input low
+GND,U14,10,3B,inferred,design/New_Address_Decode.dig,Tie unused AND input low
+GND,U14,11,3C,inferred,design/New_Address_Decode.dig,Tie unused AND input low
+5V0,U12,16,VCC,confirmed,docs/sn74ls138.pdf,Low peripheral decoder power
+GND,U12,8,GND,confirmed,docs/sn74ls138.pdf,Low peripheral decoder ground
+A1,U12,1,A,inferred,design/New_Address_Decode.dig,Low peripheral pair decoder select bit A1
+A2,U12,2,B,inferred,design/New_Address_Decode.dig,Low peripheral pair decoder select bit A2
+A3,U12,3,C,inferred,design/New_Address_Decode.dig,Low peripheral pair decoder select bit A3
+GND,U12,4,~G2A,inferred,docs/sn74ls138.pdf,Enable low peripheral decoder
+GND,U12,5,~G2B,inferred,docs/sn74ls138.pdf,Enable low peripheral decoder
+LOW_0000_000F,U12,6,G1,inferred,design/New_Address_Decode.dig,Enable decode for $0000-$000F
+~ADDR_0000_0001,U12,15,~Y0,confirmed,design/New_Address_Decode.dig,Low pair decode output
+~P1EN,U12,14,~Y1,confirmed,design/New_Address_Decode.dig,Low pair decode output
+~ADDR_0004_0005,U12,13,~Y2,confirmed,design/New_Address_Decode.dig,Low pair decode output
+~ACIAEN,U12,12,~Y3,confirmed,design/New_Address_Decode.dig,ACIA decode output
+~ADDR_0008_0009,U12,11,~Y4,inferred,design/Address_Decode.dig,Low pair decode output
+~P2EN,U12,10,~Y5,confirmed,design/New_Address_Decode.dig,Low pair decode output
+~P3EN,U12,9,~Y6,confirmed,design/New_Address_Decode.dig,Low pair decode output
+~P4EN,U12,7,~Y7,confirmed,design/New_Address_Decode.dig,Low pair decode output

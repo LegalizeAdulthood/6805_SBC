@@ -52,3 +52,39 @@ BAUD_SEL_A,control,todo,design/baud-rate.md,Shared 74153 select input A; source 
 BAUD_SEL_B,control,todo,design/baud-rate.md,Shared 74153 select input B; source still TBD
 ACIA_RXCLK,clock,inferred,design/baud-rate.md,Driven by section 1 of baud mux
 ACIA_TXCLK,clock,inferred,design/baud-rate.md,Driven by section 2 of baud mux
+~BANK0_0000_07FF,control,inferred,design/New_Address_Decode.dig,Active-low decode for $0000-$07FF while AS is asserted
+BANK0_0000_07FF,control,inferred,design/New_Address_Decode.dig,Active-high complement of the $0000-$07FF bank decode
+~ROM_LOCS,control,inferred,design/New_Address_Decode.dig,Active-low high address decoder output for one ROM half
+~ROM_HICS,control,inferred,design/New_Address_Decode.dig,Active-low high address decoder output for the other ROM half
+~DEC_HIGH_Q4,control,confirmed,design/New_Address_Decode.dig,Unused active-low high decoder output Q4
+~DEC_HIGH_Q5,control,confirmed,design/New_Address_Decode.dig,Unused active-low high decoder output Q5
+~DEC_HIGH_Q6,control,confirmed,design/New_Address_Decode.dig,Unused active-low high decoder output Q6
+~DEC_HIGH_Q7,control,confirmed,design/New_Address_Decode.dig,Unused active-low high decoder output Q7
+~PAGE_0000_00FF,control,inferred,design/New_Address_Decode.dig,Active-low page decode for $0000-$00FF inside bank 0
+PAGE_0000_00FF,control,inferred,design/New_Address_Decode.dig,Active-high complement of $0000-$00FF page decode
+~PAGE_0100_01FF,control,inferred,design/New_Address_Decode.dig,Active-low page decode for $0100-$01FF inside bank 0
+PAGE_0100_01FF,control,inferred,design/New_Address_Decode.dig,Active-high complement of $0100-$01FF page decode
+~PAGE_0200_02FF,control,inferred,design/New_Address_Decode.dig,Active-low page decode for $0200-$02FF inside bank 0
+~PAGE_0300_03FF,control,inferred,design/New_Address_Decode.dig,Active-low page decode for $0300-$03FF inside bank 0
+~PAGE_0400_04FF,control,inferred,design/New_Address_Decode.dig,Active-low page decode for $0400-$04FF inside bank 0
+~PAGE_0500_05FF,control,inferred,design/New_Address_Decode.dig,Active-low page decode for $0500-$05FF inside bank 0
+~PAGE_0600_06FF,control,inferred,design/New_Address_Decode.dig,Active-low page decode for $0600-$06FF inside bank 0
+~PAGE_0700_07FF,control,inferred,design/New_Address_Decode.dig,Active-low page decode for $0700-$07FF inside bank 0
+A4_OR_A5,control,inferred,design/New_Address_Decode.dig,Intermediate OR term for low-nibble high decode
+A6_OR_A7,control,inferred,design/New_Address_Decode.dig,Intermediate OR term for low-nibble high decode
+A4_A7_NONZERO,control,inferred,design/New_Address_Decode.dig,High when any of A4-A7 is asserted
+A4_A7_ZERO,control,inferred,design/New_Address_Decode.dig,High when A4-A7 are all zero
+A7_OR_A8,control,inferred,design/New_Address_Decode.dig,Intermediate OR term for RAM1 select
+A9_OR_A10,control,inferred,design/New_Address_Decode.dig,Intermediate OR term for RAM1 select
+BANK0_ADDR_NONZERO,control,inferred,design/New_Address_Decode.dig,High for bank 0 addresses at or above $0080
+~RTCCS,control,inferred,design/New_Address_Decode.dig,Active-low complement of RTCCS for RAM1 exclusion
+RAM1_ACTIVE,control,inferred,design/New_Address_Decode.dig,Active-high RAM1 select before inversion
+LOW_0000_000F,control,inferred,design/New_Address_Decode.dig,Active-high enable for low peripheral pair decoder
+~ADDR_0000_0001,control,confirmed,design/New_Address_Decode.dig,Active-low low peripheral decoder output for $0000-$0001
+~P1EN,control,confirmed,design/New_Address_Decode.dig,Active-low low peripheral decoder output for $0002-$0003
+~ADDR_0004_0005,control,confirmed,design/New_Address_Decode.dig,Active-low low peripheral decoder output for $0004-$0005
+~ACIAEN,control,confirmed,design/New_Address_Decode.dig,Active-low ACIA select for $0006-$0007
+~ADDR_0008_0009,control,inferred,design/Address_Decode.dig,Active-low low peripheral decoder output for $0008-$0009
+~P2EN,control,confirmed,design/New_Address_Decode.dig,Active-low low peripheral decoder output for $000A-$000B
+~P3EN,control,confirmed,design/New_Address_Decode.dig,Active-low low peripheral decoder output for $000C-$000D
+~P4EN,control,confirmed,design/New_Address_Decode.dig,Active-low low peripheral decoder output for $000E-$000F
