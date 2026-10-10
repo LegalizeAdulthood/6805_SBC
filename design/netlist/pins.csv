@@ -135,6 +135,8 @@ CAP_1NF,1,1,passive,false,usb_c_design_chat,Capacitor terminal
 CAP_1NF,2,2,passive,false,usb_c_design_chat,Capacitor terminal
 CAP_1UF,1,1,passive,false,reset_design_chat,Capacitor terminal
 CAP_1UF,2,2,passive,false,reset_design_chat,Capacitor terminal
+CAP_18PF,1,1,passive,false,cpu_oscillator_design_chat,Capacitor terminal
+CAP_18PF,2,2,passive,false,cpu_oscillator_design_chat,Capacitor terminal
 CAP_100NF,1,1,passive,false,usb_c_design_chat,Capacitor terminal
 CAP_100NF,2,2,passive,false,usb_c_design_chat,Capacitor terminal
 CAP_INPUT_BULK,1,1,passive,false,usb_c_design_chat,Capacitor positive terminal for polarized bulk option
@@ -238,6 +240,8 @@ RES_5K1,1,1,passive,false,usb_c_design_chat,Resistor terminal
 RES_5K1,2,2,passive,false,usb_c_design_chat,Resistor terminal
 RES_10K,1,1,passive,false,reset_design_chat,Resistor terminal
 RES_10K,2,2,passive,false,reset_design_chat,Resistor terminal
+RES_10M,1,1,passive,false,cpu_oscillator_design_chat,Resistor terminal
+RES_10M,2,2,passive,false,cpu_oscillator_design_chat,Resistor terminal
 SW_PUSH_NO,1,1,passive,false,reset_design_chat,Switch terminal
 SW_PUSH_NO,2,2,passive,false,reset_design_chat,Switch terminal
 TVS_5V_UNIDIR,1,K,passive,false,usb_c_design_chat,TVS cathode

@@ -9,6 +9,7 @@ part_id,manufacturer,mpn,description,default_symbol,default_footprint,source,not
 AM2732,AMD,Am2732,4Kx8 UV erasable PROM,,Package_DIP:DIP-24_W15.24mm,docs/Am2732-AMD.pdf,Selected from inventory; KiCad symbol still needs to be selected or created
 CAP_1NF,,,1 nF capacitor,Device:C,,usb_c_design_chat,Optional USB shield coupling capacitor; final shield treatment TBD
 CAP_1UF,,,1 uF reset timing capacitor,Device:C,,reset_design_chat,Reset RC timing capacitor; exact dielectric and voltage rating TBD
+CAP_18PF,,,18 pF NP0/C0G capacitor,Device:C,,cpu_oscillator_design_chat,Initial CPU crystal load capacitor; tune if needed for selected crystal load capacitance
 CAP_100NF,,,0.1 uF ceramic capacitor,Device:C,,usb_c_design_chat,Input bypass capacitor
 CAP_INPUT_BULK,,,10-47 uF input bulk capacitor,Device:C_Polarized,,usb_c_design_chat,Input bulk capacitance range from USB-C power notes; exact value TBD
 DIODE_1N4148,,1N4148,Small-signal switching diode,Device:D,,reset_design_chat,Optional reset capacitor discharge diode with anode on RESET and cathode on 5V0
@@ -21,6 +22,7 @@ PPTC_USB_INPUT,,,USB input resettable PPTC fuse,Device:Fuse,,usb_c_design_chat,T
 RES_1M,,,1 Mohm resistor,Device:R,,usb_c_design_chat,Optional USB shield bleed resistor; final shield treatment TBD
 RES_5K1,,,5.1 kohm resistor,Device:R,,usb_c_design_chat,USB-C Rd pull-down for CC pins
 RES_10K,,,10 kohm resistor,Device:R,,reset_design_chat,Reset pull-up resistor
+RES_10M,,,10 Mohm resistor,Device:R,,cpu_oscillator_design_chat,CPU oscillator feedback resistor across OSC1 and OSC2
 SW_PUSH_NO,,,Normally-open pushbutton,Switch:SW_Push,,reset_design_chat,Manual reset pushbutton pulls RESET to GND when pressed
 TVS_5V_UNIDIR,,SMBJ5.0A,SMBJ5.0A-class 5 V unidirectional TVS diode,Device:D_TVS,Diode_SMD:D_SMB,usb_c_design_chat,Use reputable SMBJ5.0A vendor; SMAJ5.0A is smaller lower-surge option; 5.0 V standoff; do not use 3.3 V or 12 V TVS
 USB_C_RECEPTACLE_POWER,,,USB-C receptacle for power-only 5 V sink,Connector:USB_C_Receptacle_USB2.0,,usb_c_design_chat,Exact connector footprint and shield pin mapping TBD; full connector data SuperSpeed and SBU pins are staged NC for power-only use; some symbols label CC2 as VCONN

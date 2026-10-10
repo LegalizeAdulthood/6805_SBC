@@ -135,8 +135,12 @@ CC1,J1,A5,CC1,inferred,usb_c_design_chat,USB-C configuration channel 1
 CC1,R1,1,1,inferred,usb_c_design_chat,CC1 Rd pull-down
 CC2,J1,B5,CC2,inferred,usb_c_design_chat,USB-C configuration channel 2
 CC2,R2,1,1,inferred,usb_c_design_chat,CC2 Rd pull-down
+CPU_OSC1,C5,1,1,inferred,cpu_oscillator_design_chat,CPU oscillator load capacitor on OSC1
+CPU_OSC1,R5,1,1,inferred,cpu_oscillator_design_chat,Feedback resistor terminal at OSC1
 CPU_OSC1,U1,39,OSC1,confirmed,MCU_Motorola_6800.kicad_sym,CPU oscillator input
 CPU_OSC1,Y1,1,1,confirmed,https://www.digikey.com/en/products/detail/w%C3%BCrth-elektronik/830003119B/13900107,CPU crystal terminal
+CPU_OSC2,C6,1,1,inferred,cpu_oscillator_design_chat,CPU oscillator load capacitor on OSC2
+CPU_OSC2,R5,2,2,inferred,cpu_oscillator_design_chat,Feedback resistor terminal at OSC2
 CPU_OSC2,U1,38,OSC2,confirmed,MCU_Motorola_6800.kicad_sym,CPU oscillator output
 CPU_OSC2,Y1,2,2,confirmed,https://www.digikey.com/en/products/detail/w%C3%BCrth-elektronik/830003119B/13900107,CPU crystal terminal
 D0,U1,36,PB0,confirmed,design/Address_Latch.dig,CPU multiplexed address/data bus bit 0
@@ -197,6 +201,8 @@ GND,C1,2,2,todo,usb_c_design_chat,Input bulk capacitor return
 GND,C2,2,2,inferred,usb_c_design_chat,Input bypass capacitor return
 GND,C3,2,2,todo,usb_c_design_chat,Optional shield coupling path return
 GND,C4,2,2,inferred,reset_design_chat,Reset timing capacitor return
+GND,C5,2,2,inferred,cpu_oscillator_design_chat,CPU_OSC1 load capacitor return
+GND,C6,2,2,inferred,cpu_oscillator_design_chat,CPU_OSC2 load capacitor return
 GND,D1,2,A,inferred,usb_c_design_chat,TVS anode to ground
 GND,J1,A1,GND,inferred,usb_c_design_chat,USB-C ground contact
 GND,J1,A12,GND,inferred,usb_c_design_chat,USB-C ground contact

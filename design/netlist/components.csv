@@ -3,6 +3,8 @@ C1,CAP_INPUT_BULK,10-47 uF,,todo,usb_c_design_chat,Input bulk capacitor on prote
 C2,CAP_100NF,0.1 uF,,inferred,usb_c_design_chat,Input bypass capacitor on protected 5V0 rail
 C3,CAP_1NF,1 nF,,todo,usb_c_design_chat,Optional shield-to-ground coupling capacitor; populate only if selected
 C4,CAP_1UF,1 uF,,inferred,reset_design_chat,Reset timing capacitor from RESET to GND for roughly 10 ms RC
+C5,CAP_18PF,18 pF,,inferred,cpu_oscillator_design_chat,CPU_OSC1 load capacitor; NP0/C0G initial build value
+C6,CAP_18PF,18 pF,,inferred,cpu_oscillator_design_chat,CPU_OSC2 load capacitor; NP0/C0G initial build value
 D1,TVS_5V_UNIDIR,SMBJ5.0A,Diode_SMD:D_SMB,todo,usb_c_design_chat,Unidirectional VBUS TVS near USB-C connector; cathode stripe to USB_VBUS and anode to GND; connector side of fuse
 D2,DIODE_1N4148,1N4148,,todo,reset_design_chat,Optional reset capacitor discharge diode; anode to RESET and cathode to 5V0
 F1,PPTC_USB_INPUT,1.1 A hold,,todo,usb_c_design_chat,Resettable input fuse between raw USB VBUS and protected 5V0 rail; about 2.2 A trip; >=6 V with 16 V preferred; exact JLC/LCSC or radial part TBD
@@ -11,6 +13,7 @@ R1,RES_5K1,5.1 kohm,,inferred,usb_c_design_chat,CC1 Rd pull-down
 R2,RES_5K1,5.1 kohm,,inferred,usb_c_design_chat,CC2 Rd pull-down
 R3,RES_1M,1 Mohm,,todo,usb_c_design_chat,Optional shield-to-ground bleed resistor; populate only if selected
 R4,RES_10K,10 kohm,,inferred,reset_design_chat,Reset pull-up from RESET to 5V0
+R5,RES_10M,10 Mohm,,inferred,cpu_oscillator_design_chat,CPU oscillator feedback resistor across CPU_OSC1 and CPU_OSC2
 SW1,SW_PUSH_NO,Reset,,inferred,reset_design_chat,Normally-open manual reset pushbutton from RESET to GND
 U1,MC146805E2,MC146805E2,Package_DIP:DIP-40_W15.24mm,confirmed,docs/MC146805E2_1983.pdf,CPU
 U2,MC6850,MC6850,Package_DIP:DIP-24_W15.24mm,confirmed,docs/MC6850.pdf,ACIA

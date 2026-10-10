@@ -35,6 +35,8 @@ O5,D5,Am2732 data output,confirmed,docs/Am2732-AMD.pdf,EPROM output bit mapped t
 O6,D6,Am2732 data output,confirmed,docs/Am2732-AMD.pdf,EPROM output bit mapped to external data bus
 O7,D7,Am2732 data output,confirmed,docs/Am2732-AMD.pdf,EPROM output bit mapped to external data bus
 OE,~MEMRD,memory output enable,todo,docs/Am2732-AMD.pdf,Common memory read-enable net still needs final control logic
+OSC1,CPU_OSC1,MC146805E2 oscillator pin,confirmed,MCU_Motorola_6800.kicad_sym,CPU pin 39 oscillator input
+OSC2,CPU_OSC2,MC146805E2 oscillator pin,confirmed,MCU_Motorola_6800.kicad_sym,CPU pin 38 oscillator output
 PB0,D0,CPU multiplexed address/data bus,confirmed,design/Address_Latch.dig,PB0 carries A0 during AS and D0 during data phase
 PB1,D1,CPU multiplexed address/data bus,confirmed,design/Address_Latch.dig,PB1 carries A1 during AS and D1 during data phase
 PB2,D2,CPU multiplexed address/data bus,confirmed,design/Address_Latch.dig,PB2 carries A2 during AS and D2 during data phase
