@@ -55,13 +55,16 @@ Receive Clock,RxCLK,MC6850 pin 3,confirmed,docs/MC6850.pdf,Datasheet descriptive
 receive-clock output of baud mux,ACIA_RXCLK,baud-rate clock path,inferred,design/baud-rate.md,U4 section 1 output staged as ACIA receive-clock net
 ROM /CE,~ROMCS,ROM chip select,confirmed,docs/memory-map.txt,Memory map names ROM chip enable
 ROM ~CS,~ROMCS,ROM chip select,confirmed,design/New_Address_Decode.dig,Address decoder signal label
+RTC battery,RTC_BAT,RTC backup supply,inferred,rtc_backup_design_chat,CR2032 positive terminal before isolation diode
 RTC CS,RTCCS,address decode label,confirmed,design/New_Address_Decode.dig,AS-qualified RTC address-decode output
+RTC VDD,RTC_VDD,MSM58321 power pin,inferred,rtc_backup_design_chat,Battery-backed RTC supply after diode-OR
 Select A,BAUD_SEL_A,74153 shared select input,todo,design/baud-rate.md,Driving source still open
 Select B,BAUD_SEL_B,74153 shared select input,todo,design/baud-rate.md,Driving source still open
 SHIELD,USB_SHIELD,USB-C connector shield,todo,usb_c_design_chat,Connector shell or shield net name before final grounding decision
 Transmit Clock,TxCLK,MC6850 pin 4,confirmed,docs/MC6850.pdf,Datasheet descriptive name for transmit clock pin
 transmit-clock output of baud mux,ACIA_TXCLK,baud-rate clock path,inferred,design/baud-rate.md,U4 section 2 output staged as ACIA transmit-clock net
 USB +5V,USB_VBUS,USB-C power input,inferred,usb_c_design_chat,Human-readable raw USB-C 5 V input name
+VBAT,RTC_BAT,RTC backup supply,inferred,rtc_backup_design_chat,Alternate name for CR2032 positive terminal
 VBUS,USB_VBUS,USB-C power input,inferred,usb_c_design_chat,USB-C connector VBUS before input fuse
 VBUS_IN,USB_VBUS,USB-C power input,inferred,usb_c_design_chat,Alternate name for raw USB-C VBUS
 VCC,5V0,logic supply,confirmed,docs/MC6850.pdf,ACIA and 74153 use VCC for 5.0 V supply

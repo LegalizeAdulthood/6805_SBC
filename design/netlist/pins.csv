@@ -135,14 +135,20 @@ CAP_1NF,1,1,passive,false,usb_c_design_chat,Capacitor terminal
 CAP_1NF,2,2,passive,false,usb_c_design_chat,Capacitor terminal
 CAP_1UF,1,1,passive,false,reset_design_chat,Capacitor terminal
 CAP_1UF,2,2,passive,false,reset_design_chat,Capacitor terminal
+CAP_10UF,1,1,passive,false,rtc_backup_design_chat,Capacitor positive terminal
+CAP_10UF,2,2,passive,false,rtc_backup_design_chat,Capacitor ground terminal
 CAP_18PF,1,1,passive,false,cpu_oscillator_design_chat,Capacitor terminal
 CAP_18PF,2,2,passive,false,cpu_oscillator_design_chat,Capacitor terminal
 CAP_100NF,1,1,passive,false,usb_c_design_chat,Capacitor terminal
 CAP_100NF,2,2,passive,false,usb_c_design_chat,Capacitor terminal
 CAP_INPUT_BULK,1,1,passive,false,usb_c_design_chat,Capacitor positive terminal for polarized bulk option
 CAP_INPUT_BULK,2,2,passive,false,usb_c_design_chat,Capacitor ground terminal
+CR2032_HOLDER,1,+,passive,false,rtc_backup_design_chat,Coin-cell positive terminal
+CR2032_HOLDER,2,-,passive,false,rtc_backup_design_chat,Coin-cell negative terminal
 DIODE_1N4148,1,K,passive,false,reset_design_chat,Diode cathode
 DIODE_1N4148,2,A,passive,false,reset_design_chat,Diode anode
+DIODE_SCHOTTKY_RTC,1,K,passive,false,rtc_backup_design_chat,Schottky diode cathode
+DIODE_SCHOTTKY_RTC,2,A,passive,false,rtc_backup_design_chat,Schottky diode anode
 HM6116,1,A7,input,false,docs/IDT_6116.pdf,Address input
 HM6116,2,A6,input,false,docs/IDT_6116.pdf,Address input
 HM6116,3,A5,input,false,docs/IDT_6116.pdf,Address input
@@ -244,6 +250,8 @@ RES_10M,1,1,passive,false,cpu_oscillator_design_chat,Resistor terminal
 RES_10M,2,2,passive,false,cpu_oscillator_design_chat,Resistor terminal
 SW_PUSH_NO,1,1,passive,false,reset_design_chat,Switch terminal
 SW_PUSH_NO,2,2,passive,false,reset_design_chat,Switch terminal
+TRIMCAP_RTC,1,1,passive,false,rtc_backup_design_chat,Trimmer capacitor terminal
+TRIMCAP_RTC,2,2,passive,false,rtc_backup_design_chat,Trimmer capacitor terminal
 TVS_5V_UNIDIR,1,K,passive,false,usb_c_design_chat,TVS cathode
 TVS_5V_UNIDIR,2,A,passive,false,usb_c_design_chat,TVS anode to ground
 USB_C_RECEPTACLE_POWER,A1,GND,power_in,false,usb_c_design_chat,USB-C ground contact

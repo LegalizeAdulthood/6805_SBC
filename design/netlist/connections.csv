@@ -2,6 +2,7 @@ net,refdes,pin_number,pin_name,status,source,notes
 5V0,C1,1,1,todo,usb_c_design_chat,Input bulk capacitor on protected 5V0 rail; exact value TBD
 5V0,C2,1,1,inferred,usb_c_design_chat,Input bypass capacitor on protected 5V0 rail
 5V0,D2,1,K,todo,reset_design_chat,Optional reset capacitor discharge diode cathode
+5V0,D3,2,A,inferred,rtc_backup_design_chat,Main 5V0 feed into RTC_VDD diode-OR
 5V0,F1,2,OUT,inferred,usb_c_design_chat,Protected 5V0 rail after input PPTC
 5V0,R4,1,1,inferred,reset_design_chat,Reset pull-up source
 5V0,U1,40,VDD,confirmed,MCU_Motorola_6800.kicad_sym,CPU power
@@ -197,12 +198,18 @@ D7,U7,17,I/O7,inferred,docs/IDT_6116.pdf,RAM 2 data bit 7
 D7,U9,18,8D,confirmed,design/Address_Latch.dig,Low address/data bit 7 latch input
 DS,U1,4,DS,confirmed,MCU_Motorola_6800.kicad_sym,CPU data strobe
 DS,U2,13,E,inferred,docs/MC6850.pdf,ACIA enable driven from CPU data strobe
+GND,BT1,2,-,inferred,rtc_backup_design_chat,RTC backup coin-cell negative terminal
 GND,C1,2,2,todo,usb_c_design_chat,Input bulk capacitor return
 GND,C2,2,2,inferred,usb_c_design_chat,Input bypass capacitor return
 GND,C3,2,2,todo,usb_c_design_chat,Optional shield coupling path return
 GND,C4,2,2,inferred,reset_design_chat,Reset timing capacitor return
 GND,C5,2,2,inferred,cpu_oscillator_design_chat,CPU_OSC1 load capacitor return
 GND,C6,2,2,inferred,cpu_oscillator_design_chat,CPU_OSC2 load capacitor return
+GND,C7,2,2,inferred,rtc_backup_design_chat,RTC_XT load capacitor return
+GND,C8,2,2,inferred,rtc_backup_design_chat,RTC_XT_N load capacitor return
+GND,C9,2,2,todo,rtc_backup_design_chat,Optional RTC trimmer capacitor return
+GND,C10,2,2,inferred,rtc_backup_design_chat,RTC_VDD bulk capacitor return
+GND,C11,2,2,inferred,rtc_backup_design_chat,RTC_VDD bypass capacitor return
 GND,D1,2,A,inferred,usb_c_design_chat,TVS anode to ground
 GND,J1,A1,GND,inferred,usb_c_design_chat,USB-C ground contact
 GND,J1,A12,GND,inferred,usb_c_design_chat,USB-C ground contact
@@ -282,15 +289,26 @@ RESET,R4,2,2,inferred,reset_design_chat,Reset pull-up output node
 RESET,SW1,1,1,inferred,reset_design_chat,Manual reset pushbutton pulls RESET low
 RESET,U1,1,~RESET,confirmed,MCU_Motorola_6800.kicad_sym,CPU active-low reset input
 RTC_ADDRESS_WRITE,U8,9,ADDRESS_WRITE,todo,design/rtc.md,Assert for address phase on both reads and writes
+RTC_BAT,BT1,1,+,inferred,rtc_backup_design_chat,RTC backup coin-cell positive terminal
+RTC_BAT,D4,2,A,inferred,rtc_backup_design_chat,CR2032 feed into RTC_VDD diode-OR
 RTC_BUSY,U8,10,~BUSY,todo,docs/MSM58321.pdf,Open-drain BUSY output consumer and pull-up TBD
 RTC_READ,U8,3,READ,todo,design/rtc.md,Active-high RTC read strobe from selected DS read cycle
 RTC_SELECT,U8,1,CS2,todo,design/rtc.md,Final select must be held for complete RTC bus cycle
 RTC_SELECT,U8,13,CS1,todo,design/rtc.md,Final select must be held for complete RTC bus cycle
 RTC_STOP,U8,11,STOP,todo,docs/MSM58321.pdf,Normal low versus controlled STOP still TBD
-RTC_VDD,U8,16,VDD,todo,docs/MSM58321.pdf,RTC power; backup/direct 5V source TBD
+RTC_VDD,C10,1,1,inferred,rtc_backup_design_chat,RTC_VDD backup bulk capacitor
+RTC_VDD,C11,1,1,inferred,rtc_backup_design_chat,RTC_VDD local bypass capacitor
+RTC_VDD,D3,1,K,inferred,rtc_backup_design_chat,Main 5V0 Schottky cathode at backed-up RTC supply
+RTC_VDD,D4,1,K,inferred,rtc_backup_design_chat,CR2032 Schottky cathode at backed-up RTC supply
+RTC_VDD,U8,16,VDD,inferred,rtc_backup_design_chat,RTC backed-up VDD supply
 RTC_WRITE,U8,2,WRITE,todo,design/rtc.md,Active-high RTC write strobe from selected DS write cycle
+RTC_XT,C7,1,1,inferred,rtc_backup_design_chat,RTC crystal load capacitor on XT
+RTC_XT,C9,1,1,todo,rtc_backup_design_chat,Optional RTC oscillator trimmer footprint on XT
+RTC_XT,R6,1,1,inferred,rtc_backup_design_chat,RTC oscillator feedback resistor terminal at XT
 RTC_XT,U8,15,XT,confirmed,docs/MSM58321.pdf,RTC crystal oscillator pin
 RTC_XT,Y3,1,1,confirmed,docs/MSM58321.pdf,RTC crystal terminal
+RTC_XT_N,C8,1,1,inferred,rtc_backup_design_chat,RTC crystal load capacitor on ~XT
+RTC_XT_N,R6,2,2,inferred,rtc_backup_design_chat,RTC oscillator feedback resistor terminal at ~XT
 RTC_XT_N,U8,14,~XT,confirmed,docs/MSM58321.pdf,RTC crystal oscillator pin
 RTC_XT_N,Y3,2,2,confirmed,docs/MSM58321.pdf,RTC crystal terminal
 RTCCS,U13,8,3Y,inferred,design/New_Address_Decode.dig,AS-qualified RTC address decode

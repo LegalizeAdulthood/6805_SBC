@@ -9,10 +9,13 @@ part_id,manufacturer,mpn,description,default_symbol,default_footprint,source,not
 AM2732,AMD,Am2732,4Kx8 UV erasable PROM,,Package_DIP:DIP-24_W15.24mm,docs/Am2732-AMD.pdf,Selected from inventory; KiCad symbol still needs to be selected or created
 CAP_1NF,,,1 nF capacitor,Device:C,,usb_c_design_chat,Optional USB shield coupling capacitor; final shield treatment TBD
 CAP_1UF,,,1 uF reset timing capacitor,Device:C,,reset_design_chat,Reset RC timing capacitor; exact dielectric and voltage rating TBD
+CAP_10UF,,,10 uF capacitor,Device:C,,rtc_backup_design_chat,RTC_VDD backup bulk capacitor; exact dielectric voltage rating and footprint TBD
 CAP_18PF,,,18 pF NP0/C0G capacitor,Device:C,,cpu_oscillator_design_chat,Initial CPU crystal load capacitor; tune if needed for selected crystal load capacitance
 CAP_100NF,,,0.1 uF ceramic capacitor,Device:C,,usb_c_design_chat,Input bypass capacitor
 CAP_INPUT_BULK,,,10-47 uF input bulk capacitor,Device:C_Polarized,,usb_c_design_chat,Input bulk capacitance range from USB-C power notes; exact value TBD
+CR2032_HOLDER,,,CR2032 coin-cell holder,Device:Battery_Cell,,rtc_backup_design_chat,RTC backup battery holder; exact footprint and retention style TBD
 DIODE_1N4148,,1N4148,Small-signal switching diode,Device:D,,reset_design_chat,Optional reset capacitor discharge diode with anode on RESET and cathode on 5V0
+DIODE_SCHOTTKY_RTC,,BAT54 or 1N5817-class,Schottky isolation diode,Device:D_Schottky,,rtc_backup_design_chat,RTC diode-OR isolation diode; use BAT54 or 1N5817-class and not 1N4148 to preserve battery margin
 HM6116,,HM6116,2Kx8 static RAM,,Package_DIP:DIP-24_W7.62mm,docs/IDT_6116.pdf,Selected from inventory; IDT6116 datasheet used for 6116-class pinout
 MC6850,Motorola,MC6850,Asynchronous communications interface adapter,,Package_DIP:DIP-24_W15.24mm,docs/MC6850.pdf,Symbol still needs to be selected or created
 MC14411,Motorola,MC14411,Baud-rate generator,MCU_Motorola_6800:MC14411,Package_DIP:DIP-24_W15.24mm,docs/MC14411.pdf,Local KiCad symbol exists
@@ -24,8 +27,9 @@ RES_5K1,,,5.1 kohm resistor,Device:R,,usb_c_design_chat,USB-C Rd pull-down for C
 RES_10K,,,10 kohm resistor,Device:R,,reset_design_chat,Reset pull-up resistor
 RES_10M,,,10 Mohm resistor,Device:R,,cpu_oscillator_design_chat,CPU oscillator feedback resistor across OSC1 and OSC2
 SW_PUSH_NO,,,Normally-open pushbutton,Switch:SW_Push,,reset_design_chat,Manual reset pushbutton pulls RESET to GND when pressed
+TRIMCAP_RTC,,,Optional RTC oscillator trimmer capacitor,Device:C_Variable,,rtc_backup_design_chat,Optional trimmer footprint for RTC oscillator; exact range and use TBD
 TVS_5V_UNIDIR,,SMBJ5.0A,SMBJ5.0A-class 5 V unidirectional TVS diode,Device:D_TVS,Diode_SMD:D_SMB,usb_c_design_chat,Use reputable SMBJ5.0A vendor; SMAJ5.0A is smaller lower-surge option; 5.0 V standoff; do not use 3.3 V or 12 V TVS
 USB_C_RECEPTACLE_POWER,,,USB-C receptacle for power-only 5 V sink,Connector:USB_C_Receptacle_USB2.0,,usb_c_design_chat,Exact connector footprint and shield pin mapping TBD; full connector data SuperSpeed and SBU pins are staged NC for power-only use; some symbols label CC2 as VCONN
 XTAL_1_8432MHZ,Raltron Electronics,A-1.8432-18,1.8432 MHz 18 pF baud-rate crystal,Device:Crystal,Crystal:Crystal_HC49-U_Vertical,https://www.digikey.com/en/products/detail/raltron-electronics/A-1-8432-18/10246237,Selected for MC14411 clock; HC-49/U through-hole; 700 ohm ESR; +/-30 ppm tolerance; +/-50 ppm stability
-XTAL_32_768KHZ,,32.768 kHz,RTC timebase crystal,Device:Crystal,,docs/MSM58321.pdf,MSM58321 requires 32.768 kHz crystal with impedance 30 kohm or less; exact package TBD
+XTAL_32_768KHZ,,32.768 kHz,RTC timebase crystal,Device:Crystal,,docs/MSM58321.pdf,MSM58321 requires 32.768 kHz crystal with impedance 30 kohm or less; exact package TBD; use 10 Mohm feedback and initial 18 pF load capacitors
 XTAL_CPU_5MHZ,Wurth Elektronik,830003119B,5 MHz 30 pF CPU crystal,Device:Crystal,Crystal:Crystal_HC49-U_Vertical,https://www.digikey.com/en/products/detail/w%C3%BCrth-elektronik/830003119B/13900107,HC-49/US through-hole; 130 ohm ESR; +/-30 ppm tolerance; +/-50 ppm stability

@@ -54,11 +54,12 @@ R/~W,control,confirmed,design/rtc.md,CPU read/write direction signal
 RAM1_ACTIVE,control,inferred,design/New_Address_Decode.dig,Active-high RAM1 select before inversion
 RESET,control,inferred,reset_design_chat,Active-low CPU reset net driven by RC pull-up network and manual pushbutton
 RTC_ADDRESS_WRITE,control,todo,design/rtc.md,RTC_SELECT AND AS
+RTC_BAT,power,inferred,rtc_backup_design_chat,CR2032 positive terminal before Schottky isolation diode
 RTC_BUSY,control,todo,docs/MSM58321.pdf,Open-drain busy output handling and pull-up TBD
 RTC_READ,control,todo,design/rtc.md,RTC_SELECT AND DS AND R/~W
 RTC_SELECT,control,todo,design/rtc.md,RTC decode held for the complete bus cycle
 RTC_STOP,control,todo,docs/MSM58321.pdf,RTC STOP input handling TBD
-RTC_VDD,power,todo,docs/MSM58321.pdf,RTC VDD supply; direct 5V0 versus backup supply TBD
+RTC_VDD,power,inferred,rtc_backup_design_chat,Battery-backed RTC supply after 5V0 and CR2032 Schottky diode-OR
 RTC_WRITE,control,todo,design/rtc.md,RTC_SELECT AND DS AND NOT R/~W
 RTC_XT,clock,confirmed,docs/MSM58321.pdf,MSM58321 32.768 kHz crystal connection
 RTC_XT_N,clock,confirmed,docs/MSM58321.pdf,MSM58321 32.768 kHz crystal connection
