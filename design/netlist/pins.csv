@@ -162,6 +162,9 @@ DIODE_1N4148,1,K,passive,false,reset_design_chat,Diode cathode
 DIODE_1N4148,2,A,passive,false,reset_design_chat,Diode anode
 DIODE_SCHOTTKY_RTC,1,K,passive,false,rtc_backup_design_chat,Schottky diode cathode
 DIODE_SCHOTTKY_RTC,2,A,passive,false,rtc_backup_design_chat,Schottky diode anode
+HEADER_TIMER_IRQ,1,TIMER,passive,false,timer_header_design_chat,External slow timer injection signal
+HEADER_TIMER_IRQ,2,IRQ,passive,false,timer_header_design_chat,Shared active-low IRQ header signal
+HEADER_TIMER_IRQ,3,GND,power_in,false,timer_header_design_chat,Header ground
 HM6116,1,A7,input,false,docs/IDT_6116.pdf,Address input
 HM6116,2,A6,input,false,docs/IDT_6116.pdf,Address input
 HM6116,3,A5,input,false,docs/IDT_6116.pdf,Address input
@@ -255,6 +258,7 @@ MC146805E2,33,PB3,bidirectional,false,MCU_Motorola_6800.kicad_sym,Multiplexed ad
 MC146805E2,34,PB2,bidirectional,false,MCU_Motorola_6800.kicad_sym,Multiplexed address/data bus bit 2
 MC146805E2,35,PB1,bidirectional,false,MCU_Motorola_6800.kicad_sym,Multiplexed address/data bus bit 1
 MC146805E2,36,PB0,bidirectional,false,MCU_Motorola_6800.kicad_sym,Multiplexed address/data bus bit 0
+MC146805E2,37,TIMER,input,false,MCU_Motorola_6800.kicad_sym,Timer input
 MC146805E2,38,OSC2,input,false,MCU_Motorola_6800.kicad_sym,Crystal oscillator pin
 MC146805E2,39,OSC1,input,false,MCU_Motorola_6800.kicad_sym,Crystal oscillator pin
 MC146805E2,40,VDD,power_in,false,MCU_Motorola_6800.kicad_sym,Power

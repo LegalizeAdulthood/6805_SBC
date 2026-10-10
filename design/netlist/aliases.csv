@@ -63,9 +63,11 @@ RTC CS,RTCCS,address decode label,confirmed,design/New_Address_Decode.dig,AS-qua
 RTC VDD,RTC_VDD,MSM58321 power pin,inferred,rtc_backup_design_chat,Battery-backed RTC supply after diode-OR
 Rx Data,ACIA_RXD_TTL,MC6850 pin 6,confirmed,docs/MC6850.pdf,Datasheet descriptive name for receive data pin
 RXD,RS232_RXD,DE-9 signal,inferred,serial_design_chat,DTE-style DE-9 pin 2 signal into SBC receiver
+SBC_TIMER,TIMER,timer header signal,inferred,timer_header_design_chat,External timer injection signal name
 Select A,BAUD_SEL_A,74153 shared select input,todo,design/baud-rate.md,Driving source still open
 Select B,BAUD_SEL_B,74153 shared select input,todo,design/baud-rate.md,Driving source still open
 SHIELD,USB_SHIELD,USB-C connector shield,todo,usb_c_design_chat,Connector shell or shield net name before final grounding decision
+Timer,TIMER,MC146805E2 timer input,confirmed,MCU_Motorola_6800.kicad_sym,CPU timer input pin
 Transmit Clock,TxCLK,MC6850 pin 4,confirmed,docs/MC6850.pdf,Datasheet descriptive name for transmit clock pin
 transmit-clock output of baud mux,ACIA_TXCLK,baud-rate clock path,inferred,design/baud-rate.md,U4 section 2 output staged as ACIA transmit-clock net
 Tx Data,ACIA_TXD_TTL,MC6850 pin 24,confirmed,docs/MC6850.pdf,Datasheet descriptive name for transmit data pin

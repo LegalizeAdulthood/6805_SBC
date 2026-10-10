@@ -28,6 +28,7 @@ D4,DIODE_SCHOTTKY_RTC,BAT54 or 1N5817-class,,todo,rtc_backup_design_chat,CR2032 
 F1,PPTC_USB_INPUT,1.1 A hold,,todo,usb_c_design_chat,Resettable input fuse between raw USB VBUS and protected 5V0 rail; about 2.2 A trip; >=6 V with 16 V preferred; exact JLC/LCSC or radial part TBD
 J1,USB_C_RECEPTACLE_POWER,USB-C power input,,todo,usb_c_design_chat,Power-only USB-C sink connector; D+/D- SuperSpeed and SBU pins are NC; exact footprint TBD
 J2,DE9_DTE_SERIAL,DE-9 serial,,todo,serial_design_chat,DTE-style RS-232 console connector; exact gender footprint and board-edge orientation TBD
+J4,HEADER_TIMER_IRQ,TIMER/IRQ header,,todo,timer_header_design_chat,Small service header for external TIMER injection shared IRQ access and ground; exact mechanical style TBD
 R1,RES_5K1,5.1 kohm,,inferred,usb_c_design_chat,CC1 Rd pull-down
 R2,RES_5K1,5.1 kohm,,inferred,usb_c_design_chat,CC2 Rd pull-down
 R3,RES_1M,1 Mohm,,todo,usb_c_design_chat,Optional shield-to-ground bleed resistor; populate only if selected

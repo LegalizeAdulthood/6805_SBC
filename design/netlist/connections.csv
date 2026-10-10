@@ -243,6 +243,7 @@ GND,J1,A12,GND,inferred,usb_c_design_chat,USB-C ground contact
 GND,J1,B1,GND,inferred,usb_c_design_chat,USB-C ground contact
 GND,J1,B12,GND,inferred,usb_c_design_chat,USB-C ground contact
 GND,J2,5,GND,inferred,serial_design_chat,DE-9 signal ground
+GND,J4,3,GND,inferred,timer_header_design_chat,TIMER/IRQ header ground
 GND,R1,2,2,inferred,usb_c_design_chat,CC1 Rd pull-down return
 GND,R2,2,2,inferred,usb_c_design_chat,CC2 Rd pull-down return
 GND,R3,2,2,todo,usb_c_design_chat,Optional shield bleed path return
@@ -293,6 +294,7 @@ GND,U17,7,GND,confirmed,https://www.ti.com/lit/ds/symlink/sn74ls04.pdf,Inverter 
 GND,U18,8,R2IN,todo,serial_design_chat,Tie unused second receiver input to ground unless the channel is exposed
 GND,U18,10,T2IN,todo,serial_design_chat,Tie unused second driver input low unless the channel is exposed
 GND,U18,15,GND,inferred,serial_design_chat,MAX232 ground
+IRQ,J4,2,IRQ,inferred,timer_header_design_chat,Optional shared IRQ access on TIMER header
 IRQ,R8,2,2,inferred,irq_design_chat,Shared IRQ pull-up output
 IRQ,TP4,1,1,inferred,test_pad_design_chat,Shared active-low IRQ observation test point
 IRQ,TP21,1,1,inferred,test_pad_design_chat,ACIA IRQ source observation pad electrically on shared IRQ; place near U2
@@ -386,6 +388,8 @@ RTCCS,TP13,1,1,inferred,test_pad_design_chat,RTC address-decode observation test
 RTCCS,U13,8,3Y,inferred,design/New_Address_Decode.dig,AS-qualified RTC address decode
 RTCCS,U17,11,5A,inferred,design/New_Address_Decode.dig,Invert RTC select for RAM1 exclusion
 SYSCLK,TP8,1,1,todo,test_pad_design_chat,Buffered system clock observation test point; driver source TBD
+TIMER,J4,1,TIMER,inferred,timer_header_design_chat,External TIMER injection header pin
+TIMER,U1,37,TIMER,confirmed,MCU_Motorola_6800.kicad_sym,CPU TIMER input
 USB_SHIELD,C3,1,1,todo,usb_c_design_chat,Optional shield coupling path; final shield treatment TBD
 USB_SHIELD,J1,SH,SHIELD,todo,usb_c_design_chat,Connector shield pin name depends on selected footprint
 USB_SHIELD,R3,1,1,todo,usb_c_design_chat,Optional shield bleed path; final shield treatment TBD
