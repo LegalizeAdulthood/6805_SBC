@@ -7,6 +7,7 @@ alias,canonical,context,status,source,notes
 +5V,5V0,legacy 5 V net name,confirmed,design/netlist,Older staging name for 5.0 V logic supply
 ACIA /CS2,~ACIAEN,MC6850 chip select,confirmed,docs/memory-map.txt,Memory map names the ACIA active-low select input
 ADDRESS WRITE,RTC_ADDRESS_WRITE,MSM58321 control input,confirmed,design/rtc.md,Active-high RTC address latch strobe
+CC,CC1,USB-C connector symbol,inferred,usb_c_design_chat,Simplified connector label for first configuration channel
 CS1,RTC_SELECT,MSM58321 chip select,todo,design/rtc.md,Final select source must be held for complete transaction
 CS2,RTC_SELECT,MSM58321 chip select,todo,design/rtc.md,Final select source must be held for complete transaction
 F1,BAUD_F1,MC14411 baud output,confirmed,design/baud-rate.md,614.4 kHz candidate clock in X64 range
@@ -62,7 +63,7 @@ USB +5V,USB_VBUS,USB-C power input,inferred,usb_c_design_chat,Human-readable raw
 VBUS,USB_VBUS,USB-C power input,inferred,usb_c_design_chat,USB-C connector VBUS before input fuse
 VBUS_IN,USB_VBUS,USB-C power input,inferred,usb_c_design_chat,Alternate name for raw USB-C VBUS
 VCC,5V0,logic supply,confirmed,docs/MC6850.pdf,ACIA and 74153 use VCC for 5.0 V supply
-VCONN,CC2,USB-C connector symbol,inferred,usb_c_design_chat,Some simplified symbols label the second CC contact as VCONN for a sink connector
+VCONN,CC2,USB-C connector symbol,inferred,usb_c_design_chat,Some simplified symbols label the second CC contact as VCONN for a sink connector; treat it as CC2 with Rd and do not source VCONN
 VDD,5V0,logic supply,confirmed,docs/MC146805E2_1983.pdf,CPU and MC14411 use VDD for 5.0 V supply
 VSS,GND,logic ground,confirmed,docs/MC146805E2_1983.pdf,CPU ACIA and MC14411 ground naming
 WE,~RAMWE,RAM write enable,todo,docs/IDT_6116.pdf,RAM write-enable net still needs final control logic

@@ -2,9 +2,9 @@ refdes,part_id,value,footprint,status,source,notes
 C1,CAP_INPUT_BULK,10-47 uF,,todo,usb_c_design_chat,Input bulk capacitor on protected 5V0 rail; exact value and footprint TBD
 C2,CAP_100NF,0.1 uF,,inferred,usb_c_design_chat,Input bypass capacitor on protected 5V0 rail
 C3,CAP_1NF,1 nF,,todo,usb_c_design_chat,Optional shield-to-ground coupling capacitor; populate only if selected
-D1,TVS_5V_UNIDIR,5 V,,todo,usb_c_design_chat,Unidirectional VBUS TVS diode near USB-C connector; exact part TBD
-F1,PPTC_USB_INPUT,1.1 A hold,,todo,usb_c_design_chat,Resettable input fuse between raw USB VBUS and protected 5V0 rail; exact package and part TBD
-J1,USB_C_RECEPTACLE_POWER,USB-C power input,,todo,usb_c_design_chat,Power-only USB-C sink connector; exact footprint TBD
+D1,TVS_5V_UNIDIR,SMBJ5.0A,Diode_SMD:D_SMB,todo,usb_c_design_chat,Unidirectional VBUS TVS near USB-C connector; cathode stripe to USB_VBUS and anode to GND; connector side of fuse
+F1,PPTC_USB_INPUT,1.1 A hold,,todo,usb_c_design_chat,Resettable input fuse between raw USB VBUS and protected 5V0 rail; about 2.2 A trip; >=6 V with 16 V preferred; exact JLC/LCSC or radial part TBD
+J1,USB_C_RECEPTACLE_POWER,USB-C power input,,todo,usb_c_design_chat,Power-only USB-C sink connector; D+/D- SuperSpeed and SBU pins are NC; exact footprint TBD
 R1,RES_5K1,5.1 kohm,,inferred,usb_c_design_chat,CC1 Rd pull-down
 R2,RES_5K1,5.1 kohm,,inferred,usb_c_design_chat,CC2 Rd pull-down
 R3,RES_1M,1 Mohm,,todo,usb_c_design_chat,Optional shield-to-ground bleed resistor; populate only if selected

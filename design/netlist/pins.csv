@@ -234,14 +234,28 @@ RES_5K1,2,2,passive,false,usb_c_design_chat,Resistor terminal
 TVS_5V_UNIDIR,1,K,passive,false,usb_c_design_chat,TVS cathode
 TVS_5V_UNIDIR,2,A,passive,false,usb_c_design_chat,TVS anode to ground
 USB_C_RECEPTACLE_POWER,A1,GND,power_in,false,usb_c_design_chat,USB-C ground contact
+USB_C_RECEPTACLE_POWER,A2,TX1+,no_connect,false,usb_c_design_chat,Unused SuperSpeed pair for power-only sink; leave unconnected
+USB_C_RECEPTACLE_POWER,A3,TX1-,no_connect,false,usb_c_design_chat,Unused SuperSpeed pair for power-only sink; leave unconnected
 USB_C_RECEPTACLE_POWER,A4,VBUS,power_in,false,usb_c_design_chat,USB-C VBUS contact
 USB_C_RECEPTACLE_POWER,A5,CC1,input,false,usb_c_design_chat,Configuration channel 1
+USB_C_RECEPTACLE_POWER,A6,D+,no_connect,false,usb_c_design_chat,Unused USB 2.0 data pin for power-only sink; leave unconnected
+USB_C_RECEPTACLE_POWER,A7,D-,no_connect,false,usb_c_design_chat,Unused USB 2.0 data pin for power-only sink; leave unconnected
+USB_C_RECEPTACLE_POWER,A8,SBU1,no_connect,false,usb_c_design_chat,Unused sideband pin for power-only sink; leave unconnected
 USB_C_RECEPTACLE_POWER,A9,VBUS,power_in,false,usb_c_design_chat,USB-C VBUS contact
+USB_C_RECEPTACLE_POWER,A10,RX2-,no_connect,false,usb_c_design_chat,Unused SuperSpeed pair for power-only sink; leave unconnected
+USB_C_RECEPTACLE_POWER,A11,RX2+,no_connect,false,usb_c_design_chat,Unused SuperSpeed pair for power-only sink; leave unconnected
 USB_C_RECEPTACLE_POWER,A12,GND,power_in,false,usb_c_design_chat,USB-C ground contact
 USB_C_RECEPTACLE_POWER,B1,GND,power_in,false,usb_c_design_chat,USB-C ground contact
+USB_C_RECEPTACLE_POWER,B2,TX2+,no_connect,false,usb_c_design_chat,Unused SuperSpeed pair for power-only sink; leave unconnected
+USB_C_RECEPTACLE_POWER,B3,TX2-,no_connect,false,usb_c_design_chat,Unused SuperSpeed pair for power-only sink; leave unconnected
 USB_C_RECEPTACLE_POWER,B4,VBUS,power_in,false,usb_c_design_chat,USB-C VBUS contact
 USB_C_RECEPTACLE_POWER,B5,CC2,input,false,usb_c_design_chat,Configuration channel 2
+USB_C_RECEPTACLE_POWER,B6,D+,no_connect,false,usb_c_design_chat,Unused USB 2.0 data pin for power-only sink; leave unconnected
+USB_C_RECEPTACLE_POWER,B7,D-,no_connect,false,usb_c_design_chat,Unused USB 2.0 data pin for power-only sink; leave unconnected
+USB_C_RECEPTACLE_POWER,B8,SBU2,no_connect,false,usb_c_design_chat,Unused sideband pin for power-only sink; leave unconnected
 USB_C_RECEPTACLE_POWER,B9,VBUS,power_in,false,usb_c_design_chat,USB-C VBUS contact
+USB_C_RECEPTACLE_POWER,B10,RX1-,no_connect,false,usb_c_design_chat,Unused SuperSpeed pair for power-only sink; leave unconnected
+USB_C_RECEPTACLE_POWER,B11,RX1+,no_connect,false,usb_c_design_chat,Unused SuperSpeed pair for power-only sink; leave unconnected
 USB_C_RECEPTACLE_POWER,B12,GND,power_in,false,usb_c_design_chat,USB-C ground contact
 USB_C_RECEPTACLE_POWER,SH,SHIELD,passive,false,usb_c_design_chat,Connector shell or shield contact; exact footprint pin name TBD
 XTAL_1_8432MHZ,1,1,passive,false,https://www.digikey.com/en/products/detail/raltron-electronics/A-1-8432-18/10246237,Crystal terminal

@@ -47,6 +47,7 @@ D7,data,confirmed,docs/memory-map.txt,External data bus bit 7
 DS,control,confirmed,design/rtc.md,Data strobe used during external data phase
 GND,power,confirmed,docs/MC146805E2_1983.pdf,Logic ground
 LOW_0000_000F,control,inferred,design/New_Address_Decode.dig,Active-high enable for low peripheral pair decoder
+NC,no-connect,inferred,usb_c_design_chat,Intentional no-connect pins for the power-only USB-C receptacle
 PAGE_0000_00FF,control,inferred,design/New_Address_Decode.dig,Active-high complement of $0000-$00FF page decode
 PAGE_0100_01FF,control,inferred,design/New_Address_Decode.dig,Active-high complement of $0100-$01FF page decode
 R/~W,control,confirmed,design/rtc.md,CPU read/write direction signal

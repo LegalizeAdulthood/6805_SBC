@@ -244,6 +244,20 @@ GND,U16,13,4B,inferred,design/New_Address_Decode.dig,Tie unused OR input low
 GND,U17,7,GND,confirmed,https://www.ti.com/lit/ds/symlink/sn74ls04.pdf,Inverter package ground
 LOW_0000_000F,U12,6,G1,inferred,design/New_Address_Decode.dig,Enable decode for $0000-$000F
 LOW_0000_000F,U13,6,2Y,inferred,design/New_Address_Decode.dig,Enable low peripheral pair decoder
+NC,J1,A2,TX1+,inferred,usb_c_design_chat,Unused SuperSpeed pair for power-only sink
+NC,J1,A3,TX1-,inferred,usb_c_design_chat,Unused SuperSpeed pair for power-only sink
+NC,J1,A6,D+,inferred,usb_c_design_chat,Unused USB 2.0 data pin for power-only sink
+NC,J1,A7,D-,inferred,usb_c_design_chat,Unused USB 2.0 data pin for power-only sink
+NC,J1,A8,SBU1,inferred,usb_c_design_chat,Unused sideband pin for power-only sink
+NC,J1,A10,RX2-,inferred,usb_c_design_chat,Unused SuperSpeed pair for power-only sink
+NC,J1,A11,RX2+,inferred,usb_c_design_chat,Unused SuperSpeed pair for power-only sink
+NC,J1,B2,TX2+,inferred,usb_c_design_chat,Unused SuperSpeed pair for power-only sink
+NC,J1,B3,TX2-,inferred,usb_c_design_chat,Unused SuperSpeed pair for power-only sink
+NC,J1,B6,D+,inferred,usb_c_design_chat,Unused USB 2.0 data pin for power-only sink
+NC,J1,B7,D-,inferred,usb_c_design_chat,Unused USB 2.0 data pin for power-only sink
+NC,J1,B8,SBU2,inferred,usb_c_design_chat,Unused sideband pin for power-only sink
+NC,J1,B10,RX1-,inferred,usb_c_design_chat,Unused SuperSpeed pair for power-only sink
+NC,J1,B11,RX1+,inferred,usb_c_design_chat,Unused SuperSpeed pair for power-only sink
 PAGE_0000_00FF,U13,4,2A,inferred,design/New_Address_Decode.dig,Low I/O decode page term
 PAGE_0000_00FF,U17,6,3Y,inferred,design/New_Address_Decode.dig,Active-high page decode
 PAGE_0100_01FF,U13,9,3A,inferred,design/New_Address_Decode.dig,RTC decode page term
