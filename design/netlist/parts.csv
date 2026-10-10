@@ -12,11 +12,15 @@ CAP_1UF,,,1 uF reset timing capacitor,Device:C,,reset_design_chat,Reset RC timin
 CAP_10UF,,,10 uF capacitor,Device:C,,rtc_backup_design_chat,RTC_VDD backup bulk capacitor; exact dielectric voltage rating and footprint TBD
 CAP_18PF,,,18 pF NP0/C0G capacitor,Device:C,,cpu_oscillator_design_chat,Initial CPU crystal load capacitor; tune if needed for selected crystal load capacitance
 CAP_100NF,,,0.1 uF ceramic capacitor,Device:C,,usb_c_design_chat,Input bypass capacitor
+CAP_BAUD_LOAD,,,MC14411 crystal load capacitor,Device:C,,serial_design_chat,Small baud-generator crystal load capacitor; value per MC14411 datasheet and selected crystal
 CAP_INPUT_BULK,,,10-47 uF input bulk capacitor,Device:C_Polarized,,usb_c_design_chat,Input bulk capacitance range from USB-C power notes; exact value TBD
+CAP_MAX232_CHARGE,,,MAX232 charge-pump capacitor,Device:C,,serial_design_chat,Charge-pump capacitor value depends on exact MAX232 variant; classic MAX232 often differs from MAX232A-class parts
 CR2032_HOLDER,,,CR2032 coin-cell holder,Device:Battery_Cell,,rtc_backup_design_chat,RTC backup battery holder; exact footprint and retention style TBD
+DE9_DTE_SERIAL,,,DE-9 RS-232 console connector,Connector:DB9_Male,,serial_design_chat,DTE-style pinout staged with SBC TX on pin 3 RX on pin 2 and GND on pin 5; exact gender and footprint TBD
 DIODE_1N4148,,1N4148,Small-signal switching diode,Device:D,,reset_design_chat,Optional reset capacitor discharge diode with anode on RESET and cathode on 5V0
 DIODE_SCHOTTKY_RTC,,BAT54 or 1N5817-class,Schottky isolation diode,Device:D_Schottky,,rtc_backup_design_chat,RTC diode-OR isolation diode; use BAT54 or 1N5817-class and not 1N4148 to preserve battery margin
 HM6116,,HM6116,2Kx8 static RAM,,Package_DIP:DIP-24_W7.62mm,docs/IDT_6116.pdf,Selected from inventory; IDT6116 datasheet used for 6116-class pinout
+MAX232,,MAX232,Dual RS-232 transceiver,Interface_UART:MAX232,Package_DIP:DIP-16_W7.62mm,docs/chip-inventory.csv,Selected from inventory; exact MAX232-family variant and charge-pump capacitor values TBD
 MC6850,Motorola,MC6850,Asynchronous communications interface adapter,,Package_DIP:DIP-24_W15.24mm,docs/MC6850.pdf,Symbol still needs to be selected or created
 MC14411,Motorola,MC14411,Baud-rate generator,MCU_Motorola_6800:MC14411,Package_DIP:DIP-24_W15.24mm,docs/MC14411.pdf,Local KiCad symbol exists
 MC146805E2,Motorola,MC146805E2,6805 CPU with external bus,MCU_Motorola_6800:MC146805E2,Package_DIP:DIP-40_W15.24mm,docs/MC146805E2_1983.pdf,Local KiCad symbol exists
@@ -26,6 +30,7 @@ RES_1M,,,1 Mohm resistor,Device:R,,usb_c_design_chat,Optional USB shield bleed r
 RES_5K1,,,5.1 kohm resistor,Device:R,,usb_c_design_chat,USB-C Rd pull-down for CC pins
 RES_10K,,,10 kohm resistor,Device:R,,reset_design_chat,Reset pull-up resistor
 RES_10M,,,10 Mohm resistor,Device:R,,cpu_oscillator_design_chat,CPU oscillator feedback resistor across OSC1 and OSC2
+RES_15M,,,15 Mohm resistor,Device:R,,serial_design_chat,MC14411 crystal oscillator feedback resistor Rt 15 Mohm +/-10 percent
 SW_PUSH_NO,,,Normally-open pushbutton,Switch:SW_Push,,reset_design_chat,Manual reset pushbutton pulls RESET to GND when pressed
 TRIMCAP_RTC,,,Optional RTC oscillator trimmer capacitor,Device:C_Variable,,rtc_backup_design_chat,Optional trimmer footprint for RTC oscillator; exact range and use TBD
 TVS_5V_UNIDIR,,SMBJ5.0A,SMBJ5.0A-class 5 V unidirectional TVS diode,Device:D_TVS,Diode_SMD:D_SMB,usb_c_design_chat,Use reputable SMBJ5.0A vendor; SMAJ5.0A is smaller lower-surge option; 5.0 V standoff; do not use 3.3 V or 12 V TVS

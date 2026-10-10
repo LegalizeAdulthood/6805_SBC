@@ -11,18 +11,30 @@ C8,CAP_18PF,18 pF,,inferred,rtc_backup_design_chat,RTC_XT_N load capacitor; NP0/
 C9,TRIMCAP_RTC,optional,,todo,rtc_backup_design_chat,Optional RTC oscillator trimming capacitor footprint; exact range TBD
 C10,CAP_10UF,10 uF,,inferred,rtc_backup_design_chat,RTC_VDD backup bulk capacitor
 C11,CAP_100NF,0.1 uF,,inferred,rtc_backup_design_chat,RTC_VDD local ceramic bypass capacitor
+C12,CAP_MAX232_CHARGE,variant-dependent,,todo,serial_design_chat,MAX232 charge-pump capacitor between C1+ and C1-; exact value depends on chosen variant
+C13,CAP_MAX232_CHARGE,variant-dependent,,todo,serial_design_chat,MAX232 charge-pump capacitor between C2+ and C2-; exact value depends on chosen variant
+C14,CAP_MAX232_CHARGE,variant-dependent,,todo,serial_design_chat,MAX232 V+ reservoir capacitor; exact value depends on chosen variant
+C15,CAP_MAX232_CHARGE,variant-dependent,,todo,serial_design_chat,MAX232 V- reservoir capacitor; exact value depends on chosen variant
+C16,CAP_100NF,0.1 uF,,inferred,serial_design_chat,MAX232 local ceramic bypass capacitor
+C17,CAP_BAUD_LOAD,TBD,,todo,serial_design_chat,MC14411 XTAL_IN load capacitor; choose value from datasheet and selected crystal
+C18,CAP_BAUD_LOAD,TBD,,todo,serial_design_chat,MC14411 XTAL_OUT load capacitor; choose value from datasheet and selected crystal
+C19,CAP_100NF,0.1 uF,,inferred,serial_design_chat,ACIA local ceramic bypass capacitor
+C20,CAP_100NF,0.1 uF,,inferred,serial_design_chat,MC14411 local ceramic bypass capacitor
+C21,CAP_100NF,0.1 uF,,inferred,serial_design_chat,Baud mux local ceramic bypass capacitor
 D1,TVS_5V_UNIDIR,SMBJ5.0A,Diode_SMD:D_SMB,todo,usb_c_design_chat,Unidirectional VBUS TVS near USB-C connector; cathode stripe to USB_VBUS and anode to GND; connector side of fuse
 D2,DIODE_1N4148,1N4148,,todo,reset_design_chat,Optional reset capacitor discharge diode; anode to RESET and cathode to 5V0
 D3,DIODE_SCHOTTKY_RTC,BAT54 or 1N5817-class,,todo,rtc_backup_design_chat,5V0 isolation diode to RTC_VDD; exact Schottky part and footprint TBD
 D4,DIODE_SCHOTTKY_RTC,BAT54 or 1N5817-class,,todo,rtc_backup_design_chat,CR2032 isolation diode to RTC_VDD; exact Schottky part and footprint TBD
 F1,PPTC_USB_INPUT,1.1 A hold,,todo,usb_c_design_chat,Resettable input fuse between raw USB VBUS and protected 5V0 rail; about 2.2 A trip; >=6 V with 16 V preferred; exact JLC/LCSC or radial part TBD
 J1,USB_C_RECEPTACLE_POWER,USB-C power input,,todo,usb_c_design_chat,Power-only USB-C sink connector; D+/D- SuperSpeed and SBU pins are NC; exact footprint TBD
+J2,DE9_DTE_SERIAL,DE-9 serial,,todo,serial_design_chat,DTE-style RS-232 console connector; exact gender footprint and board-edge orientation TBD
 R1,RES_5K1,5.1 kohm,,inferred,usb_c_design_chat,CC1 Rd pull-down
 R2,RES_5K1,5.1 kohm,,inferred,usb_c_design_chat,CC2 Rd pull-down
 R3,RES_1M,1 Mohm,,todo,usb_c_design_chat,Optional shield-to-ground bleed resistor; populate only if selected
 R4,RES_10K,10 kohm,,inferred,reset_design_chat,Reset pull-up from RESET to 5V0
 R5,RES_10M,10 Mohm,,inferred,cpu_oscillator_design_chat,CPU oscillator feedback resistor across CPU_OSC1 and CPU_OSC2
 R6,RES_10M,10 Mohm,,inferred,rtc_backup_design_chat,RTC oscillator feedback resistor across RTC_XT and RTC_XT_N
+R7,RES_15M,15 Mohm,,inferred,serial_design_chat,MC14411 crystal oscillator feedback resistor Rt across XTAL_IN and XTAL_OUT
 SW1,SW_PUSH_NO,Reset,,inferred,reset_design_chat,Normally-open manual reset pushbutton from RESET to GND
 U1,MC146805E2,MC146805E2,Package_DIP:DIP-40_W15.24mm,confirmed,docs/MC146805E2_1983.pdf,CPU
 U2,MC6850,MC6850,Package_DIP:DIP-24_W15.24mm,confirmed,docs/MC6850.pdf,ACIA
@@ -41,6 +53,7 @@ U14,7411,7411,Package_DIP:DIP-14_W7.62mm,inferred,design/New_Address_Decode.dig,
 U15,7432,7432,Package_DIP:DIP-14_W7.62mm,inferred,design/New_Address_Decode.dig,OR gates for low-nibble and RAM1 decode terms
 U16,7432,7432,Package_DIP:DIP-14_W7.62mm,inferred,design/New_Address_Decode.dig,OR gates for RAM1 nonzero address term
 U17,7404,7404,Package_DIP:DIP-14_W7.62mm,inferred,design/New_Address_Decode.dig,Inverters for active-low decode outputs and RAM1 select
+U18,MAX232,MAX232,Package_DIP:DIP-16_W7.62mm,todo,docs/chip-inventory.csv,RS-232 transceiver for ACIA console; exact MAX232-family variant TBD
 Y1,XTAL_CPU_5MHZ,5 MHz,Crystal:Crystal_HC49-U_Vertical,confirmed,https://www.digikey.com/en/products/detail/w%C3%BCrth-elektronik/830003119B/13900107,CPU crystal
 Y2,XTAL_1_8432MHZ,1.8432 MHz,Crystal:Crystal_HC49-U_Vertical,confirmed,https://www.digikey.com/en/products/detail/raltron-electronics/A-1-8432-18/10246237,MC14411 baud-rate crystal
 Y3,XTAL_32_768KHZ,32.768 kHz,,todo,rtc_backup_design_chat,RTC timebase crystal; exact part and package TBD; impedance must be no more than 30 kohm

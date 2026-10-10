@@ -24,4 +24,5 @@ rom_datasheet,docs/Am2732-AMD.pdf,datasheet,Am2732 data sheet,4Kx8 EPROM pinout 
 rtc_backup_design_chat,https://chatgpt.com/share/6ac9862d-b16c-83e8-946e-75dec9cc5bbd,design note,RTC backup and oscillator notes,CR2032 diode-OR backup RTC crystal passives pull-up supply and power-off isolation guidance
 rtc_datasheet,docs/MSM58321.pdf,datasheet,MSM58321 data sheet,RTC pinout crystal and timing information
 rtc_design,design/rtc.md,design note,MSM58321 bus interface,RTC address range data bus width and intended control relationships
+serial_design_chat,https://chatgpt.com/share/6ac9862d-b16c-83e8-946e-75dec9cc5bbd,design note,Serial console notes,MC6850 MC14411 MAX232 DE-9 no-flow-control and 9600 baud baseline details
 usb_c_design_chat,https://chatgpt.com/share/6ac9862d-b16c-83e8-946e-75dec9cc5bbd,design note,USB-C power input notes,Power-only USB-C sink wiring with CC pull-downs PPTC fuse TVS protection input capacitors and shield options

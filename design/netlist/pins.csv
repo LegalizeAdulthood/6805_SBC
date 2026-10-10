@@ -141,10 +141,23 @@ CAP_18PF,1,1,passive,false,cpu_oscillator_design_chat,Capacitor terminal
 CAP_18PF,2,2,passive,false,cpu_oscillator_design_chat,Capacitor terminal
 CAP_100NF,1,1,passive,false,usb_c_design_chat,Capacitor terminal
 CAP_100NF,2,2,passive,false,usb_c_design_chat,Capacitor terminal
+CAP_BAUD_LOAD,1,1,passive,false,serial_design_chat,Capacitor terminal
+CAP_BAUD_LOAD,2,2,passive,false,serial_design_chat,Capacitor terminal
 CAP_INPUT_BULK,1,1,passive,false,usb_c_design_chat,Capacitor positive terminal for polarized bulk option
 CAP_INPUT_BULK,2,2,passive,false,usb_c_design_chat,Capacitor ground terminal
+CAP_MAX232_CHARGE,1,1,passive,false,serial_design_chat,Charge-pump capacitor terminal
+CAP_MAX232_CHARGE,2,2,passive,false,serial_design_chat,Charge-pump capacitor terminal
 CR2032_HOLDER,1,+,passive,false,rtc_backup_design_chat,Coin-cell positive terminal
 CR2032_HOLDER,2,-,passive,false,rtc_backup_design_chat,Coin-cell negative terminal
+DE9_DTE_SERIAL,1,DCD,passive,false,serial_design_chat,DTE-style carrier-detect pin staged NC
+DE9_DTE_SERIAL,2,RXD,passive,false,serial_design_chat,DTE-style receive-data pin into SBC
+DE9_DTE_SERIAL,3,TXD,passive,false,serial_design_chat,DTE-style transmit-data pin from SBC
+DE9_DTE_SERIAL,4,DTR,passive,false,serial_design_chat,DTE-style data-terminal-ready pin staged NC
+DE9_DTE_SERIAL,5,GND,passive,false,serial_design_chat,Signal ground
+DE9_DTE_SERIAL,6,DSR,passive,false,serial_design_chat,DTE-style data-set-ready pin staged NC
+DE9_DTE_SERIAL,7,RTS,passive,false,serial_design_chat,DTE-style request-to-send pin staged NC
+DE9_DTE_SERIAL,8,CTS,passive,false,serial_design_chat,DTE-style clear-to-send pin staged NC
+DE9_DTE_SERIAL,9,RI,passive,false,serial_design_chat,DTE-style ring-indicator pin staged NC
 DIODE_1N4148,1,K,passive,false,reset_design_chat,Diode cathode
 DIODE_1N4148,2,A,passive,false,reset_design_chat,Diode anode
 DIODE_SCHOTTKY_RTC,1,K,passive,false,rtc_backup_design_chat,Schottky diode cathode
@@ -173,9 +186,29 @@ HM6116,21,~WE,input,true,docs/IDT_6116.pdf,Write enable
 HM6116,22,A9,input,false,docs/IDT_6116.pdf,Address input
 HM6116,23,A8,input,false,docs/IDT_6116.pdf,Address input
 HM6116,24,VCC,power_in,false,docs/IDT_6116.pdf,Power
+MAX232,1,C1+,passive,false,serial_design_chat,Charge-pump capacitor C1 positive terminal
+MAX232,2,V+,power_out,false,serial_design_chat,Positive charge-pump reservoir
+MAX232,3,C1-,passive,false,serial_design_chat,Charge-pump capacitor C1 negative terminal
+MAX232,4,C2+,passive,false,serial_design_chat,Charge-pump capacitor C2 positive terminal
+MAX232,5,C2-,passive,false,serial_design_chat,Charge-pump capacitor C2 negative terminal
+MAX232,6,V-,power_out,false,serial_design_chat,Negative charge-pump reservoir
+MAX232,7,T2OUT,output,false,serial_design_chat,Unused second RS-232 driver output staged NC
+MAX232,8,R2IN,input,false,serial_design_chat,Unused second RS-232 receiver input staged NC
+MAX232,9,R2OUT,output,false,serial_design_chat,Unused second TTL receiver output staged NC
+MAX232,10,T2IN,input,false,serial_design_chat,Unused second TTL driver input tied low unless later exposed
+MAX232,11,T1IN,input,false,serial_design_chat,TTL driver input from MC6850 transmit data
+MAX232,12,R1OUT,output,false,serial_design_chat,TTL receiver output to MC6850 receive data
+MAX232,13,R1IN,input,false,serial_design_chat,RS-232 receiver input from DE-9 pin 2
+MAX232,14,T1OUT,output,false,serial_design_chat,RS-232 driver output to DE-9 pin 3
+MAX232,15,GND,power_in,false,serial_design_chat,Ground
+MAX232,16,VCC,power_in,false,serial_design_chat,5 V logic supply
 MC6850,1,VSS,power_in,false,docs/MC6850.pdf,Ground
+MC6850,2,~CTS,input,true,docs/MC6850.pdf,Active-low clear-to-send input
 MC6850,3,RxCLK,input,false,docs/MC6850.pdf,Receive clock input
 MC6850,4,TxCLK,input,false,docs/MC6850.pdf,Transmit clock input
+MC6850,5,RTS,output,false,docs/MC6850.pdf,Request-to-send output
+MC6850,6,RxD,input,false,docs/MC6850.pdf,Receive data input
+MC6850,7,~DCD,input,true,docs/MC6850.pdf,Active-low data-carrier-detect input
 MC6850,8,CS0,input,false,docs/MC6850.pdf,Chip select input
 MC6850,9,~CS2,input,true,docs/MC6850.pdf,Active-low chip select input
 MC6850,10,CS1,input,false,docs/MC6850.pdf,Chip select input
@@ -191,6 +224,8 @@ MC6850,19,D3,bidirectional,false,docs/MC6850.pdf,Data bus bit 3
 MC6850,20,D2,bidirectional,false,docs/MC6850.pdf,Data bus bit 2
 MC6850,21,D1,bidirectional,false,docs/MC6850.pdf,Data bus bit 1
 MC6850,22,D0,bidirectional,false,docs/MC6850.pdf,Data bus bit 0
+MC6850,23,~IRQ,output,true,docs/MC6850.pdf,Active-low interrupt output
+MC6850,24,TxD,output,false,docs/MC6850.pdf,Transmit data output
 MC14411,1,F1,output,false,MCU_Motorola_6800.kicad_sym,Baud clock output
 MC14411,2,F3,output,false,MCU_Motorola_6800.kicad_sym,Baud clock output
 MC14411,5,F8,output,false,MCU_Motorola_6800.kicad_sym,Baud clock output
@@ -248,6 +283,8 @@ RES_10K,1,1,passive,false,reset_design_chat,Resistor terminal
 RES_10K,2,2,passive,false,reset_design_chat,Resistor terminal
 RES_10M,1,1,passive,false,cpu_oscillator_design_chat,Resistor terminal
 RES_10M,2,2,passive,false,cpu_oscillator_design_chat,Resistor terminal
+RES_15M,1,1,passive,false,serial_design_chat,Resistor terminal
+RES_15M,2,2,passive,false,serial_design_chat,Resistor terminal
 SW_PUSH_NO,1,1,passive,false,reset_design_chat,Switch terminal
 SW_PUSH_NO,2,2,passive,false,reset_design_chat,Switch terminal
 TRIMCAP_RTC,1,1,passive,false,rtc_backup_design_chat,Trimmer capacitor terminal

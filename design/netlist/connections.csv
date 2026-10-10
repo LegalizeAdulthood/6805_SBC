@@ -1,6 +1,10 @@
 net,refdes,pin_number,pin_name,status,source,notes
 5V0,C1,1,1,todo,usb_c_design_chat,Input bulk capacitor on protected 5V0 rail; exact value TBD
 5V0,C2,1,1,inferred,usb_c_design_chat,Input bypass capacitor on protected 5V0 rail
+5V0,C16,1,1,inferred,serial_design_chat,MAX232 local bypass capacitor
+5V0,C19,1,1,inferred,serial_design_chat,ACIA local bypass capacitor
+5V0,C20,1,1,inferred,serial_design_chat,MC14411 local bypass capacitor
+5V0,C21,1,1,inferred,serial_design_chat,Baud mux local bypass capacitor
 5V0,D2,1,K,todo,reset_design_chat,Optional reset capacitor discharge diode cathode
 5V0,D3,2,A,inferred,rtc_backup_design_chat,Main 5V0 feed into RTC_VDD diode-OR
 5V0,F1,2,OUT,inferred,usb_c_design_chat,Protected 5V0 rail after input PPTC
@@ -25,6 +29,7 @@ net,refdes,pin_number,pin_name,status,source,notes
 5V0,U15,14,VCC,confirmed,https://www.ti.com/lit/ds/symlink/sn74ls32.pdf,OR gate package power
 5V0,U16,14,VCC,confirmed,https://www.ti.com/lit/ds/symlink/sn74ls32.pdf,OR gate package power
 5V0,U17,14,VCC,confirmed,https://www.ti.com/lit/ds/symlink/sn74ls04.pdf,Inverter package power
+5V0,U18,16,VCC,inferred,serial_design_chat,MAX232 logic supply
 A0,U2,11,RS,inferred,docs/memory-map.txt,ACIA register select for $0006 versus $0007
 A0,U5,8,A0,inferred,docs/Am2732-AMD.pdf,ROM address bit 0
 A0,U6,8,A0,inferred,docs/IDT_6116.pdf,RAM 1 address bit 0
@@ -104,8 +109,12 @@ A12,U1,15,A12,confirmed,MCU_Motorola_6800.kicad_sym,CPU high address bit 12
 A12,U10,2,B,inferred,design/New_Address_Decode.dig,High address decoder high select bit
 ACIA_RXCLK,U2,3,RxCLK,inferred,design/baud-rate.md,Receive clock from section 1 of baud mux
 ACIA_RXCLK,U4,7,1Y,inferred,design/baud-rate.md,Section 1 output assigned to ACIA receive clock
+ACIA_RXD_TTL,U2,6,RxD,inferred,serial_design_chat,ACIA receive data input
+ACIA_RXD_TTL,U18,12,R1OUT,inferred,serial_design_chat,MAX232 receiver output to ACIA
 ACIA_TXCLK,U2,4,TxCLK,inferred,design/baud-rate.md,Transmit clock from section 2 of baud mux
 ACIA_TXCLK,U4,9,2Y,inferred,design/baud-rate.md,Section 2 output assigned to ACIA transmit clock
+ACIA_TXD_TTL,U2,24,TxD,inferred,serial_design_chat,ACIA transmit data output
+ACIA_TXD_TTL,U18,11,T1IN,inferred,serial_design_chat,MAX232 driver input for console TX
 AS,U1,6,AS,confirmed,MCU_Motorola_6800.kicad_sym,CPU address strobe
 AS,U9,11,LE,confirmed,design/Address_Latch.dig,Latch PB0-PB7 while AS is asserted
 AS,U10,6,G1,inferred,design/New_Address_Decode.dig,AS qualifies high address decode
@@ -128,8 +137,12 @@ BAUD_F9,U4,3,1C3,inferred,design/baud-rate.md,Provisional C3 assignment
 BAUD_F9,U4,13,2C3,inferred,design/baud-rate.md,Provisional C3 assignment; mirrors receive-clock mux
 BAUD_SEL_A,U4,14,A,todo,design/baud-rate.md,Shared select input; driving source still TBD
 BAUD_SEL_B,U4,2,B,todo,design/baud-rate.md,Shared select input; driving source still TBD
+BAUD_XTAL_IN,C17,1,1,todo,serial_design_chat,MC14411 XTAL_IN load capacitor on baud crystal
+BAUD_XTAL_IN,R7,1,1,inferred,serial_design_chat,MC14411 Rt feedback resistor terminal
 BAUD_XTAL_IN,U3,21,XTAL_IN,confirmed,MCU_Motorola_6800.kicad_sym,MC14411 crystal input
 BAUD_XTAL_IN,Y2,1,1,confirmed,https://www.digikey.com/en/products/detail/raltron-electronics/A-1-8432-18/10246237,Baud crystal terminal
+BAUD_XTAL_OUT,C18,1,1,todo,serial_design_chat,MC14411 XTAL_OUT load capacitor on baud crystal
+BAUD_XTAL_OUT,R7,2,2,inferred,serial_design_chat,MC14411 Rt feedback resistor terminal
 BAUD_XTAL_OUT,U3,20,XTAL_OUT,confirmed,MCU_Motorola_6800.kicad_sym,MC14411 crystal output
 BAUD_XTAL_OUT,Y2,2,2,confirmed,https://www.digikey.com/en/products/detail/raltron-electronics/A-1-8432-18/10246237,Baud crystal terminal
 CC1,J1,A5,CC1,inferred,usb_c_design_chat,USB-C configuration channel 1
@@ -210,17 +223,28 @@ GND,C8,2,2,inferred,rtc_backup_design_chat,RTC_XT_N load capacitor return
 GND,C9,2,2,todo,rtc_backup_design_chat,Optional RTC trimmer capacitor return
 GND,C10,2,2,inferred,rtc_backup_design_chat,RTC_VDD bulk capacitor return
 GND,C11,2,2,inferred,rtc_backup_design_chat,RTC_VDD bypass capacitor return
+GND,C14,2,2,todo,serial_design_chat,MAX232 V+ reservoir capacitor return
+GND,C15,2,2,todo,serial_design_chat,MAX232 V- reservoir capacitor return
+GND,C16,2,2,inferred,serial_design_chat,MAX232 bypass return
+GND,C17,2,2,todo,serial_design_chat,MC14411 XTAL_IN load capacitor return
+GND,C18,2,2,todo,serial_design_chat,MC14411 XTAL_OUT load capacitor return
+GND,C19,2,2,inferred,serial_design_chat,ACIA bypass return
+GND,C20,2,2,inferred,serial_design_chat,MC14411 bypass return
+GND,C21,2,2,inferred,serial_design_chat,Baud mux bypass return
 GND,D1,2,A,inferred,usb_c_design_chat,TVS anode to ground
 GND,J1,A1,GND,inferred,usb_c_design_chat,USB-C ground contact
 GND,J1,A12,GND,inferred,usb_c_design_chat,USB-C ground contact
 GND,J1,B1,GND,inferred,usb_c_design_chat,USB-C ground contact
 GND,J1,B12,GND,inferred,usb_c_design_chat,USB-C ground contact
+GND,J2,5,GND,inferred,serial_design_chat,DE-9 signal ground
 GND,R1,2,2,inferred,usb_c_design_chat,CC1 Rd pull-down return
 GND,R2,2,2,inferred,usb_c_design_chat,CC2 Rd pull-down return
 GND,R3,2,2,todo,usb_c_design_chat,Optional shield bleed path return
 GND,SW1,2,2,inferred,reset_design_chat,Manual reset pushbutton return
 GND,U1,20,VSS,confirmed,MCU_Motorola_6800.kicad_sym,CPU ground
 GND,U2,1,VSS,confirmed,docs/MC6850.pdf,ACIA ground
+GND,U2,2,~CTS,inferred,serial_design_chat,Tie CTS low for no hardware flow control
+GND,U2,7,~DCD,inferred,serial_design_chat,Tie DCD low for no hardware flow control
 GND,U3,12,VSS,confirmed,MCU_Motorola_6800.kicad_sym,MC14411 ground
 GND,U4,1,~1G,inferred,design/baud-rate.md,Enable receive-clock mux section
 GND,U4,8,GND,confirmed,https://www.ti.com/lit/ds/symlink/sn74ls153.pdf,74153 ground
@@ -259,8 +283,23 @@ GND,U16,10,3B,inferred,design/New_Address_Decode.dig,Tie unused OR input low
 GND,U16,12,4A,inferred,design/New_Address_Decode.dig,Tie unused OR input low
 GND,U16,13,4B,inferred,design/New_Address_Decode.dig,Tie unused OR input low
 GND,U17,7,GND,confirmed,https://www.ti.com/lit/ds/symlink/sn74ls04.pdf,Inverter package ground
+GND,U18,8,R2IN,todo,serial_design_chat,Tie unused second receiver input to ground unless the channel is exposed
+GND,U18,10,T2IN,todo,serial_design_chat,Tie unused second driver input low unless the channel is exposed
+GND,U18,15,GND,inferred,serial_design_chat,MAX232 ground
 LOW_0000_000F,U12,6,G1,inferred,design/New_Address_Decode.dig,Enable decode for $0000-$000F
 LOW_0000_000F,U13,6,2Y,inferred,design/New_Address_Decode.dig,Enable low peripheral pair decoder
+MAX232_C1N,C12,2,2,todo,serial_design_chat,MAX232 C1 flying capacitor
+MAX232_C1N,U18,3,C1-,todo,serial_design_chat,MAX232 C1 negative terminal
+MAX232_C1P,C12,1,1,todo,serial_design_chat,MAX232 C1 flying capacitor
+MAX232_C1P,U18,1,C1+,todo,serial_design_chat,MAX232 C1 positive terminal
+MAX232_C2N,C13,2,2,todo,serial_design_chat,MAX232 C2 flying capacitor
+MAX232_C2N,U18,5,C2-,todo,serial_design_chat,MAX232 C2 negative terminal
+MAX232_C2P,C13,1,1,todo,serial_design_chat,MAX232 C2 flying capacitor
+MAX232_C2P,U18,4,C2+,todo,serial_design_chat,MAX232 C2 positive terminal
+MAX232_VMINUS,C15,1,1,todo,serial_design_chat,MAX232 negative charge-pump reservoir capacitor
+MAX232_VMINUS,U18,6,V-,todo,serial_design_chat,MAX232 negative charge-pump reservoir pin
+MAX232_VPLUS,C14,1,1,todo,serial_design_chat,MAX232 positive charge-pump reservoir capacitor
+MAX232_VPLUS,U18,2,V+,todo,serial_design_chat,MAX232 positive charge-pump reservoir pin
 NC,J1,A2,TX1+,inferred,usb_c_design_chat,Unused SuperSpeed pair for power-only sink
 NC,J1,A3,TX1-,inferred,usb_c_design_chat,Unused SuperSpeed pair for power-only sink
 NC,J1,A6,D+,inferred,usb_c_design_chat,Unused USB 2.0 data pin for power-only sink
@@ -275,6 +314,15 @@ NC,J1,B7,D-,inferred,usb_c_design_chat,Unused USB 2.0 data pin for power-only si
 NC,J1,B8,SBU2,inferred,usb_c_design_chat,Unused sideband pin for power-only sink
 NC,J1,B10,RX1-,inferred,usb_c_design_chat,Unused SuperSpeed pair for power-only sink
 NC,J1,B11,RX1+,inferred,usb_c_design_chat,Unused SuperSpeed pair for power-only sink
+NC,J2,1,DCD,todo,serial_design_chat,No-flow-control policy leaves DE-9 DCD unconnected
+NC,J2,4,DTR,todo,serial_design_chat,No-flow-control policy leaves DE-9 DTR unconnected
+NC,J2,6,DSR,todo,serial_design_chat,No-flow-control policy leaves DE-9 DSR unconnected
+NC,J2,7,RTS,todo,serial_design_chat,No-flow-control policy leaves DE-9 RTS unconnected
+NC,J2,8,CTS,todo,serial_design_chat,No-flow-control policy leaves DE-9 CTS unconnected
+NC,J2,9,RI,todo,serial_design_chat,No-flow-control policy leaves DE-9 RI unconnected
+NC,U2,5,RTS,todo,serial_design_chat,No-flow-control policy leaves ACIA RTS unconnected unless later exposed on a test pad
+NC,U18,7,T2OUT,todo,serial_design_chat,Unused second MAX232 driver output
+NC,U18,9,R2OUT,todo,serial_design_chat,Unused second MAX232 receiver output
 PAGE_0000_00FF,U13,4,2A,inferred,design/New_Address_Decode.dig,Low I/O decode page term
 PAGE_0000_00FF,U17,6,3Y,inferred,design/New_Address_Decode.dig,Active-high page decode
 PAGE_0100_01FF,U13,9,3A,inferred,design/New_Address_Decode.dig,RTC decode page term
@@ -288,6 +336,10 @@ RESET,D2,2,A,todo,reset_design_chat,Optional reset capacitor discharge diode ano
 RESET,R4,2,2,inferred,reset_design_chat,Reset pull-up output node
 RESET,SW1,1,1,inferred,reset_design_chat,Manual reset pushbutton pulls RESET low
 RESET,U1,1,~RESET,confirmed,MCU_Motorola_6800.kicad_sym,CPU active-low reset input
+RS232_RXD,J2,2,RXD,inferred,serial_design_chat,DE-9 pin 2 into SBC receiver
+RS232_RXD,U18,13,R1IN,inferred,serial_design_chat,MAX232 receiver input from DE-9 pin 2
+RS232_TXD,J2,3,TXD,inferred,serial_design_chat,DTE-style SBC TX on DE-9 pin 3
+RS232_TXD,U18,14,T1OUT,inferred,serial_design_chat,RS-232 driver output for DTE-style TX
 RTC_ADDRESS_WRITE,U8,9,ADDRESS_WRITE,todo,design/rtc.md,Assert for address phase on both reads and writes
 RTC_BAT,BT1,1,+,inferred,rtc_backup_design_chat,RTC backup coin-cell positive terminal
 RTC_BAT,D4,2,A,inferred,rtc_backup_design_chat,CR2032 feed into RTC_VDD diode-OR

@@ -20,7 +20,9 @@ A10,address,confirmed,docs/memory-map.txt,External address bus bit 10
 A11,address,confirmed,docs/memory-map.txt,External address bus bit 11
 A12,address,confirmed,docs/memory-map.txt,External address bus bit 12 used by address decode
 ACIA_RXCLK,clock,inferred,design/baud-rate.md,Driven by section 1 of baud mux
+ACIA_RXD_TTL,data,inferred,serial_design_chat,TTL receive-data path from MAX232 R1OUT to MC6850 RxD
 ACIA_TXCLK,clock,inferred,design/baud-rate.md,Driven by section 2 of baud mux
+ACIA_TXD_TTL,data,inferred,serial_design_chat,TTL transmit-data path from MC6850 TxD to MAX232 T1IN
 AS,control,confirmed,design/Address_Latch.dig,Address strobe used to latch multiplexed low address byte
 BANK0_0000_07FF,control,inferred,design/New_Address_Decode.dig,Active-high complement of the $0000-$07FF bank decode
 BANK0_ADDR_NONZERO,control,inferred,design/New_Address_Decode.dig,High for bank 0 addresses at or above $0080
@@ -47,12 +49,20 @@ D7,data,confirmed,docs/memory-map.txt,External data bus bit 7
 DS,control,confirmed,design/rtc.md,Data strobe used during external data phase
 GND,power,confirmed,docs/MC146805E2_1983.pdf,Logic ground
 LOW_0000_000F,control,inferred,design/New_Address_Decode.dig,Active-high enable for low peripheral pair decoder
-NC,no-connect,inferred,usb_c_design_chat,Intentional no-connect pins for the power-only USB-C receptacle
+MAX232_C1N,charge-pump,todo,serial_design_chat,MAX232 C1 negative flying-capacitor terminal
+MAX232_C1P,charge-pump,todo,serial_design_chat,MAX232 C1 positive flying-capacitor terminal
+MAX232_C2N,charge-pump,todo,serial_design_chat,MAX232 C2 negative flying-capacitor terminal
+MAX232_C2P,charge-pump,todo,serial_design_chat,MAX232 C2 positive flying-capacitor terminal
+MAX232_VMINUS,charge-pump,todo,serial_design_chat,MAX232 negative charge-pump reservoir
+MAX232_VPLUS,charge-pump,todo,serial_design_chat,MAX232 positive charge-pump reservoir
+NC,no-connect,inferred,design/netlist,Intentional no-connect pins for unused connector and device pins
 PAGE_0000_00FF,control,inferred,design/New_Address_Decode.dig,Active-high complement of $0000-$00FF page decode
 PAGE_0100_01FF,control,inferred,design/New_Address_Decode.dig,Active-high complement of $0100-$01FF page decode
 R/~W,control,confirmed,design/rtc.md,CPU read/write direction signal
 RAM1_ACTIVE,control,inferred,design/New_Address_Decode.dig,Active-high RAM1 select before inversion
 RESET,control,inferred,reset_design_chat,Active-low CPU reset net driven by RC pull-up network and manual pushbutton
+RS232_RXD,data,inferred,serial_design_chat,RS-232 receive data from DE-9 pin 2 into MAX232 R1IN
+RS232_TXD,data,inferred,serial_design_chat,RS-232 transmit data from MAX232 T1OUT to DE-9 pin 3
 RTC_ADDRESS_WRITE,control,todo,design/rtc.md,RTC_SELECT AND AS
 RTC_BAT,power,inferred,rtc_backup_design_chat,CR2032 positive terminal before Schottky isolation diode
 RTC_BUSY,control,todo,docs/MSM58321.pdf,Open-drain busy output handling and pull-up TBD

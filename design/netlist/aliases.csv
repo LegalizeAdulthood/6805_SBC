@@ -6,6 +6,8 @@ alias,canonical,context,status,source,notes
 0008-0009,~ADDR_0008_0009,Digital output label,inferred,design/Address_Decode.dig,Original address decode label for the low pair output
 +5V,5V0,legacy 5 V net name,confirmed,design/netlist,Older staging name for 5.0 V logic supply
 ACIA /CS2,~ACIAEN,MC6850 chip select,confirmed,docs/memory-map.txt,Memory map names the ACIA active-low select input
+ACIA Rx Data,ACIA_RXD_TTL,MC6850 serial data path,inferred,serial_design_chat,TTL receive-data net between MAX232 R1OUT and MC6850 RxD
+ACIA Tx Data,ACIA_TXD_TTL,MC6850 serial data path,inferred,serial_design_chat,TTL transmit-data net between MC6850 TxD and MAX232 T1IN
 ADDRESS WRITE,RTC_ADDRESS_WRITE,MSM58321 control input,confirmed,design/rtc.md,Active-high RTC address latch strobe
 CC,CC1,USB-C connector symbol,inferred,usb_c_design_chat,Simplified connector label for first configuration channel
 CS1,RTC_SELECT,MSM58321 chip select,todo,design/rtc.md,Final select source must be held for complete transaction
@@ -58,11 +60,15 @@ ROM ~CS,~ROMCS,ROM chip select,confirmed,design/New_Address_Decode.dig,Address d
 RTC battery,RTC_BAT,RTC backup supply,inferred,rtc_backup_design_chat,CR2032 positive terminal before isolation diode
 RTC CS,RTCCS,address decode label,confirmed,design/New_Address_Decode.dig,AS-qualified RTC address-decode output
 RTC VDD,RTC_VDD,MSM58321 power pin,inferred,rtc_backup_design_chat,Battery-backed RTC supply after diode-OR
+Rx Data,ACIA_RXD_TTL,MC6850 pin 6,confirmed,docs/MC6850.pdf,Datasheet descriptive name for receive data pin
+RXD,RS232_RXD,DE-9 signal,inferred,serial_design_chat,DTE-style DE-9 pin 2 signal into SBC receiver
 Select A,BAUD_SEL_A,74153 shared select input,todo,design/baud-rate.md,Driving source still open
 Select B,BAUD_SEL_B,74153 shared select input,todo,design/baud-rate.md,Driving source still open
 SHIELD,USB_SHIELD,USB-C connector shield,todo,usb_c_design_chat,Connector shell or shield net name before final grounding decision
 Transmit Clock,TxCLK,MC6850 pin 4,confirmed,docs/MC6850.pdf,Datasheet descriptive name for transmit clock pin
 transmit-clock output of baud mux,ACIA_TXCLK,baud-rate clock path,inferred,design/baud-rate.md,U4 section 2 output staged as ACIA transmit-clock net
+Tx Data,ACIA_TXD_TTL,MC6850 pin 24,confirmed,docs/MC6850.pdf,Datasheet descriptive name for transmit data pin
+TXD,RS232_TXD,DE-9 signal,inferred,serial_design_chat,DTE-style DE-9 pin 3 signal from SBC transmitter
 USB +5V,USB_VBUS,USB-C power input,inferred,usb_c_design_chat,Human-readable raw USB-C 5 V input name
 VBAT,RTC_BAT,RTC backup supply,inferred,rtc_backup_design_chat,Alternate name for CR2032 positive terminal
 VBUS,USB_VBUS,USB-C power input,inferred,usb_c_design_chat,USB-C connector VBUS before input fuse
