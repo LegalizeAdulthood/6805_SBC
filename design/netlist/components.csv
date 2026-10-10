@@ -36,7 +36,7 @@ R4,RES_10K,10 kohm,,inferred,current_user_direction,Reset pull-up from RESET to 
 R5,RES_10M,10 Mohm,,inferred,cpu_oscillator_design_chat,CPU oscillator feedback resistor across CPU_OSC1 and CPU_OSC2
 R6,RES_10M,10 Mohm,,inferred,rtc_backup_design_chat,RTC oscillator feedback resistor across RTC_XT and RTC_XT_N
 R7,RES_15M,15 Mohm,,inferred,serial_design_chat,MC14411 crystal oscillator feedback resistor Rt across XTAL_IN and XTAL_OUT
-R8,RES_IRQ_PULLUP,4.7-10 kohm,,todo,irq_design_chat,Shared IRQ pull-up to 5V0; exact value TBD
+R8,RES_IRQ_PULLUP,4.7 kohm,,inferred,current_user_direction,Shared IRQ pull-up to 5V0; selected because IRQ is exposed on J4
 R9,RES_BAUD_PULLDOWN,TBD,,todo,current_user_direction,BAUD_SEL_A pull-down; exact value depends on final 74153 logic family
 R10,RES_BAUD_PULLDOWN,TBD,,todo,current_user_direction,BAUD_SEL_B pull-down; exact value depends on final 74153 logic family
 R11,RES_RTC_BUSY_PULLUP,10 kohm,,inferred,rtc_adapter_design,Pulls MSM58321 open-drain BUSY output to main 5V0 logic rail
