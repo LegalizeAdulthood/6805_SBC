@@ -10,6 +10,7 @@ net,refdes,pin_number,pin_name,status,source,notes
 5V0,F1,2,OUT,inferred,usb_c_design_chat,Protected 5V0 rail after input PPTC
 5V0,R4,1,1,inferred,reset_design_chat,Reset pull-up source
 5V0,R8,1,1,inferred,irq_design_chat,Shared IRQ pull-up source
+5V0,TP1,1,1,inferred,test_pad_design_chat,Power rail bring-up test point
 5V0,U1,40,VDD,confirmed,MCU_Motorola_6800.kicad_sym,CPU power
 5V0,U2,8,CS0,inferred,docs/memory-map.txt,Hold ACIA positive chip select asserted
 5V0,U2,10,CS1,inferred,docs/memory-map.txt,Hold ACIA positive chip select asserted
@@ -110,12 +111,15 @@ A12,U1,15,A12,confirmed,MCU_Motorola_6800.kicad_sym,CPU high address bit 12
 A12,U10,2,B,inferred,design/New_Address_Decode.dig,High address decoder high select bit
 ACIA_RXCLK,U2,3,RxCLK,inferred,design/baud-rate.md,Receive clock from section 1 of baud mux
 ACIA_RXCLK,U4,7,1Y,inferred,design/baud-rate.md,Section 1 output assigned to ACIA receive clock
+ACIA_RXD_TTL,TP15,1,1,inferred,test_pad_design_chat,TTL-side ACIA receive-data observation test point
 ACIA_RXD_TTL,U2,6,RxD,inferred,serial_design_chat,ACIA receive data input
 ACIA_RXD_TTL,U18,12,R1OUT,inferred,serial_design_chat,MAX232 receiver output to ACIA
 ACIA_TXCLK,U2,4,TxCLK,inferred,design/baud-rate.md,Transmit clock from section 2 of baud mux
 ACIA_TXCLK,U4,9,2Y,inferred,design/baud-rate.md,Section 2 output assigned to ACIA transmit clock
+ACIA_TXD_TTL,TP14,1,1,inferred,test_pad_design_chat,TTL-side ACIA transmit-data observation test point
 ACIA_TXD_TTL,U2,24,TxD,inferred,serial_design_chat,ACIA transmit data output
 ACIA_TXD_TTL,U18,11,T1IN,inferred,serial_design_chat,MAX232 driver input for console TX
+AS,TP5,1,1,inferred,test_pad_design_chat,CPU address-strobe observation test point
 AS,U1,6,AS,confirmed,MCU_Motorola_6800.kicad_sym,CPU address strobe
 AS,U9,11,LE,confirmed,design/Address_Latch.dig,Latch PB0-PB7 while AS is asserted
 AS,U10,6,G1,inferred,design/New_Address_Decode.dig,AS qualifies high address decode
@@ -210,6 +214,7 @@ D7,U5,17,O7,inferred,docs/Am2732-AMD.pdf,ROM data output bit 7
 D7,U6,17,I/O7,inferred,docs/IDT_6116.pdf,RAM 1 data bit 7
 D7,U7,17,I/O7,inferred,docs/IDT_6116.pdf,RAM 2 data bit 7
 D7,U9,18,8D,confirmed,design/Address_Latch.dig,Low address/data bit 7 latch input
+DS,TP6,1,1,inferred,test_pad_design_chat,CPU data-strobe observation test point
 DS,U1,4,DS,confirmed,MCU_Motorola_6800.kicad_sym,CPU data strobe
 DS,U2,13,E,inferred,docs/MC6850.pdf,ACIA enable driven from CPU data strobe
 GND,BT1,2,-,inferred,rtc_backup_design_chat,RTC backup coin-cell negative terminal
@@ -242,6 +247,7 @@ GND,R1,2,2,inferred,usb_c_design_chat,CC1 Rd pull-down return
 GND,R2,2,2,inferred,usb_c_design_chat,CC2 Rd pull-down return
 GND,R3,2,2,todo,usb_c_design_chat,Optional shield bleed path return
 GND,SW1,2,2,inferred,reset_design_chat,Manual reset pushbutton return
+GND,TP2,1,1,inferred,test_pad_design_chat,Ground bring-up test point
 GND,U1,20,VSS,confirmed,MCU_Motorola_6800.kicad_sym,CPU ground
 GND,U2,1,VSS,confirmed,docs/MC6850.pdf,ACIA ground
 GND,U2,2,~CTS,inferred,serial_design_chat,Tie CTS low for no hardware flow control
@@ -288,6 +294,8 @@ GND,U18,8,R2IN,todo,serial_design_chat,Tie unused second receiver input to groun
 GND,U18,10,T2IN,todo,serial_design_chat,Tie unused second driver input low unless the channel is exposed
 GND,U18,15,GND,inferred,serial_design_chat,MAX232 ground
 IRQ,R8,2,2,inferred,irq_design_chat,Shared IRQ pull-up output
+IRQ,TP4,1,1,inferred,test_pad_design_chat,Shared active-low IRQ observation test point
+IRQ,TP21,1,1,inferred,test_pad_design_chat,ACIA IRQ source observation pad electrically on shared IRQ; place near U2
 IRQ,U1,2,~IRQ,confirmed,MCU_Motorola_6800.kicad_sym,CPU active-low interrupt input
 IRQ,U2,23,~IRQ,inferred,irq_design_chat,MC6850 open-drain active-low interrupt output joins shared IRQ directly
 LOW_0000_000F,U12,6,G1,inferred,design/New_Address_Decode.dig,Enable decode for $0000-$000F
@@ -331,6 +339,7 @@ PAGE_0000_00FF,U13,4,2A,inferred,design/New_Address_Decode.dig,Low I/O decode pa
 PAGE_0000_00FF,U17,6,3Y,inferred,design/New_Address_Decode.dig,Active-high page decode
 PAGE_0100_01FF,U13,9,3A,inferred,design/New_Address_Decode.dig,RTC decode page term
 PAGE_0100_01FF,U17,8,4Y,inferred,design/New_Address_Decode.dig,Active-high RTC page decode
+R/~W,TP7,1,1,inferred,test_pad_design_chat,CPU read/write direction observation test point
 R/~W,U1,5,R/~W,confirmed,MCU_Motorola_6800.kicad_sym,CPU read/write direction
 R/~W,U2,14,R/~W,inferred,docs/MC6850.pdf,ACIA read/write direction
 RAM1_ACTIVE,U14,12,1Y,inferred,design/New_Address_Decode.dig,Active-high RAM1 select before inversion
@@ -339,16 +348,21 @@ RESET,C4,1,1,inferred,reset_design_chat,Reset RC timing node
 RESET,D2,2,A,todo,reset_design_chat,Optional reset capacitor discharge diode anode
 RESET,R4,2,2,inferred,reset_design_chat,Reset pull-up output node
 RESET,SW1,1,1,inferred,reset_design_chat,Manual reset pushbutton pulls RESET low
+RESET,TP3,1,1,inferred,test_pad_design_chat,Reset net bring-up test point
 RESET,U1,1,~RESET,confirmed,MCU_Motorola_6800.kicad_sym,CPU active-low reset input
 RS232_RXD,J2,2,RXD,inferred,serial_design_chat,DE-9 pin 2 into SBC receiver
 RS232_RXD,U18,13,R1IN,inferred,serial_design_chat,MAX232 receiver input from DE-9 pin 2
 RS232_TXD,J2,3,TXD,inferred,serial_design_chat,DTE-style SBC TX on DE-9 pin 3
 RS232_TXD,U18,14,T1OUT,inferred,serial_design_chat,RS-232 driver output for DTE-style TX
+RTC_ADDRESS_WRITE,TP16,1,1,todo,test_pad_design_chat,RTC address-write timing observation test point
 RTC_ADDRESS_WRITE,U8,9,ADDRESS_WRITE,todo,design/rtc.md,Assert for address phase on both reads and writes
 RTC_BAT,BT1,1,+,inferred,rtc_backup_design_chat,RTC backup coin-cell positive terminal
 RTC_BAT,D4,2,A,inferred,rtc_backup_design_chat,CR2032 feed into RTC_VDD diode-OR
+RTC_BUSY,TP20,1,1,todo,test_pad_design_chat,RTC BUSY status observation test point kept separate from IRQ
 RTC_BUSY,U8,10,~BUSY,todo,irq_design_chat,Open-drain BUSY output remains separate from IRQ unless deliberately promoted
+RTC_READ,TP17,1,1,todo,test_pad_design_chat,RTC read strobe timing observation test point
 RTC_READ,U8,3,READ,todo,design/rtc.md,Active-high RTC read strobe from selected DS read cycle
+RTC_SELECT,TP19,1,1,todo,test_pad_design_chat,RTC select timing observation test point
 RTC_SELECT,U8,1,CS2,todo,design/rtc.md,Final select must be held for complete RTC bus cycle
 RTC_SELECT,U8,13,CS1,todo,design/rtc.md,Final select must be held for complete RTC bus cycle
 RTC_STOP,U8,11,STOP,todo,docs/MSM58321.pdf,Normal low versus controlled STOP still TBD
@@ -357,6 +371,7 @@ RTC_VDD,C11,1,1,inferred,rtc_backup_design_chat,RTC_VDD local bypass capacitor
 RTC_VDD,D3,1,K,inferred,rtc_backup_design_chat,Main 5V0 Schottky cathode at backed-up RTC supply
 RTC_VDD,D4,1,K,inferred,rtc_backup_design_chat,CR2032 Schottky cathode at backed-up RTC supply
 RTC_VDD,U8,16,VDD,inferred,rtc_backup_design_chat,RTC backed-up VDD supply
+RTC_WRITE,TP18,1,1,todo,test_pad_design_chat,RTC write strobe timing observation test point
 RTC_WRITE,U8,2,WRITE,todo,design/rtc.md,Active-high RTC write strobe from selected DS write cycle
 RTC_XT,C7,1,1,inferred,rtc_backup_design_chat,RTC crystal load capacitor on XT
 RTC_XT,C9,1,1,todo,rtc_backup_design_chat,Optional RTC oscillator trimmer footprint on XT
@@ -367,8 +382,10 @@ RTC_XT_N,C8,1,1,inferred,rtc_backup_design_chat,RTC crystal load capacitor on ~X
 RTC_XT_N,R6,2,2,inferred,rtc_backup_design_chat,RTC oscillator feedback resistor terminal at ~XT
 RTC_XT_N,U8,14,~XT,confirmed,docs/MSM58321.pdf,RTC crystal oscillator pin
 RTC_XT_N,Y3,2,2,confirmed,docs/MSM58321.pdf,RTC crystal terminal
+RTCCS,TP13,1,1,inferred,test_pad_design_chat,RTC address-decode observation test point
 RTCCS,U13,8,3Y,inferred,design/New_Address_Decode.dig,AS-qualified RTC address decode
 RTCCS,U17,11,5A,inferred,design/New_Address_Decode.dig,Invert RTC select for RAM1 exclusion
+SYSCLK,TP8,1,1,todo,test_pad_design_chat,Buffered system clock observation test point; driver source TBD
 USB_SHIELD,C3,1,1,todo,usb_c_design_chat,Optional shield coupling path; final shield treatment TBD
 USB_SHIELD,J1,SH,SHIELD,todo,usb_c_design_chat,Connector shield pin name depends on selected footprint
 USB_SHIELD,R3,1,1,todo,usb_c_design_chat,Optional shield bleed path; final shield treatment TBD
@@ -378,6 +395,7 @@ USB_VBUS,J1,A4,VBUS,inferred,usb_c_design_chat,USB-C raw VBUS contact
 USB_VBUS,J1,A9,VBUS,inferred,usb_c_design_chat,USB-C raw VBUS contact
 USB_VBUS,J1,B4,VBUS,inferred,usb_c_design_chat,USB-C raw VBUS contact
 USB_VBUS,J1,B9,VBUS,inferred,usb_c_design_chat,USB-C raw VBUS contact
+~ACIAEN,TP12,1,1,inferred,test_pad_design_chat,ACIA chip-select observation test point
 ~ACIAEN,U2,9,~CS2,inferred,design/New_Address_Decode.dig,Active-low ACIA chip select from address decode
 ~ACIAEN,U12,12,~Y3,confirmed,design/New_Address_Decode.dig,ACIA decode output
 ~ADDR_0000_0001,U12,15,~Y0,confirmed,design/New_Address_Decode.dig,Low pair decode output
@@ -406,8 +424,10 @@ USB_VBUS,J1,B9,VBUS,inferred,usb_c_design_chat,USB-C raw VBUS contact
 ~PAGE_0500_05FF,U11,10,~Y5,inferred,design/New_Address_Decode.dig,Page decode for $0500-$05FF
 ~PAGE_0600_06FF,U11,9,~Y6,inferred,design/New_Address_Decode.dig,Page decode for $0600-$06FF
 ~PAGE_0700_07FF,U11,7,~Y7,inferred,design/New_Address_Decode.dig,Page decode for $0700-$07FF
+~RAM1CS,TP10,1,1,inferred,test_pad_design_chat,RAM 1 chip-select observation test point
 ~RAM1CS,U6,18,~CS,inferred,docs/memory-map.txt,RAM 1 chip select
 ~RAM1CS,U17,12,6Y,inferred,design/New_Address_Decode.dig,Active-low RAM1 chip select
+~RAM2CS,TP11,1,1,inferred,test_pad_design_chat,RAM 2 chip-select observation test point
 ~RAM2CS,U7,18,~CS,inferred,docs/memory-map.txt,RAM 2 chip select
 ~RAM2CS,U10,14,~Y1,inferred,design/New_Address_Decode.dig,Decode for $0800-$0FFF RAM2 bank
 ~RAMWE,U6,21,~WE,todo,docs/IDT_6116.pdf,RAM 1 write enable during writes
@@ -416,6 +436,7 @@ USB_VBUS,J1,B9,VBUS,inferred,usb_c_design_chat,USB-C raw VBUS contact
 ~ROM_HICS,U13,2,1B,inferred,design/New_Address_Decode.dig,AND active-low ROM half selects
 ~ROM_LOCS,U10,13,~Y2,inferred,design/New_Address_Decode.dig,One half of ROM decode
 ~ROM_LOCS,U13,1,1A,inferred,design/New_Address_Decode.dig,AND active-low ROM half selects
+~ROMCS,TP9,1,1,inferred,test_pad_design_chat,ROM chip-select observation test point
 ~ROMCS,U5,18,~CE/PGM,inferred,docs/memory-map.txt,ROM chip select
 ~ROMCS,U13,3,1Y,inferred,design/New_Address_Decode.dig,Combined ROM chip select
 ~RTCCS,U14,13,1C,inferred,design/New_Address_Decode.dig,RAM1 active decode term

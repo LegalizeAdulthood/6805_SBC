@@ -37,6 +37,27 @@ R6,RES_10M,10 Mohm,,inferred,rtc_backup_design_chat,RTC oscillator feedback resi
 R7,RES_15M,15 Mohm,,inferred,serial_design_chat,MC14411 crystal oscillator feedback resistor Rt across XTAL_IN and XTAL_OUT
 R8,RES_IRQ_PULLUP,4.7-10 kohm,,todo,irq_design_chat,Shared IRQ pull-up to 5V0; exact value TBD
 SW1,SW_PUSH_NO,Reset,,inferred,reset_design_chat,Normally-open manual reset pushbutton from RESET to GND
+TP1,TEST_PAD,5V0 test pad,,inferred,test_pad_design_chat,Power rail bring-up test point
+TP2,TEST_PAD,GND test pad,,inferred,test_pad_design_chat,Ground bring-up test point
+TP3,TEST_PAD,RESET test pad,,inferred,test_pad_design_chat,Reset net bring-up test point
+TP4,TEST_PAD,IRQ test pad,,inferred,test_pad_design_chat,Shared active-low IRQ observation test point
+TP5,TEST_PAD,AS test pad,,inferred,test_pad_design_chat,CPU address strobe observation test point
+TP6,TEST_PAD,DS test pad,,inferred,test_pad_design_chat,CPU data strobe observation test point
+TP7,TEST_PAD,R/~W test pad,,inferred,test_pad_design_chat,CPU read/write direction observation test point
+TP8,TEST_PAD,SYSCLK test pad,,todo,test_pad_design_chat,Buffered system clock observation point; driver source TBD
+TP9,TEST_PAD,~ROMCS test pad,,inferred,test_pad_design_chat,ROM chip-select observation test point
+TP10,TEST_PAD,~RAM1CS test pad,,inferred,test_pad_design_chat,RAM 1 chip-select observation test point
+TP11,TEST_PAD,~RAM2CS test pad,,inferred,test_pad_design_chat,RAM 2 chip-select observation test point
+TP12,TEST_PAD,~ACIAEN test pad,,inferred,test_pad_design_chat,ACIA chip-select observation test point
+TP13,TEST_PAD,RTCCS test pad,,inferred,test_pad_design_chat,RTC address-decode observation test point
+TP14,TEST_PAD,ACIA_TXD_TTL test pad,,inferred,test_pad_design_chat,TTL-side ACIA transmit-data observation test point
+TP15,TEST_PAD,ACIA_RXD_TTL test pad,,inferred,test_pad_design_chat,TTL-side ACIA receive-data observation test point
+TP16,TEST_PAD,RTC_ADDRESS_WRITE test pad,,todo,test_pad_design_chat,RTC address-write timing observation test point
+TP17,TEST_PAD,RTC_READ test pad,,todo,test_pad_design_chat,RTC read strobe timing observation test point
+TP18,TEST_PAD,RTC_WRITE test pad,,todo,test_pad_design_chat,RTC write strobe timing observation test point
+TP19,TEST_PAD,RTC_SELECT test pad,,todo,test_pad_design_chat,RTC select timing observation test point
+TP20,TEST_PAD,RTC_BUSY test pad,,todo,test_pad_design_chat,RTC BUSY status observation test point kept separate from IRQ
+TP21,TEST_PAD,ACIA_IRQ source test pad,,inferred,test_pad_design_chat,Place near U2 IRQ pin; electrically on shared IRQ because ACIA joins directly
 U1,MC146805E2,MC146805E2,Package_DIP:DIP-40_W15.24mm,confirmed,docs/MC146805E2_1983.pdf,CPU
 U2,MC6850,MC6850,Package_DIP:DIP-24_W15.24mm,confirmed,docs/MC6850.pdf,ACIA
 U3,MC14411,MC14411,Package_DIP:DIP-24_W15.24mm,confirmed,docs/MC14411.pdf,Baud-rate generator

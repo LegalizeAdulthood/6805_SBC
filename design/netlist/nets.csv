@@ -75,6 +75,7 @@ RTC_WRITE,control,todo,design/rtc.md,RTC_SELECT AND DS AND NOT R/~W
 RTC_XT,clock,confirmed,docs/MSM58321.pdf,MSM58321 32.768 kHz crystal connection
 RTC_XT_N,clock,confirmed,docs/MSM58321.pdf,MSM58321 32.768 kHz crystal connection
 RTCCS,control,confirmed,design/New_Address_Decode.dig,AS-qualified RTC decode for $0100-$010F; not a complete transaction select
+SYSCLK,clock,todo,test_pad_design_chat,Buffered system clock observation point; do not connect directly to raw crystal oscillator pins
 USB_SHIELD,shield,todo,usb_c_design_chat,USB-C connector shell or shield net; final ground treatment TBD
 USB_VBUS,power,inferred,usb_c_design_chat,Raw USB-C VBUS before input fuse and protection
 ~ACIAEN,control,confirmed,design/New_Address_Decode.dig,Active-low ACIA select for $0006-$0007
