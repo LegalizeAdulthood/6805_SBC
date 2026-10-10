@@ -11,7 +11,7 @@ chip_inventory,docs/chip-inventory.csv,inventory,Chip inventory,Available Am2732
 cpu_crystal_digikey,https://www.digikey.com/en/products/detail/w%C3%BCrth-elektronik/830003119B/13900107,supplier page,Wurth Elektronik 830003119B,5 MHz CPU crystal
 cpu_datasheet,docs/MC146805E2_1983.pdf,datasheet,MC146805E2 data sheet,CPU pin and oscillator information
 cpu_oscillator_design_chat,https://chatgpt.com/share/6ac9862d-b16c-83e8-946e-75dec9cc5bbd,design note,CPU oscillator notes,5 MHz crystal feedback resistor load capacitors and layout guidance
-current_user_direction,current conversation,user direction,Current user direction,PA0 LED jumper and resistor network intentionally omitted from slice 9
+current_user_direction,current conversation,user direction,Current user direction,PA0 LED jumper and resistor network intentionally omitted from slice 9; serial baud conflict resolved in favor of the later X64 choice
 decoder_datasheet,docs/sn74ls138.pdf,datasheet,SN74LS138 data sheet,74138 pinout and active-low output behavior
 gpio_header_design_chat,https://chatgpt.com/share/6ac9862d-b16c-83e8-946e-75dec9cc5bbd,design note,Port A/B GPIO header notes,Right-angle 2x10 0.1 inch PA/PB GPIO breakout with 5V0 and GND; boxed or shrouded IDC preferred if board space allows
 inverter_datasheet,https://www.ti.com/lit/ds/symlink/sn74ls04.pdf,datasheet,SN74LS04 data sheet,7404 hex inverter pinout
