@@ -19,3 +19,12 @@ U17,7404,7404,Package_DIP:DIP-14_W7.62mm,inferred,design/New_Address_Decode.dig,
 Y1,XTAL_CPU_5MHZ,5 MHz,Crystal:Crystal_HC49-U_Vertical,confirmed,https://www.digikey.com/en/products/detail/w%C3%BCrth-elektronik/830003119B/13900107,CPU crystal
 Y2,XTAL_1_8432MHZ,1.8432 MHz,Crystal:Crystal_HC49-U_Vertical,confirmed,https://www.digikey.com/en/products/detail/raltron-electronics/A-1-8432-18/10246237,MC14411 baud-rate crystal
 Y3,XTAL_32_768KHZ,32.768 kHz,,todo,docs/MSM58321.pdf,RTC timebase crystal; exact part and package TBD
+J1,USB_C_RECEPTACLE_POWER,USB-C power input,,todo,usb_c_design_chat,Power-only USB-C sink connector; exact footprint TBD
+F1,PPTC_USB_INPUT,1.1 A hold,,todo,usb_c_design_chat,Resettable input fuse between raw USB VBUS and protected 5V0 rail; exact package and part TBD
+D1,TVS_5V_UNIDIR,5 V,,todo,usb_c_design_chat,Unidirectional VBUS TVS diode near USB-C connector; exact part TBD
+R1,RES_5K1,5.1 kohm,,inferred,usb_c_design_chat,CC1 Rd pull-down
+R2,RES_5K1,5.1 kohm,,inferred,usb_c_design_chat,CC2 Rd pull-down
+C1,CAP_INPUT_BULK,10-47 uF,,todo,usb_c_design_chat,Input bulk capacitor on protected 5V0 rail; exact value and footprint TBD
+C2,CAP_100NF,0.1 uF,,inferred,usb_c_design_chat,Input bypass capacitor on protected 5V0 rail
+R3,RES_1M,1 Mohm,,todo,usb_c_design_chat,Optional shield-to-ground bleed resistor; populate only if selected
+C3,CAP_1NF,1 nF,,todo,usb_c_design_chat,Optional shield-to-ground coupling capacitor; populate only if selected

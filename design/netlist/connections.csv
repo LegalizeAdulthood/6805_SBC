@@ -290,3 +290,30 @@ LOW_0000_000F,U12,6,G1,inferred,design/New_Address_Decode.dig,Enable decode for 
 ~P2EN,U12,10,~Y5,confirmed,design/New_Address_Decode.dig,Low pair decode output
 ~P3EN,U12,9,~Y6,confirmed,design/New_Address_Decode.dig,Low pair decode output
 ~P4EN,U12,7,~Y7,confirmed,design/New_Address_Decode.dig,Low pair decode output
+USB_VBUS,J1,A4,VBUS,inferred,usb_c_design_chat,USB-C raw VBUS contact
+USB_VBUS,J1,A9,VBUS,inferred,usb_c_design_chat,USB-C raw VBUS contact
+USB_VBUS,J1,B4,VBUS,inferred,usb_c_design_chat,USB-C raw VBUS contact
+USB_VBUS,J1,B9,VBUS,inferred,usb_c_design_chat,USB-C raw VBUS contact
+GND,J1,A1,GND,inferred,usb_c_design_chat,USB-C ground contact
+GND,J1,A12,GND,inferred,usb_c_design_chat,USB-C ground contact
+GND,J1,B1,GND,inferred,usb_c_design_chat,USB-C ground contact
+GND,J1,B12,GND,inferred,usb_c_design_chat,USB-C ground contact
+CC1,J1,A5,CC1,inferred,usb_c_design_chat,USB-C configuration channel 1
+CC2,J1,B5,CC2,inferred,usb_c_design_chat,USB-C configuration channel 2
+USB_SHIELD,J1,SH,SHIELD,todo,usb_c_design_chat,Connector shield pin name depends on selected footprint
+CC1,R1,1,1,inferred,usb_c_design_chat,CC1 Rd pull-down
+GND,R1,2,2,inferred,usb_c_design_chat,CC1 Rd pull-down return
+CC2,R2,1,1,inferred,usb_c_design_chat,CC2 Rd pull-down
+GND,R2,2,2,inferred,usb_c_design_chat,CC2 Rd pull-down return
+USB_VBUS,F1,1,IN,inferred,usb_c_design_chat,Raw VBUS into input PPTC
+5V0,F1,2,OUT,inferred,usb_c_design_chat,Protected 5V0 rail after input PPTC
+USB_VBUS,D1,1,K,inferred,usb_c_design_chat,TVS cathode on connector side of fuse
+GND,D1,2,A,inferred,usb_c_design_chat,TVS anode to ground
+5V0,C1,1,1,todo,usb_c_design_chat,Input bulk capacitor on protected 5V0 rail; exact value TBD
+GND,C1,2,2,todo,usb_c_design_chat,Input bulk capacitor return
+5V0,C2,1,1,inferred,usb_c_design_chat,Input bypass capacitor on protected 5V0 rail
+GND,C2,2,2,inferred,usb_c_design_chat,Input bypass capacitor return
+USB_SHIELD,R3,1,1,todo,usb_c_design_chat,Optional shield bleed path; final shield treatment TBD
+GND,R3,2,2,todo,usb_c_design_chat,Optional shield bleed path return
+USB_SHIELD,C3,1,1,todo,usb_c_design_chat,Optional shield coupling path; final shield treatment TBD
+GND,C3,2,2,todo,usb_c_design_chat,Optional shield coupling path return

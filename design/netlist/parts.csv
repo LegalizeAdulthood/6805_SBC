@@ -15,3 +15,11 @@ HM6116,,HM6116,2Kx8 static RAM,,Package_DIP:DIP-24_W7.62mm,docs/IDT_6116.pdf,Sel
 XTAL_CPU_5MHZ,Wurth Elektronik,830003119B,5 MHz 30 pF CPU crystal,Device:Crystal,Crystal:Crystal_HC49-U_Vertical,https://www.digikey.com/en/products/detail/w%C3%BCrth-elektronik/830003119B/13900107,HC-49/US through-hole; 130 ohm ESR; +/-30 ppm tolerance; +/-50 ppm stability
 XTAL_1_8432MHZ,Raltron Electronics,A-1.8432-18,1.8432 MHz 18 pF baud-rate crystal,Device:Crystal,Crystal:Crystal_HC49-U_Vertical,https://www.digikey.com/en/products/detail/raltron-electronics/A-1-8432-18/10246237,Selected for MC14411 clock; HC-49/U through-hole; 700 ohm ESR; +/-30 ppm tolerance; +/-50 ppm stability
 XTAL_32_768KHZ,,32.768 kHz,RTC timebase crystal,Device:Crystal,,docs/MSM58321.pdf,MSM58321 requires 32.768 kHz crystal with impedance 30 kohm or less; exact package TBD
+USB_C_RECEPTACLE_POWER,,,USB-C receptacle for power-only 5 V sink,Connector:USB_C_Receptacle_USB2.0,,usb_c_design_chat,Exact connector footprint and shield pin mapping TBD
+RES_5K1,,,5.1 kohm resistor,Device:R,,usb_c_design_chat,USB-C Rd pull-down for CC pins
+PPTC_USB_INPUT,,,USB input resettable PPTC fuse,Device:Fuse,,usb_c_design_chat,Target 1.1 A hold current and at least 6 V rating; exact package TBD
+TVS_5V_UNIDIR,,,5 V unidirectional TVS diode,Device:D_TVS,,usb_c_design_chat,VBUS transient clamp near connector; exact part TBD
+CAP_INPUT_BULK,,,10-47 uF input bulk capacitor,Device:C_Polarized,,usb_c_design_chat,Input bulk capacitance range from USB-C power notes; exact value TBD
+CAP_100NF,,,0.1 uF ceramic capacitor,Device:C,,usb_c_design_chat,Input bypass capacitor
+CAP_1NF,,,1 nF capacitor,Device:C,,usb_c_design_chat,Optional USB shield coupling capacitor; final shield treatment TBD
+RES_1M,,,1 Mohm resistor,Device:R,,usb_c_design_chat,Optional USB shield bleed resistor; final shield treatment TBD

@@ -225,3 +225,28 @@ XTAL_1_8432MHZ,1,1,passive,false,https://www.digikey.com/en/products/detail/ralt
 XTAL_1_8432MHZ,2,2,passive,false,https://www.digikey.com/en/products/detail/raltron-electronics/A-1-8432-18/10246237,Crystal terminal
 XTAL_32_768KHZ,1,1,passive,false,docs/MSM58321.pdf,Crystal terminal
 XTAL_32_768KHZ,2,2,passive,false,docs/MSM58321.pdf,Crystal terminal
+USB_C_RECEPTACLE_POWER,A4,VBUS,power_in,false,usb_c_design_chat,USB-C VBUS contact
+USB_C_RECEPTACLE_POWER,A9,VBUS,power_in,false,usb_c_design_chat,USB-C VBUS contact
+USB_C_RECEPTACLE_POWER,B4,VBUS,power_in,false,usb_c_design_chat,USB-C VBUS contact
+USB_C_RECEPTACLE_POWER,B9,VBUS,power_in,false,usb_c_design_chat,USB-C VBUS contact
+USB_C_RECEPTACLE_POWER,A1,GND,power_in,false,usb_c_design_chat,USB-C ground contact
+USB_C_RECEPTACLE_POWER,A12,GND,power_in,false,usb_c_design_chat,USB-C ground contact
+USB_C_RECEPTACLE_POWER,B1,GND,power_in,false,usb_c_design_chat,USB-C ground contact
+USB_C_RECEPTACLE_POWER,B12,GND,power_in,false,usb_c_design_chat,USB-C ground contact
+USB_C_RECEPTACLE_POWER,A5,CC1,input,false,usb_c_design_chat,Configuration channel 1
+USB_C_RECEPTACLE_POWER,B5,CC2,input,false,usb_c_design_chat,Configuration channel 2
+USB_C_RECEPTACLE_POWER,SH,SHIELD,passive,false,usb_c_design_chat,Connector shell or shield contact; exact footprint pin name TBD
+RES_5K1,1,1,passive,false,usb_c_design_chat,Resistor terminal
+RES_5K1,2,2,passive,false,usb_c_design_chat,Resistor terminal
+PPTC_USB_INPUT,1,IN,passive,false,usb_c_design_chat,Fuse input terminal from raw VBUS
+PPTC_USB_INPUT,2,OUT,passive,false,usb_c_design_chat,Fuse output terminal to protected 5V0 rail
+TVS_5V_UNIDIR,1,K,passive,false,usb_c_design_chat,TVS cathode
+TVS_5V_UNIDIR,2,A,passive,false,usb_c_design_chat,TVS anode to ground
+CAP_INPUT_BULK,1,1,passive,false,usb_c_design_chat,Capacitor positive terminal for polarized bulk option
+CAP_INPUT_BULK,2,2,passive,false,usb_c_design_chat,Capacitor ground terminal
+CAP_100NF,1,1,passive,false,usb_c_design_chat,Capacitor terminal
+CAP_100NF,2,2,passive,false,usb_c_design_chat,Capacitor terminal
+CAP_1NF,1,1,passive,false,usb_c_design_chat,Capacitor terminal
+CAP_1NF,2,2,passive,false,usb_c_design_chat,Capacitor terminal
+RES_1M,1,1,passive,false,usb_c_design_chat,Resistor terminal
+RES_1M,2,2,passive,false,usb_c_design_chat,Resistor terminal

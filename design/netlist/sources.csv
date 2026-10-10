@@ -21,3 +21,4 @@ and_gate_datasheet,https://www.ti.com/lit/ds/symlink/sn74ls08.pdf,datasheet,SN74
 and3_gate_datasheet,https://www.ti.com/lit/ds/symlink/sn74ls11.pdf,datasheet,SN74LS11 data sheet,7411 triple three-input AND gate pinout
 or_gate_datasheet,https://www.ti.com/lit/ds/symlink/sn74ls32.pdf,datasheet,SN74LS32 data sheet,7432 quad OR gate pinout
 inverter_datasheet,https://www.ti.com/lit/ds/symlink/sn74ls04.pdf,datasheet,SN74LS04 data sheet,7404 hex inverter pinout
+usb_c_design_chat,https://chatgpt.com/share/6ac9862d-b16c-83e8-946e-75dec9cc5bbd,design note,USB-C power input notes,Power-only USB-C sink wiring with CC pull-downs PPTC fuse TVS protection input capacitors and shield options

@@ -66,3 +66,8 @@ MX3,U12,Digital component label,confirmed,design/New_Address_Decode.dig,Low peri
 ~1Q40006-0007,~ADDR_0008_0009,Digital output label,todo,design/New_Address_Decode.dig,Malformed label in New_Address_Decode.dig likely intended to name the $0008-$0009 output
 ACIA /CS2,~ACIAEN,MC6850 chip select,confirmed,docs/memory-map.txt,Memory map names the ACIA active-low select input
 RAM1 bank,~BANK0_0000_07FF,address decode term,inferred,docs/memory-map.txt,High-level $0000-$07FF decode before exclusions
+VBUS,USB_VBUS,USB-C power input,inferred,usb_c_design_chat,USB-C connector VBUS before input fuse
+VBUS_IN,USB_VBUS,USB-C power input,inferred,usb_c_design_chat,Alternate name for raw USB-C VBUS
+USB +5V,USB_VBUS,USB-C power input,inferred,usb_c_design_chat,Human-readable raw USB-C 5 V input name
+VCONN,CC2,USB-C connector symbol,inferred,usb_c_design_chat,Some simplified symbols label the second CC contact as VCONN for a sink connector
+SHIELD,USB_SHIELD,USB-C connector shield,todo,usb_c_design_chat,Connector shell or shield net name before final grounding decision

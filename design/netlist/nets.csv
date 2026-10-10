@@ -88,3 +88,7 @@ LOW_0000_000F,control,inferred,design/New_Address_Decode.dig,Active-high enable 
 ~P2EN,control,confirmed,design/New_Address_Decode.dig,Active-low low peripheral decoder output for $000A-$000B
 ~P3EN,control,confirmed,design/New_Address_Decode.dig,Active-low low peripheral decoder output for $000C-$000D
 ~P4EN,control,confirmed,design/New_Address_Decode.dig,Active-low low peripheral decoder output for $000E-$000F
+USB_VBUS,power,inferred,usb_c_design_chat,Raw USB-C VBUS before input fuse and protection
+CC1,control,inferred,usb_c_design_chat,USB-C configuration channel 1 with Rd pull-down
+CC2,control,inferred,usb_c_design_chat,USB-C configuration channel 2 with Rd pull-down
+USB_SHIELD,shield,todo,usb_c_design_chat,USB-C connector shell or shield net; final ground treatment TBD
