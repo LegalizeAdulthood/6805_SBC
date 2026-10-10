@@ -13,6 +13,7 @@ cpu_datasheet,docs/MC146805E2_1983.pdf,datasheet,MC146805E2 data sheet,CPU pin a
 cpu_oscillator_design_chat,https://chatgpt.com/share/6ac9862d-b16c-83e8-946e-75dec9cc5bbd,design note,CPU oscillator notes,5 MHz crystal feedback resistor load capacitors and layout guidance
 decoder_datasheet,docs/sn74ls138.pdf,datasheet,SN74LS138 data sheet,74138 pinout and active-low output behavior
 inverter_datasheet,https://www.ti.com/lit/ds/symlink/sn74ls04.pdf,datasheet,SN74LS04 data sheet,7404 hex inverter pinout
+irq_design_chat,https://chatgpt.com/share/6ac9862d-b16c-83e8-946e-75dec9cc5bbd,design note,Shared IRQ policy,Active-low open-drain IRQ line pull-up source polling and RTC BUSY participation guidance
 latch_datasheet,https://www.ti.com/lit/ds/symlink/sn74ls373.pdf,datasheet,SN74LS373 data sheet,74373-compatible transparent latch pinout and behavior
 local_symbols,C:/code/6805_sbc/MCU_Motorola_6800.kicad_sym,kicad symbol library,Local Motorola symbol library,CPU MC14411 and MSM58321 pin numbers
 memory_map,docs/memory-map.txt,design note,Memory map,External ROM and RAM address ranges plus chip-select names

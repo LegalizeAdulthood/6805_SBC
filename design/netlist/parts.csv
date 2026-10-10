@@ -31,6 +31,7 @@ RES_5K1,,,5.1 kohm resistor,Device:R,,usb_c_design_chat,USB-C Rd pull-down for C
 RES_10K,,,10 kohm resistor,Device:R,,reset_design_chat,Reset pull-up resistor
 RES_10M,,,10 Mohm resistor,Device:R,,cpu_oscillator_design_chat,CPU oscillator feedback resistor across OSC1 and OSC2
 RES_15M,,,15 Mohm resistor,Device:R,,serial_design_chat,MC14411 crystal oscillator feedback resistor Rt 15 Mohm +/-10 percent
+RES_IRQ_PULLUP,,,4.7-10 kohm IRQ pull-up resistor,Device:R,,irq_design_chat,Shared active-low open-drain IRQ pull-up; exact value TBD
 SW_PUSH_NO,,,Normally-open pushbutton,Switch:SW_Push,,reset_design_chat,Manual reset pushbutton pulls RESET to GND when pressed
 TRIMCAP_RTC,,,Optional RTC oscillator trimmer capacitor,Device:C_Variable,,rtc_backup_design_chat,Optional trimmer footprint for RTC oscillator; exact range and use TBD
 TVS_5V_UNIDIR,,SMBJ5.0A,SMBJ5.0A-class 5 V unidirectional TVS diode,Device:D_TVS,Diode_SMD:D_SMB,usb_c_design_chat,Use reputable SMBJ5.0A vendor; SMAJ5.0A is smaller lower-surge option; 5.0 V standoff; do not use 3.3 V or 12 V TVS

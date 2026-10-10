@@ -224,7 +224,7 @@ MC6850,19,D3,bidirectional,false,docs/MC6850.pdf,Data bus bit 3
 MC6850,20,D2,bidirectional,false,docs/MC6850.pdf,Data bus bit 2
 MC6850,21,D1,bidirectional,false,docs/MC6850.pdf,Data bus bit 1
 MC6850,22,D0,bidirectional,false,docs/MC6850.pdf,Data bus bit 0
-MC6850,23,~IRQ,output,true,docs/MC6850.pdf,Active-low interrupt output
+MC6850,23,~IRQ,output,true,docs/MC6850.pdf,Open-drain active-low interrupt output
 MC6850,24,TxD,output,false,docs/MC6850.pdf,Transmit data output
 MC14411,1,F1,output,false,MCU_Motorola_6800.kicad_sym,Baud clock output
 MC14411,2,F3,output,false,MCU_Motorola_6800.kicad_sym,Baud clock output
@@ -237,6 +237,7 @@ MC14411,22,RSB,input,false,MCU_Motorola_6800.kicad_sym,Rate select input fixed h
 MC14411,23,RSA,input,false,MCU_Motorola_6800.kicad_sym,Rate select input fixed high for X64 range
 MC14411,24,VDD,power_in,false,MCU_Motorola_6800.kicad_sym,Power
 MC146805E2,1,~RESET,input,true,MCU_Motorola_6800.kicad_sym,Active-low Schmitt-triggered reset input
+MC146805E2,2,~IRQ,input,true,MCU_Motorola_6800.kicad_sym,Active-low interrupt request input
 MC146805E2,4,DS,output,false,MCU_Motorola_6800.kicad_sym,Data strobe
 MC146805E2,5,R/~W,output,false,MCU_Motorola_6800.kicad_sym,Read/write direction
 MC146805E2,6,AS,output,false,MCU_Motorola_6800.kicad_sym,Address strobe
@@ -285,6 +286,8 @@ RES_10M,1,1,passive,false,cpu_oscillator_design_chat,Resistor terminal
 RES_10M,2,2,passive,false,cpu_oscillator_design_chat,Resistor terminal
 RES_15M,1,1,passive,false,serial_design_chat,Resistor terminal
 RES_15M,2,2,passive,false,serial_design_chat,Resistor terminal
+RES_IRQ_PULLUP,1,1,passive,false,irq_design_chat,Pull-up resistor terminal at 5V0
+RES_IRQ_PULLUP,2,2,passive,false,irq_design_chat,Pull-up resistor terminal at IRQ
 SW_PUSH_NO,1,1,passive,false,reset_design_chat,Switch terminal
 SW_PUSH_NO,2,2,passive,false,reset_design_chat,Switch terminal
 TRIMCAP_RTC,1,1,passive,false,rtc_backup_design_chat,Trimmer capacitor terminal

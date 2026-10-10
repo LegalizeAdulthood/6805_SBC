@@ -48,6 +48,7 @@ D6,data,confirmed,docs/memory-map.txt,External data bus bit 6
 D7,data,confirmed,docs/memory-map.txt,External data bus bit 7
 DS,control,confirmed,design/rtc.md,Data strobe used during external data phase
 GND,power,confirmed,docs/MC146805E2_1983.pdf,Logic ground
+IRQ,control,inferred,irq_design_chat,Shared active-low open-drain interrupt request line pulled up to 5V0
 LOW_0000_000F,control,inferred,design/New_Address_Decode.dig,Active-high enable for low peripheral pair decoder
 MAX232_C1N,charge-pump,todo,serial_design_chat,MAX232 C1 negative flying-capacitor terminal
 MAX232_C1P,charge-pump,todo,serial_design_chat,MAX232 C1 positive flying-capacitor terminal
@@ -65,7 +66,7 @@ RS232_RXD,data,inferred,serial_design_chat,RS-232 receive data from DE-9 pin 2 i
 RS232_TXD,data,inferred,serial_design_chat,RS-232 transmit data from MAX232 T1OUT to DE-9 pin 3
 RTC_ADDRESS_WRITE,control,todo,design/rtc.md,RTC_SELECT AND AS
 RTC_BAT,power,inferred,rtc_backup_design_chat,CR2032 positive terminal before Schottky isolation diode
-RTC_BUSY,control,todo,docs/MSM58321.pdf,Open-drain busy output handling and pull-up TBD
+RTC_BUSY,control,todo,irq_design_chat,Open-drain MSM58321 busy output; keep separate from IRQ unless deliberately promoted to status or interrupt use
 RTC_READ,control,todo,design/rtc.md,RTC_SELECT AND DS AND R/~W
 RTC_SELECT,control,todo,design/rtc.md,RTC decode held for the complete bus cycle
 RTC_STOP,control,todo,docs/MSM58321.pdf,RTC STOP input handling TBD

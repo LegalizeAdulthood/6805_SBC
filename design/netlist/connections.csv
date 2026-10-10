@@ -9,6 +9,7 @@ net,refdes,pin_number,pin_name,status,source,notes
 5V0,D3,2,A,inferred,rtc_backup_design_chat,Main 5V0 feed into RTC_VDD diode-OR
 5V0,F1,2,OUT,inferred,usb_c_design_chat,Protected 5V0 rail after input PPTC
 5V0,R4,1,1,inferred,reset_design_chat,Reset pull-up source
+5V0,R8,1,1,inferred,irq_design_chat,Shared IRQ pull-up source
 5V0,U1,40,VDD,confirmed,MCU_Motorola_6800.kicad_sym,CPU power
 5V0,U2,8,CS0,inferred,docs/memory-map.txt,Hold ACIA positive chip select asserted
 5V0,U2,10,CS1,inferred,docs/memory-map.txt,Hold ACIA positive chip select asserted
@@ -286,6 +287,9 @@ GND,U17,7,GND,confirmed,https://www.ti.com/lit/ds/symlink/sn74ls04.pdf,Inverter 
 GND,U18,8,R2IN,todo,serial_design_chat,Tie unused second receiver input to ground unless the channel is exposed
 GND,U18,10,T2IN,todo,serial_design_chat,Tie unused second driver input low unless the channel is exposed
 GND,U18,15,GND,inferred,serial_design_chat,MAX232 ground
+IRQ,R8,2,2,inferred,irq_design_chat,Shared IRQ pull-up output
+IRQ,U1,2,~IRQ,confirmed,MCU_Motorola_6800.kicad_sym,CPU active-low interrupt input
+IRQ,U2,23,~IRQ,inferred,irq_design_chat,MC6850 open-drain active-low interrupt output joins shared IRQ directly
 LOW_0000_000F,U12,6,G1,inferred,design/New_Address_Decode.dig,Enable decode for $0000-$000F
 LOW_0000_000F,U13,6,2Y,inferred,design/New_Address_Decode.dig,Enable low peripheral pair decoder
 MAX232_C1N,C12,2,2,todo,serial_design_chat,MAX232 C1 flying capacitor
@@ -343,7 +347,7 @@ RS232_TXD,U18,14,T1OUT,inferred,serial_design_chat,RS-232 driver output for DTE-
 RTC_ADDRESS_WRITE,U8,9,ADDRESS_WRITE,todo,design/rtc.md,Assert for address phase on both reads and writes
 RTC_BAT,BT1,1,+,inferred,rtc_backup_design_chat,RTC backup coin-cell positive terminal
 RTC_BAT,D4,2,A,inferred,rtc_backup_design_chat,CR2032 feed into RTC_VDD diode-OR
-RTC_BUSY,U8,10,~BUSY,todo,docs/MSM58321.pdf,Open-drain BUSY output consumer and pull-up TBD
+RTC_BUSY,U8,10,~BUSY,todo,irq_design_chat,Open-drain BUSY output remains separate from IRQ unless deliberately promoted
 RTC_READ,U8,3,READ,todo,design/rtc.md,Active-high RTC read strobe from selected DS read cycle
 RTC_SELECT,U8,1,CS2,todo,design/rtc.md,Final select must be held for complete RTC bus cycle
 RTC_SELECT,U8,13,CS1,todo,design/rtc.md,Final select must be held for complete RTC bus cycle
