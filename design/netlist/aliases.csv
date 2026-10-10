@@ -59,7 +59,7 @@ receive-clock output of baud mux,ACIA_RXCLK,baud-rate clock path,inferred,design
 ROM /CE,~ROMCS,ROM chip select,confirmed,docs/memory-map.txt,Memory map names ROM chip enable
 ROM ~CS,~ROMCS,ROM chip select,confirmed,design/New_Address_Decode.dig,Address decoder signal label
 RTC battery,RTC_BAT,RTC backup supply,inferred,rtc_backup_design_chat,CR2032 positive terminal before isolation diode
-RTC CS,RTCCS,address decode label,confirmed,design/New_Address_Decode.dig,AS-qualified RTC address-decode output
+RTC CS,RTCCS,address decode label,confirmed,design/New_Address_Decode.dig,Address-only RTC adapter decode output
 RTC VDD,RTC_VDD,MSM58321 power pin,inferred,rtc_backup_design_chat,Battery-backed RTC supply after diode-OR
 Rx Data,ACIA_RXD_TTL,MC6850 pin 6,confirmed,docs/MC6850.pdf,Datasheet descriptive name for receive data pin
 RXD,RS232_RXD,DE-9 signal,inferred,serial_design_chat,DTE-style DE-9 pin 2 signal into SBC receiver

@@ -27,6 +27,7 @@ net,refdes,pin_number,pin_name,status,source,notes
 5V0,U6,24,VCC,inferred,docs/IDT_6116.pdf,RAM 1 power
 5V0,U7,24,VCC,inferred,docs/IDT_6116.pdf,RAM 2 power
 5V0,U9,20,VCC,confirmed,https://www.ti.com/lit/ds/symlink/sn74ls373.pdf,Address latch power
+5V0,U10,6,G1,inferred,current_user_direction,Enable high address decoder continuously for address-only chip selects
 5V0,U10,16,VCC,confirmed,docs/sn74ls138.pdf,High address decoder power
 5V0,U11,16,VCC,confirmed,docs/sn74ls138.pdf,Page decoder power
 5V0,U12,16,VCC,confirmed,docs/sn74ls138.pdf,Low peripheral decoder power
@@ -146,7 +147,6 @@ ACIA_TXD_TTL,U18,11,T1IN,inferred,serial_design_chat,MAX232 driver input for con
 AS,TP5,1,1,inferred,test_pad_design_chat,CPU address-strobe observation test point
 AS,U1,6,AS,confirmed,MCU_Motorola_6800.kicad_sym,CPU address strobe
 AS,U9,11,LE,confirmed,design/Address_Latch.dig,Latch PB0-PB7 while AS is asserted
-AS,U10,6,G1,inferred,design/New_Address_Decode.dig,AS qualifies high address decode
 AS,U23,11,LE,inferred,rtc_adapter_design,Latch adapter subregister address while AS is asserted
 AS,U32,11,5A,inferred,rtc_adapter_design,Invert AS for RTC_CYCLE clear timing
 BANK0_0000_07FF,U11,6,G1,inferred,design/New_Address_Decode.dig,Enable page decode inside the $0000-$07FF bank
@@ -647,7 +647,7 @@ RTC_XT_N,R6,2,2,inferred,rtc_backup_design_chat,RTC oscillator feedback resistor
 RTC_XT_N,U8,14,~XT,confirmed,docs/MSM58321.pdf,RTC crystal oscillator pin
 RTC_XT_N,Y3,2,2,confirmed,docs/MSM58321.pdf,RTC crystal terminal
 RTCCS,TP13,1,1,inferred,test_pad_design_chat,RTC address-decode observation test point
-RTCCS,U13,8,3Y,inferred,design/New_Address_Decode.dig,AS-qualified RTC address decode
+RTCCS,U13,8,3Y,inferred,design/New_Address_Decode.dig,Address-only RTC adapter decode
 RTCCS,U17,11,5A,inferred,design/New_Address_Decode.dig,Invert RTC select for RAM1 exclusion
 RTCCS,U33,13,4B,inferred,rtc_adapter_design,Qualify RTC_CYCLE hold clear while RTC decode is inactive
 SYSCLK,TP8,1,1,todo,test_pad_design_chat,Buffered system clock observation test point; driver source TBD
@@ -729,4 +729,4 @@ USB_VBUS,J1,B9,VBUS,inferred,usb_c_design_chat,USB-C raw VBUS contact
 ~RTC_WDATA_OE,U32,4,2Y,inferred,rtc_adapter_design,Inverted RTC_WRITE pulse
 ~RTCCS,U14,13,1C,inferred,design/New_Address_Decode.dig,RAM1 active decode term
 ~RTCCS,U17,10,5Y,inferred,design/New_Address_Decode.dig,Active-low RTC select complement
-~RTCCS,U29,10,~2PRE,inferred,rtc_adapter_design,Set RTC_CYCLE latch during AS-qualified RTC decode
+~RTCCS,U29,10,~2PRE,inferred,rtc_adapter_design,Set RTC_CYCLE latch during RTC address decode

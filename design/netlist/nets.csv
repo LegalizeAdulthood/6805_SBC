@@ -23,7 +23,7 @@ ACIA_RXCLK,clock,inferred,design/baud-rate.md,Driven by section 1 of baud mux
 ACIA_RXD_TTL,data,inferred,serial_design_chat,TTL receive-data path from MAX232 R1OUT to MC6850 RxD
 ACIA_TXCLK,clock,inferred,design/baud-rate.md,Driven by section 2 of baud mux
 ACIA_TXD_TTL,data,inferred,serial_design_chat,TTL transmit-data path from MC6850 TxD to MAX232 T1IN
-AS,control,confirmed,design/Address_Latch.dig,Address strobe used to latch multiplexed low address byte
+AS,control,confirmed,design/Address_Latch.dig,Address strobe used only to latch the multiplexed low address byte
 ~AS,control,inferred,rtc_adapter_design,Inverted address strobe used by the RTC CPU-cycle latch clear gate
 BANK0_0000_07FF,control,inferred,design/New_Address_Decode.dig,Active-high complement of the $0000-$07FF bank decode
 BANK0_ADDR_NONZERO,control,inferred,design/New_Address_Decode.dig,High for bank 0 addresses at or above $0080
@@ -48,7 +48,7 @@ D4,data,confirmed,docs/memory-map.txt,External data bus bit 4
 D5,data,confirmed,docs/memory-map.txt,External data bus bit 5
 D6,data,confirmed,docs/memory-map.txt,External data bus bit 6
 D7,data,confirmed,docs/memory-map.txt,External data bus bit 7
-DS,control,confirmed,design/rtc.md,Data strobe used during external data phase
+DS,control,confirmed,cpu_datasheet,Data strobe used to qualify external data-transfer enables
 GND,power,confirmed,docs/MC146805E2_1983.pdf,Logic ground
 IRQ,control,inferred,irq_design_chat,Shared active-low open-drain interrupt request line pulled up to 5V0
 LOW_0000_000F,control,inferred,design/New_Address_Decode.dig,Active-high enable for low peripheral pair decoder
@@ -109,7 +109,7 @@ RTC_WDATA_LE,control,inferred,rtc_adapter_design,Loads CPU D0-D3 into the RTC wr
 RTC_WRITE,control,inferred,rtc_adapter_design,Sequenced active-high MSM58321 write pulse generated from adapter command state
 RTC_XT,clock,confirmed,docs/MSM58321.pdf,MSM58321 32.768 kHz crystal connection
 RTC_XT_N,clock,confirmed,docs/MSM58321.pdf,MSM58321 32.768 kHz crystal connection
-RTCCS,control,confirmed,design/New_Address_Decode.dig,AS-qualified RTC decode for $0100-$010F; not a complete transaction select
+RTCCS,control,confirmed,design/New_Address_Decode.dig,Address-only RTC adapter decode for $0100-$010F; not a complete transaction select
 SYSCLK,clock,todo,test_pad_design_chat,Buffered system clock observation point; do not connect directly to raw crystal oscillator pins
 TIMER,control,inferred,timer_header_design_chat,CPU TIMER input exposed on a small service header for external slow signal injection
 USB_SHIELD,shield,todo,usb_c_design_chat,USB-C connector shell or shield net; final ground treatment TBD
@@ -118,7 +118,7 @@ USB_VBUS,power,inferred,usb_c_design_chat,Raw USB-C VBUS before input fuse and p
 ~ADDR_0000_0001,control,confirmed,design/New_Address_Decode.dig,Active-low low peripheral decoder output for $0000-$0001
 ~ADDR_0004_0005,control,confirmed,design/New_Address_Decode.dig,Active-low low peripheral decoder output for $0004-$0005
 ~ADDR_0008_0009,control,inferred,design/Address_Decode.dig,Active-low low peripheral decoder output for $0008-$0009
-~BANK0_0000_07FF,control,inferred,design/New_Address_Decode.dig,Active-low decode for $0000-$07FF while AS is asserted
+~BANK0_0000_07FF,control,inferred,design/New_Address_Decode.dig,Active-low address-only decode for $0000-$07FF
 ~DEC_HIGH_Q4,control,confirmed,design/New_Address_Decode.dig,Unused active-low high decoder output Q4
 ~DEC_HIGH_Q5,control,confirmed,design/New_Address_Decode.dig,Unused active-low high decoder output Q5
 ~DEC_HIGH_Q6,control,confirmed,design/New_Address_Decode.dig,Unused active-low high decoder output Q6
