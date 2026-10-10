@@ -49,7 +49,6 @@ TP4,TEST_PAD,IRQ test pad,,inferred,test_pad_design_chat,Shared active-low IRQ o
 TP5,TEST_PAD,AS test pad,,inferred,test_pad_design_chat,CPU address strobe observation test point
 TP6,TEST_PAD,DS test pad,,inferred,test_pad_design_chat,CPU data strobe observation test point
 TP7,TEST_PAD,R/~W test pad,,inferred,test_pad_design_chat,CPU read/write direction observation test point
-TP8,TEST_PAD,SYSCLK test pad,,todo,test_pad_design_chat,Buffered system clock observation point; driver source TBD
 TP9,TEST_PAD,~ROMCS test pad,,inferred,test_pad_design_chat,ROM chip-select observation test point
 TP10,TEST_PAD,~RAM1CS test pad,,inferred,test_pad_design_chat,RAM 1 chip-select observation test point
 TP11,TEST_PAD,~RAM2CS test pad,,inferred,test_pad_design_chat,RAM 2 chip-select observation test point

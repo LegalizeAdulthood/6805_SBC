@@ -650,7 +650,6 @@ RTCCS,TP13,1,1,inferred,test_pad_design_chat,RTC address-decode observation test
 RTCCS,U13,8,3Y,inferred,design/New_Address_Decode.dig,Address-only RTC adapter decode
 RTCCS,U17,11,5A,inferred,design/New_Address_Decode.dig,Invert RTC select for RAM1 exclusion
 RTCCS,U33,13,4B,inferred,rtc_adapter_design,Qualify RTC_CYCLE hold clear while RTC decode is inactive
-SYSCLK,TP8,1,1,todo,test_pad_design_chat,Buffered system clock observation test point; driver source TBD
 TIMER,J4,1,TIMER,inferred,timer_header_design_chat,External TIMER injection header pin
 TIMER,U1,37,TIMER,confirmed,MCU_Motorola_6800.kicad_sym,CPU TIMER input
 USB_SHIELD,C3,1,1,todo,usb_c_design_chat,Optional shield coupling path; final shield treatment TBD
