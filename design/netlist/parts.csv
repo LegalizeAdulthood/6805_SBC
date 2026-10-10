@@ -19,6 +19,7 @@ CR2032_HOLDER,,,CR2032 coin-cell holder,Device:Battery_Cell,,rtc_backup_design_c
 DE9_DTE_SERIAL,,,DE-9 RS-232 console connector,Connector:DB9_Male,,serial_design_chat,DTE-style pinout staged with SBC TX on pin 3 RX on pin 2 and GND on pin 5; exact gender and footprint TBD
 DIODE_1N4148,,1N4148,Small-signal switching diode,Device:D,,reset_design_chat,Optional reset capacitor discharge diode with anode on RESET and cathode on 5V0
 DIODE_SCHOTTKY_RTC,,BAT54 or 1N5817-class,Schottky isolation diode,Device:D_Schottky,,rtc_backup_design_chat,RTC diode-OR isolation diode; use BAT54 or 1N5817-class and not 1N4148 to preserve battery margin
+HEADER_PORT_AB_2X10,,,Right-angle 2x10 Port A/B GPIO header,Connector_Generic:Conn_02x10_Odd_Even,Connector_IDC:IDC-Header_2x10_P2.54mm_Horizontal,gpio_header_design_chat,0.1 inch GPIO breakout for PA0-PA7 PB0-PB7 5V0 and GND; boxed or shrouded IDC preferred if board space allows; exact footprint TBD
 HEADER_TIMER_IRQ,,,TIMER and IRQ service header,Connector_Generic:Conn_01x03,Connector_PinHeader_2.54mm:PinHeader_1x03_P2.54mm_Vertical,timer_header_design_chat,Small header for external slow TIMER injection optional IRQ access and ground; exact vertical or right-angle style TBD
 HM6116,,HM6116,2Kx8 static RAM,,Package_DIP:DIP-24_W7.62mm,docs/IDT_6116.pdf,Selected from inventory; IDT6116 datasheet used for 6116-class pinout
 MAX232,,MAX232,Dual RS-232 transceiver,Interface_UART:MAX232,Package_DIP:DIP-16_W7.62mm,docs/chip-inventory.csv,Selected from inventory; exact MAX232-family variant and charge-pump capacitor values TBD

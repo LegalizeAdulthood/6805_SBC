@@ -162,6 +162,26 @@ DIODE_1N4148,1,K,passive,false,reset_design_chat,Diode cathode
 DIODE_1N4148,2,A,passive,false,reset_design_chat,Diode anode
 DIODE_SCHOTTKY_RTC,1,K,passive,false,rtc_backup_design_chat,Schottky diode cathode
 DIODE_SCHOTTKY_RTC,2,A,passive,false,rtc_backup_design_chat,Schottky diode anode
+HEADER_PORT_AB_2X10,1,PA0,passive,false,gpio_header_design_chat,J3 odd row Port A bit 0
+HEADER_PORT_AB_2X10,2,PB0,passive,false,gpio_header_design_chat,J3 even row Port B bit 0 exposed on canonical D0 net
+HEADER_PORT_AB_2X10,3,PA1,passive,false,gpio_header_design_chat,J3 odd row Port A bit 1
+HEADER_PORT_AB_2X10,4,PB1,passive,false,gpio_header_design_chat,J3 even row Port B bit 1 exposed on canonical D1 net
+HEADER_PORT_AB_2X10,5,PA2,passive,false,gpio_header_design_chat,J3 odd row Port A bit 2
+HEADER_PORT_AB_2X10,6,PB2,passive,false,gpio_header_design_chat,J3 even row Port B bit 2 exposed on canonical D2 net
+HEADER_PORT_AB_2X10,7,PA3,passive,false,gpio_header_design_chat,J3 odd row Port A bit 3
+HEADER_PORT_AB_2X10,8,PB3,passive,false,gpio_header_design_chat,J3 even row Port B bit 3 exposed on canonical D3 net
+HEADER_PORT_AB_2X10,9,PA4,passive,false,gpio_header_design_chat,J3 odd row Port A bit 4
+HEADER_PORT_AB_2X10,10,PB4,passive,false,gpio_header_design_chat,J3 even row Port B bit 4 exposed on canonical D4 net
+HEADER_PORT_AB_2X10,11,PA5,passive,false,gpio_header_design_chat,J3 odd row Port A bit 5
+HEADER_PORT_AB_2X10,12,PB5,passive,false,gpio_header_design_chat,J3 even row Port B bit 5 exposed on canonical D5 net
+HEADER_PORT_AB_2X10,13,PA6,passive,false,gpio_header_design_chat,J3 odd row Port A bit 6
+HEADER_PORT_AB_2X10,14,PB6,passive,false,gpio_header_design_chat,J3 even row Port B bit 6 exposed on canonical D6 net
+HEADER_PORT_AB_2X10,15,PA7,passive,false,gpio_header_design_chat,J3 odd row Port A bit 7
+HEADER_PORT_AB_2X10,16,PB7,passive,false,gpio_header_design_chat,J3 even row Port B bit 7 exposed on canonical D7 net
+HEADER_PORT_AB_2X10,17,5V0,power_out,false,gpio_header_design_chat,J3 5V0 utility pin
+HEADER_PORT_AB_2X10,18,5V0,power_out,false,gpio_header_design_chat,J3 second 5V0 utility pin
+HEADER_PORT_AB_2X10,19,GND,power_in,false,gpio_header_design_chat,J3 ground return pin
+HEADER_PORT_AB_2X10,20,GND,power_in,false,gpio_header_design_chat,J3 second ground return pin
 HEADER_TIMER_IRQ,1,TIMER,passive,false,timer_header_design_chat,External slow timer injection signal
 HEADER_TIMER_IRQ,2,IRQ,passive,false,timer_header_design_chat,Shared active-low IRQ header signal
 HEADER_TIMER_IRQ,3,GND,power_in,false,timer_header_design_chat,Header ground
@@ -244,6 +264,14 @@ MC146805E2,2,~IRQ,input,true,MCU_Motorola_6800.kicad_sym,Active-low interrupt re
 MC146805E2,4,DS,output,false,MCU_Motorola_6800.kicad_sym,Data strobe
 MC146805E2,5,R/~W,output,false,MCU_Motorola_6800.kicad_sym,Read/write direction
 MC146805E2,6,AS,output,false,MCU_Motorola_6800.kicad_sym,Address strobe
+MC146805E2,7,PA7,bidirectional,false,MCU_Motorola_6800.kicad_sym,Port A bit 7
+MC146805E2,8,PA6,bidirectional,false,MCU_Motorola_6800.kicad_sym,Port A bit 6
+MC146805E2,9,PA5,bidirectional,false,MCU_Motorola_6800.kicad_sym,Port A bit 5
+MC146805E2,10,PA4,bidirectional,false,MCU_Motorola_6800.kicad_sym,Port A bit 4
+MC146805E2,11,PA3,bidirectional,false,MCU_Motorola_6800.kicad_sym,Port A bit 3
+MC146805E2,12,PA2,bidirectional,false,MCU_Motorola_6800.kicad_sym,Port A bit 2
+MC146805E2,13,PA1,bidirectional,false,MCU_Motorola_6800.kicad_sym,Port A bit 1
+MC146805E2,14,PA0,bidirectional,false,MCU_Motorola_6800.kicad_sym,Port A bit 0
 MC146805E2,15,A12,output,false,MCU_Motorola_6800.kicad_sym,External address bus bit 12
 MC146805E2,16,A11,output,false,MCU_Motorola_6800.kicad_sym,External address bus bit 11
 MC146805E2,17,A10,output,false,MCU_Motorola_6800.kicad_sym,External address bus bit 10

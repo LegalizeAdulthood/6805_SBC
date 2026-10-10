@@ -8,6 +8,8 @@ net,refdes,pin_number,pin_name,status,source,notes
 5V0,D2,1,K,todo,reset_design_chat,Optional reset capacitor discharge diode cathode
 5V0,D3,2,A,inferred,rtc_backup_design_chat,Main 5V0 feed into RTC_VDD diode-OR
 5V0,F1,2,OUT,inferred,usb_c_design_chat,Protected 5V0 rail after input PPTC
+5V0,J3,17,5V0,inferred,gpio_header_design_chat,J3 5V0 utility pin
+5V0,J3,18,5V0,inferred,gpio_header_design_chat,J3 second 5V0 utility pin
 5V0,R4,1,1,inferred,reset_design_chat,Reset pull-up source
 5V0,R8,1,1,inferred,irq_design_chat,Shared IRQ pull-up source
 5V0,TP1,1,1,inferred,test_pad_design_chat,Power rail bring-up test point
@@ -162,6 +164,7 @@ CPU_OSC2,C6,1,1,inferred,cpu_oscillator_design_chat,CPU oscillator load capacito
 CPU_OSC2,R5,2,2,inferred,cpu_oscillator_design_chat,Feedback resistor terminal at OSC2
 CPU_OSC2,U1,38,OSC2,confirmed,MCU_Motorola_6800.kicad_sym,CPU oscillator output
 CPU_OSC2,Y1,2,2,confirmed,https://www.digikey.com/en/products/detail/w%C3%BCrth-elektronik/830003119B/13900107,CPU crystal terminal
+D0,J3,2,PB0,inferred,gpio_header_design_chat,Port B bit 0 exposed on J3; canonical net is D0
 D0,U1,36,PB0,confirmed,design/Address_Latch.dig,CPU multiplexed address/data bus bit 0
 D0,U2,22,D0,inferred,docs/MC6850.pdf,ACIA data bus bit 0
 D0,U5,9,O0,inferred,docs/Am2732-AMD.pdf,ROM data output bit 0
@@ -169,6 +172,7 @@ D0,U6,9,I/O0,inferred,docs/IDT_6116.pdf,RAM 1 data bit 0
 D0,U7,9,I/O0,inferred,docs/IDT_6116.pdf,RAM 2 data bit 0
 D0,U8,4,D0,confirmed,design/rtc.md,RTC 4-bit data bus bit 0
 D0,U9,3,1D,confirmed,design/Address_Latch.dig,Low address/data bit 0 latch input
+D1,J3,4,PB1,inferred,gpio_header_design_chat,Port B bit 1 exposed on J3; canonical net is D1
 D1,U1,35,PB1,confirmed,design/Address_Latch.dig,CPU multiplexed address/data bus bit 1
 D1,U2,21,D1,inferred,docs/MC6850.pdf,ACIA data bus bit 1
 D1,U5,10,O1,inferred,docs/Am2732-AMD.pdf,ROM data output bit 1
@@ -176,6 +180,7 @@ D1,U6,10,I/O1,inferred,docs/IDT_6116.pdf,RAM 1 data bit 1
 D1,U7,10,I/O1,inferred,docs/IDT_6116.pdf,RAM 2 data bit 1
 D1,U8,5,D1,confirmed,design/rtc.md,RTC 4-bit data bus bit 1
 D1,U9,4,2D,confirmed,design/Address_Latch.dig,Low address/data bit 1 latch input
+D2,J3,6,PB2,inferred,gpio_header_design_chat,Port B bit 2 exposed on J3; canonical net is D2
 D2,U1,34,PB2,confirmed,design/Address_Latch.dig,CPU multiplexed address/data bus bit 2
 D2,U2,20,D2,inferred,docs/MC6850.pdf,ACIA data bus bit 2
 D2,U5,11,O2,inferred,docs/Am2732-AMD.pdf,ROM data output bit 2
@@ -183,6 +188,7 @@ D2,U6,11,I/O2,inferred,docs/IDT_6116.pdf,RAM 1 data bit 2
 D2,U7,11,I/O2,inferred,docs/IDT_6116.pdf,RAM 2 data bit 2
 D2,U8,6,D2,confirmed,design/rtc.md,RTC 4-bit data bus bit 2
 D2,U9,7,3D,confirmed,design/Address_Latch.dig,Low address/data bit 2 latch input
+D3,J3,8,PB3,inferred,gpio_header_design_chat,Port B bit 3 exposed on J3; canonical net is D3
 D3,U1,33,PB3,confirmed,design/Address_Latch.dig,CPU multiplexed address/data bus bit 3
 D3,U2,19,D3,inferred,docs/MC6850.pdf,ACIA data bus bit 3
 D3,U5,13,O3,inferred,docs/Am2732-AMD.pdf,ROM data output bit 3
@@ -190,24 +196,28 @@ D3,U6,13,I/O3,inferred,docs/IDT_6116.pdf,RAM 1 data bit 3
 D3,U7,13,I/O3,inferred,docs/IDT_6116.pdf,RAM 2 data bit 3
 D3,U8,7,D3,confirmed,design/rtc.md,RTC 4-bit data bus bit 3
 D3,U9,8,4D,confirmed,design/Address_Latch.dig,Low address/data bit 3 latch input
+D4,J3,10,PB4,inferred,gpio_header_design_chat,Port B bit 4 exposed on J3; canonical net is D4
 D4,U1,32,PB4,confirmed,design/Address_Latch.dig,CPU multiplexed address/data bus bit 4
 D4,U2,18,D4,inferred,docs/MC6850.pdf,ACIA data bus bit 4
 D4,U5,14,O4,inferred,docs/Am2732-AMD.pdf,ROM data output bit 4
 D4,U6,14,I/O4,inferred,docs/IDT_6116.pdf,RAM 1 data bit 4
 D4,U7,14,I/O4,inferred,docs/IDT_6116.pdf,RAM 2 data bit 4
 D4,U9,13,5D,confirmed,design/Address_Latch.dig,Low address/data bit 4 latch input
+D5,J3,12,PB5,inferred,gpio_header_design_chat,Port B bit 5 exposed on J3; canonical net is D5
 D5,U1,31,PB5,confirmed,design/Address_Latch.dig,CPU multiplexed address/data bus bit 5
 D5,U2,17,D5,inferred,docs/MC6850.pdf,ACIA data bus bit 5
 D5,U5,15,O5,inferred,docs/Am2732-AMD.pdf,ROM data output bit 5
 D5,U6,15,I/O5,inferred,docs/IDT_6116.pdf,RAM 1 data bit 5
 D5,U7,15,I/O5,inferred,docs/IDT_6116.pdf,RAM 2 data bit 5
 D5,U9,14,6D,confirmed,design/Address_Latch.dig,Low address/data bit 5 latch input
+D6,J3,14,PB6,inferred,gpio_header_design_chat,Port B bit 6 exposed on J3; canonical net is D6
 D6,U1,30,PB6,confirmed,design/Address_Latch.dig,CPU multiplexed address/data bus bit 6
 D6,U2,16,D6,inferred,docs/MC6850.pdf,ACIA data bus bit 6
 D6,U5,16,O6,inferred,docs/Am2732-AMD.pdf,ROM data output bit 6
 D6,U6,16,I/O6,inferred,docs/IDT_6116.pdf,RAM 1 data bit 6
 D6,U7,16,I/O6,inferred,docs/IDT_6116.pdf,RAM 2 data bit 6
 D6,U9,17,7D,confirmed,design/Address_Latch.dig,Low address/data bit 6 latch input
+D7,J3,16,PB7,inferred,gpio_header_design_chat,Port B bit 7 exposed on J3; canonical net is D7
 D7,U1,29,PB7,confirmed,design/Address_Latch.dig,CPU multiplexed address/data bus bit 7
 D7,U2,15,D7,inferred,docs/MC6850.pdf,ACIA data bus bit 7
 D7,U5,17,O7,inferred,docs/Am2732-AMD.pdf,ROM data output bit 7
@@ -243,6 +253,8 @@ GND,J1,A12,GND,inferred,usb_c_design_chat,USB-C ground contact
 GND,J1,B1,GND,inferred,usb_c_design_chat,USB-C ground contact
 GND,J1,B12,GND,inferred,usb_c_design_chat,USB-C ground contact
 GND,J2,5,GND,inferred,serial_design_chat,DE-9 signal ground
+GND,J3,19,GND,inferred,gpio_header_design_chat,J3 ground return pin
+GND,J3,20,GND,inferred,gpio_header_design_chat,J3 second ground return pin
 GND,J4,3,GND,inferred,timer_header_design_chat,TIMER/IRQ header ground
 GND,R1,2,2,inferred,usb_c_design_chat,CC1 Rd pull-down return
 GND,R2,2,2,inferred,usb_c_design_chat,CC2 Rd pull-down return
@@ -337,6 +349,22 @@ NC,J2,9,RI,todo,serial_design_chat,No-flow-control policy leaves DE-9 RI unconne
 NC,U2,5,RTS,todo,serial_design_chat,No-flow-control policy leaves ACIA RTS unconnected unless later exposed on a test pad
 NC,U18,7,T2OUT,todo,serial_design_chat,Unused second MAX232 driver output
 NC,U18,9,R2OUT,todo,serial_design_chat,Unused second MAX232 receiver output
+PA0,J3,1,PA0,inferred,gpio_header_design_chat,Port A bit 0 exposed on J3
+PA0,U1,14,PA0,confirmed,MCU_Motorola_6800.kicad_sym,CPU Port A bit 0
+PA1,J3,3,PA1,inferred,gpio_header_design_chat,Port A bit 1 exposed on J3
+PA1,U1,13,PA1,confirmed,MCU_Motorola_6800.kicad_sym,CPU Port A bit 1
+PA2,J3,5,PA2,inferred,gpio_header_design_chat,Port A bit 2 exposed on J3
+PA2,U1,12,PA2,confirmed,MCU_Motorola_6800.kicad_sym,CPU Port A bit 2
+PA3,J3,7,PA3,inferred,gpio_header_design_chat,Port A bit 3 exposed on J3
+PA3,U1,11,PA3,confirmed,MCU_Motorola_6800.kicad_sym,CPU Port A bit 3
+PA4,J3,9,PA4,inferred,gpio_header_design_chat,Port A bit 4 exposed on J3
+PA4,U1,10,PA4,confirmed,MCU_Motorola_6800.kicad_sym,CPU Port A bit 4
+PA5,J3,11,PA5,inferred,gpio_header_design_chat,Port A bit 5 exposed on J3
+PA5,U1,9,PA5,confirmed,MCU_Motorola_6800.kicad_sym,CPU Port A bit 5
+PA6,J3,13,PA6,inferred,gpio_header_design_chat,Port A bit 6 exposed on J3
+PA6,U1,8,PA6,confirmed,MCU_Motorola_6800.kicad_sym,CPU Port A bit 6
+PA7,J3,15,PA7,inferred,gpio_header_design_chat,Port A bit 7 exposed on J3
+PA7,U1,7,PA7,confirmed,MCU_Motorola_6800.kicad_sym,CPU Port A bit 7
 PAGE_0000_00FF,U13,4,2A,inferred,design/New_Address_Decode.dig,Low I/O decode page term
 PAGE_0000_00FF,U17,6,3Y,inferred,design/New_Address_Decode.dig,Active-high page decode
 PAGE_0100_01FF,U13,9,3A,inferred,design/New_Address_Decode.dig,RTC decode page term
