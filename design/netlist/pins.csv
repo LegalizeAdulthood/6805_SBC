@@ -346,6 +346,8 @@ RES_10M,1,1,passive,false,cpu_oscillator_design_chat,Resistor terminal
 RES_10M,2,2,passive,false,cpu_oscillator_design_chat,Resistor terminal
 RES_15M,1,1,passive,false,serial_design_chat,Resistor terminal
 RES_15M,2,2,passive,false,serial_design_chat,Resistor terminal
+RES_200K,1,1,passive,false,rtc_datasheet,Resistor terminal
+RES_200K,2,2,passive,false,rtc_datasheet,Resistor terminal
 RES_BAUD_PULLDOWN,1,1,passive,false,current_user_direction,Pull-down resistor terminal at select net
 RES_BAUD_PULLDOWN,2,2,passive,false,current_user_direction,Pull-down resistor terminal at ground
 RES_IRQ_PULLUP,1,1,passive,false,irq_design_chat,Pull-up resistor terminal at 5V0
@@ -359,8 +361,6 @@ SW_DIP_2,4,2B,passive,false,current_user_direction,Switch 2 output terminal
 SW_PUSH_NO,1,1,passive,false,current_user_direction,Switch terminal
 SW_PUSH_NO,2,2,passive,false,current_user_direction,Switch terminal
 TEST_PAD,1,1,passive,false,test_pad_design_chat,Single test pad terminal
-TRIMCAP_RTC,1,1,passive,false,rtc_backup_design_chat,Trimmer capacitor terminal
-TRIMCAP_RTC,2,2,passive,false,rtc_backup_design_chat,Trimmer capacitor terminal
 TVS_5V_UNIDIR,1,K,passive,false,usb_c_design_chat,TVS cathode
 TVS_5V_UNIDIR,2,A,passive,false,usb_c_design_chat,TVS anode to ground
 USB_C_RECEPTACLE_POWER,A1,GND,power_in,false,usb_c_design_chat,USB-C ground contact

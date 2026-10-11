@@ -34,15 +34,15 @@ RES_5K1,,,5.1 kohm resistor,Device:R,,usb_c_design_chat,USB-C Rd pull-down for C
 RES_10K,,,10 kohm resistor,Device:R,,current_user_direction,External reset pull-up resistor
 RES_10M,,,10 Mohm resistor,Device:R,,cpu_oscillator_design_chat,CPU oscillator feedback resistor across OSC1 and OSC2
 RES_15M,,,15 Mohm resistor,Device:R,,serial_design_chat,MC14411 crystal oscillator feedback resistor Rt 15 Mohm +/-10 percent
+RES_200K,,,200 kohm resistor,Device:R,,rtc_datasheet,MSM58321 oscillator series resistor RS 200 kohm typical from Figure 8
 RES_BAUD_PULLDOWN,,,Baud select pull-down resistor,Device:R,,current_user_direction,Pull-down value TBD after final 74153 logic family is chosen
 RES_IRQ_PULLUP,,,4.7-10 kohm IRQ pull-up resistor,Device:R,,irq_design_chat,Shared active-low open-drain IRQ pull-up; exact value TBD
 RES_RTC_BUSY_PULLUP,,,RTC BUSY pull-up resistor,Device:R,,rtc_adapter_design,Pulls MSM58321 open-drain BUSY to the main 5V0 logic rail
 SW_DIP_2,,,Two-position DIP switch,Switch:SW_DIP_x02,,current_user_direction,Manual baud-rate range selector; closed switch drives the corresponding select bit high
 SW_PUSH_NO,,,Normally-open pushbutton,Switch:SW_Push,,current_user_direction,Manual reset pushbutton pulls RESET to GND when pressed
 TEST_PAD,,,Single-pin test pad,Connector:TestPoint,TestPoint:TestPoint_Pad_D1.0mm,test_pad_design_chat,Generic board bring-up test point; final pad diameter and style TBD
-TRIMCAP_RTC,,,Optional RTC oscillator trimmer capacitor,Device:C_Variable,,rtc_backup_design_chat,Optional trimmer footprint for RTC oscillator; exact range and use TBD
 TVS_5V_UNIDIR,,SMBJ5.0A,SMBJ5.0A-class 5 V unidirectional TVS diode,Device:D_TVS,Diode_SMD:D_SMB,usb_c_design_chat,Use reputable SMBJ5.0A vendor; SMAJ5.0A is smaller lower-surge option; 5.0 V standoff; do not use 3.3 V or 12 V TVS
 USB_C_RECEPTACLE_POWER,,,USB-C receptacle for power-only 5 V sink,Connector:USB_C_Receptacle_USB2.0,,usb_c_design_chat,Exact connector footprint and shield pin mapping TBD; full connector data SuperSpeed and SBU pins are staged NC for power-only use; some symbols label CC2 as VCONN
 XTAL_1_8432MHZ,Raltron Electronics,A-1.8432-18,1.8432 MHz 18 pF baud-rate crystal,Device:Crystal,Crystal:Crystal_HC49-U_Vertical,https://www.digikey.com/en/products/detail/raltron-electronics/A-1-8432-18/10246237,Selected for MC14411 clock; HC-49/U through-hole; 700 ohm ESR; +/-30 ppm tolerance; +/-50 ppm stability
-XTAL_32_768KHZ,,32.768 kHz,RTC timebase crystal,Device:Crystal,,docs/MSM58321.pdf,MSM58321 requires 32.768 kHz crystal with impedance 30 kohm or less; exact package TBD; use 10 Mohm feedback and initial 18 pF load capacitors
+XTAL_32_768KHZ,Abracon LLC,AB38T-32.768KHZ-B7,32.768 kHz 12.5 pF RTC crystal,Device:Crystal,,rtc_crystal_digikey,DigiKey 535-AB38T-32.768KHZ-B7-ND; through-hole cylindrical can; 30 kohm ESR; +/-15 ppm; 3.20 mm dia x 8.30 mm; exact KiCad footprint TBD
 XTAL_CPU_5MHZ,Wurth Elektronik,830003119B,5 MHz 30 pF CPU crystal,Device:Crystal,Crystal:Crystal_HC49-U_Vertical,https://www.digikey.com/en/products/detail/w%C3%BCrth-elektronik/830003119B/13900107,HC-49/US through-hole; 130 ohm ESR; +/-30 ppm tolerance; +/-50 ppm stability

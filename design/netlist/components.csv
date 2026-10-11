@@ -6,9 +6,8 @@ C3,CAP_1NF,1 nF,,todo,usb_c_design_chat,Optional shield-to-ground coupling capac
 C4,CAP_1UF,1 uF,,inferred,cpu_user_manual,Reset timing capacitor from RESET to GND for roughly 10 ms RC
 C5,CAP_18PF,18 pF,,inferred,cpu_oscillator_design_chat,CPU_OSC1 load capacitor; NP0/C0G initial build value
 C6,CAP_18PF,18 pF,,inferred,cpu_oscillator_design_chat,CPU_OSC2 load capacitor; NP0/C0G initial build value
-C7,CAP_18PF,18 pF,,inferred,rtc_backup_design_chat,RTC_XT load capacitor; NP0/C0G initial build value
-C8,CAP_18PF,18 pF,,inferred,rtc_backup_design_chat,RTC_XT_N load capacitor; NP0/C0G initial build value
-C9,TRIMCAP_RTC,optional,,todo,rtc_backup_design_chat,Optional RTC oscillator trimming capacitor footprint; exact range TBD
+C7,CAP_18PF,18 pF,,inferred,current_user_direction,RTC_XT fixed load capacitor for selected 12.5 pF crystal; NP0/C0G
+C8,CAP_18PF,18 pF,,inferred,current_user_direction,RTC_XT_N fixed load capacitor for selected 12.5 pF crystal; NP0/C0G
 C10,CAP_10UF,10 uF,,inferred,rtc_backup_design_chat,RTC_VDD backup bulk capacitor
 C11,CAP_100NF,0.1 uF,,inferred,rtc_backup_design_chat,RTC_VDD local ceramic bypass capacitor
 C12,CAP_MAX232_CHARGE,variant-dependent,,todo,serial_design_chat,MAX232 charge-pump capacitor between C1+ and C1-; exact value depends on chosen variant
@@ -40,6 +39,7 @@ R8,RES_IRQ_PULLUP,4.7 kohm,,inferred,current_user_direction,Shared IRQ pull-up t
 R9,RES_BAUD_PULLDOWN,TBD,,todo,current_user_direction,BAUD_SEL_A pull-down; exact value depends on final 74153 logic family
 R10,RES_BAUD_PULLDOWN,TBD,,todo,current_user_direction,BAUD_SEL_B pull-down; exact value depends on final 74153 logic family
 R11,RES_RTC_BUSY_PULLUP,10 kohm,,inferred,rtc_adapter_design,Pulls MSM58321 open-drain BUSY output to main 5V0 logic rail
+R12,RES_200K,200 kohm,,inferred,rtc_datasheet,MSM58321 RTC oscillator series resistor RS from Figure 8
 SW1,SW_PUSH_NO,Reset,,inferred,current_user_direction,Normally-open manual reset pushbutton from RESET to GND
 SW2,SW_DIP_2,Baud select,,inferred,current_user_direction,Two-position DIP switch for BAUD_SEL_A and BAUD_SEL_B
 TP1,TEST_PAD,5V0 test pad,,inferred,test_pad_design_chat,Power rail bring-up test point
@@ -97,4 +97,4 @@ U32,7404,7404,Package_DIP:DIP-14_W7.62mm,inferred,rtc_adapter_design,Inverters f
 U33,7432,7432,Package_DIP:DIP-14_W7.62mm,inferred,rtc_adapter_design,OR gates combining RTC sequencer phases into select data-strobe and cycle-clear terms
 Y1,XTAL_CPU_5MHZ,5 MHz,Crystal:Crystal_HC49-U_Vertical,confirmed,https://www.digikey.com/en/products/detail/w%C3%BCrth-elektronik/830003119B/13900107,CPU crystal
 Y2,XTAL_1_8432MHZ,1.8432 MHz,Crystal:Crystal_HC49-U_Vertical,confirmed,https://www.digikey.com/en/products/detail/raltron-electronics/A-1-8432-18/10246237,MC14411 baud-rate crystal
-Y3,XTAL_32_768KHZ,32.768 kHz,,todo,rtc_backup_design_chat,RTC timebase crystal; exact part and package TBD; impedance must be no more than 30 kohm
+Y3,XTAL_32_768KHZ,32.768 kHz,,confirmed,rtc_crystal_digikey,Abracon AB38T-32.768KHZ-B7 RTC timebase crystal; exact KiCad footprint TBD
