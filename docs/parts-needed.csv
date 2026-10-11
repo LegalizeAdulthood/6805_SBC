@@ -1,0 +1,37 @@
+part_id,description,qty_per_board,qty_for_10,inventory_key,inventory_qty,qty_to_source,source,notes
+7408,Quad 2-input AND gate,2,20,7408,16,4,inventory_shortage,Used by address decode and RTC adapter glue
+7411,Triple 3-input AND gate,3,30,7411,12,18,inventory_shortage,Used by address decode and RTC adapter glue
+CAP_100NF,100 nF 50 V X7R 0805 ceramic capacitor,5,50,,0,50,jlcpcb_basic_c49678,JLCPCB Basic part for bypass capacitors
+CAP_10UF,10 uF RTC backup bulk capacitor,1,10,,0,10,part_not_selected,Exact dielectric voltage rating and footprint TBD
+CAP_18PF,18 pF NP0 C0G capacitor,4,40,,0,40,part_not_selected,CPU and RTC crystal load capacitors
+CAP_1NF,1 nF 50 V X7R shield capacitor,1,10,,0,10,jlcpcb_basic_c1523,JLCPCB Basic part for USB shield coupling
+CAP_1UF,1 uF reset timing capacitor,1,10,,0,10,part_not_selected,Exact dielectric voltage rating and footprint TBD
+CAP_BAUD_LOAD,MC14411 crystal load capacitor,2,20,,0,20,part_not_selected,Value TBD from MC14411 datasheet and selected crystal
+CAP_INPUT_BULK,10 uF 25 V X5R 0805 input bulk capacitor,1,10,,0,10,jlcpcb_basic_c15850,JLCPCB Basic part for protected 5V0 input bulk
+CAP_MAX232_1UF,1.0 uF MAX232CPE external capacitor,5,50,,0,50,part_not_selected,Classic MAX232 C1-C5 capacitor value
+CR2032_HOLDER,CR2032 coin-cell holder,1,10,,0,10,part_not_selected,Exact holder footprint and retention style TBD
+DE9_DCE_SERIAL,Female DE-9 RS-232 console connector,1,10,,0,10,part_not_selected,DCE connector with exact footprint and board-edge orientation TBD
+DIODE_SCHOTTKY_RTC,Schottky RTC isolation diode,2,20,,0,20,part_not_selected,BAT54 or 1N5817-class part still TBD
+HEADER_PORT_AB_2X10,Right-angle 2x10 Port A and Port B GPIO header,1,10,,0,10,part_not_selected,Exact boxed or shrouded IDC style TBD
+HEADER_TIMER_IRQ,TIMER and IRQ service header,1,10,,0,10,part_not_selected,Exact vertical or right-angle style TBD
+MAX232,MAX232CPE dual RS-232 transceiver,1,10,MAX 232,7,3,inventory_shortage,Inventory chips are Maxim MAX232CPE
+MC6850,MC6850 asynchronous communications interface adapter,1,10,6850,7,3,inventory_shortage,ACIA for serial section
+PPTC_USB_INPUT,1.25 A hold 16 V 1812 resettable fuse,1,10,,0,10,jlcpcb_pptc_c15156,JLCPCB Extended USB input fuse
+RES_10K,10 kohm reset pull-up resistor,1,10,,0,10,part_not_selected,Exact resistor source and footprint TBD
+RES_10M,10 Mohm oscillator feedback resistor,2,20,,0,20,part_not_selected,Used by CPU and RTC oscillator networks
+RES_15M,15 Mohm MC14411 oscillator feedback resistor,1,10,,0,10,part_not_selected,15 Mohm plus or minus 10 percent
+RES_1M,1 Mohm 1 percent 0805 shield bleed resistor,1,10,,0,10,jlcpcb_basic_c17514,JLCPCB Basic part for USB shield bleed
+RES_200K,200 kohm RTC oscillator series resistor,1,10,,0,10,part_not_selected,MSM58321 Figure 8 typical value
+RES_5K1,5.1 kohm 1 percent 0805 USB-C CC resistor,2,20,,0,20,jlcpcb_basic_c27834,JLCPCB Basic part for CC1 and CC2 Rd
+RES_ARRAY_8X4K7,8x 4.7 kohm bussed pull-up resistor network,3,30,,0,30,part_not_selected,Used for B0-B7 and Port A and Port B pull-ups
+RES_BAUD_PULLDOWN,1k0 baud select pull-down resistor,2,20,,0,20,part_not_selected,Selected for LS TTL 74153 inputs
+RES_IRQ_PULLUP,4.7 kohm IRQ pull-up resistor,1,10,,0,10,part_not_selected,Shared IRQ pull-up because IRQ is exposed on header
+RES_RTC_BUSY_PULLUP,10 kohm RTC BUSY pull-up resistor,1,10,,0,10,part_not_selected,Pulls MSM58321 open-drain BUSY high
+SOCKET_DIP16_NARROW,16-pin narrow DIP socket,2,20,,0,20,part_not_selected,Socket for RTC and MAX232
+SOCKET_DIP24_NARROW,24-pin narrow DIP socket,2,20,,0,20,part_not_selected,Sockets for two HM6116 SRAM chips
+SOCKET_DIP24_WIDE,24-pin wide DIP socket,3,30,,0,30,part_not_selected,Sockets for ACIA MC14411 and EPROM
+SW_DIP_2,Two-position DIP switch,1,10,,0,10,part_not_selected,Baud rate selector switch
+SW_PUSH_NO,Normally-open reset pushbutton,1,10,,0,10,part_not_selected,Manual reset switch
+TVS_5V_UNIDIR,5 V unidirectional SMBJ TVS diode,1,10,,0,10,jlcpcb_tvs_c5457085,JLCPCB Extended USB VBUS TVS
+USB_C_RECEPTACLE_POWER,USB-C receptacle for power-only 5 V sink,1,10,,0,10,jlcpcb_connector_c2765186,JLCPCB connector candidate with exact footprint still TBD
+XTAL_32_768KHZ,32.768 kHz 12.5 pF RTC crystal,1,10,,0,10,rtc_crystal_digikey,Abracon AB38T-32.768KHZ-B7
