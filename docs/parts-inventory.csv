@@ -1,4 +1,4 @@
- ,Part #,Description,Signalling
+Qty,Part #,Description,Signalling
 46,7400,Quad 2-input NAND,
 170,7402,Quad 2-input NOR,
 1,7403,Quad 2-input NAND,open collecctor
@@ -85,10 +85,9 @@
 3,8255,PPI Programmable Peripheral Interface,
 8,8049,MCS-48 microcontroller,
 10,68HC11,8-bit microcontroller,
-1,DS88L12N,Hex TTL·MOS Inverter/Interface Gate,
+1,DS88L12N,Hex TTL MOS Inverter/Interface Gate,
 1,MK50399N,Six-decade counter/display decoder,
 1,CD4515BE,CMOS 4-bit latch/4-to-16 line decoder,
-,,,
 ,HEF4538,dual monostable multivibrator,
 ,NEC C358C,Low power dual op amp,
 ,ICL8211,Programmable voltage detector,
@@ -110,3 +109,5 @@
 16,MC1413P,High voltage high current darlington transistor arrays,
 1,MC14051,Analog multiplexer/demultiplexer,
 4,MC14066,Quad analog switch/quad multiplexer,
+10,830003119B,5 MHz 30 pF CPU crystal Wurth Elektronik,
+10,A-1.8432-18,1.8432 MHz 18 pF baud-rate crystal Raltron Electronics,
