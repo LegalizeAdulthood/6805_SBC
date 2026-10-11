@@ -1,7 +1,7 @@
 net,refdes,pin_number,pin_name,status,source,notes
 5V0,C1,1,1,confirmed,jlcpcb_basic_c15850,Input bulk capacitor on protected 5V0 rail
 5V0,C2,1,1,confirmed,jlcpcb_basic_c49678,Input bypass capacitor on protected 5V0 rail
-5V0,C16,1,1,inferred,serial_design_chat,MAX232 local bypass capacitor
+5V0,C16,1,1,confirmed,max232_datasheet,MAX232CPE C5 VCC bypass capacitor
 5V0,C19,1,1,inferred,serial_design_chat,ACIA local bypass capacitor
 5V0,C20,1,1,inferred,serial_design_chat,MC14411 local bypass capacitor
 5V0,C21,1,1,inferred,serial_design_chat,Baud mux local bypass capacitor
@@ -302,9 +302,9 @@ GND,C7,2,2,inferred,current_user_direction,RTC_XT fixed load capacitor return
 GND,C8,2,2,inferred,current_user_direction,RTC_XT_N fixed load capacitor return
 GND,C10,2,2,inferred,rtc_backup_design_chat,RTC_VDD bulk capacitor return
 GND,C11,2,2,inferred,rtc_backup_design_chat,RTC_VDD bypass capacitor return
-GND,C14,2,2,todo,serial_design_chat,MAX232 V+ reservoir capacitor return
-GND,C15,2,2,todo,serial_design_chat,MAX232 V- reservoir capacitor return
-GND,C16,2,2,inferred,serial_design_chat,MAX232 bypass return
+GND,C14,2,2,confirmed,max232_datasheet,MAX232CPE V+ reservoir capacitor return
+GND,C15,2,2,confirmed,max232_datasheet,MAX232CPE V- reservoir capacitor return
+GND,C16,2,2,confirmed,max232_datasheet,MAX232CPE C5 bypass return
 GND,C17,2,2,todo,serial_design_chat,MC14411 XTAL_IN load capacitor return
 GND,C18,2,2,todo,serial_design_chat,MC14411 XTAL_OUT load capacitor return
 GND,C19,2,2,inferred,serial_design_chat,ACIA bypass return
@@ -430,18 +430,18 @@ IRQ,U1,2,~IRQ,confirmed,MCU_Motorola_6800.kicad_sym,CPU active-low interrupt inp
 IRQ,U2,23,~IRQ,inferred,irq_design_chat,MC6850 open-drain active-low interrupt output joins shared IRQ directly
 LOW_0000_000F,U12,6,G1,inferred,design/New_Address_Decode.dig,Enable decode for $0000-$000F
 LOW_0000_000F,U13,6,2Y,inferred,design/New_Address_Decode.dig,Enable low peripheral pair decoder
-MAX232_C1N,C12,2,2,todo,serial_design_chat,MAX232 C1 flying capacitor
-MAX232_C1N,U18,3,C1-,todo,serial_design_chat,MAX232 C1 negative terminal
-MAX232_C1P,C12,1,1,todo,serial_design_chat,MAX232 C1 flying capacitor
-MAX232_C1P,U18,1,C1+,todo,serial_design_chat,MAX232 C1 positive terminal
-MAX232_C2N,C13,2,2,todo,serial_design_chat,MAX232 C2 flying capacitor
-MAX232_C2N,U18,5,C2-,todo,serial_design_chat,MAX232 C2 negative terminal
-MAX232_C2P,C13,1,1,todo,serial_design_chat,MAX232 C2 flying capacitor
-MAX232_C2P,U18,4,C2+,todo,serial_design_chat,MAX232 C2 positive terminal
-MAX232_VMINUS,C15,1,1,todo,serial_design_chat,MAX232 negative charge-pump reservoir capacitor
-MAX232_VMINUS,U18,6,V-,todo,serial_design_chat,MAX232 negative charge-pump reservoir pin
-MAX232_VPLUS,C14,1,1,todo,serial_design_chat,MAX232 positive charge-pump reservoir capacitor
-MAX232_VPLUS,U18,2,V+,todo,serial_design_chat,MAX232 positive charge-pump reservoir pin
+MAX232_C1N,C12,2,2,confirmed,max232_datasheet,MAX232CPE C1 1.0 uF flying capacitor
+MAX232_C1N,U18,3,C1-,confirmed,max232_datasheet,MAX232CPE C1 negative terminal
+MAX232_C1P,C12,1,1,confirmed,max232_datasheet,MAX232CPE C1 1.0 uF flying capacitor
+MAX232_C1P,U18,1,C1+,confirmed,max232_datasheet,MAX232CPE C1 positive terminal
+MAX232_C2N,C13,2,2,confirmed,max232_datasheet,MAX232CPE C2 1.0 uF flying capacitor
+MAX232_C2N,U18,5,C2-,confirmed,max232_datasheet,MAX232CPE C2 negative terminal
+MAX232_C2P,C13,1,1,confirmed,max232_datasheet,MAX232CPE C2 1.0 uF flying capacitor
+MAX232_C2P,U18,4,C2+,confirmed,max232_datasheet,MAX232CPE C2 positive terminal
+MAX232_VMINUS,C15,1,1,confirmed,max232_datasheet,MAX232CPE V- 1.0 uF reservoir capacitor
+MAX232_VMINUS,U18,6,V-,confirmed,max232_datasheet,MAX232CPE negative charge-pump reservoir pin
+MAX232_VPLUS,C14,1,1,confirmed,max232_datasheet,MAX232CPE V+ 1.0 uF reservoir capacitor
+MAX232_VPLUS,U18,2,V+,confirmed,max232_datasheet,MAX232CPE positive charge-pump reservoir pin
 MEMRD_ACTIVE,U13,11,4Y,inferred,current_user_direction,Active-high memory read transfer enable before inversion
 MEMRD_ACTIVE,U32,9,4A,inferred,current_user_direction,Invert active-high memory read transfer enable
 NC,J1,A2,TX1+,inferred,usb_c_design_chat,Unused SuperSpeed pair for power-only sink

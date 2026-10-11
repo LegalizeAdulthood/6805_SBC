@@ -175,8 +175,8 @@ CAP_BAUD_LOAD,1,1,passive,false,serial_design_chat,Capacitor terminal
 CAP_BAUD_LOAD,2,2,passive,false,serial_design_chat,Capacitor terminal
 CAP_INPUT_BULK,1,1,passive,false,jlcpcb_basic_c15850,Capacitor terminal
 CAP_INPUT_BULK,2,2,passive,false,jlcpcb_basic_c15850,Capacitor terminal
-CAP_MAX232_CHARGE,1,1,passive,false,serial_design_chat,Charge-pump capacitor terminal
-CAP_MAX232_CHARGE,2,2,passive,false,serial_design_chat,Charge-pump capacitor terminal
+CAP_MAX232_1UF,1,1,passive,false,max232_datasheet,Capacitor terminal
+CAP_MAX232_1UF,2,2,passive,false,max232_datasheet,Capacitor terminal
 CR2032_HOLDER,1,+,passive,false,rtc_backup_design_chat,Coin-cell positive terminal
 CR2032_HOLDER,2,-,passive,false,rtc_backup_design_chat,Coin-cell negative terminal
 DE9_DCE_SERIAL,1,DCD,passive,false,current_user_direction,Handshake pin staged NC for no-flow-control console
@@ -249,8 +249,8 @@ MAX232,9,R2OUT,output,false,serial_design_chat,Unused second TTL receiver output
 MAX232,10,T2IN,input,false,serial_design_chat,Unused second TTL driver input tied low unless later exposed
 MAX232,11,T1IN,input,false,serial_design_chat,TTL driver input from MC6850 transmit data
 MAX232,12,R1OUT,output,false,serial_design_chat,TTL receiver output to MC6850 receive data
-MAX232,13,R1IN,input,false,serial_design_chat,RS-232 receiver input from DE-9 pin 2
-MAX232,14,T1OUT,output,false,serial_design_chat,RS-232 driver output to DE-9 pin 3
+MAX232,13,R1IN,input,false,current_user_direction,RS-232 receiver input from DCE-style DE-9 pin 3
+MAX232,14,T1OUT,output,false,current_user_direction,RS-232 driver output to DCE-style DE-9 pin 2
 MAX232,15,GND,power_in,false,serial_design_chat,Ground
 MAX232,16,VCC,power_in,false,serial_design_chat,5 V logic supply
 MC6850,1,VSS,power_in,false,docs/MC6850.pdf,Ground
