@@ -341,22 +341,22 @@ MC146805E2,37,TIMER,input,false,project_kicad_symbols,Timer input
 MC146805E2,38,OSC2,output,false,project_kicad_symbols,Crystal oscillator output
 MC146805E2,39,OSC1,input,false,project_kicad_symbols,Crystal oscillator input
 MC146805E2,40,VDD,power_in,false,project_kicad_symbols,Power
-MSM58321,1,CS2,input,false,MCU_Motorola_6800.kicad_sym,Chip select input
-MSM58321,2,WRITE,input,false,MCU_Motorola_6800.kicad_sym,Active-high write input
-MSM58321,3,READ,input,false,MCU_Motorola_6800.kicad_sym,Active-high read input
-MSM58321,4,D0,bidirectional,false,MCU_Motorola_6800.kicad_sym,Data input/output bit 0
-MSM58321,5,D1,bidirectional,false,MCU_Motorola_6800.kicad_sym,Data input/output bit 1
-MSM58321,6,D2,bidirectional,false,MCU_Motorola_6800.kicad_sym,Data input/output bit 2
-MSM58321,7,D3,bidirectional,false,MCU_Motorola_6800.kicad_sym,Data input/output bit 3
-MSM58321,8,GND,power_in,false,MCU_Motorola_6800.kicad_sym,Ground
-MSM58321,9,ADDRESS_WRITE,input,false,MCU_Motorola_6800.kicad_sym,Active-high address latch input
-MSM58321,10,~BUSY,output,true,MCU_Motorola_6800.kicad_sym,Open-drain busy output
-MSM58321,11,STOP,input,false,MCU_Motorola_6800.kicad_sym,Clock stop input
-MSM58321,12,TEST,input,false,MCU_Motorola_6800.kicad_sym,Test input
-MSM58321,13,CS1,input,false,MCU_Motorola_6800.kicad_sym,Chip select input
-MSM58321,14,~XT,input,true,MCU_Motorola_6800.kicad_sym,Crystal oscillator pin
-MSM58321,15,XT,input,false,MCU_Motorola_6800.kicad_sym,Crystal oscillator pin
-MSM58321,16,VDD,power_in,false,MCU_Motorola_6800.kicad_sym,Power
+MSM58321,1,CS2,input,false,docs/MSM58321.pdf,Chip select input intended for microcontroller control
+MSM58321,2,WRITE,input,false,docs/MSM58321.pdf,Active-high level-sensitive write input
+MSM58321,3,READ,input,false,docs/MSM58321.pdf,Active-high level-sensitive read input
+MSM58321,4,D0,bidirectional,false,docs/MSM58321.pdf,Bidirectional bus bit 0 with open-drain RTC output side
+MSM58321,5,D1,bidirectional,false,docs/MSM58321.pdf,Bidirectional bus bit 1 with open-drain RTC output side
+MSM58321,6,D2,bidirectional,false,docs/MSM58321.pdf,Bidirectional bus bit 2 with open-drain RTC output side
+MSM58321,7,D3,bidirectional,false,docs/MSM58321.pdf,Bidirectional bus bit 3 with open-drain RTC output side
+MSM58321,8,GND,power_in,false,docs/MSM58321.pdf,Ground
+MSM58321,9,ADDRESS_WRITE,input,false,docs/MSM58321.pdf,Active-high level-sensitive address latch input
+MSM58321,10,~{BUSY},open_collector,true,docs/MSM58321.pdf,N-channel open-drain negative-logic BUSY output
+MSM58321,11,STOP,input,false,docs/MSM58321.pdf,Active-high clock stop input tied low for normal counting
+MSM58321,12,TEST,input,false,docs/MSM58321.pdf,Test input normally tied to GND per datasheet
+MSM58321,13,CS1,input,false,docs/MSM58321.pdf,Chip select input with higher threshold per datasheet
+MSM58321,14,~{XT},passive,true,docs/MSM58321.pdf,Crystal oscillator pin
+MSM58321,15,XT,passive,false,docs/MSM58321.pdf,Crystal oscillator pin
+MSM58321,16,VDD,power_in,false,docs/MSM58321.pdf,Power
 PPTC_USB_INPUT,1,IN,passive,false,usb_c_design_chat,Fuse input terminal from raw VBUS
 PPTC_USB_INPUT,2,OUT,passive,false,usb_c_design_chat,Fuse output terminal to protected 5V0 rail
 RES_1M,1,1,passive,false,usb_c_design_chat,Resistor terminal

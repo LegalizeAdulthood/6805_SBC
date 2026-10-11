@@ -340,7 +340,7 @@ GND,U4,15,~2G,inferred,design/baud-rate.md,Enable transmit-clock mux section
 GND,U5,12,GND,inferred,docs/Am2732-AMD.pdf,ROM ground
 GND,U6,12,GND,inferred,docs/IDT_6116.pdf,RAM 1 ground
 GND,U7,12,GND,inferred,docs/IDT_6116.pdf,RAM 2 ground
-GND,U8,8,GND,confirmed,MCU_Motorola_6800.kicad_sym,RTC ground
+GND,U8,8,GND,confirmed,docs/MSM58321.pdf,RTC ground
 GND,U8,11,STOP,inferred,current_user_direction,Tie MSM58321 STOP low for normal always-running RTC operation
 GND,U8,12,TEST,inferred,docs/MSM58321.pdf,Datasheet recommends tying TEST to GND
 GND,U9,1,~OE,inferred,design/Address_Latch.dig,Enable address latch outputs
@@ -588,7 +588,7 @@ RTC_BAT,BT1,1,+,inferred,rtc_backup_design_chat,RTC backup coin-cell positive te
 RTC_BAT,D4,2,A,inferred,rtc_backup_design_chat,CR2032 feed into RTC_VDD diode-OR
 RTC_BUSY,R11,2,2,inferred,rtc_adapter_design,Main-rail pull-up output for MSM58321 open-drain BUSY
 RTC_BUSY,TP20,1,1,inferred,rtc_adapter_design,RTC BUSY status observation test point kept separate from IRQ
-RTC_BUSY,U8,10,~BUSY,inferred,rtc_adapter_design,Open-drain BUSY output remains separate from IRQ
+RTC_BUSY,U8,10,~{BUSY},inferred,rtc_adapter_design,Open-drain BUSY output remains separate from IRQ
 RTC_BUSY,U22,4,2D,inferred,rtc_adapter_design,Expose raw active-low BUSY in status bit 1
 RTC_CMD_READ,U31,2,1B,inferred,rtc_adapter_design,Select RTC read pulse when command write bit is low
 RTC_CMD_READ,U32,6,3Y,inferred,rtc_adapter_design,Complement of latched command write bit
@@ -678,7 +678,7 @@ RTC_XT,U8,15,XT,confirmed,docs/MSM58321.pdf,RTC crystal oscillator pin
 RTC_XT,Y3,1,1,confirmed,rtc_crystal_digikey,RTC crystal terminal
 RTC_XT_N,R6,2,2,inferred,rtc_datasheet,RTC oscillator feedback resistor terminal at ~XT
 RTC_XT_N,R12,2,2,inferred,rtc_datasheet,Chip-side terminal of MSM58321 oscillator series resistor RS
-RTC_XT_N,U8,14,~XT,confirmed,docs/MSM58321.pdf,RTC crystal oscillator pin
+RTC_XT_N,U8,14,~{XT},confirmed,docs/MSM58321.pdf,RTC crystal oscillator pin
 RTC_XT_N_LOAD,C8,1,1,inferred,current_user_direction,Crystal-side RTC fixed load capacitor on ~XT node
 RTC_XT_N_LOAD,R12,1,1,inferred,rtc_datasheet,Crystal-side terminal of MSM58321 oscillator series resistor RS
 RTC_XT_N_LOAD,Y3,2,2,confirmed,rtc_crystal_digikey,RTC crystal terminal before series resistor RS
