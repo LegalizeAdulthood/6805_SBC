@@ -25,7 +25,7 @@ D3,DIODE_SCHOTTKY_RTC,BAT54 or 1N5817-class,,todo,rtc_backup_design_chat,5V0 iso
 D4,DIODE_SCHOTTKY_RTC,BAT54 or 1N5817-class,,todo,rtc_backup_design_chat,CR2032 isolation diode to RTC_VDD; exact Schottky part and footprint TBD
 F1,PPTC_USB_INPUT,1.25 A hold,Fuse:Fuse_1812_4532Metric,confirmed,jlcpcb_pptc_c15156,JLCPCB Extended resettable input fuse between raw USB VBUS and protected 5V0 rail; 16 V max and about 2.5 A trip
 J1,USB_C_RECEPTACLE_POWER,USB-C power input,,todo,jlcpcb_connector_c2765186,Board-edge power-only USB-C sink connector candidate; exact KiCad footprint and pin mapping still TBD
-J2,DE9_DTE_SERIAL,DE-9 serial,,todo,serial_design_chat,DTE-style RS-232 console connector; exact gender footprint and board-edge orientation TBD
+J2,DE9_DCE_SERIAL,DE-9 female serial,,todo,current_user_direction,DCE-style RS-232 console connector; exact footprint and board-edge orientation TBD
 J3,HEADER_PORT_AB_2X10,Port A/B GPIO,Connector_IDC:IDC-Header_2x10_P2.54mm_Horizontal,todo,gpio_header_design_chat,Right-angle 2x10 0.1 inch GPIO header; boxed or shrouded IDC preferred if board space allows
 J4,HEADER_TIMER_IRQ,TIMER/IRQ header,,todo,timer_header_design_chat,Small service header for external TIMER injection shared IRQ access and ground; exact mechanical style TBD
 R1,RES_5K1,5.1 kohm,Resistor_SMD:R_0805_2012Metric,confirmed,jlcpcb_basic_c27834,JLCPCB Basic CC1 Rd pull-down

@@ -536,10 +536,10 @@ RESET,U1,1,~RESET,confirmed,MCU_Motorola_6800.kicad_sym,CPU active-low reset inp
 RESET,U28,1,~CLR,inferred,rtc_adapter_design,Clear RTC one-hot sequencer during reset
 RESET,U31,9,3A,inferred,rtc_adapter_design,Qualify RTC start latch clear with reset state
 RESET,U31,12,4A,inferred,rtc_adapter_design,Qualify RTC_CYCLE latch clear with reset state
-RS232_RXD,J2,2,RXD,inferred,serial_design_chat,DE-9 pin 2 into SBC receiver
-RS232_RXD,U18,13,R1IN,inferred,serial_design_chat,MAX232 receiver input from DE-9 pin 2
-RS232_TXD,J2,3,TXD,inferred,serial_design_chat,DTE-style SBC TX on DE-9 pin 3
-RS232_TXD,U18,14,T1OUT,inferred,serial_design_chat,RS-232 driver output for DTE-style TX
+RS232_RXD,J2,3,RXD,inferred,current_user_direction,DCE-style DE-9 pin 3 into SBC receiver
+RS232_RXD,U18,13,R1IN,inferred,current_user_direction,MAX232 receiver input from DCE-style DE-9 pin 3
+RS232_TXD,J2,2,TXD,inferred,current_user_direction,DCE-style SBC TX on DE-9 pin 2
+RS232_TXD,U18,14,T1OUT,inferred,serial_design_chat,RS-232 driver output for DCE-style TX
 RTC_ADDR_LE,U19,11,LE,inferred,rtc_adapter_design,Load RTC address nibble latch
 RTC_ADDR_LE,U25,12,1Y,inferred,rtc_adapter_design,Decoded address-register write strobe
 RTC_ADDRESS_WRITE,TP16,1,1,inferred,rtc_adapter_design,RTC address-write timing observation test point

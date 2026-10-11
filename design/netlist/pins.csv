@@ -179,15 +179,15 @@ CAP_MAX232_CHARGE,1,1,passive,false,serial_design_chat,Charge-pump capacitor ter
 CAP_MAX232_CHARGE,2,2,passive,false,serial_design_chat,Charge-pump capacitor terminal
 CR2032_HOLDER,1,+,passive,false,rtc_backup_design_chat,Coin-cell positive terminal
 CR2032_HOLDER,2,-,passive,false,rtc_backup_design_chat,Coin-cell negative terminal
-DE9_DTE_SERIAL,1,DCD,passive,false,serial_design_chat,DTE-style carrier-detect pin staged NC
-DE9_DTE_SERIAL,2,RXD,passive,false,serial_design_chat,DTE-style receive-data pin into SBC
-DE9_DTE_SERIAL,3,TXD,passive,false,serial_design_chat,DTE-style transmit-data pin from SBC
-DE9_DTE_SERIAL,4,DTR,passive,false,serial_design_chat,DTE-style data-terminal-ready pin staged NC
-DE9_DTE_SERIAL,5,GND,passive,false,serial_design_chat,Signal ground
-DE9_DTE_SERIAL,6,DSR,passive,false,serial_design_chat,DTE-style data-set-ready pin staged NC
-DE9_DTE_SERIAL,7,RTS,passive,false,serial_design_chat,DTE-style request-to-send pin staged NC
-DE9_DTE_SERIAL,8,CTS,passive,false,serial_design_chat,DTE-style clear-to-send pin staged NC
-DE9_DTE_SERIAL,9,RI,passive,false,serial_design_chat,DTE-style ring-indicator pin staged NC
+DE9_DCE_SERIAL,1,DCD,passive,false,current_user_direction,Handshake pin staged NC for no-flow-control console
+DE9_DCE_SERIAL,2,TXD,passive,false,current_user_direction,DCE-style transmit-data pin from SBC
+DE9_DCE_SERIAL,3,RXD,passive,false,current_user_direction,DCE-style receive-data pin into SBC
+DE9_DCE_SERIAL,4,DTR,passive,false,current_user_direction,Handshake pin staged NC for no-flow-control console
+DE9_DCE_SERIAL,5,GND,passive,false,current_user_direction,Signal ground
+DE9_DCE_SERIAL,6,DSR,passive,false,current_user_direction,Handshake pin staged NC for no-flow-control console
+DE9_DCE_SERIAL,7,RTS,passive,false,current_user_direction,Handshake pin staged NC for no-flow-control console
+DE9_DCE_SERIAL,8,CTS,passive,false,current_user_direction,Handshake pin staged NC for no-flow-control console
+DE9_DCE_SERIAL,9,RI,passive,false,current_user_direction,Handshake pin staged NC for no-flow-control console
 DIODE_SCHOTTKY_RTC,1,K,passive,false,rtc_backup_design_chat,Schottky diode cathode
 DIODE_SCHOTTKY_RTC,2,A,passive,false,rtc_backup_design_chat,Schottky diode anode
 HEADER_PORT_AB_2X10,1,PA0,passive,false,gpio_header_design_chat,J3 odd row Port A bit 0
