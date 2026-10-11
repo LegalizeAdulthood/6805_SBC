@@ -327,4 +327,233 @@
       )
     )
   )
+  (symbol "MC14411"
+    (pin_names
+      (offset 1.016)
+    )
+    (exclude_from_sim no)
+    (in_bom yes)
+    (on_board yes)
+    (property "Reference" "U"
+      (at -6.096 24.13 0)
+      (effects
+        (font
+          (size 1.27 1.27)
+        )
+        (justify right)
+      )
+    )
+    (property "Value" "MC14411"
+      (at 11.684 24.13 0)
+      (effects
+        (font
+          (size 1.27 1.27)
+        )
+        (justify right)
+      )
+    )
+    (property "Footprint" "Package_DIP:DIP-24_W15.24mm"
+      (at 0.508 -37.846 0)
+      (effects
+        (font
+          (size 1.27 1.27)
+        )
+        (justify left)
+        (hide yes)
+      )
+    )
+    (property "Datasheet" "${KIPRJMOD}/../docs/MC14411.pdf"
+      (at 0.254 -46.482 0)
+      (effects
+        (font
+          (size 1.27 1.27)
+        )
+        (hide yes)
+      )
+    )
+    (property "Description" "Motorola MC14411 bit-rate generator, DIP-24"
+      (at 1.016 -51.308 0)
+      (effects
+        (font
+          (size 1.27 1.27)
+        )
+        (hide yes)
+      )
+    )
+    (property "ki_keywords" "Motorola MC14411 baud bit rate generator ACIA"
+      (at 0 0 0)
+      (effects
+        (font
+          (size 1.27 1.27)
+        )
+        (hide yes)
+      )
+    )
+    (property "ki_fp_filters" "DIP*W15.24mm*"
+      (at 0 0 0)
+      (effects
+        (font
+          (size 1.27 1.27)
+        )
+        (hide yes)
+      )
+    )
+    (symbol "MC14411_1_1"
+      (rectangle
+        (start -8.89 22.86)
+        (end 8.89 -22.86)
+        (stroke
+          (width 0.254)
+          (type default)
+        )
+        (fill
+          (type background)
+        )
+      )
+      (pin input line
+        (at -11.43 19.05 0)
+        (length 2.54)
+        (name "RSA" (effects (font (size 1.27 1.27))))
+        (number "23" (effects (font (size 1.27 1.27))))
+      )
+      (pin input line
+        (at -11.43 16.51 0)
+        (length 2.54)
+        (name "RSB" (effects (font (size 1.27 1.27))))
+        (number "22" (effects (font (size 1.27 1.27))))
+      )
+      (pin input line
+        (at -11.43 13.97 0)
+        (length 2.54)
+        (name "~{RESET}" (effects (font (size 1.27 1.27))))
+        (number "10" (effects (font (size 1.27 1.27))))
+      )
+      (pin input line
+        (at -11.43 6.35 0)
+        (length 2.54)
+        (name "XTAL_IN" (effects (font (size 1.27 1.27))))
+        (number "21" (effects (font (size 1.27 1.27))))
+      )
+      (pin output line
+        (at -11.43 3.81 0)
+        (length 2.54)
+        (name "XTAL_OUT" (effects (font (size 1.27 1.27))))
+        (number "20" (effects (font (size 1.27 1.27))))
+      )
+      (pin no_connect line
+        (at -11.43 -19.05 0)
+        (length 2.54)
+        (name "NC" (effects (font (size 1.27 1.27))))
+        (number "11" (effects (font (size 1.27 1.27))))
+      )
+      (pin power_in line
+        (at 0 25.4 270)
+        (length 2.54)
+        (name "VDD" (effects (font (size 1.27 1.27))))
+        (number "24" (effects (font (size 1.27 1.27))))
+      )
+      (pin power_in line
+        (at 0 -25.4 90)
+        (length 2.54)
+        (name "VSS" (effects (font (size 1.27 1.27))))
+        (number "12" (effects (font (size 1.27 1.27))))
+      )
+      (pin output line
+        (at 11.43 19.05 180)
+        (length 2.54)
+        (name "F1" (effects (font (size 1.27 1.27))))
+        (number "1" (effects (font (size 1.27 1.27))))
+      )
+      (pin output line
+        (at 11.43 16.51 180)
+        (length 2.54)
+        (name "F2" (effects (font (size 1.27 1.27))))
+        (number "17" (effects (font (size 1.27 1.27))))
+      )
+      (pin output line
+        (at 11.43 13.97 180)
+        (length 2.54)
+        (name "F3" (effects (font (size 1.27 1.27))))
+        (number "2" (effects (font (size 1.27 1.27))))
+      )
+      (pin output line
+        (at 11.43 11.43 180)
+        (length 2.54)
+        (name "F4" (effects (font (size 1.27 1.27))))
+        (number "16" (effects (font (size 1.27 1.27))))
+      )
+      (pin output line
+        (at 11.43 8.89 180)
+        (length 2.54)
+        (name "F5" (effects (font (size 1.27 1.27))))
+        (number "3" (effects (font (size 1.27 1.27))))
+      )
+      (pin output line
+        (at 11.43 6.35 180)
+        (length 2.54)
+        (name "F6" (effects (font (size 1.27 1.27))))
+        (number "15" (effects (font (size 1.27 1.27))))
+      )
+      (pin output line
+        (at 11.43 3.81 180)
+        (length 2.54)
+        (name "F7" (effects (font (size 1.27 1.27))))
+        (number "4" (effects (font (size 1.27 1.27))))
+      )
+      (pin output line
+        (at 11.43 1.27 180)
+        (length 2.54)
+        (name "F8" (effects (font (size 1.27 1.27))))
+        (number "5" (effects (font (size 1.27 1.27))))
+      )
+      (pin output line
+        (at 11.43 -1.27 180)
+        (length 2.54)
+        (name "F9" (effects (font (size 1.27 1.27))))
+        (number "7" (effects (font (size 1.27 1.27))))
+      )
+      (pin output line
+        (at 11.43 -3.81 180)
+        (length 2.54)
+        (name "F10" (effects (font (size 1.27 1.27))))
+        (number "6" (effects (font (size 1.27 1.27))))
+      )
+      (pin output line
+        (at 11.43 -6.35 180)
+        (length 2.54)
+        (name "F11" (effects (font (size 1.27 1.27))))
+        (number "8" (effects (font (size 1.27 1.27))))
+      )
+      (pin output line
+        (at 11.43 -8.89 180)
+        (length 2.54)
+        (name "F12" (effects (font (size 1.27 1.27))))
+        (number "14" (effects (font (size 1.27 1.27))))
+      )
+      (pin output line
+        (at 11.43 -11.43 180)
+        (length 2.54)
+        (name "F13" (effects (font (size 1.27 1.27))))
+        (number "13" (effects (font (size 1.27 1.27))))
+      )
+      (pin output line
+        (at 11.43 -13.97 180)
+        (length 2.54)
+        (name "F14" (effects (font (size 1.27 1.27))))
+        (number "9" (effects (font (size 1.27 1.27))))
+      )
+      (pin output line
+        (at 11.43 -16.51 180)
+        (length 2.54)
+        (name "F15" (effects (font (size 1.27 1.27))))
+        (number "18" (effects (font (size 1.27 1.27))))
+      )
+      (pin output line
+        (at 11.43 -19.05 180)
+        (length 2.54)
+        (name "F16" (effects (font (size 1.27 1.27))))
+        (number "19" (effects (font (size 1.27 1.27))))
+      )
+    )
+  )
 )

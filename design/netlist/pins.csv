@@ -277,16 +277,30 @@ MC6850,21,D1,bidirectional,false,docs/MC6850.pdf,Data bus bit 1
 MC6850,22,D0,bidirectional,false,docs/MC6850.pdf,Data bus bit 0
 MC6850,23,~IRQ,output,true,docs/MC6850.pdf,Open-drain active-low interrupt output
 MC6850,24,TxD,output,false,docs/MC6850.pdf,Transmit data output
-MC14411,1,F1,output,false,MCU_Motorola_6800.kicad_sym,Baud clock output
-MC14411,2,F3,output,false,MCU_Motorola_6800.kicad_sym,Baud clock output
-MC14411,5,F8,output,false,MCU_Motorola_6800.kicad_sym,Baud clock output
-MC14411,7,F9,output,false,MCU_Motorola_6800.kicad_sym,Baud clock output
-MC14411,12,VSS,power_in,false,MCU_Motorola_6800.kicad_sym,Ground
-MC14411,20,XTAL_OUT,input,false,MCU_Motorola_6800.kicad_sym,Crystal oscillator pin
-MC14411,21,XTAL_IN,input,false,MCU_Motorola_6800.kicad_sym,Crystal oscillator pin
-MC14411,22,RSB,input,false,MCU_Motorola_6800.kicad_sym,Rate select input fixed high for X64 range
-MC14411,23,RSA,input,false,MCU_Motorola_6800.kicad_sym,Rate select input fixed high for X64 range
-MC14411,24,VDD,power_in,false,MCU_Motorola_6800.kicad_sym,Power
+MC14411,1,F1,output,false,docs/MC14411.pdf,Baud clock output
+MC14411,2,F3,output,false,docs/MC14411.pdf,Baud clock output
+MC14411,3,F5,output,false,docs/MC14411.pdf,Baud clock output
+MC14411,4,F7,output,false,docs/MC14411.pdf,Baud clock output
+MC14411,5,F8,output,false,docs/MC14411.pdf,Baud clock output
+MC14411,6,F10,output,false,docs/MC14411.pdf,Baud clock output
+MC14411,7,F9,output,false,docs/MC14411.pdf,Baud clock output
+MC14411,8,F11,output,false,docs/MC14411.pdf,Baud clock output
+MC14411,9,F14,output,false,docs/MC14411.pdf,Baud clock output
+MC14411,10,~{RESET},input,true,docs/MC14411.pdf,Active-low reset input with internal pull-up
+MC14411,11,NC,no_connect,false,docs/MC14411.pdf,Not used
+MC14411,12,VSS,power_in,false,docs/MC14411.pdf,Ground
+MC14411,13,F13,output,false,docs/MC14411.pdf,Baud clock output
+MC14411,14,F12,output,false,docs/MC14411.pdf,Baud clock output
+MC14411,15,F6,output,false,docs/MC14411.pdf,Baud clock output
+MC14411,16,F4,output,false,docs/MC14411.pdf,Baud clock output
+MC14411,17,F2,output,false,docs/MC14411.pdf,Baud clock output
+MC14411,18,F15,output,false,docs/MC14411.pdf,Baud clock output
+MC14411,19,F16,output,false,docs/MC14411.pdf,Buffered oscillator output
+MC14411,20,XTAL_OUT,output,false,docs/MC14411.pdf,Crystal oscillator output
+MC14411,21,XTAL_IN,input,false,docs/MC14411.pdf,Crystal oscillator input or external clock input
+MC14411,22,RSB,input,false,docs/MC14411.pdf,Rate select input fixed high for X64 range
+MC14411,23,RSA,input,false,docs/MC14411.pdf,Rate select input fixed high for X64 range
+MC14411,24,VDD,power_in,false,docs/MC14411.pdf,Power
 MC146805E2,1,~{RESET},input,true,project_kicad_symbols,Active-low Schmitt-triggered reset input
 MC146805E2,2,~{IRQ},input,true,project_kicad_symbols,Active-low interrupt request input
 MC146805E2,3,LI,output,false,project_kicad_symbols,Instruction fetch indicator output

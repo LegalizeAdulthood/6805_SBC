@@ -28,8 +28,8 @@ jlcpcb_manufacturing_policy,current conversation,user direction,JLCPCB assembly 
 jlcpcb_pptc_c15156,https://jlcpcb.com/parts/2nd/Circuit_Protection/Resettable_Fuses_3294,parts library,JLCPCB C15156 MINISMDC125F/16-2,Extended 1812 1.25 A hold 16 V resettable fuse selected for USB input protection
 jlcpcb_tvs_c5457085,https://jlcpcb.com/partdetail/RealChip-SMBJ50A/C5457085,parts library,JLCPCB C5457085 SMBJ5.0A,Extended 5 V 600 W unidirectional SMB TVS selected for USB VBUS surge protection
 latch_datasheet,https://www.ti.com/lit/ds/symlink/sn74ls373.pdf,datasheet,SN74LS373 data sheet,74373-compatible transparent latch pinout and behavior
-local_symbols,C:/code/6805_sbc/MCU_Motorola_6800.kicad_sym,kicad symbol library,Local Motorola symbol library,MC14411 and MSM58321 pin numbers; MC146805E2 superseded by project_kicad_symbols
-project_kicad_symbols,kicad/symbols/6805_sbc.kicad_sym,kicad symbol library,Project KiCad symbol library,Project-local KiCad 9 symbol library including corrected MC146805E2 pinout
+local_symbols,C:/code/6805_sbc/MCU_Motorola_6800.kicad_sym,kicad symbol library,Local Motorola symbol library,MSM58321 pin numbers; MC14411 and MC146805E2 superseded by datasheet-backed project_kicad_symbols
+project_kicad_symbols,kicad/symbols/6805_sbc.kicad_sym,kicad symbol library,Project KiCad symbol library,Project-local KiCad 9 symbol library including corrected MC146805E2 pinout and datasheet-backed MC14411 pin assignment
 max232_datasheet,docs/MAX232CPE.pdf,datasheet,MAX232CPE data sheet,Local Maxim MAX232CPE data sheet; typical operating circuit specifies 1.0 uF C1-C5 for classic MAX232
 max232_inventory_photo,current conversation,user photo,Inventory MAX232 marking,Photo of inventory IC identifies the part as Maxim MAX232CPE with 8708 marking
 memory_map,docs/memory-map.txt,design note,Memory map,External ROM and RAM address ranges plus chip-select names

@@ -24,7 +24,7 @@ net,refdes,pin_number,pin_name,status,source,notes
 5V0,U2,12,VCC,confirmed,docs/MC6850.pdf,ACIA power
 5V0,U3,22,RSB,confirmed,design/baud-rate.md,Fixed high for X64 output range
 5V0,U3,23,RSA,confirmed,design/baud-rate.md,Fixed high for X64 output range
-5V0,U3,24,VDD,confirmed,MCU_Motorola_6800.kicad_sym,MC14411 power
+5V0,U3,24,VDD,confirmed,docs/MC14411.pdf,MC14411 power
 5V0,U4,16,VCC,confirmed,https://www.ti.com/lit/ds/symlink/sn74ls153.pdf,74153 power
 5V0,U5,24,VCC,inferred,docs/Am2732-AMD.pdf,ROM power
 5V0,U6,24,VCC,inferred,docs/IDT_6116.pdf,RAM 1 power
@@ -179,11 +179,11 @@ BAUD_SEL_B,SW2,4,2B,inferred,current_user_direction,High-order baud-select DIP s
 BAUD_SEL_B,U4,2,B,inferred,current_user_direction,Shared select input B driven by DIP switch high bit
 BAUD_XTAL_IN,C17,1,1,todo,serial_design_chat,MC14411 XTAL_IN load capacitor on baud crystal
 BAUD_XTAL_IN,R7,1,1,inferred,serial_design_chat,MC14411 Rt feedback resistor terminal
-BAUD_XTAL_IN,U3,21,XTAL_IN,confirmed,MCU_Motorola_6800.kicad_sym,MC14411 crystal input
+BAUD_XTAL_IN,U3,21,XTAL_IN,confirmed,docs/MC14411.pdf,MC14411 crystal input
 BAUD_XTAL_IN,Y2,1,1,confirmed,https://www.digikey.com/en/products/detail/raltron-electronics/A-1-8432-18/10246237,Baud crystal terminal
 BAUD_XTAL_OUT,C18,1,1,todo,serial_design_chat,MC14411 XTAL_OUT load capacitor on baud crystal
 BAUD_XTAL_OUT,R7,2,2,inferred,serial_design_chat,MC14411 Rt feedback resistor terminal
-BAUD_XTAL_OUT,U3,20,XTAL_OUT,confirmed,MCU_Motorola_6800.kicad_sym,MC14411 crystal output
+BAUD_XTAL_OUT,U3,20,XTAL_OUT,confirmed,docs/MC14411.pdf,MC14411 crystal output
 BAUD_XTAL_OUT,Y2,2,2,confirmed,https://www.digikey.com/en/products/detail/raltron-electronics/A-1-8432-18/10246237,Baud crystal terminal
 CC1,J1,A5,CC1,inferred,usb_c_design_chat,USB-C configuration channel 1
 CC1,R1,1,1,inferred,usb_c_design_chat,CC1 Rd pull-down
@@ -333,7 +333,7 @@ GND,U1,20,VSS,confirmed,project_kicad_symbols,CPU ground
 GND,U2,1,VSS,confirmed,docs/MC6850.pdf,ACIA ground
 GND,U2,2,~CTS,inferred,serial_design_chat,Tie CTS low for no hardware flow control
 GND,U2,7,~DCD,inferred,serial_design_chat,Tie DCD low for no hardware flow control
-GND,U3,12,VSS,confirmed,MCU_Motorola_6800.kicad_sym,MC14411 ground
+GND,U3,12,VSS,confirmed,docs/MC14411.pdf,MC14411 ground
 GND,U4,1,~1G,inferred,design/baud-rate.md,Enable receive-clock mux section
 GND,U4,8,GND,confirmed,https://www.ti.com/lit/ds/symlink/sn74ls153.pdf,74153 ground
 GND,U4,15,~2G,inferred,design/baud-rate.md,Enable transmit-clock mux section
