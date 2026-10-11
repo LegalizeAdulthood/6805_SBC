@@ -145,18 +145,18 @@ AM2732,5,A3,input,false,docs/Am2732-AMD.pdf,Address input
 AM2732,6,A2,input,false,docs/Am2732-AMD.pdf,Address input
 AM2732,7,A1,input,false,docs/Am2732-AMD.pdf,Address input
 AM2732,8,A0,input,false,docs/Am2732-AMD.pdf,Address input
-AM2732,9,O0,output,false,docs/Am2732-AMD.pdf,Data output
-AM2732,10,O1,output,false,docs/Am2732-AMD.pdf,Data output
-AM2732,11,O2,output,false,docs/Am2732-AMD.pdf,Data output
+AM2732,9,O0,tri_state,false,docs/Am2732-AMD.pdf,Three-state data output bit 0
+AM2732,10,O1,tri_state,false,docs/Am2732-AMD.pdf,Three-state data output bit 1
+AM2732,11,O2,tri_state,false,docs/Am2732-AMD.pdf,Three-state data output bit 2
 AM2732,12,GND,power_in,false,docs/Am2732-AMD.pdf,Ground
-AM2732,13,O3,output,false,docs/Am2732-AMD.pdf,Data output
-AM2732,14,O4,output,false,docs/Am2732-AMD.pdf,Data output
-AM2732,15,O5,output,false,docs/Am2732-AMD.pdf,Data output
-AM2732,16,O6,output,false,docs/Am2732-AMD.pdf,Data output
-AM2732,17,O7,output,false,docs/Am2732-AMD.pdf,Data output
-AM2732,18,~CE/PGM,input,true,docs/Am2732-AMD.pdf,Chip enable/program input
+AM2732,13,O3,tri_state,false,docs/Am2732-AMD.pdf,Three-state data output bit 3
+AM2732,14,O4,tri_state,false,docs/Am2732-AMD.pdf,Three-state data output bit 4
+AM2732,15,O5,tri_state,false,docs/Am2732-AMD.pdf,Three-state data output bit 5
+AM2732,16,O6,tri_state,false,docs/Am2732-AMD.pdf,Three-state data output bit 6
+AM2732,17,O7,tri_state,false,docs/Am2732-AMD.pdf,Three-state data output bit 7
+AM2732,18,~{CE}/PGM,input,true,docs/Am2732-AMD.pdf,Active-low chip enable/program input
 AM2732,19,A10,input,false,docs/Am2732-AMD.pdf,Address input
-AM2732,20,~OE/VPP,input,true,docs/Am2732-AMD.pdf,Output enable/programming voltage input
+AM2732,20,~{OE}/VPP,input,true,docs/Am2732-AMD.pdf,Active-low output enable/programming voltage input
 AM2732,21,A11,input,false,docs/Am2732-AMD.pdf,Address input
 AM2732,22,A9,input,false,docs/Am2732-AMD.pdf,Address input
 AM2732,23,A8,input,false,docs/Am2732-AMD.pdf,Address input

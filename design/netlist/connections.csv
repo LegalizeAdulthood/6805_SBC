@@ -711,7 +711,7 @@ USB_VBUS,J1,B9,VBUS,inferred,usb_c_design_chat,USB-C raw VBUS contact
 ~DEC_HIGH_Q5,U10,10,~Y5,confirmed,design/New_Address_Decode.dig,Unused high decoder output
 ~DEC_HIGH_Q6,U10,9,~Y6,confirmed,design/New_Address_Decode.dig,Unused high decoder output
 ~DEC_HIGH_Q7,U10,7,~Y7,confirmed,design/New_Address_Decode.dig,Unused high decoder output
-~MEMRD,U5,20,~OE/VPP,inferred,current_user_direction,DS-qualified ROM output enable during reads
+~MEMRD,U5,20,~{OE}/VPP,inferred,current_user_direction,DS-qualified ROM output enable during reads
 ~MEMRD,U6,20,~OE,inferred,current_user_direction,DS-qualified RAM 1 output enable during reads
 ~MEMRD,U7,20,~OE,inferred,current_user_direction,DS-qualified RAM 2 output enable during reads
 ~MEMRD,U32,8,4Y,inferred,current_user_direction,Active-low memory read enable generated from DS and R/~W
@@ -743,7 +743,7 @@ USB_VBUS,J1,B9,VBUS,inferred,usb_c_design_chat,USB-C raw VBUS contact
 ~ROM_LOCS,U10,13,~Y2,inferred,design/New_Address_Decode.dig,One half of ROM decode
 ~ROM_LOCS,U13,1,1A,inferred,design/New_Address_Decode.dig,AND active-low ROM half selects
 ~ROMCS,TP9,1,1,inferred,test_pad_design_chat,ROM chip-select observation test point
-~ROMCS,U5,18,~CE/PGM,inferred,docs/memory-map.txt,ROM chip select
+~ROMCS,U5,18,~{CE}/PGM,inferred,docs/memory-map.txt,ROM chip select
 ~ROMCS,U13,3,1Y,inferred,design/New_Address_Decode.dig,Combined ROM chip select
 ~RTC_ADDR_OE,U19,1,~OE,inferred,rtc_adapter_design,Enable RTC address latch only during ADDRESS_WRITE pulse
 ~RTC_ADDR_OE,U31,10,3B,inferred,rtc_adapter_design,Clear start-request latch once address phase begins
