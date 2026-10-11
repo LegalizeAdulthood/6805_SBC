@@ -10,16 +10,16 @@ part_id,manufacturer,mpn,description,default_symbol,default_footprint,source,not
 7474,,7474,Dual D flip-flop with preset and clear,74xx:74LS74,Package_DIP:DIP-14_W7.62mm,docs/chip-inventory.csv,Selected from inventory for RTC start-request and CPU-cycle latches; KiCad symbol uses the standard 74LS74-compatible pinout
 AM2732,AMD,Am2732,4Kx8 UV erasable PROM,6805_sbc:AM2732,Package_DIP:DIP-24_W15.24mm_Socket,docs/Am2732-AMD.pdf,Project-local KiCad symbol uses the Am2732 datasheet pin assignment; socket footprint represents the hand-soldered DIP socket
 CAP_1NF,FH (Guangdong Fenghua Advanced Tech),0402B102K500NT,1 nF 50 V X7R shield capacitor,Device:C,Capacitor_SMD:C_0402_1005Metric,jlcpcb_basic_c1523,JLCPCB C1523 Basic part for USB shield coupling
-CAP_1UF,,,1 uF reset timing capacitor,Device:C,,cpu_user_manual,Reset RC timing capacitor from Figure 4-4; exact dielectric and voltage rating TBD
-CAP_10UF,,,10 uF capacitor,Device:C,,rtc_backup_design_chat,RTC_VDD backup bulk capacitor; exact dielectric voltage rating and footprint TBD
-CAP_18PF,,,18 pF NP0/C0G capacitor,Device:C,,cpu_oscillator_design_chat,Initial CPU crystal load capacitor; tune if needed for selected crystal load capacitance
+CAP_1UF,CCTC,TCC0805X7R105M500FT,1 uF 50 V X7R 0805 capacitor,Device:C,Capacitor_SMD:C_0805_2012Metric,jlcpcb_extended_c376929,Selected JLCPCB SMD part for reset RC timing capacitor from Figure 4-4
+CAP_10UF,Samsung Electro-Mechanics,CL21A106KAYNNNE,10 uF 25 V X5R 0805 capacitor,Device:C,Capacitor_SMD:C_0805_2012Metric,jlcpcb_basic_c15850,Selected JLCPCB Basic SMD part for RTC_VDD backup bulk capacitor
+CAP_18PF,CCTC,TCC0402COG180J500AT,18 pF 50 V C0G 0402 capacitor,Device:C,Capacitor_SMD:C_0402_1005Metric,jlcpcb_extended_c880644,Selected JLCPCB SMD part for CPU and RTC crystal load capacitors; tune if needed for selected crystal load capacitance
 CAP_100NF,YAGEO,CC0805KRX7R9BB104,100 nF 50 V X7R 0805 ceramic capacitor,Device:C,Capacitor_SMD:C_0805_2012Metric,jlcpcb_basic_c49678,JLCPCB C49678 Basic part for USB input bypass and general 0.1 uF bypass use
 CAP_BAUD_LOAD,,,MC14411 crystal load capacitor,Device:C,,serial_design_chat,Small baud-generator crystal load capacitor; value per MC14411 datasheet and selected crystal
 CAP_INPUT_BULK,Samsung Electro-Mechanics,CL21A106KAYNNNE,10 uF 25 V X5R 0805 input bulk capacitor,Device:C,Capacitor_SMD:C_0805_2012Metric,jlcpcb_basic_c15850,JLCPCB C15850 Basic part for protected 5V0 input bulk capacitance
-CAP_MAX232_1UF,,,1.0 uF MAX232CPE external capacitor,Device:C,,max232_datasheet,Datasheet value for classic MAX232 C1-C5; used for flying capacitors V+ and V- reservoirs and VCC bypass
+CAP_MAX232_1UF,CCTC,TCC0805X7R105M500FT,1.0 uF 50 V X7R 0805 capacitor,Device:C,Capacitor_SMD:C_0805_2012Metric,jlcpcb_extended_c376929,Datasheet value for classic MAX232 C1-C5; non-polar ceramic selected for flying capacitors V+ and V- reservoirs and VCC bypass
 CR2032_HOLDER,,,CR2032 coin-cell holder,Device:Battery_Cell,,rtc_backup_design_chat,RTC backup battery holder; exact footprint and retention style TBD
 DE9_DCE_SERIAL,,,Female DE-9 RS-232 console connector,Connector:DB9_Female,,current_user_direction,DCE-style pinout with SBC TX on pin 2 RX on pin 3 and GND on pin 5; exact footprint and board-edge orientation TBD
-DIODE_SCHOTTKY_RTC,,BAT54 or 1N5817-class,Schottky isolation diode,Device:D_Schottky,,rtc_backup_design_chat,RTC diode-OR isolation diode; use BAT54 or 1N5817-class and not 1N4148 to preserve battery margin
+DIODE_SCHOTTKY_RTC,Diodes Incorporated,BAT54WS-7-F,30 V 100 mA SOD-323 Schottky diode,Device:D_Schottky,Diode_SMD:D_SOD-323,jlcpcb_extended_c124205,Selected BAT54WS-class diode for RTC diode-OR isolation; lower leakage than 1N5819-class parts preserves battery margin
 HEADER_PORT_AB_2X10,,,Right-angle 2x10 Port A/B GPIO header,Connector_Generic:Conn_02x10_Odd_Even,Connector_IDC:IDC-Header_2x10_P2.54mm_Horizontal,gpio_header_design_chat,0.1 inch GPIO breakout for PA0-PA7 PB0-PB7 5V0 and GND; boxed or shrouded IDC preferred if board space allows; exact footprint TBD
 HEADER_TIMER_IRQ,,,TIMER and IRQ service header,Connector_Generic:Conn_01x03,Connector_PinHeader_2.54mm:PinHeader_1x03_P2.54mm_Vertical,timer_header_design_chat,Small header for external slow TIMER injection optional IRQ access and ground; exact vertical or right-angle style TBD
 HM6116,,HM6116,2Kx8 static RAM,6805_sbc:HM6116,Package_DIP:DIP-24_W7.62mm_Socket,docs/IDT_6116.pdf,Project-local KiCad symbol uses the IDT6116 datasheet pin assignment; socket footprint represents the hand-soldered DIP socket
@@ -31,14 +31,14 @@ MSM58321,OKI,MSM58321,Real-time clock calendar,6805_sbc:MSM58321,Package_DIP:DIP
 PPTC_USB_INPUT,Littelfuse,MINISMDC125F/16-2,1.25 A hold 16 V 1812 resettable fuse,Device:Fuse,Fuse:Fuse_1812_4532Metric,jlcpcb_pptc_c15156,JLCPCB C15156 Extended part; 2.5 A trip and 16 V max for protected USB-C input
 RES_1M,UNI-ROYAL(Uniroyal Elec),0805W8F1004T5E,1 Mohm 1 percent 0805 resistor,Device:R,Resistor_SMD:R_0805_2012Metric,jlcpcb_basic_c17514,JLCPCB C17514 Basic part for USB shield bleed
 RES_5K1,UNI-ROYAL(Uniroyal Elec),0805W8F5101T5E,5.1 kohm 1 percent 0805 resistor,Device:R,Resistor_SMD:R_0805_2012Metric,jlcpcb_basic_c27834,JLCPCB C27834 Basic part for USB-C CC Rd pull-downs
-RES_10K,,,10 kohm resistor,Device:R,,current_user_direction,External reset pull-up resistor
-RES_10M,,,10 Mohm resistor,Device:R,,cpu_oscillator_design_chat,CPU oscillator feedback resistor across OSC1 and OSC2
-RES_15M,,,15 Mohm resistor,Device:R,,serial_design_chat,MC14411 crystal oscillator feedback resistor Rt 15 Mohm +/-10 percent
-RES_200K,,,200 kohm resistor,Device:R,,rtc_datasheet,MSM58321 oscillator series resistor RS 200 kohm typical from Figure 8
-RES_ARRAY_8X4K7,,,8x 4.7 kohm bussed pull-up resistor network,Device:R_Network08,,current_user_direction,Staged for CPU B0-B7 data-bus margin and Port A/B default-high GPIO inputs; exact resistor-network or discrete implementation and footprint TBD
-RES_BAUD_PULLDOWN,,,1k0 baud select pull-down resistor,Device:R,,current_user_direction,Electrical value selected for LS TTL U4 select inputs; exact resistor vendor and footprint can follow JLCPCB passives policy
-RES_IRQ_PULLUP,,,4.7 kohm IRQ pull-up resistor,Device:R,,current_user_direction,Shared active-low open-drain IRQ pull-up selected because IRQ is exposed on J4
-RES_RTC_BUSY_PULLUP,,,RTC BUSY pull-up resistor,Device:R,,rtc_adapter_design,Pulls MSM58321 open-drain BUSY to the main 5V0 logic rail
+RES_10K,UNI-ROYAL(Uniroyal Elec),0805W8F1002T5E,10 kohm 1 percent 0805 resistor,Device:R,Resistor_SMD:R_0805_2012Metric,jlcpcb_basic_c17414,Selected JLCPCB Basic SMD part for external reset pull-up resistor
+RES_10M,UNI-ROYAL(Uniroyal Elec),0805W8F1005T5E,10 Mohm 1 percent 0805 resistor,Device:R,Resistor_SMD:R_0805_2012Metric,jlcpcb_catalog_c26108,Selected JLCPCB/LCSC SMD part for CPU and RTC oscillator feedback resistors
+RES_15M,UNI-ROYAL(Uniroyal Elec),0805W8F1505T5E,15 Mohm 1 percent 0805 resistor,Device:R,Resistor_SMD:R_0805_2012Metric,jlcpcb_catalog_c42861,Selected JLCPCB/LCSC SMD part for MC14411 crystal oscillator feedback resistor Rt
+RES_200K,UNI-ROYAL(Uniroyal Elec),0805W8F2003T5E,200 kohm 1 percent 0805 resistor,Device:R,Resistor_SMD:R_0805_2012Metric,jlcpcb_basic_c17539,Selected JLCPCB Basic SMD part for MSM58321 oscillator series resistor RS from Figure 8
+RES_ARRAY_8X4K7,,,8x 4.7 kohm bussed pull-up resistor network,Device:R_Network08,,current_user_direction,Staged for CPU B0-B7 data-bus margin and Port A/B default-high GPIO inputs; exact SMD implementation remains TBD because available JLCPCB 4x 4.7 kohm arrays are isolated rather than bussed; discrete 0805 C17673 resistors are the fallback
+RES_BAUD_PULLDOWN,UNI-ROYAL(Uniroyal Elec),0805W8F1001T5E,1 kohm 1 percent 0805 resistor,Device:R,Resistor_SMD:R_0805_2012Metric,jlcpcb_basic_c17513,Selected JLCPCB Basic SMD part for LS TTL U4 select-input pull-downs
+RES_IRQ_PULLUP,UNI-ROYAL(Uniroyal Elec),0805W8F4701T5E,4.7 kohm 1 percent 0805 resistor,Device:R,Resistor_SMD:R_0805_2012Metric,jlcpcb_basic_c17673,Selected JLCPCB Basic SMD part for shared active-low open-drain IRQ pull-up
+RES_RTC_BUSY_PULLUP,UNI-ROYAL(Uniroyal Elec),0805W8F1002T5E,10 kohm 1 percent 0805 resistor,Device:R,Resistor_SMD:R_0805_2012Metric,jlcpcb_basic_c17414,Selected JLCPCB Basic SMD part for MSM58321 open-drain BUSY pull-up
 SW_DIP_2,,,Two-position DIP switch,Switch:SW_DIP_x02,,current_user_direction,Manual baud-rate range selector; closed switch drives the corresponding select bit high
 SW_PUSH_NO,,,Normally-open pushbutton,Switch:SW_Push,,current_user_direction,Manual reset pushbutton pulls RESET to GND when pressed
 TEST_PAD,,,Single-pin test pad,Connector:TestPoint,TestPoint:TestPoint_Pad_D1.0mm,test_pad_design_chat,Generic board bring-up test point; final pad diameter and style TBD

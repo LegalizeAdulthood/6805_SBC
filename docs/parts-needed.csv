@@ -2,31 +2,31 @@ part_id,description,qty_per_board,qty_for_10,inventory_key,inventory_qty,qty_to_
 7408,Quad 2-input AND gate,2,20,7408,16,4,inventory_shortage,Used by address decode and RTC adapter glue
 7411,Triple 3-input AND gate,3,30,7411,12,18,inventory_shortage,Used by address decode and RTC adapter glue
 CAP_100NF,100 nF 50 V X7R 0805 ceramic capacitor,5,50,,0,50,jlcpcb_basic_c49678,JLCPCB Basic part for bypass capacitors
-CAP_10UF,10 uF RTC backup bulk capacitor,1,10,,0,10,part_not_selected,Exact dielectric voltage rating and footprint TBD
-CAP_18PF,18 pF NP0 C0G capacitor,4,40,,0,40,part_not_selected,CPU and RTC crystal load capacitors
+CAP_10UF,10 uF 25 V X5R 0805 capacitor,1,10,,0,10,jlcpcb_basic_c15850,JLCPCB Basic part for RTC backup bulk capacitor
+CAP_18PF,18 pF 50 V C0G 0402 capacitor,4,40,,0,40,jlcpcb_extended_c880644,JLCPCB part for CPU and RTC crystal load capacitors
 CAP_1NF,1 nF 50 V X7R shield capacitor,1,10,,0,10,jlcpcb_basic_c1523,JLCPCB Basic part for USB shield coupling
-CAP_1UF,1 uF reset timing capacitor,1,10,,0,10,part_not_selected,Exact dielectric voltage rating and footprint TBD
+CAP_1UF,1 uF 50 V X7R 0805 capacitor,1,10,,0,10,jlcpcb_extended_c376929,JLCPCB part for reset timing capacitor
 CAP_BAUD_LOAD,MC14411 crystal load capacitor,2,20,,0,20,part_not_selected,Value TBD from MC14411 datasheet and selected crystal
 CAP_INPUT_BULK,10 uF 25 V X5R 0805 input bulk capacitor,1,10,,0,10,jlcpcb_basic_c15850,JLCPCB Basic part for protected 5V0 input bulk
-CAP_MAX232_1UF,1.0 uF MAX232CPE external capacitor,5,50,,0,50,part_not_selected,Classic MAX232 C1-C5 capacitor value
+CAP_MAX232_1UF,1.0 uF 50 V X7R 0805 capacitor,5,50,,0,50,jlcpcb_extended_c376929,JLCPCB part for classic MAX232 C1-C5 capacitors
 CR2032_HOLDER,CR2032 coin-cell holder,1,10,,0,10,part_not_selected,Exact holder footprint and retention style TBD
 DE9_DCE_SERIAL,Female DE-9 RS-232 console connector,1,10,,0,10,part_not_selected,DCE connector with exact footprint and board-edge orientation TBD
-DIODE_SCHOTTKY_RTC,Schottky RTC isolation diode,2,20,,0,20,part_not_selected,BAT54 or 1N5817-class part still TBD
+DIODE_SCHOTTKY_RTC,BAT54WS SOD-323 Schottky RTC isolation diode,2,20,,0,20,jlcpcb_extended_c124205,JLCPCB/LCSC BAT54WS-7-F selected for RTC diode-OR isolation
 HEADER_PORT_AB_2X10,Right-angle 2x10 Port A and Port B GPIO header,1,10,,0,10,part_not_selected,Exact boxed or shrouded IDC style TBD
 HEADER_TIMER_IRQ,TIMER and IRQ service header,1,10,,0,10,part_not_selected,Exact vertical or right-angle style TBD
 MAX232,MAX232CPE dual RS-232 transceiver,1,10,MAX 232,7,3,inventory_shortage,Inventory chips are Maxim MAX232CPE
 MC6850,MC6850 asynchronous communications interface adapter,1,10,6850,7,3,inventory_shortage,ACIA for serial section
 PPTC_USB_INPUT,1.25 A hold 16 V 1812 resettable fuse,1,10,,0,10,jlcpcb_pptc_c15156,JLCPCB Extended USB input fuse
-RES_10K,10 kohm reset pull-up resistor,1,10,,0,10,part_not_selected,Exact resistor source and footprint TBD
-RES_10M,10 Mohm oscillator feedback resistor,2,20,,0,20,part_not_selected,Used by CPU and RTC oscillator networks
-RES_15M,15 Mohm MC14411 oscillator feedback resistor,1,10,,0,10,part_not_selected,15 Mohm plus or minus 10 percent
+RES_10K,10 kohm 1 percent 0805 resistor,1,10,,0,10,jlcpcb_basic_c17414,JLCPCB Basic part for reset pull-up
+RES_10M,10 Mohm 1 percent 0805 resistor,2,20,,0,20,jlcpcb_catalog_c26108,JLCPCB/LCSC part for CPU and RTC oscillator feedback
+RES_15M,15 Mohm 1 percent 0805 resistor,1,10,,0,10,jlcpcb_catalog_c42861,JLCPCB/LCSC part for MC14411 oscillator feedback
 RES_1M,1 Mohm 1 percent 0805 shield bleed resistor,1,10,,0,10,jlcpcb_basic_c17514,JLCPCB Basic part for USB shield bleed
-RES_200K,200 kohm RTC oscillator series resistor,1,10,,0,10,part_not_selected,MSM58321 Figure 8 typical value
+RES_200K,200 kohm 1 percent 0805 resistor,1,10,,0,10,jlcpcb_basic_c17539,JLCPCB Basic part for MSM58321 Figure 8 series resistor
 RES_5K1,5.1 kohm 1 percent 0805 USB-C CC resistor,2,20,,0,20,jlcpcb_basic_c27834,JLCPCB Basic part for CC1 and CC2 Rd
-RES_ARRAY_8X4K7,8x 4.7 kohm bussed pull-up resistor network,3,30,,0,30,part_not_selected,Used for B0-B7 and Port A and Port B pull-ups
-RES_BAUD_PULLDOWN,1k0 baud select pull-down resistor,2,20,,0,20,part_not_selected,Selected for LS TTL 74153 inputs
-RES_IRQ_PULLUP,4.7 kohm IRQ pull-up resistor,1,10,,0,10,part_not_selected,Shared IRQ pull-up because IRQ is exposed on header
-RES_RTC_BUSY_PULLUP,10 kohm RTC BUSY pull-up resistor,1,10,,0,10,part_not_selected,Pulls MSM58321 open-drain BUSY high
+RES_ARRAY_8X4K7,8x 4.7 kohm bussed pull-up resistor network,3,30,,0,30,part_not_selected,Topology still unresolved for JLCPCB SMD; discrete 0805 C17673 resistors are the fallback
+RES_BAUD_PULLDOWN,1 kohm 1 percent 0805 resistor,2,20,,0,20,jlcpcb_basic_c17513,JLCPCB Basic part for LS TTL 74153 inputs
+RES_IRQ_PULLUP,4.7 kohm 1 percent 0805 resistor,1,10,,0,10,jlcpcb_basic_c17673,JLCPCB Basic part for shared IRQ pull-up
+RES_RTC_BUSY_PULLUP,10 kohm 1 percent 0805 resistor,1,10,,0,10,jlcpcb_basic_c17414,JLCPCB Basic part for MSM58321 BUSY pull-up
 SOCKET_DIP16_NARROW,16-pin narrow DIP socket,2,20,,0,20,part_not_selected,Socket for RTC and MAX232
 SOCKET_DIP24_NARROW,24-pin narrow DIP socket,2,20,,0,20,part_not_selected,Sockets for two HM6116 SRAM chips
 SOCKET_DIP24_WIDE,24-pin wide DIP socket,3,30,,0,30,part_not_selected,Sockets for ACIA MC14411 and EPROM

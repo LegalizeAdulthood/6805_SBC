@@ -3,26 +3,26 @@ BT1,CR2032_HOLDER,CR2032,,todo,rtc_backup_design_chat,RTC backup coin-cell holde
 C1,CAP_INPUT_BULK,10 uF,Capacitor_SMD:C_0805_2012Metric,confirmed,jlcpcb_basic_c15850,JLCPCB Basic 0805 input bulk capacitor on protected 5V0 rail
 C2,CAP_100NF,0.1 uF,Capacitor_SMD:C_0805_2012Metric,confirmed,jlcpcb_basic_c49678,JLCPCB Basic 0805 input bypass capacitor on protected 5V0 rail
 C3,CAP_1NF,1 nF,Capacitor_SMD:C_0402_1005Metric,confirmed,jlcpcb_basic_c1523,JLCPCB Basic shield-to-ground coupling capacitor
-C4,CAP_1UF,1 uF,,inferred,cpu_user_manual,Reset timing capacitor from RESET to GND for roughly 10 ms RC
-C5,CAP_18PF,18 pF,,inferred,cpu_oscillator_design_chat,CPU_OSC1 load capacitor; NP0/C0G initial build value
-C6,CAP_18PF,18 pF,,inferred,cpu_oscillator_design_chat,CPU_OSC2 load capacitor; NP0/C0G initial build value
-C7,CAP_18PF,18 pF,,inferred,current_user_direction,RTC_XT fixed load capacitor for selected 12.5 pF crystal; NP0/C0G
-C8,CAP_18PF,18 pF,,inferred,current_user_direction,RTC_XT_N fixed load capacitor for selected 12.5 pF crystal; NP0/C0G
-C10,CAP_10UF,10 uF,,inferred,rtc_backup_design_chat,RTC_VDD backup bulk capacitor
+C4,CAP_1UF,1 uF,Capacitor_SMD:C_0805_2012Metric,confirmed,jlcpcb_extended_c376929,Reset timing capacitor from RESET to GND for roughly 10 ms RC
+C5,CAP_18PF,18 pF,Capacitor_SMD:C_0402_1005Metric,confirmed,jlcpcb_extended_c880644,CPU_OSC1 load capacitor; NP0/C0G initial build value
+C6,CAP_18PF,18 pF,Capacitor_SMD:C_0402_1005Metric,confirmed,jlcpcb_extended_c880644,CPU_OSC2 load capacitor; NP0/C0G initial build value
+C7,CAP_18PF,18 pF,Capacitor_SMD:C_0402_1005Metric,confirmed,jlcpcb_extended_c880644,RTC_XT fixed load capacitor for selected 12.5 pF crystal; NP0/C0G
+C8,CAP_18PF,18 pF,Capacitor_SMD:C_0402_1005Metric,confirmed,jlcpcb_extended_c880644,RTC_XT_N fixed load capacitor for selected 12.5 pF crystal; NP0/C0G
+C10,CAP_10UF,10 uF,Capacitor_SMD:C_0805_2012Metric,confirmed,jlcpcb_basic_c15850,RTC_VDD backup bulk capacitor
 C11,CAP_100NF,0.1 uF,,inferred,rtc_backup_design_chat,RTC_VDD local ceramic bypass capacitor
-C12,CAP_MAX232_1UF,1.0 uF,,confirmed,max232_datasheet,MAX232CPE C1 flying capacitor between C1+ and C1-
-C13,CAP_MAX232_1UF,1.0 uF,,confirmed,max232_datasheet,MAX232CPE C2 flying capacitor between C2+ and C2-
-C14,CAP_MAX232_1UF,1.0 uF,,confirmed,max232_datasheet,MAX232CPE V+ reservoir capacitor
-C15,CAP_MAX232_1UF,1.0 uF,,confirmed,max232_datasheet,MAX232CPE V- reservoir capacitor
-C16,CAP_MAX232_1UF,1.0 uF,,confirmed,max232_datasheet,MAX232CPE C5 VCC bypass capacitor
+C12,CAP_MAX232_1UF,1.0 uF,Capacitor_SMD:C_0805_2012Metric,confirmed,jlcpcb_extended_c376929,MAX232CPE C1 flying capacitor between C1+ and C1-
+C13,CAP_MAX232_1UF,1.0 uF,Capacitor_SMD:C_0805_2012Metric,confirmed,jlcpcb_extended_c376929,MAX232CPE C2 flying capacitor between C2+ and C2-
+C14,CAP_MAX232_1UF,1.0 uF,Capacitor_SMD:C_0805_2012Metric,confirmed,jlcpcb_extended_c376929,MAX232CPE V+ reservoir capacitor
+C15,CAP_MAX232_1UF,1.0 uF,Capacitor_SMD:C_0805_2012Metric,confirmed,jlcpcb_extended_c376929,MAX232CPE V- reservoir capacitor
+C16,CAP_MAX232_1UF,1.0 uF,Capacitor_SMD:C_0805_2012Metric,confirmed,jlcpcb_extended_c376929,MAX232CPE C5 VCC bypass capacitor
 C17,CAP_BAUD_LOAD,TBD,,todo,serial_design_chat,MC14411 XTAL_IN load capacitor; choose value from datasheet and selected crystal
 C18,CAP_BAUD_LOAD,TBD,,todo,serial_design_chat,MC14411 XTAL_OUT load capacitor; choose value from datasheet and selected crystal
 C19,CAP_100NF,0.1 uF,,inferred,serial_design_chat,ACIA local ceramic bypass capacitor
 C20,CAP_100NF,0.1 uF,,inferred,serial_design_chat,MC14411 local ceramic bypass capacitor
 C21,CAP_100NF,0.1 uF,,inferred,serial_design_chat,Baud mux local ceramic bypass capacitor
 D1,TVS_5V_UNIDIR,SMBJ5.0A,Diode_SMD:D_SMB,confirmed,jlcpcb_tvs_c5457085,JLCPCB Extended 5 V unidirectional VBUS TVS near USB-C connector; cathode stripe to USB_VBUS and anode to GND
-D3,DIODE_SCHOTTKY_RTC,BAT54 or 1N5817-class,,todo,rtc_backup_design_chat,5V0 isolation diode to RTC_VDD; exact Schottky part and footprint TBD
-D4,DIODE_SCHOTTKY_RTC,BAT54 or 1N5817-class,,todo,rtc_backup_design_chat,CR2032 isolation diode to RTC_VDD; exact Schottky part and footprint TBD
+D3,DIODE_SCHOTTKY_RTC,BAT54WS,Diode_SMD:D_SOD-323,confirmed,jlcpcb_extended_c124205,5V0 isolation diode to RTC_VDD
+D4,DIODE_SCHOTTKY_RTC,BAT54WS,Diode_SMD:D_SOD-323,confirmed,jlcpcb_extended_c124205,CR2032 isolation diode to RTC_VDD
 F1,PPTC_USB_INPUT,1.25 A hold,Fuse:Fuse_1812_4532Metric,confirmed,jlcpcb_pptc_c15156,JLCPCB Extended resettable input fuse between raw USB VBUS and protected 5V0 rail; 16 V max and about 2.5 A trip
 J1,USB_C_RECEPTACLE_POWER,USB-C power input,,todo,jlcpcb_connector_c2765186,Board-edge power-only USB-C sink connector candidate; exact KiCad footprint and pin mapping still TBD
 J2,DE9_DCE_SERIAL,DE-9 female serial,,todo,current_user_direction,DCE-style RS-232 console connector; exact footprint and board-edge orientation TBD
@@ -31,15 +31,15 @@ J4,HEADER_TIMER_IRQ,TIMER/IRQ header,,todo,timer_header_design_chat,Small servic
 R1,RES_5K1,5.1 kohm,Resistor_SMD:R_0805_2012Metric,confirmed,jlcpcb_basic_c27834,JLCPCB Basic CC1 Rd pull-down
 R2,RES_5K1,5.1 kohm,Resistor_SMD:R_0805_2012Metric,confirmed,jlcpcb_basic_c27834,JLCPCB Basic CC2 Rd pull-down
 R3,RES_1M,1 Mohm,Resistor_SMD:R_0805_2012Metric,confirmed,jlcpcb_basic_c17514,JLCPCB Basic shield-to-ground bleed resistor
-R4,RES_10K,10 kohm,,inferred,current_user_direction,Reset pull-up from RESET to 5V0
-R5,RES_10M,10 Mohm,,inferred,cpu_oscillator_design_chat,CPU oscillator feedback resistor across CPU_OSC1 and CPU_OSC2
-R6,RES_10M,10 Mohm,,inferred,rtc_backup_design_chat,RTC oscillator feedback resistor across RTC_XT and RTC_XT_N
-R7,RES_15M,15 Mohm,,inferred,serial_design_chat,MC14411 crystal oscillator feedback resistor Rt across XTAL_IN and XTAL_OUT
-R8,RES_IRQ_PULLUP,4.7 kohm,,inferred,current_user_direction,Shared IRQ pull-up to 5V0; selected because IRQ is exposed on J4
-R9,RES_BAUD_PULLDOWN,1k0,,confirmed,current_user_direction,BAUD_SEL_A pull-down selected for LS TTL 74153 input current
-R10,RES_BAUD_PULLDOWN,1k0,,confirmed,current_user_direction,BAUD_SEL_B pull-down selected for LS TTL 74153 input current
-R11,RES_RTC_BUSY_PULLUP,10 kohm,,inferred,rtc_adapter_design,Pulls MSM58321 open-drain BUSY output to main 5V0 logic rail
-R12,RES_200K,200 kohm,,inferred,rtc_datasheet,MSM58321 RTC oscillator series resistor RS from Figure 8
+R4,RES_10K,10 kohm,Resistor_SMD:R_0805_2012Metric,confirmed,jlcpcb_basic_c17414,Reset pull-up from RESET to 5V0
+R5,RES_10M,10 Mohm,Resistor_SMD:R_0805_2012Metric,confirmed,jlcpcb_catalog_c26108,CPU oscillator feedback resistor across CPU_OSC1 and CPU_OSC2
+R6,RES_10M,10 Mohm,Resistor_SMD:R_0805_2012Metric,confirmed,jlcpcb_catalog_c26108,RTC oscillator feedback resistor across RTC_XT and RTC_XT_N
+R7,RES_15M,15 Mohm,Resistor_SMD:R_0805_2012Metric,confirmed,jlcpcb_catalog_c42861,MC14411 crystal oscillator feedback resistor Rt across XTAL_IN and XTAL_OUT
+R8,RES_IRQ_PULLUP,4.7 kohm,Resistor_SMD:R_0805_2012Metric,confirmed,jlcpcb_basic_c17673,Shared IRQ pull-up to 5V0; selected because IRQ is exposed on J4
+R9,RES_BAUD_PULLDOWN,1k0,Resistor_SMD:R_0805_2012Metric,confirmed,jlcpcb_basic_c17513,BAUD_SEL_A pull-down selected for LS TTL 74153 input current
+R10,RES_BAUD_PULLDOWN,1k0,Resistor_SMD:R_0805_2012Metric,confirmed,jlcpcb_basic_c17513,BAUD_SEL_B pull-down selected for LS TTL 74153 input current
+R11,RES_RTC_BUSY_PULLUP,10 kohm,Resistor_SMD:R_0805_2012Metric,confirmed,jlcpcb_basic_c17414,Pulls MSM58321 open-drain BUSY output to main 5V0 logic rail
+R12,RES_200K,200 kohm,Resistor_SMD:R_0805_2012Metric,confirmed,jlcpcb_basic_c17539,MSM58321 RTC oscillator series resistor RS from Figure 8
 RN1,RES_ARRAY_8X4K7,4.7 kohm x8,,inferred,current_user_direction,B0-B7/D0-D7 multiplexed bus pull-up network for CPU input-high margin with TTL-level bus drivers
 RN2,RES_ARRAY_8X4K7,4.7 kohm x8,,inferred,current_user_direction,Port A PA0-PA7 default-high pull-up network for GPIO header inputs
 RN3,RES_ARRAY_8X4K7,4.7 kohm x8,,inferred,current_user_direction,Port B PB0-PB7 default-high pull-up network for GPIO header inputs
