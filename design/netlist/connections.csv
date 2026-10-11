@@ -168,10 +168,10 @@ BAUD_F8,U4,11,2C1,inferred,current_user_direction,C1 assignment mirrors receive-
 BAUD_F9,U3,7,F9,confirmed,design/baud-rate.md,19.2 kHz candidate clock for baud mux in X64 range
 BAUD_F9,U4,6,1C0,inferred,current_user_direction,C0 assignment for lowest switch setting
 BAUD_F9,U4,10,2C0,inferred,current_user_direction,C0 assignment mirrors receive-clock mux
-BAUD_SEL_A,R9,1,1,inferred,current_user_direction,BAUD_SEL_A pull-down node
+BAUD_SEL_A,R9,1,1,confirmed,current_user_direction,1k0 BAUD_SEL_A pull-down node
 BAUD_SEL_A,SW2,2,1B,inferred,current_user_direction,Low-order baud-select DIP switch output
 BAUD_SEL_A,U4,14,A,inferred,current_user_direction,Shared select input A driven by DIP switch low bit
-BAUD_SEL_B,R10,1,1,inferred,current_user_direction,BAUD_SEL_B pull-down node
+BAUD_SEL_B,R10,1,1,confirmed,current_user_direction,1k0 BAUD_SEL_B pull-down node
 BAUD_SEL_B,SW2,4,2B,inferred,current_user_direction,High-order baud-select DIP switch output
 BAUD_SEL_B,U4,2,B,inferred,current_user_direction,Shared select input B driven by DIP switch high bit
 BAUD_XTAL_IN,C17,1,1,todo,serial_design_chat,MC14411 XTAL_IN load capacitor on baud crystal
@@ -322,8 +322,8 @@ GND,J4,3,GND,inferred,timer_header_design_chat,TIMER/IRQ header ground
 GND,R1,2,2,inferred,usb_c_design_chat,CC1 Rd pull-down return
 GND,R2,2,2,inferred,usb_c_design_chat,CC2 Rd pull-down return
 GND,R3,2,2,confirmed,jlcpcb_basic_c17514,Shield bleed resistor return
-GND,R9,2,2,inferred,current_user_direction,BAUD_SEL_A pull-down return
-GND,R10,2,2,inferred,current_user_direction,BAUD_SEL_B pull-down return
+GND,R9,2,2,confirmed,current_user_direction,1k0 BAUD_SEL_A pull-down return
+GND,R10,2,2,confirmed,current_user_direction,1k0 BAUD_SEL_B pull-down return
 GND,SW1,2,2,inferred,current_user_direction,Manual reset pushbutton return
 GND,TP2,1,1,inferred,test_pad_design_chat,Ground bring-up test point
 GND,U1,20,VSS,confirmed,MCU_Motorola_6800.kicad_sym,CPU ground

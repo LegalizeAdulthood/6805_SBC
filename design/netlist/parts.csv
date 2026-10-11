@@ -4,7 +4,7 @@ part_id,manufacturer,mpn,description,default_symbol,default_footprint,source,not
 7411,,7411,Triple 3-input AND gate,,Package_DIP:DIP-14_W7.62mm,https://www.ti.com/lit/ds/symlink/sn74ls11.pdf,Selected from inventory for address decode gate packing
 7432,,7432,Quad 2-input OR gate,,Package_DIP:DIP-14_W7.62mm,https://www.ti.com/lit/ds/symlink/sn74ls32.pdf,Selected from inventory for address decode gate packing
 74138,,74138,3-to-8 line decoder with active-low outputs,,Package_DIP:DIP-16_W7.62mm,docs/sn74ls138.pdf,Selected from inventory for address decode; standard 74138 pinout used for staging
-74153,,74153,Dual 4-to-1 data selector/multiplexer,,Package_DIP:DIP-16_W7.62mm,design/baud-rate.md,Exact logic family and KiCad symbol still TBD; standard 74153 pinout used for staging
+74153,Hitachi,HD74LS153P,LS TTL dual 4-to-1 data selector/multiplexer,,Package_DIP:DIP-16_W7.62mm,baud_mux_inventory_photo,Selected from inventory; standard 74153-compatible pinout used for staging; exact KiCad symbol still TBD
 74174,,74174,Hex D flip-flop with common clock and asynchronous clear,,Package_DIP:DIP-16_W7.62mm,docs/chip-inventory.csv,Selected from inventory for MC14411-clocked RTC one-hot sequencer
 74373,,74373,Octal transparent latch with tri-state outputs,,Package_DIP:DIP-20_W7.62mm,design/Address_Latch.dig,Selected from inventory for low-address demultiplexing; exact KiCad symbol still TBD
 7474,,7474,Dual D flip-flop with preset and clear,,Package_DIP:DIP-14_W7.62mm,docs/chip-inventory.csv,Selected from inventory for RTC start-request and CPU-cycle latches
@@ -35,7 +35,7 @@ RES_10K,,,10 kohm resistor,Device:R,,current_user_direction,External reset pull-
 RES_10M,,,10 Mohm resistor,Device:R,,cpu_oscillator_design_chat,CPU oscillator feedback resistor across OSC1 and OSC2
 RES_15M,,,15 Mohm resistor,Device:R,,serial_design_chat,MC14411 crystal oscillator feedback resistor Rt 15 Mohm +/-10 percent
 RES_200K,,,200 kohm resistor,Device:R,,rtc_datasheet,MSM58321 oscillator series resistor RS 200 kohm typical from Figure 8
-RES_BAUD_PULLDOWN,,,Baud select pull-down resistor,Device:R,,current_user_direction,Pull-down value TBD after final 74153 logic family is chosen
+RES_BAUD_PULLDOWN,,,1k0 baud select pull-down resistor,Device:R,,current_user_direction,Electrical value selected for LS TTL U4 select inputs; exact resistor vendor and footprint can follow JLCPCB passives policy
 RES_IRQ_PULLUP,,,4.7-10 kohm IRQ pull-up resistor,Device:R,,irq_design_chat,Shared active-low open-drain IRQ pull-up; exact value TBD
 RES_RTC_BUSY_PULLUP,,,RTC BUSY pull-up resistor,Device:R,,rtc_adapter_design,Pulls MSM58321 open-drain BUSY to the main 5V0 logic rail
 SW_DIP_2,,,Two-position DIP switch,Switch:SW_DIP_x02,,current_user_direction,Manual baud-rate range selector; closed switch drives the corresponding select bit high

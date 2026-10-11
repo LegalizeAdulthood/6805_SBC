@@ -36,8 +36,8 @@ R5,RES_10M,10 Mohm,,inferred,cpu_oscillator_design_chat,CPU oscillator feedback 
 R6,RES_10M,10 Mohm,,inferred,rtc_backup_design_chat,RTC oscillator feedback resistor across RTC_XT and RTC_XT_N
 R7,RES_15M,15 Mohm,,inferred,serial_design_chat,MC14411 crystal oscillator feedback resistor Rt across XTAL_IN and XTAL_OUT
 R8,RES_IRQ_PULLUP,4.7 kohm,,inferred,current_user_direction,Shared IRQ pull-up to 5V0; selected because IRQ is exposed on J4
-R9,RES_BAUD_PULLDOWN,TBD,,todo,current_user_direction,BAUD_SEL_A pull-down; exact value depends on final 74153 logic family
-R10,RES_BAUD_PULLDOWN,TBD,,todo,current_user_direction,BAUD_SEL_B pull-down; exact value depends on final 74153 logic family
+R9,RES_BAUD_PULLDOWN,1k0,,confirmed,current_user_direction,BAUD_SEL_A pull-down selected for LS TTL 74153 input current
+R10,RES_BAUD_PULLDOWN,1k0,,confirmed,current_user_direction,BAUD_SEL_B pull-down selected for LS TTL 74153 input current
 R11,RES_RTC_BUSY_PULLUP,10 kohm,,inferred,rtc_adapter_design,Pulls MSM58321 open-drain BUSY output to main 5V0 logic rail
 R12,RES_200K,200 kohm,,inferred,rtc_datasheet,MSM58321 RTC oscillator series resistor RS from Figure 8
 SW1,SW_PUSH_NO,Reset,,inferred,current_user_direction,Normally-open manual reset pushbutton from RESET to GND
@@ -65,7 +65,7 @@ TP21,TEST_PAD,ACIA_IRQ source test pad,,inferred,test_pad_design_chat,Place near
 U1,MC146805E2,MC146805E2,Package_DIP:DIP-40_W15.24mm,confirmed,docs/MC146805E2_1983.pdf,CPU
 U2,MC6850,MC6850,Package_DIP:DIP-24_W15.24mm,confirmed,docs/MC6850.pdf,ACIA
 U3,MC14411,MC14411,Package_DIP:DIP-24_W15.24mm,confirmed,docs/MC14411.pdf,Baud-rate generator
-U4,74153,74153,Package_DIP:DIP-16_W7.62mm,inferred,design/baud-rate.md,Dual mux for ACIA receive and transmit baud clocks
+U4,74153,HD74LS153P,Package_DIP:DIP-16_W7.62mm,confirmed,baud_mux_inventory_photo,LS TTL dual mux for ACIA receive and transmit baud clocks
 U5,AM2732,Am2732,Package_DIP:DIP-24_W15.24mm,confirmed,docs/memory-map.txt,4Kx8 ROM at $1000-$1FFF using inventory Am2732
 U6,HM6116,HM6116,Package_DIP:DIP-24_W7.62mm,confirmed,docs/memory-map.txt,2Kx8 RAM 1 at $0110-$07FF using inventory HM6116
 U7,HM6116,HM6116,Package_DIP:DIP-24_W7.62mm,confirmed,docs/memory-map.txt,2Kx8 RAM 2 at $0800-$0FFF using inventory HM6116
