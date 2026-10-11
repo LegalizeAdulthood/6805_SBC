@@ -230,10 +230,10 @@ HM6116,14,I/O4,bidirectional,false,docs/IDT_6116.pdf,Data input/output
 HM6116,15,I/O5,bidirectional,false,docs/IDT_6116.pdf,Data input/output
 HM6116,16,I/O6,bidirectional,false,docs/IDT_6116.pdf,Data input/output
 HM6116,17,I/O7,bidirectional,false,docs/IDT_6116.pdf,Data input/output
-HM6116,18,~CS,input,true,docs/IDT_6116.pdf,Chip select
+HM6116,18,~{CS},input,true,docs/IDT_6116.pdf,Active-low chip select
 HM6116,19,A10,input,false,docs/IDT_6116.pdf,Address input
-HM6116,20,~OE,input,true,docs/IDT_6116.pdf,Output enable
-HM6116,21,~WE,input,true,docs/IDT_6116.pdf,Write enable
+HM6116,20,~{OE},input,true,docs/IDT_6116.pdf,Active-low output enable
+HM6116,21,~{WE},input,true,docs/IDT_6116.pdf,Active-low write enable
 HM6116,22,A9,input,false,docs/IDT_6116.pdf,Address input
 HM6116,23,A8,input,false,docs/IDT_6116.pdf,Address input
 HM6116,24,VCC,power_in,false,docs/IDT_6116.pdf,Power

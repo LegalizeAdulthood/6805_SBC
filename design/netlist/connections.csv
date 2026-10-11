@@ -712,8 +712,8 @@ USB_VBUS,J1,B9,VBUS,inferred,usb_c_design_chat,USB-C raw VBUS contact
 ~DEC_HIGH_Q6,U10,9,~Y6,confirmed,design/New_Address_Decode.dig,Unused high decoder output
 ~DEC_HIGH_Q7,U10,7,~Y7,confirmed,design/New_Address_Decode.dig,Unused high decoder output
 ~MEMRD,U5,20,~{OE}/VPP,inferred,current_user_direction,DS-qualified ROM output enable during reads
-~MEMRD,U6,20,~OE,inferred,current_user_direction,DS-qualified RAM 1 output enable during reads
-~MEMRD,U7,20,~OE,inferred,current_user_direction,DS-qualified RAM 2 output enable during reads
+~MEMRD,U6,20,~{OE},inferred,current_user_direction,DS-qualified RAM 1 output enable during reads
+~MEMRD,U7,20,~{OE},inferred,current_user_direction,DS-qualified RAM 2 output enable during reads
 ~MEMRD,U32,8,4Y,inferred,current_user_direction,Active-low memory read enable generated from DS and R/~W
 ~P1EN,U12,14,~Y1,confirmed,design/New_Address_Decode.dig,Low pair decode output
 ~P2EN,U12,10,~Y5,confirmed,design/New_Address_Decode.dig,Low pair decode output
@@ -730,13 +730,13 @@ USB_VBUS,J1,B9,VBUS,inferred,usb_c_design_chat,USB-C raw VBUS contact
 ~PAGE_0600_06FF,U11,9,~Y6,inferred,design/New_Address_Decode.dig,Page decode for $0600-$06FF
 ~PAGE_0700_07FF,U11,7,~Y7,inferred,design/New_Address_Decode.dig,Page decode for $0700-$07FF
 ~RAM1CS,TP10,1,1,inferred,test_pad_design_chat,RAM 1 chip-select observation test point
-~RAM1CS,U6,18,~CS,inferred,docs/memory-map.txt,RAM 1 chip select
+~RAM1CS,U6,18,~{CS},inferred,docs/memory-map.txt,RAM 1 chip select
 ~RAM1CS,U17,12,6Y,inferred,design/New_Address_Decode.dig,Active-low RAM1 chip select
 ~RAM2CS,TP11,1,1,inferred,test_pad_design_chat,RAM 2 chip-select observation test point
-~RAM2CS,U7,18,~CS,inferred,docs/memory-map.txt,RAM 2 chip select
+~RAM2CS,U7,18,~{CS},inferred,docs/memory-map.txt,RAM 2 chip select
 ~RAM2CS,U10,14,~Y1,inferred,design/New_Address_Decode.dig,Decode for $0800-$0FFF RAM2 bank
-~RAMWE,U6,21,~WE,inferred,current_user_direction,DS-qualified RAM 1 write enable during writes
-~RAMWE,U7,21,~WE,inferred,current_user_direction,DS-qualified RAM 2 write enable during writes
+~RAMWE,U6,21,~{WE},inferred,current_user_direction,DS-qualified RAM 1 write enable during writes
+~RAMWE,U7,21,~{WE},inferred,current_user_direction,DS-qualified RAM 2 write enable during writes
 ~RAMWE,U32,12,6Y,inferred,current_user_direction,Active-low RAM write enable generated from DS and CPU_WRITE
 ~ROM_HICS,U10,12,~Y3,inferred,design/New_Address_Decode.dig,Other half of ROM decode
 ~ROM_HICS,U13,2,1B,inferred,design/New_Address_Decode.dig,AND active-low ROM half selects
