@@ -191,21 +191,21 @@ DE9_DCE_SERIAL,9,RI,passive,false,current_user_direction,Handshake pin staged NC
 DIODE_SCHOTTKY_RTC,1,K,passive,false,rtc_backup_design_chat,Schottky diode cathode
 DIODE_SCHOTTKY_RTC,2,A,passive,false,rtc_backup_design_chat,Schottky diode anode
 HEADER_PORT_AB_2X10,1,PA0,passive,false,gpio_header_design_chat,J3 odd row Port A bit 0
-HEADER_PORT_AB_2X10,2,PB0,passive,false,gpio_header_design_chat,J3 even row Port B bit 0 exposed on canonical D0 net
+HEADER_PORT_AB_2X10,2,PB0,passive,false,gpio_header_design_chat,J3 even row Port B bit 0
 HEADER_PORT_AB_2X10,3,PA1,passive,false,gpio_header_design_chat,J3 odd row Port A bit 1
-HEADER_PORT_AB_2X10,4,PB1,passive,false,gpio_header_design_chat,J3 even row Port B bit 1 exposed on canonical D1 net
+HEADER_PORT_AB_2X10,4,PB1,passive,false,gpio_header_design_chat,J3 even row Port B bit 1
 HEADER_PORT_AB_2X10,5,PA2,passive,false,gpio_header_design_chat,J3 odd row Port A bit 2
-HEADER_PORT_AB_2X10,6,PB2,passive,false,gpio_header_design_chat,J3 even row Port B bit 2 exposed on canonical D2 net
+HEADER_PORT_AB_2X10,6,PB2,passive,false,gpio_header_design_chat,J3 even row Port B bit 2
 HEADER_PORT_AB_2X10,7,PA3,passive,false,gpio_header_design_chat,J3 odd row Port A bit 3
-HEADER_PORT_AB_2X10,8,PB3,passive,false,gpio_header_design_chat,J3 even row Port B bit 3 exposed on canonical D3 net
+HEADER_PORT_AB_2X10,8,PB3,passive,false,gpio_header_design_chat,J3 even row Port B bit 3
 HEADER_PORT_AB_2X10,9,PA4,passive,false,gpio_header_design_chat,J3 odd row Port A bit 4
-HEADER_PORT_AB_2X10,10,PB4,passive,false,gpio_header_design_chat,J3 even row Port B bit 4 exposed on canonical D4 net
+HEADER_PORT_AB_2X10,10,PB4,passive,false,gpio_header_design_chat,J3 even row Port B bit 4
 HEADER_PORT_AB_2X10,11,PA5,passive,false,gpio_header_design_chat,J3 odd row Port A bit 5
-HEADER_PORT_AB_2X10,12,PB5,passive,false,gpio_header_design_chat,J3 even row Port B bit 5 exposed on canonical D5 net
+HEADER_PORT_AB_2X10,12,PB5,passive,false,gpio_header_design_chat,J3 even row Port B bit 5
 HEADER_PORT_AB_2X10,13,PA6,passive,false,gpio_header_design_chat,J3 odd row Port A bit 6
-HEADER_PORT_AB_2X10,14,PB6,passive,false,gpio_header_design_chat,J3 even row Port B bit 6 exposed on canonical D6 net
+HEADER_PORT_AB_2X10,14,PB6,passive,false,gpio_header_design_chat,J3 even row Port B bit 6
 HEADER_PORT_AB_2X10,15,PA7,passive,false,gpio_header_design_chat,J3 odd row Port A bit 7
-HEADER_PORT_AB_2X10,16,PB7,passive,false,gpio_header_design_chat,J3 even row Port B bit 7 exposed on canonical D7 net
+HEADER_PORT_AB_2X10,16,PB7,passive,false,gpio_header_design_chat,J3 even row Port B bit 7
 HEADER_PORT_AB_2X10,17,5V0,power_out,false,gpio_header_design_chat,J3 5V0 utility pin
 HEADER_PORT_AB_2X10,18,5V0,power_out,false,gpio_header_design_chat,J3 second 5V0 utility pin
 HEADER_PORT_AB_2X10,19,GND,power_in,false,gpio_header_design_chat,J3 ground return pin
@@ -306,14 +306,22 @@ MC146805E2,17,A10,output,false,MCU_Motorola_6800.kicad_sym,External address bus 
 MC146805E2,18,A9,output,false,MCU_Motorola_6800.kicad_sym,External address bus bit 9
 MC146805E2,19,A8,output,false,MCU_Motorola_6800.kicad_sym,External address bus bit 8
 MC146805E2,20,VSS,power_in,false,MCU_Motorola_6800.kicad_sym,Ground
-MC146805E2,29,PB7,bidirectional,false,MCU_Motorola_6800.kicad_sym,Multiplexed address/data bus bit 7
-MC146805E2,30,PB6,bidirectional,false,MCU_Motorola_6800.kicad_sym,Multiplexed address/data bus bit 6
-MC146805E2,31,PB5,bidirectional,false,MCU_Motorola_6800.kicad_sym,Multiplexed address/data bus bit 5
-MC146805E2,32,PB4,bidirectional,false,MCU_Motorola_6800.kicad_sym,Multiplexed address/data bus bit 4
-MC146805E2,33,PB3,bidirectional,false,MCU_Motorola_6800.kicad_sym,Multiplexed address/data bus bit 3
-MC146805E2,34,PB2,bidirectional,false,MCU_Motorola_6800.kicad_sym,Multiplexed address/data bus bit 2
-MC146805E2,35,PB1,bidirectional,false,MCU_Motorola_6800.kicad_sym,Multiplexed address/data bus bit 1
-MC146805E2,36,PB0,bidirectional,false,MCU_Motorola_6800.kicad_sym,Multiplexed address/data bus bit 0
+MC146805E2,21,B7,bidirectional,false,docs/MC146805E2_1983.pdf,Multiplexed address/data bus bit 7
+MC146805E2,22,B6,bidirectional,false,docs/MC146805E2_1983.pdf,Multiplexed address/data bus bit 6
+MC146805E2,23,B5,bidirectional,false,docs/MC146805E2_1983.pdf,Multiplexed address/data bus bit 5
+MC146805E2,24,B4,bidirectional,false,docs/MC146805E2_1983.pdf,Multiplexed address/data bus bit 4
+MC146805E2,25,B3,bidirectional,false,docs/MC146805E2_1983.pdf,Multiplexed address/data bus bit 3
+MC146805E2,26,B2,bidirectional,false,docs/MC146805E2_1983.pdf,Multiplexed address/data bus bit 2
+MC146805E2,27,B1,bidirectional,false,docs/MC146805E2_1983.pdf,Multiplexed address/data bus bit 1
+MC146805E2,28,B0,bidirectional,false,docs/MC146805E2_1983.pdf,Multiplexed address/data bus bit 0
+MC146805E2,29,PB7,bidirectional,false,MCU_Motorola_6800.kicad_sym,Port B bit 7
+MC146805E2,30,PB6,bidirectional,false,MCU_Motorola_6800.kicad_sym,Port B bit 6
+MC146805E2,31,PB5,bidirectional,false,MCU_Motorola_6800.kicad_sym,Port B bit 5
+MC146805E2,32,PB4,bidirectional,false,MCU_Motorola_6800.kicad_sym,Port B bit 4
+MC146805E2,33,PB3,bidirectional,false,MCU_Motorola_6800.kicad_sym,Port B bit 3
+MC146805E2,34,PB2,bidirectional,false,MCU_Motorola_6800.kicad_sym,Port B bit 2
+MC146805E2,35,PB1,bidirectional,false,MCU_Motorola_6800.kicad_sym,Port B bit 1
+MC146805E2,36,PB0,bidirectional,false,MCU_Motorola_6800.kicad_sym,Port B bit 0
 MC146805E2,37,TIMER,input,false,MCU_Motorola_6800.kicad_sym,Timer input
 MC146805E2,38,OSC2,input,false,MCU_Motorola_6800.kicad_sym,Crystal oscillator pin
 MC146805E2,39,OSC1,input,false,MCU_Motorola_6800.kicad_sym,Crystal oscillator pin
@@ -348,6 +356,15 @@ RES_15M,1,1,passive,false,serial_design_chat,Resistor terminal
 RES_15M,2,2,passive,false,serial_design_chat,Resistor terminal
 RES_200K,1,1,passive,false,rtc_datasheet,Resistor terminal
 RES_200K,2,2,passive,false,rtc_datasheet,Resistor terminal
+RES_ARRAY_8X4K7,1,COM,passive,false,current_user_direction,Bussed pull-up common terminal to 5V0
+RES_ARRAY_8X4K7,2,R1,passive,false,current_user_direction,Pull-up resistor 1 output
+RES_ARRAY_8X4K7,3,R2,passive,false,current_user_direction,Pull-up resistor 2 output
+RES_ARRAY_8X4K7,4,R3,passive,false,current_user_direction,Pull-up resistor 3 output
+RES_ARRAY_8X4K7,5,R4,passive,false,current_user_direction,Pull-up resistor 4 output
+RES_ARRAY_8X4K7,6,R5,passive,false,current_user_direction,Pull-up resistor 5 output
+RES_ARRAY_8X4K7,7,R6,passive,false,current_user_direction,Pull-up resistor 6 output
+RES_ARRAY_8X4K7,8,R7,passive,false,current_user_direction,Pull-up resistor 7 output
+RES_ARRAY_8X4K7,9,R8,passive,false,current_user_direction,Pull-up resistor 8 output
 RES_BAUD_PULLDOWN,1,1,passive,false,current_user_direction,Pull-down resistor terminal at select net
 RES_BAUD_PULLDOWN,2,2,passive,false,current_user_direction,Pull-down resistor terminal at ground
 RES_IRQ_PULLUP,1,1,passive,false,irq_design_chat,Pull-up resistor terminal at 5V0

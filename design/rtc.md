@@ -38,10 +38,10 @@ or data port.
 
 ## Bus Phases and Control Signals
 
-The MC146805E2 multiplexes the low address and data on Port B. During the
-address-strobe phase, B0-B7 carry A0-A7. During the data-strobe phase, B0-B7
-carry the byte being read or written. R/~W is high for a read and low for a
-write.
+The MC146805E2 multiplexes the low address and data on B0-B7, not Port B.
+During the address-strobe phase, B0-B7 carry A0-A7. During the data-strobe
+phase, B0-B7 carry the byte being read or written. R/~W is high for a read and
+low for a write.
 
 The MSM58321 control inputs are active high. CS1 and CS2 must both be high for
 address, read, or write activity. `ADDRESS WRITE`, `READ`, and `WRITE` are

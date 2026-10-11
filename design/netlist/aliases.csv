@@ -10,6 +10,14 @@ ACIA IRQ,IRQ,MC6850 interrupt output,inferred,irq_design_chat,ACIA open-drain in
 ACIA Rx Data,ACIA_RXD_TTL,MC6850 serial data path,inferred,serial_design_chat,TTL receive-data net between MAX232 R1OUT and MC6850 RxD
 ACIA Tx Data,ACIA_TXD_TTL,MC6850 serial data path,inferred,serial_design_chat,TTL transmit-data net between MC6850 TxD and MAX232 T1IN
 ADDRESS WRITE,RTC_ADDRESS_WRITE,MSM58321 control input,confirmed,design/rtc.md,Active-high RTC address latch strobe
+B0,D0,CPU multiplexed address/data bus,confirmed,docs/MC146805E2_1983.pdf,B0 carries A0 during AS and D0 during data phase
+B1,D1,CPU multiplexed address/data bus,confirmed,docs/MC146805E2_1983.pdf,B1 carries A1 during AS and D1 during data phase
+B2,D2,CPU multiplexed address/data bus,confirmed,docs/MC146805E2_1983.pdf,B2 carries A2 during AS and D2 during data phase
+B3,D3,CPU multiplexed address/data bus,confirmed,docs/MC146805E2_1983.pdf,B3 carries A3 during AS and D3 during data phase
+B4,D4,CPU multiplexed address/data bus,confirmed,docs/MC146805E2_1983.pdf,B4 carries A4 during AS and D4 during data phase
+B5,D5,CPU multiplexed address/data bus,confirmed,docs/MC146805E2_1983.pdf,B5 carries A5 during AS and D5 during data phase
+B6,D6,CPU multiplexed address/data bus,confirmed,docs/MC146805E2_1983.pdf,B6 carries A6 during AS and D6 during data phase
+B7,D7,CPU multiplexed address/data bus,confirmed,docs/MC146805E2_1983.pdf,B7 carries A7 during AS and D7 during data phase
 CC,CC1,USB-C connector symbol,inferred,usb_c_design_chat,Simplified connector label for first configuration channel
 CS1,RTC_SELECT,MSM58321 chip select,inferred,rtc_adapter_design,Driven by sequenced RTC_SELECT from the trigger and read-back adapter
 CS2,RTC_SELECT,MSM58321 chip select,inferred,rtc_adapter_design,Driven by sequenced RTC_SELECT from the trigger and read-back adapter
@@ -40,14 +48,6 @@ O7,D7,Am2732 data output,confirmed,docs/Am2732-AMD.pdf,EPROM output bit mapped t
 OE,~MEMRD,memory output enable,inferred,current_user_direction,Common DS-qualified memory read-enable net
 OSC1,CPU_OSC1,MC146805E2 oscillator pin,confirmed,MCU_Motorola_6800.kicad_sym,CPU pin 39 oscillator input
 OSC2,CPU_OSC2,MC146805E2 oscillator pin,confirmed,MCU_Motorola_6800.kicad_sym,CPU pin 38 oscillator output
-PB0,D0,CPU multiplexed address/data bus,confirmed,design/Address_Latch.dig,PB0 carries A0 during AS and D0 during data phase
-PB1,D1,CPU multiplexed address/data bus,confirmed,design/Address_Latch.dig,PB1 carries A1 during AS and D1 during data phase
-PB2,D2,CPU multiplexed address/data bus,confirmed,design/Address_Latch.dig,PB2 carries A2 during AS and D2 during data phase
-PB3,D3,CPU multiplexed address/data bus,confirmed,design/Address_Latch.dig,PB3 carries A3 during AS and D3 during data phase
-PB4,D4,CPU multiplexed address/data bus,confirmed,design/Address_Latch.dig,PB4 carries A4 during AS and D4 during data phase
-PB5,D5,CPU multiplexed address/data bus,confirmed,design/Address_Latch.dig,PB5 carries A5 during AS and D5 during data phase
-PB6,D6,CPU multiplexed address/data bus,confirmed,design/Address_Latch.dig,PB6 carries A6 during AS and D6 during data phase
-PB7,D7,CPU multiplexed address/data bus,confirmed,design/Address_Latch.dig,PB7 carries A7 during AS and D7 during data phase
 RAM1 bank,~BANK0_0000_07FF,address decode term,inferred,docs/memory-map.txt,High-level $0000-$07FF decode before exclusions
 RAM1 ~CS,~RAM1CS,RAM 1 chip select,confirmed,design/New_Address_Decode.dig,Address decoder signal label
 RAM 1 /CS,~RAM1CS,RAM 1 chip select,confirmed,docs/memory-map.txt,Memory map names SRAM chip select

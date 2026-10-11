@@ -35,8 +35,9 @@ RES_10K,,,10 kohm resistor,Device:R,,current_user_direction,External reset pull-
 RES_10M,,,10 Mohm resistor,Device:R,,cpu_oscillator_design_chat,CPU oscillator feedback resistor across OSC1 and OSC2
 RES_15M,,,15 Mohm resistor,Device:R,,serial_design_chat,MC14411 crystal oscillator feedback resistor Rt 15 Mohm +/-10 percent
 RES_200K,,,200 kohm resistor,Device:R,,rtc_datasheet,MSM58321 oscillator series resistor RS 200 kohm typical from Figure 8
+RES_ARRAY_8X4K7,,,8x 4.7 kohm bussed pull-up resistor network,Device:R_Network08,,current_user_direction,Staged for CPU B0-B7 data-bus margin and Port A/B default-high GPIO inputs; exact resistor-network or discrete implementation and footprint TBD
 RES_BAUD_PULLDOWN,,,1k0 baud select pull-down resistor,Device:R,,current_user_direction,Electrical value selected for LS TTL U4 select inputs; exact resistor vendor and footprint can follow JLCPCB passives policy
-RES_IRQ_PULLUP,,,4.7-10 kohm IRQ pull-up resistor,Device:R,,irq_design_chat,Shared active-low open-drain IRQ pull-up; exact value TBD
+RES_IRQ_PULLUP,,,4.7 kohm IRQ pull-up resistor,Device:R,,current_user_direction,Shared active-low open-drain IRQ pull-up selected because IRQ is exposed on J4
 RES_RTC_BUSY_PULLUP,,,RTC BUSY pull-up resistor,Device:R,,rtc_adapter_design,Pulls MSM58321 open-drain BUSY to the main 5V0 logic rail
 SW_DIP_2,,,Two-position DIP switch,Switch:SW_DIP_x02,,current_user_direction,Manual baud-rate range selector; closed switch drives the corresponding select bit high
 SW_PUSH_NO,,,Normally-open pushbutton,Switch:SW_Push,,current_user_direction,Manual reset pushbutton pulls RESET to GND when pressed

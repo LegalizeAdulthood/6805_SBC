@@ -40,6 +40,9 @@ R9,RES_BAUD_PULLDOWN,1k0,,confirmed,current_user_direction,BAUD_SEL_A pull-down 
 R10,RES_BAUD_PULLDOWN,1k0,,confirmed,current_user_direction,BAUD_SEL_B pull-down selected for LS TTL 74153 input current
 R11,RES_RTC_BUSY_PULLUP,10 kohm,,inferred,rtc_adapter_design,Pulls MSM58321 open-drain BUSY output to main 5V0 logic rail
 R12,RES_200K,200 kohm,,inferred,rtc_datasheet,MSM58321 RTC oscillator series resistor RS from Figure 8
+RN1,RES_ARRAY_8X4K7,4.7 kohm x8,,inferred,current_user_direction,B0-B7/D0-D7 multiplexed bus pull-up network for CPU input-high margin with TTL-level bus drivers
+RN2,RES_ARRAY_8X4K7,4.7 kohm x8,,inferred,current_user_direction,Port A PA0-PA7 default-high pull-up network for GPIO header inputs
+RN3,RES_ARRAY_8X4K7,4.7 kohm x8,,inferred,current_user_direction,Port B PB0-PB7 default-high pull-up network for GPIO header inputs
 SW1,SW_PUSH_NO,Reset,,inferred,current_user_direction,Normally-open manual reset pushbutton from RESET to GND
 SW2,SW_DIP_2,Baud select,,inferred,current_user_direction,Two-position DIP switch for BAUD_SEL_A and BAUD_SEL_B
 TP1,TEST_PAD,5V0 test pad,,inferred,test_pad_design_chat,Power rail bring-up test point
@@ -70,7 +73,7 @@ U5,AM2732,Am2732,Package_DIP:DIP-24_W15.24mm,confirmed,docs/memory-map.txt,4Kx8 
 U6,HM6116,HM6116,Package_DIP:DIP-24_W7.62mm,confirmed,docs/memory-map.txt,2Kx8 RAM 1 at $0110-$07FF using inventory HM6116
 U7,HM6116,HM6116,Package_DIP:DIP-24_W7.62mm,confirmed,docs/memory-map.txt,2Kx8 RAM 2 at $0800-$0FFF using inventory HM6116
 U8,MSM58321,MSM58321,Package_DIP:DIP-16_W7.62mm,confirmed,design/rtc.md,Real-time clock at $0100-$010F
-U9,74373,74373,Package_DIP:DIP-20_W7.62mm,confirmed,design/Address_Latch.dig,Low-address latch for CPU multiplexed PB0-PB7 address/data bus
+U9,74373,74373,Package_DIP:DIP-20_W7.62mm,confirmed,design/Address_Latch.dig,Low-address latch for CPU multiplexed B0-B7 address/data bus
 U10,74138,74138,Package_DIP:DIP-16_W7.62mm,confirmed,design/New_Address_Decode.dig,MX1 high address decoder for RAM1 RAM2 and ROM banks
 U11,74138,74138,Package_DIP:DIP-16_W7.62mm,confirmed,design/New_Address_Decode.dig,MX2 page decoder inside the RAM1 bank
 U12,74138,74138,Package_DIP:DIP-16_W7.62mm,confirmed,design/New_Address_Decode.dig,MX3 low peripheral pair decoder

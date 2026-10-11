@@ -12,6 +12,9 @@ net,refdes,pin_number,pin_name,status,source,notes
 5V0,R4,1,1,inferred,current_user_direction,Reset pull-up source
 5V0,R8,1,1,inferred,irq_design_chat,Shared IRQ pull-up source
 5V0,R11,1,1,inferred,rtc_adapter_design,RTC BUSY pull-up source
+5V0,RN1,1,COM,inferred,current_user_direction,B0-B7/D0-D7 pull-up network common
+5V0,RN2,1,COM,inferred,current_user_direction,Port A pull-up network common
+5V0,RN3,1,COM,inferred,current_user_direction,Port B pull-up network common
 5V0,SW2,1,1A,inferred,current_user_direction,BAUD_SEL_A switch high side
 5V0,SW2,3,2A,inferred,current_user_direction,BAUD_SEL_B switch high side
 5V0,TP1,1,1,inferred,test_pad_design_chat,Power rail bring-up test point
@@ -147,7 +150,7 @@ ACIA_TXD_TTL,U2,24,TxD,inferred,serial_design_chat,ACIA transmit data output
 ACIA_TXD_TTL,U18,11,T1IN,inferred,serial_design_chat,MAX232 driver input for console TX
 AS,TP5,1,1,inferred,test_pad_design_chat,CPU address-strobe observation test point
 AS,U1,6,AS,confirmed,MCU_Motorola_6800.kicad_sym,CPU address strobe
-AS,U9,11,LE,confirmed,design/Address_Latch.dig,Latch PB0-PB7 while AS is asserted
+AS,U9,11,LE,confirmed,design/Address_Latch.dig,Latch B0-B7 while AS is asserted
 AS,U23,11,LE,inferred,rtc_adapter_design,Latch adapter subregister address while AS is asserted
 AS,U32,11,5A,inferred,rtc_adapter_design,Invert AS for RTC_CYCLE clear timing
 BANK0_0000_07FF,U11,6,G1,inferred,design/New_Address_Decode.dig,Enable page decode inside the $0000-$07FF bank
@@ -199,8 +202,8 @@ CPU_WRITE,U25,4,2B,inferred,rtc_adapter_design,Write qualifier for RTC data latc
 CPU_WRITE,U25,10,3B,inferred,rtc_adapter_design,Write qualifier for RTC command trigger
 CPU_WRITE,U27,2,1Y,inferred,rtc_adapter_design,Active-high write qualifier
 CPU_WRITE,U14,4,2B,inferred,current_user_direction,Memory write-direction input for RAMWE active-write gate
-D0,J3,2,PB0,inferred,gpio_header_design_chat,Port B bit 0 exposed on J3; canonical net is D0
-D0,U1,36,PB0,confirmed,design/Address_Latch.dig,CPU multiplexed address/data bus bit 0
+D0,RN1,2,R1,inferred,current_user_direction,4.7 kohm pull-up on CPU B0/D0 multiplexed bus bit
+D0,U1,28,B0,confirmed,docs/MC146805E2_1983.pdf,CPU multiplexed B0 address/data bus bit 0
 D0,U2,22,D0,inferred,docs/MC6850.pdf,ACIA data bus bit 0
 D0,U5,9,O0,inferred,docs/Am2732-AMD.pdf,ROM data output bit 0
 D0,U6,9,I/O0,inferred,docs/IDT_6116.pdf,RAM 1 data bit 0
@@ -211,8 +214,8 @@ D0,U20,3,1D,inferred,rtc_adapter_design,RTC write-data latch input bit 0
 D0,U21,2,1Q,inferred,rtc_adapter_design,RTC readback output bit 0 onto CPU data bus
 D0,U22,2,1Q,inferred,rtc_adapter_design,RTC status output bit 0 onto CPU data bus
 D0,U30,3,1D,inferred,rtc_adapter_design,Command bit 0 sampled for future start-bit policy
-D1,J3,4,PB1,inferred,gpio_header_design_chat,Port B bit 1 exposed on J3; canonical net is D1
-D1,U1,35,PB1,confirmed,design/Address_Latch.dig,CPU multiplexed address/data bus bit 1
+D1,RN1,3,R2,inferred,current_user_direction,4.7 kohm pull-up on CPU B1/D1 multiplexed bus bit
+D1,U1,27,B1,confirmed,docs/MC146805E2_1983.pdf,CPU multiplexed B1 address/data bus bit 1
 D1,U2,21,D1,inferred,docs/MC6850.pdf,ACIA data bus bit 1
 D1,U5,10,O1,inferred,docs/Am2732-AMD.pdf,ROM data output bit 1
 D1,U6,10,I/O1,inferred,docs/IDT_6116.pdf,RAM 1 data bit 1
@@ -223,8 +226,8 @@ D1,U20,4,2D,inferred,rtc_adapter_design,RTC write-data latch input bit 1
 D1,U21,5,2Q,inferred,rtc_adapter_design,RTC readback output bit 1 onto CPU data bus
 D1,U22,5,2Q,inferred,rtc_adapter_design,RTC status output bit 1 onto CPU data bus
 D1,U30,4,2D,inferred,rtc_adapter_design,Command bit 1 selects write when high and read when low
-D2,J3,6,PB2,inferred,gpio_header_design_chat,Port B bit 2 exposed on J3; canonical net is D2
-D2,U1,34,PB2,confirmed,design/Address_Latch.dig,CPU multiplexed address/data bus bit 2
+D2,RN1,4,R3,inferred,current_user_direction,4.7 kohm pull-up on CPU B2/D2 multiplexed bus bit
+D2,U1,26,B2,confirmed,docs/MC146805E2_1983.pdf,CPU multiplexed B2 address/data bus bit 2
 D2,U2,20,D2,inferred,docs/MC6850.pdf,ACIA data bus bit 2
 D2,U5,11,O2,inferred,docs/Am2732-AMD.pdf,ROM data output bit 2
 D2,U6,11,I/O2,inferred,docs/IDT_6116.pdf,RAM 1 data bit 2
@@ -234,8 +237,8 @@ D2,U19,7,3D,inferred,rtc_adapter_design,RTC address latch input bit 2
 D2,U20,7,3D,inferred,rtc_adapter_design,RTC write-data latch input bit 2
 D2,U21,6,3Q,inferred,rtc_adapter_design,RTC readback output bit 2 onto CPU data bus
 D2,U22,6,3Q,inferred,rtc_adapter_design,RTC status output bit 2 onto CPU data bus
-D3,J3,8,PB3,inferred,gpio_header_design_chat,Port B bit 3 exposed on J3; canonical net is D3
-D3,U1,33,PB3,confirmed,design/Address_Latch.dig,CPU multiplexed address/data bus bit 3
+D3,RN1,5,R4,inferred,current_user_direction,4.7 kohm pull-up on CPU B3/D3 multiplexed bus bit
+D3,U1,25,B3,confirmed,docs/MC146805E2_1983.pdf,CPU multiplexed B3 address/data bus bit 3
 D3,U2,19,D3,inferred,docs/MC6850.pdf,ACIA data bus bit 3
 D3,U5,13,O3,inferred,docs/Am2732-AMD.pdf,ROM data output bit 3
 D3,U6,13,I/O3,inferred,docs/IDT_6116.pdf,RAM 1 data bit 3
@@ -245,8 +248,8 @@ D3,U19,8,4D,inferred,rtc_adapter_design,RTC address latch input bit 3
 D3,U20,8,4D,inferred,rtc_adapter_design,RTC write-data latch input bit 3
 D3,U21,9,4Q,inferred,rtc_adapter_design,RTC readback output bit 3 onto CPU data bus
 D3,U22,9,4Q,inferred,rtc_adapter_design,RTC status output bit 3 onto CPU data bus
-D4,J3,10,PB4,inferred,gpio_header_design_chat,Port B bit 4 exposed on J3; canonical net is D4
-D4,U1,32,PB4,confirmed,design/Address_Latch.dig,CPU multiplexed address/data bus bit 4
+D4,RN1,6,R5,inferred,current_user_direction,4.7 kohm pull-up on CPU B4/D4 multiplexed bus bit
+D4,U1,24,B4,confirmed,docs/MC146805E2_1983.pdf,CPU multiplexed B4 address/data bus bit 4
 D4,U2,18,D4,inferred,docs/MC6850.pdf,ACIA data bus bit 4
 D4,U5,14,O4,inferred,docs/Am2732-AMD.pdf,ROM data output bit 4
 D4,U6,14,I/O4,inferred,docs/IDT_6116.pdf,RAM 1 data bit 4
@@ -254,8 +257,8 @@ D4,U7,14,I/O4,inferred,docs/IDT_6116.pdf,RAM 2 data bit 4
 D4,U9,13,5D,confirmed,design/Address_Latch.dig,Low address/data bit 4 latch input
 D4,U21,12,5Q,inferred,rtc_adapter_design,RTC readback high bit forced low onto CPU data bus
 D4,U22,12,5Q,inferred,rtc_adapter_design,RTC status high bit forced low onto CPU data bus
-D5,J3,12,PB5,inferred,gpio_header_design_chat,Port B bit 5 exposed on J3; canonical net is D5
-D5,U1,31,PB5,confirmed,design/Address_Latch.dig,CPU multiplexed address/data bus bit 5
+D5,RN1,7,R6,inferred,current_user_direction,4.7 kohm pull-up on CPU B5/D5 multiplexed bus bit
+D5,U1,23,B5,confirmed,docs/MC146805E2_1983.pdf,CPU multiplexed B5 address/data bus bit 5
 D5,U2,17,D5,inferred,docs/MC6850.pdf,ACIA data bus bit 5
 D5,U5,15,O5,inferred,docs/Am2732-AMD.pdf,ROM data output bit 5
 D5,U6,15,I/O5,inferred,docs/IDT_6116.pdf,RAM 1 data bit 5
@@ -263,8 +266,8 @@ D5,U7,15,I/O5,inferred,docs/IDT_6116.pdf,RAM 2 data bit 5
 D5,U9,14,6D,confirmed,design/Address_Latch.dig,Low address/data bit 5 latch input
 D5,U21,15,6Q,inferred,rtc_adapter_design,RTC readback high bit forced low onto CPU data bus
 D5,U22,15,6Q,inferred,rtc_adapter_design,RTC status high bit forced low onto CPU data bus
-D6,J3,14,PB6,inferred,gpio_header_design_chat,Port B bit 6 exposed on J3; canonical net is D6
-D6,U1,30,PB6,confirmed,design/Address_Latch.dig,CPU multiplexed address/data bus bit 6
+D6,RN1,8,R7,inferred,current_user_direction,4.7 kohm pull-up on CPU B6/D6 multiplexed bus bit
+D6,U1,22,B6,confirmed,docs/MC146805E2_1983.pdf,CPU multiplexed B6 address/data bus bit 6
 D6,U2,16,D6,inferred,docs/MC6850.pdf,ACIA data bus bit 6
 D6,U5,16,O6,inferred,docs/Am2732-AMD.pdf,ROM data output bit 6
 D6,U6,16,I/O6,inferred,docs/IDT_6116.pdf,RAM 1 data bit 6
@@ -272,8 +275,8 @@ D6,U7,16,I/O6,inferred,docs/IDT_6116.pdf,RAM 2 data bit 6
 D6,U9,17,7D,confirmed,design/Address_Latch.dig,Low address/data bit 6 latch input
 D6,U21,16,7Q,inferred,rtc_adapter_design,RTC readback high bit forced low onto CPU data bus
 D6,U22,16,7Q,inferred,rtc_adapter_design,RTC status high bit forced low onto CPU data bus
-D7,J3,16,PB7,inferred,gpio_header_design_chat,Port B bit 7 exposed on J3; canonical net is D7
-D7,U1,29,PB7,confirmed,design/Address_Latch.dig,CPU multiplexed address/data bus bit 7
+D7,RN1,9,R8,inferred,current_user_direction,4.7 kohm pull-up on CPU B7/D7 multiplexed bus bit
+D7,U1,21,B7,confirmed,docs/MC146805E2_1983.pdf,CPU multiplexed B7 address/data bus bit 7
 D7,U2,15,D7,inferred,docs/MC6850.pdf,ACIA data bus bit 7
 D7,U5,17,O7,inferred,docs/Am2732-AMD.pdf,ROM data output bit 7
 D7,U6,17,I/O7,inferred,docs/IDT_6116.pdf,RAM 1 data bit 7
@@ -498,21 +501,53 @@ NC,U30,15,6Q,inferred,rtc_adapter_design,Unused command latch output
 NC,U30,16,7Q,inferred,rtc_adapter_design,Unused command latch output
 NC,U30,19,8Q,inferred,rtc_adapter_design,Unused command latch output
 PA0,J3,1,PA0,inferred,gpio_header_design_chat,Port A bit 0 exposed on J3
+PA0,RN2,2,R1,inferred,current_user_direction,4.7 kohm pull-up for Port A bit 0 header input use
 PA0,U1,14,PA0,confirmed,MCU_Motorola_6800.kicad_sym,CPU Port A bit 0
 PA1,J3,3,PA1,inferred,gpio_header_design_chat,Port A bit 1 exposed on J3
+PA1,RN2,3,R2,inferred,current_user_direction,4.7 kohm pull-up for Port A bit 1 header input use
 PA1,U1,13,PA1,confirmed,MCU_Motorola_6800.kicad_sym,CPU Port A bit 1
 PA2,J3,5,PA2,inferred,gpio_header_design_chat,Port A bit 2 exposed on J3
+PA2,RN2,4,R3,inferred,current_user_direction,4.7 kohm pull-up for Port A bit 2 header input use
 PA2,U1,12,PA2,confirmed,MCU_Motorola_6800.kicad_sym,CPU Port A bit 2
 PA3,J3,7,PA3,inferred,gpio_header_design_chat,Port A bit 3 exposed on J3
+PA3,RN2,5,R4,inferred,current_user_direction,4.7 kohm pull-up for Port A bit 3 header input use
 PA3,U1,11,PA3,confirmed,MCU_Motorola_6800.kicad_sym,CPU Port A bit 3
 PA4,J3,9,PA4,inferred,gpio_header_design_chat,Port A bit 4 exposed on J3
+PA4,RN2,6,R5,inferred,current_user_direction,4.7 kohm pull-up for Port A bit 4 header input use
 PA4,U1,10,PA4,confirmed,MCU_Motorola_6800.kicad_sym,CPU Port A bit 4
 PA5,J3,11,PA5,inferred,gpio_header_design_chat,Port A bit 5 exposed on J3
+PA5,RN2,7,R6,inferred,current_user_direction,4.7 kohm pull-up for Port A bit 5 header input use
 PA5,U1,9,PA5,confirmed,MCU_Motorola_6800.kicad_sym,CPU Port A bit 5
 PA6,J3,13,PA6,inferred,gpio_header_design_chat,Port A bit 6 exposed on J3
+PA6,RN2,8,R7,inferred,current_user_direction,4.7 kohm pull-up for Port A bit 6 header input use
 PA6,U1,8,PA6,confirmed,MCU_Motorola_6800.kicad_sym,CPU Port A bit 6
 PA7,J3,15,PA7,inferred,gpio_header_design_chat,Port A bit 7 exposed on J3
+PA7,RN2,9,R8,inferred,current_user_direction,4.7 kohm pull-up for Port A bit 7 header input use
 PA7,U1,7,PA7,confirmed,MCU_Motorola_6800.kicad_sym,CPU Port A bit 7
+PB0,J3,2,PB0,inferred,gpio_header_design_chat,Port B bit 0 exposed on J3
+PB0,RN3,2,R1,inferred,current_user_direction,4.7 kohm pull-up for Port B bit 0 header input use
+PB0,U1,36,PB0,confirmed,MCU_Motorola_6800.kicad_sym,CPU Port B bit 0
+PB1,J3,4,PB1,inferred,gpio_header_design_chat,Port B bit 1 exposed on J3
+PB1,RN3,3,R2,inferred,current_user_direction,4.7 kohm pull-up for Port B bit 1 header input use
+PB1,U1,35,PB1,confirmed,MCU_Motorola_6800.kicad_sym,CPU Port B bit 1
+PB2,J3,6,PB2,inferred,gpio_header_design_chat,Port B bit 2 exposed on J3
+PB2,RN3,4,R3,inferred,current_user_direction,4.7 kohm pull-up for Port B bit 2 header input use
+PB2,U1,34,PB2,confirmed,MCU_Motorola_6800.kicad_sym,CPU Port B bit 2
+PB3,J3,8,PB3,inferred,gpio_header_design_chat,Port B bit 3 exposed on J3
+PB3,RN3,5,R4,inferred,current_user_direction,4.7 kohm pull-up for Port B bit 3 header input use
+PB3,U1,33,PB3,confirmed,MCU_Motorola_6800.kicad_sym,CPU Port B bit 3
+PB4,J3,10,PB4,inferred,gpio_header_design_chat,Port B bit 4 exposed on J3
+PB4,RN3,6,R5,inferred,current_user_direction,4.7 kohm pull-up for Port B bit 4 header input use
+PB4,U1,32,PB4,confirmed,MCU_Motorola_6800.kicad_sym,CPU Port B bit 4
+PB5,J3,12,PB5,inferred,gpio_header_design_chat,Port B bit 5 exposed on J3
+PB5,RN3,7,R6,inferred,current_user_direction,4.7 kohm pull-up for Port B bit 5 header input use
+PB5,U1,31,PB5,confirmed,MCU_Motorola_6800.kicad_sym,CPU Port B bit 5
+PB6,J3,14,PB6,inferred,gpio_header_design_chat,Port B bit 6 exposed on J3
+PB6,RN3,8,R7,inferred,current_user_direction,4.7 kohm pull-up for Port B bit 6 header input use
+PB6,U1,30,PB6,confirmed,MCU_Motorola_6800.kicad_sym,CPU Port B bit 6
+PB7,J3,16,PB7,inferred,gpio_header_design_chat,Port B bit 7 exposed on J3
+PB7,RN3,9,R8,inferred,current_user_direction,4.7 kohm pull-up for Port B bit 7 header input use
+PB7,U1,29,PB7,confirmed,MCU_Motorola_6800.kicad_sym,CPU Port B bit 7
 PAGE_0000_00FF,U13,4,2A,inferred,design/New_Address_Decode.dig,Low I/O decode page term
 PAGE_0000_00FF,U17,6,3Y,inferred,design/New_Address_Decode.dig,Active-high page decode
 PAGE_0100_01FF,U13,9,3A,inferred,design/New_Address_Decode.dig,RTC decode page term

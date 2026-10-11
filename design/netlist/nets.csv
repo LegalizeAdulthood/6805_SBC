@@ -40,14 +40,14 @@ CC2,control,inferred,usb_c_design_chat,USB-C configuration channel 2 with Rd pul
 CPU_OSC1,clock,confirmed,docs/MC146805E2_1983.pdf,CPU crystal connection
 CPU_OSC2,clock,confirmed,docs/MC146805E2_1983.pdf,CPU crystal connection
 CPU_WRITE,control,inferred,rtc_adapter_design,Active-high CPU write qualifier inverted from R/~W
-D0,data,confirmed,docs/memory-map.txt,External data bus bit 0
-D1,data,confirmed,docs/memory-map.txt,External data bus bit 1
-D2,data,confirmed,docs/memory-map.txt,External data bus bit 2
-D3,data,confirmed,docs/memory-map.txt,External data bus bit 3
-D4,data,confirmed,docs/memory-map.txt,External data bus bit 4
-D5,data,confirmed,docs/memory-map.txt,External data bus bit 5
-D6,data,confirmed,docs/memory-map.txt,External data bus bit 6
-D7,data,confirmed,docs/memory-map.txt,External data bus bit 7
+D0,data,confirmed,docs/memory-map.txt,External data bus bit 0 on CPU B0 multiplexed address/data pin
+D1,data,confirmed,docs/memory-map.txt,External data bus bit 1 on CPU B1 multiplexed address/data pin
+D2,data,confirmed,docs/memory-map.txt,External data bus bit 2 on CPU B2 multiplexed address/data pin
+D3,data,confirmed,docs/memory-map.txt,External data bus bit 3 on CPU B3 multiplexed address/data pin
+D4,data,confirmed,docs/memory-map.txt,External data bus bit 4 on CPU B4 multiplexed address/data pin
+D5,data,confirmed,docs/memory-map.txt,External data bus bit 5 on CPU B5 multiplexed address/data pin
+D6,data,confirmed,docs/memory-map.txt,External data bus bit 6 on CPU B6 multiplexed address/data pin
+D7,data,confirmed,docs/memory-map.txt,External data bus bit 7 on CPU B7 multiplexed address/data pin
 DS,control,confirmed,cpu_datasheet,Data strobe used to qualify external data-transfer enables
 GND,power,confirmed,docs/MC146805E2_1983.pdf,Logic ground
 IRQ,control,inferred,irq_design_chat,Shared active-low open-drain interrupt request line pulled up to 5V0
@@ -68,6 +68,14 @@ PA4,gpio,confirmed,MCU_Motorola_6800.kicad_sym,CPU Port A bit 4 exposed on J3
 PA5,gpio,confirmed,MCU_Motorola_6800.kicad_sym,CPU Port A bit 5 exposed on J3
 PA6,gpio,confirmed,MCU_Motorola_6800.kicad_sym,CPU Port A bit 6 exposed on J3
 PA7,gpio,confirmed,MCU_Motorola_6800.kicad_sym,CPU Port A bit 7 exposed on J3
+PB0,gpio,confirmed,MCU_Motorola_6800.kicad_sym,CPU Port B bit 0 exposed on J3
+PB1,gpio,confirmed,MCU_Motorola_6800.kicad_sym,CPU Port B bit 1 exposed on J3
+PB2,gpio,confirmed,MCU_Motorola_6800.kicad_sym,CPU Port B bit 2 exposed on J3
+PB3,gpio,confirmed,MCU_Motorola_6800.kicad_sym,CPU Port B bit 3 exposed on J3
+PB4,gpio,confirmed,MCU_Motorola_6800.kicad_sym,CPU Port B bit 4 exposed on J3
+PB5,gpio,confirmed,MCU_Motorola_6800.kicad_sym,CPU Port B bit 5 exposed on J3
+PB6,gpio,confirmed,MCU_Motorola_6800.kicad_sym,CPU Port B bit 6 exposed on J3
+PB7,gpio,confirmed,MCU_Motorola_6800.kicad_sym,CPU Port B bit 7 exposed on J3
 PAGE_0000_00FF,control,inferred,design/New_Address_Decode.dig,Active-high complement of $0000-$00FF page decode
 PAGE_0100_01FF,control,inferred,design/New_Address_Decode.dig,Active-high complement of $0100-$01FF page decode
 R/~W,control,confirmed,design/rtc.md,CPU read/write direction signal
