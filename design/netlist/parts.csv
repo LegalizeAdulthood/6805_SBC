@@ -9,13 +9,13 @@ part_id,manufacturer,mpn,description,default_symbol,default_footprint,source,not
 74373,,74373,Octal transparent latch with tri-state outputs,,Package_DIP:DIP-20_W7.62mm,design/Address_Latch.dig,Selected from inventory for low-address demultiplexing; exact KiCad symbol still TBD
 7474,,7474,Dual D flip-flop with preset and clear,,Package_DIP:DIP-14_W7.62mm,docs/chip-inventory.csv,Selected from inventory for RTC start-request and CPU-cycle latches
 AM2732,AMD,Am2732,4Kx8 UV erasable PROM,,Package_DIP:DIP-24_W15.24mm,docs/Am2732-AMD.pdf,Selected from inventory; KiCad symbol still needs to be selected or created
-CAP_1NF,,,1 nF capacitor,Device:C,,usb_c_design_chat,Optional USB shield coupling capacitor; final shield treatment TBD
+CAP_1NF,FH (Guangdong Fenghua Advanced Tech),0402B102K500NT,1 nF 50 V X7R shield capacitor,Device:C,Capacitor_SMD:C_0402_1005Metric,jlcpcb_basic_c1523,JLCPCB C1523 Basic part for USB shield coupling
 CAP_1UF,,,1 uF reset timing capacitor,Device:C,,cpu_user_manual,Reset RC timing capacitor from Figure 4-4; exact dielectric and voltage rating TBD
 CAP_10UF,,,10 uF capacitor,Device:C,,rtc_backup_design_chat,RTC_VDD backup bulk capacitor; exact dielectric voltage rating and footprint TBD
 CAP_18PF,,,18 pF NP0/C0G capacitor,Device:C,,cpu_oscillator_design_chat,Initial CPU crystal load capacitor; tune if needed for selected crystal load capacitance
-CAP_100NF,,,0.1 uF ceramic capacitor,Device:C,,usb_c_design_chat,Input bypass capacitor
+CAP_100NF,YAGEO,CC0805KRX7R9BB104,100 nF 50 V X7R 0805 ceramic capacitor,Device:C,Capacitor_SMD:C_0805_2012Metric,jlcpcb_basic_c49678,JLCPCB C49678 Basic part for USB input bypass and general 0.1 uF bypass use
 CAP_BAUD_LOAD,,,MC14411 crystal load capacitor,Device:C,,serial_design_chat,Small baud-generator crystal load capacitor; value per MC14411 datasheet and selected crystal
-CAP_INPUT_BULK,,,10-47 uF input bulk capacitor,Device:C_Polarized,,usb_c_design_chat,Input bulk capacitance range from USB-C power notes; exact value TBD
+CAP_INPUT_BULK,Samsung Electro-Mechanics,CL21A106KAYNNNE,10 uF 25 V X5R 0805 input bulk capacitor,Device:C,Capacitor_SMD:C_0805_2012Metric,jlcpcb_basic_c15850,JLCPCB C15850 Basic part for protected 5V0 input bulk capacitance
 CAP_MAX232_CHARGE,,,MAX232 charge-pump capacitor,Device:C,,serial_design_chat,Charge-pump capacitor value depends on exact MAX232 variant; classic MAX232 often differs from MAX232A-class parts
 CR2032_HOLDER,,,CR2032 coin-cell holder,Device:Battery_Cell,,rtc_backup_design_chat,RTC backup battery holder; exact footprint and retention style TBD
 DE9_DTE_SERIAL,,,DE-9 RS-232 console connector,Connector:DB9_Male,,serial_design_chat,DTE-style pinout staged with SBC TX on pin 3 RX on pin 2 and GND on pin 5; exact gender and footprint TBD
@@ -28,9 +28,9 @@ MC6850,Motorola,MC6850,Asynchronous communications interface adapter,,Package_DI
 MC14411,Motorola,MC14411,Baud-rate generator,MCU_Motorola_6800:MC14411,Package_DIP:DIP-24_W15.24mm,docs/MC14411.pdf,Local KiCad symbol exists
 MC146805E2,Motorola,MC146805E2,6805 CPU with external bus,MCU_Motorola_6800:MC146805E2,Package_DIP:DIP-40_W15.24mm,docs/MC146805E2_1983.pdf,Local KiCad symbol exists
 MSM58321,OKI,MSM58321,Real-time clock calendar,MCU_Motorola_6800:MSM58321,Package_DIP:DIP-16_W7.62mm,docs/MSM58321.pdf,Local KiCad symbol exists
-PPTC_USB_INPUT,,,USB input resettable PPTC fuse,Device:Fuse,,usb_c_design_chat,Target 1.1 A hold and about 2.2 A trip; >=6 V rating with 16 V preferred; SMD 1812 JLCPCB-assembled preferred; 1210 acceptable; avoid 0805; MF-R110-class radial 5.08 mm fallback
-RES_1M,,,1 Mohm resistor,Device:R,,usb_c_design_chat,Optional USB shield bleed resistor; final shield treatment TBD
-RES_5K1,,,5.1 kohm resistor,Device:R,,usb_c_design_chat,USB-C Rd pull-down for CC pins
+PPTC_USB_INPUT,Littelfuse,MINISMDC125F/16-2,1.25 A hold 16 V 1812 resettable fuse,Device:Fuse,Fuse:Fuse_1812_4532Metric,jlcpcb_pptc_c15156,JLCPCB C15156 Extended part; 2.5 A trip and 16 V max for protected USB-C input
+RES_1M,UNI-ROYAL(Uniroyal Elec),0805W8F1004T5E,1 Mohm 1 percent 0805 resistor,Device:R,Resistor_SMD:R_0805_2012Metric,jlcpcb_basic_c17514,JLCPCB C17514 Basic part for USB shield bleed
+RES_5K1,UNI-ROYAL(Uniroyal Elec),0805W8F5101T5E,5.1 kohm 1 percent 0805 resistor,Device:R,Resistor_SMD:R_0805_2012Metric,jlcpcb_basic_c27834,JLCPCB C27834 Basic part for USB-C CC Rd pull-downs
 RES_10K,,,10 kohm resistor,Device:R,,current_user_direction,External reset pull-up resistor
 RES_10M,,,10 Mohm resistor,Device:R,,cpu_oscillator_design_chat,CPU oscillator feedback resistor across OSC1 and OSC2
 RES_15M,,,15 Mohm resistor,Device:R,,serial_design_chat,MC14411 crystal oscillator feedback resistor Rt 15 Mohm +/-10 percent
@@ -41,8 +41,8 @@ RES_RTC_BUSY_PULLUP,,,RTC BUSY pull-up resistor,Device:R,,rtc_adapter_design,Pul
 SW_DIP_2,,,Two-position DIP switch,Switch:SW_DIP_x02,,current_user_direction,Manual baud-rate range selector; closed switch drives the corresponding select bit high
 SW_PUSH_NO,,,Normally-open pushbutton,Switch:SW_Push,,current_user_direction,Manual reset pushbutton pulls RESET to GND when pressed
 TEST_PAD,,,Single-pin test pad,Connector:TestPoint,TestPoint:TestPoint_Pad_D1.0mm,test_pad_design_chat,Generic board bring-up test point; final pad diameter and style TBD
-TVS_5V_UNIDIR,,SMBJ5.0A,SMBJ5.0A-class 5 V unidirectional TVS diode,Device:D_TVS,Diode_SMD:D_SMB,usb_c_design_chat,Use reputable SMBJ5.0A vendor; SMAJ5.0A is smaller lower-surge option; 5.0 V standoff; do not use 3.3 V or 12 V TVS
-USB_C_RECEPTACLE_POWER,,,USB-C receptacle for power-only 5 V sink,Connector:USB_C_Receptacle_USB2.0,,usb_c_design_chat,Exact connector footprint and shield pin mapping TBD; full connector data SuperSpeed and SBU pins are staged NC for power-only use; some symbols label CC2 as VCONN
+TVS_5V_UNIDIR,RealChip,SMBJ5.0A,5 V unidirectional SMBJ TVS diode,Device:D_TVS,Diode_SMD:D_SMB,jlcpcb_tvs_c5457085,JLCPCB C5457085 Extended part; 5 V standoff 600 W unidirectional SMB package
+USB_C_RECEPTACLE_POWER,,TYPE-C 16PIN 2MD(073),USB-C receptacle for power-only 5 V sink,Connector:USB_C_Receptacle_USB2.0,,jlcpcb_connector_c2765186,JLCPCB C2765186 Extended board-edge connector candidate; exact footprint and shield pin mapping TBD; full connector data SuperSpeed and SBU pins are staged NC for power-only use; some symbols label CC2 as VCONN
 XTAL_1_8432MHZ,Raltron Electronics,A-1.8432-18,1.8432 MHz 18 pF baud-rate crystal,Device:Crystal,Crystal:Crystal_HC49-U_Vertical,https://www.digikey.com/en/products/detail/raltron-electronics/A-1-8432-18/10246237,Selected for MC14411 clock; HC-49/U through-hole; 700 ohm ESR; +/-30 ppm tolerance; +/-50 ppm stability
 XTAL_32_768KHZ,Abracon LLC,AB38T-32.768KHZ-B7,32.768 kHz 12.5 pF RTC crystal,Device:Crystal,,rtc_crystal_digikey,DigiKey 535-AB38T-32.768KHZ-B7-ND; through-hole cylindrical can; 30 kohm ESR; +/-15 ppm; 3.20 mm dia x 8.30 mm; exact KiCad footprint TBD
 XTAL_CPU_5MHZ,Wurth Elektronik,830003119B,5 MHz 30 pF CPU crystal,Device:Crystal,Crystal:Crystal_HC49-U_Vertical,https://www.digikey.com/en/products/detail/w%C3%BCrth-elektronik/830003119B/13900107,HC-49/US through-hole; 130 ohm ESR; +/-30 ppm tolerance; +/-50 ppm stability

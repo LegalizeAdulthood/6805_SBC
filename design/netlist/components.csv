@@ -1,8 +1,8 @@
 refdes,part_id,value,footprint,status,source,notes
 BT1,CR2032_HOLDER,CR2032,,todo,rtc_backup_design_chat,RTC backup coin-cell holder; exact footprint TBD
-C1,CAP_INPUT_BULK,10-47 uF,,todo,usb_c_design_chat,Input bulk capacitor on protected 5V0 rail; exact value and footprint TBD
-C2,CAP_100NF,0.1 uF,,inferred,usb_c_design_chat,Input bypass capacitor on protected 5V0 rail
-C3,CAP_1NF,1 nF,,todo,usb_c_design_chat,Optional shield-to-ground coupling capacitor; populate only if selected
+C1,CAP_INPUT_BULK,10 uF,Capacitor_SMD:C_0805_2012Metric,confirmed,jlcpcb_basic_c15850,JLCPCB Basic 0805 input bulk capacitor on protected 5V0 rail
+C2,CAP_100NF,0.1 uF,Capacitor_SMD:C_0805_2012Metric,confirmed,jlcpcb_basic_c49678,JLCPCB Basic 0805 input bypass capacitor on protected 5V0 rail
+C3,CAP_1NF,1 nF,Capacitor_SMD:C_0402_1005Metric,confirmed,jlcpcb_basic_c1523,JLCPCB Basic shield-to-ground coupling capacitor
 C4,CAP_1UF,1 uF,,inferred,cpu_user_manual,Reset timing capacitor from RESET to GND for roughly 10 ms RC
 C5,CAP_18PF,18 pF,,inferred,cpu_oscillator_design_chat,CPU_OSC1 load capacitor; NP0/C0G initial build value
 C6,CAP_18PF,18 pF,,inferred,cpu_oscillator_design_chat,CPU_OSC2 load capacitor; NP0/C0G initial build value
@@ -20,17 +20,17 @@ C18,CAP_BAUD_LOAD,TBD,,todo,serial_design_chat,MC14411 XTAL_OUT load capacitor; 
 C19,CAP_100NF,0.1 uF,,inferred,serial_design_chat,ACIA local ceramic bypass capacitor
 C20,CAP_100NF,0.1 uF,,inferred,serial_design_chat,MC14411 local ceramic bypass capacitor
 C21,CAP_100NF,0.1 uF,,inferred,serial_design_chat,Baud mux local ceramic bypass capacitor
-D1,TVS_5V_UNIDIR,SMBJ5.0A,Diode_SMD:D_SMB,todo,usb_c_design_chat,Unidirectional VBUS TVS near USB-C connector; cathode stripe to USB_VBUS and anode to GND; connector side of fuse
+D1,TVS_5V_UNIDIR,SMBJ5.0A,Diode_SMD:D_SMB,confirmed,jlcpcb_tvs_c5457085,JLCPCB Extended 5 V unidirectional VBUS TVS near USB-C connector; cathode stripe to USB_VBUS and anode to GND
 D3,DIODE_SCHOTTKY_RTC,BAT54 or 1N5817-class,,todo,rtc_backup_design_chat,5V0 isolation diode to RTC_VDD; exact Schottky part and footprint TBD
 D4,DIODE_SCHOTTKY_RTC,BAT54 or 1N5817-class,,todo,rtc_backup_design_chat,CR2032 isolation diode to RTC_VDD; exact Schottky part and footprint TBD
-F1,PPTC_USB_INPUT,1.1 A hold,,todo,usb_c_design_chat,Resettable input fuse between raw USB VBUS and protected 5V0 rail; about 2.2 A trip; >=6 V with 16 V preferred; exact JLC/LCSC or radial part TBD
-J1,USB_C_RECEPTACLE_POWER,USB-C power input,,todo,usb_c_design_chat,Power-only USB-C sink connector; D+/D- SuperSpeed and SBU pins are NC; exact footprint TBD
+F1,PPTC_USB_INPUT,1.25 A hold,Fuse:Fuse_1812_4532Metric,confirmed,jlcpcb_pptc_c15156,JLCPCB Extended resettable input fuse between raw USB VBUS and protected 5V0 rail; 16 V max and about 2.5 A trip
+J1,USB_C_RECEPTACLE_POWER,USB-C power input,,todo,jlcpcb_connector_c2765186,Board-edge power-only USB-C sink connector candidate; exact KiCad footprint and pin mapping still TBD
 J2,DE9_DTE_SERIAL,DE-9 serial,,todo,serial_design_chat,DTE-style RS-232 console connector; exact gender footprint and board-edge orientation TBD
 J3,HEADER_PORT_AB_2X10,Port A/B GPIO,Connector_IDC:IDC-Header_2x10_P2.54mm_Horizontal,todo,gpio_header_design_chat,Right-angle 2x10 0.1 inch GPIO header; boxed or shrouded IDC preferred if board space allows
 J4,HEADER_TIMER_IRQ,TIMER/IRQ header,,todo,timer_header_design_chat,Small service header for external TIMER injection shared IRQ access and ground; exact mechanical style TBD
-R1,RES_5K1,5.1 kohm,,inferred,usb_c_design_chat,CC1 Rd pull-down
-R2,RES_5K1,5.1 kohm,,inferred,usb_c_design_chat,CC2 Rd pull-down
-R3,RES_1M,1 Mohm,,todo,usb_c_design_chat,Optional shield-to-ground bleed resistor; populate only if selected
+R1,RES_5K1,5.1 kohm,Resistor_SMD:R_0805_2012Metric,confirmed,jlcpcb_basic_c27834,JLCPCB Basic CC1 Rd pull-down
+R2,RES_5K1,5.1 kohm,Resistor_SMD:R_0805_2012Metric,confirmed,jlcpcb_basic_c27834,JLCPCB Basic CC2 Rd pull-down
+R3,RES_1M,1 Mohm,Resistor_SMD:R_0805_2012Metric,confirmed,jlcpcb_basic_c17514,JLCPCB Basic shield-to-ground bleed resistor
 R4,RES_10K,10 kohm,,inferred,current_user_direction,Reset pull-up from RESET to 5V0
 R5,RES_10M,10 Mohm,,inferred,cpu_oscillator_design_chat,CPU oscillator feedback resistor across CPU_OSC1 and CPU_OSC2
 R6,RES_10M,10 Mohm,,inferred,rtc_backup_design_chat,RTC oscillator feedback resistor across RTC_XT and RTC_XT_N

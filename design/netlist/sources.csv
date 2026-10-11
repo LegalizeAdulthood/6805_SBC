@@ -17,6 +17,15 @@ decoder_datasheet,docs/sn74ls138.pdf,datasheet,SN74LS138 data sheet,74138 pinout
 gpio_header_design_chat,https://chatgpt.com/share/6ac9862d-b16c-83e8-946e-75dec9cc5bbd,design note,Port A/B GPIO header notes,Right-angle 2x10 0.1 inch PA/PB GPIO breakout with 5V0 and GND; boxed or shrouded IDC preferred if board space allows
 inverter_datasheet,https://www.ti.com/lit/ds/symlink/sn74ls04.pdf,datasheet,SN74LS04 data sheet,7404 hex inverter pinout
 irq_design_chat,https://chatgpt.com/share/6ac9862d-b16c-83e8-946e-75dec9cc5bbd,design note,Shared IRQ policy,Active-low open-drain IRQ line pull-up source polling and RTC BUSY participation guidance
+jlcpcb_basic_c1523,https://jlcpcb.com/partdetail/0402B102K500NT/C1523,parts library,JLCPCB C1523 1 nF capacitor,Basic 0402 1 nF 50 V X7R capacitor selected for USB shield coupling
+jlcpcb_basic_c15850,https://jlcpcb.com/partdetail/CL21A106KAYNNNE/C15850,parts library,JLCPCB C15850 10 uF capacitor,Basic 0805 10 uF 25 V X5R capacitor selected for USB input bulk capacitance
+jlcpcb_basic_c17514,https://jlcpcb.com/partdetail/0805W8F1004T5E/C17514,parts library,JLCPCB C17514 1 Mohm resistor,Basic 0805 1 Mohm 1 percent resistor selected for USB shield bleed
+jlcpcb_basic_c27834,https://jlcpcb.com/partdetail/0805W8F5101T5E/C27834,parts library,JLCPCB C27834 5.1 kohm resistor,Basic 0805 5.1 kohm 1 percent resistor selected for USB-C CC pull-downs
+jlcpcb_basic_c49678,https://jlcpcb.com/partdetail/YAGEO-YAGEOCC0805KRX7R9BB104/C49678,parts library,JLCPCB C49678 100 nF capacitor,Basic 0805 100 nF 50 V X7R capacitor selected for USB input bypass
+jlcpcb_connector_c2765186,https://jlcpcb.com/partdetail/TYPE-C%2016PIN%202MD%28073%29/C2765186,parts library,JLCPCB C2765186 USB-C connector,Extended board-edge USB-C connector candidate; exact KiCad footprint and pin mapping still require layout verification
+jlcpcb_manufacturing_policy,current conversation,user direction,JLCPCB assembly policy,Use JLCPCB board fabrication with JLCPCB assembly preferred for all surface-mount parts; prefer Basic parts for ordinary passives and use Extended parts when suitable; hand assemble through-hole ICs sockets headers and other mechanical parts
+jlcpcb_pptc_c15156,https://jlcpcb.com/parts/2nd/Circuit_Protection/Resettable_Fuses_3294,parts library,JLCPCB C15156 MINISMDC125F/16-2,Extended 1812 1.25 A hold 16 V resettable fuse selected for USB input protection
+jlcpcb_tvs_c5457085,https://jlcpcb.com/partdetail/RealChip-SMBJ50A/C5457085,parts library,JLCPCB C5457085 SMBJ5.0A,Extended 5 V 600 W unidirectional SMB TVS selected for USB VBUS surge protection
 latch_datasheet,https://www.ti.com/lit/ds/symlink/sn74ls373.pdf,datasheet,SN74LS373 data sheet,74373-compatible transparent latch pinout and behavior
 local_symbols,C:/code/6805_sbc/MCU_Motorola_6800.kicad_sym,kicad symbol library,Local Motorola symbol library,CPU MC14411 and MSM58321 pin numbers
 memory_map,docs/memory-map.txt,design note,Memory map,External ROM and RAM address ranges plus chip-select names

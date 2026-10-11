@@ -173,8 +173,8 @@ CAP_100NF,1,1,passive,false,usb_c_design_chat,Capacitor terminal
 CAP_100NF,2,2,passive,false,usb_c_design_chat,Capacitor terminal
 CAP_BAUD_LOAD,1,1,passive,false,serial_design_chat,Capacitor terminal
 CAP_BAUD_LOAD,2,2,passive,false,serial_design_chat,Capacitor terminal
-CAP_INPUT_BULK,1,1,passive,false,usb_c_design_chat,Capacitor positive terminal for polarized bulk option
-CAP_INPUT_BULK,2,2,passive,false,usb_c_design_chat,Capacitor ground terminal
+CAP_INPUT_BULK,1,1,passive,false,jlcpcb_basic_c15850,Capacitor terminal
+CAP_INPUT_BULK,2,2,passive,false,jlcpcb_basic_c15850,Capacitor terminal
 CAP_MAX232_CHARGE,1,1,passive,false,serial_design_chat,Charge-pump capacitor terminal
 CAP_MAX232_CHARGE,2,2,passive,false,serial_design_chat,Charge-pump capacitor terminal
 CR2032_HOLDER,1,+,passive,false,rtc_backup_design_chat,Coin-cell positive terminal

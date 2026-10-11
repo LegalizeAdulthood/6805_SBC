@@ -114,7 +114,7 @@ RTC_XT_N,clock,confirmed,docs/MSM58321.pdf,MSM58321 32.768 kHz crystal connectio
 RTC_XT_N_LOAD,clock,inferred,rtc_datasheet,Crystal-side MSM58321 oscillator node before the 200 kohm series resistor
 RTCCS,control,confirmed,design/New_Address_Decode.dig,Address-only RTC adapter decode for $0100-$010F; not a complete transaction select
 TIMER,control,inferred,timer_header_design_chat,CPU TIMER input exposed on a small service header for external slow signal injection
-USB_SHIELD,shield,todo,usb_c_design_chat,USB-C connector shell or shield net; final ground treatment TBD
+USB_SHIELD,shield,inferred,current_user_direction,USB-C connector shell tied to GND through selected 1 nF parallel 1 Mohm shield network
 USB_VBUS,power,inferred,usb_c_design_chat,Raw USB-C VBUS before input fuse and protection
 ~ACIAEN,control,confirmed,design/New_Address_Decode.dig,Active-low ACIA select for $0006-$0007
 ~ADDR_0000_0001,control,confirmed,design/New_Address_Decode.dig,Active-low low peripheral decoder output for $0000-$0001
