@@ -60,22 +60,22 @@ MAX232_VMINUS,charge-pump,todo,serial_design_chat,MAX232 negative charge-pump re
 MAX232_VPLUS,charge-pump,todo,serial_design_chat,MAX232 positive charge-pump reservoir
 MEMRD_ACTIVE,control,inferred,current_user_direction,Active-high intermediate for DS-qualified memory reads before inversion to ~MEMRD
 NC,no-connect,inferred,design/netlist,Intentional no-connect pins for unused connector and device pins
-PA0,gpio,confirmed,MCU_Motorola_6800.kicad_sym,CPU Port A bit 0 exposed on J3
-PA1,gpio,confirmed,MCU_Motorola_6800.kicad_sym,CPU Port A bit 1 exposed on J3
-PA2,gpio,confirmed,MCU_Motorola_6800.kicad_sym,CPU Port A bit 2 exposed on J3
-PA3,gpio,confirmed,MCU_Motorola_6800.kicad_sym,CPU Port A bit 3 exposed on J3
-PA4,gpio,confirmed,MCU_Motorola_6800.kicad_sym,CPU Port A bit 4 exposed on J3
-PA5,gpio,confirmed,MCU_Motorola_6800.kicad_sym,CPU Port A bit 5 exposed on J3
-PA6,gpio,confirmed,MCU_Motorola_6800.kicad_sym,CPU Port A bit 6 exposed on J3
-PA7,gpio,confirmed,MCU_Motorola_6800.kicad_sym,CPU Port A bit 7 exposed on J3
-PB0,gpio,confirmed,MCU_Motorola_6800.kicad_sym,CPU Port B bit 0 exposed on J3
-PB1,gpio,confirmed,MCU_Motorola_6800.kicad_sym,CPU Port B bit 1 exposed on J3
-PB2,gpio,confirmed,MCU_Motorola_6800.kicad_sym,CPU Port B bit 2 exposed on J3
-PB3,gpio,confirmed,MCU_Motorola_6800.kicad_sym,CPU Port B bit 3 exposed on J3
-PB4,gpio,confirmed,MCU_Motorola_6800.kicad_sym,CPU Port B bit 4 exposed on J3
-PB5,gpio,confirmed,MCU_Motorola_6800.kicad_sym,CPU Port B bit 5 exposed on J3
-PB6,gpio,confirmed,MCU_Motorola_6800.kicad_sym,CPU Port B bit 6 exposed on J3
-PB7,gpio,confirmed,MCU_Motorola_6800.kicad_sym,CPU Port B bit 7 exposed on J3
+PA0,gpio,confirmed,project_kicad_symbols,CPU Port A bit 0 exposed on J3
+PA1,gpio,confirmed,project_kicad_symbols,CPU Port A bit 1 exposed on J3
+PA2,gpio,confirmed,project_kicad_symbols,CPU Port A bit 2 exposed on J3
+PA3,gpio,confirmed,project_kicad_symbols,CPU Port A bit 3 exposed on J3
+PA4,gpio,confirmed,project_kicad_symbols,CPU Port A bit 4 exposed on J3
+PA5,gpio,confirmed,project_kicad_symbols,CPU Port A bit 5 exposed on J3
+PA6,gpio,confirmed,project_kicad_symbols,CPU Port A bit 6 exposed on J3
+PA7,gpio,confirmed,project_kicad_symbols,CPU Port A bit 7 exposed on J3
+PB0,gpio,confirmed,project_kicad_symbols,CPU Port B bit 0 exposed on J3
+PB1,gpio,confirmed,project_kicad_symbols,CPU Port B bit 1 exposed on J3
+PB2,gpio,confirmed,project_kicad_symbols,CPU Port B bit 2 exposed on J3
+PB3,gpio,confirmed,project_kicad_symbols,CPU Port B bit 3 exposed on J3
+PB4,gpio,confirmed,project_kicad_symbols,CPU Port B bit 4 exposed on J3
+PB5,gpio,confirmed,project_kicad_symbols,CPU Port B bit 5 exposed on J3
+PB6,gpio,confirmed,project_kicad_symbols,CPU Port B bit 6 exposed on J3
+PB7,gpio,confirmed,project_kicad_symbols,CPU Port B bit 7 exposed on J3
 PAGE_0000_00FF,control,inferred,design/New_Address_Decode.dig,Active-high complement of $0000-$00FF page decode
 PAGE_0100_01FF,control,inferred,design/New_Address_Decode.dig,Active-high complement of $0100-$01FF page decode
 R/~W,control,confirmed,design/rtc.md,CPU read/write direction signal

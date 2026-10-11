@@ -1,0 +1,3 @@
+(fp_lib_table
+  (lib (name "6805_sbc")(type "KiCad")(uri "${KIPRJMOD}/footprints/6805_sbc.pretty")(options "")(descr "6805 SBC project footprints"))
+)

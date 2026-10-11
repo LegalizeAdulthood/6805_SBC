@@ -287,45 +287,46 @@ MC14411,21,XTAL_IN,input,false,MCU_Motorola_6800.kicad_sym,Crystal oscillator pi
 MC14411,22,RSB,input,false,MCU_Motorola_6800.kicad_sym,Rate select input fixed high for X64 range
 MC14411,23,RSA,input,false,MCU_Motorola_6800.kicad_sym,Rate select input fixed high for X64 range
 MC14411,24,VDD,power_in,false,MCU_Motorola_6800.kicad_sym,Power
-MC146805E2,1,~RESET,input,true,MCU_Motorola_6800.kicad_sym,Active-low Schmitt-triggered reset input
-MC146805E2,2,~IRQ,input,true,MCU_Motorola_6800.kicad_sym,Active-low interrupt request input
-MC146805E2,4,DS,output,false,MCU_Motorola_6800.kicad_sym,Data strobe
-MC146805E2,5,R/~W,output,false,MCU_Motorola_6800.kicad_sym,Read/write direction
-MC146805E2,6,AS,output,false,MCU_Motorola_6800.kicad_sym,Address strobe
-MC146805E2,7,PA7,bidirectional,false,MCU_Motorola_6800.kicad_sym,Port A bit 7
-MC146805E2,8,PA6,bidirectional,false,MCU_Motorola_6800.kicad_sym,Port A bit 6
-MC146805E2,9,PA5,bidirectional,false,MCU_Motorola_6800.kicad_sym,Port A bit 5
-MC146805E2,10,PA4,bidirectional,false,MCU_Motorola_6800.kicad_sym,Port A bit 4
-MC146805E2,11,PA3,bidirectional,false,MCU_Motorola_6800.kicad_sym,Port A bit 3
-MC146805E2,12,PA2,bidirectional,false,MCU_Motorola_6800.kicad_sym,Port A bit 2
-MC146805E2,13,PA1,bidirectional,false,MCU_Motorola_6800.kicad_sym,Port A bit 1
-MC146805E2,14,PA0,bidirectional,false,MCU_Motorola_6800.kicad_sym,Port A bit 0
-MC146805E2,15,A12,output,false,MCU_Motorola_6800.kicad_sym,External address bus bit 12
-MC146805E2,16,A11,output,false,MCU_Motorola_6800.kicad_sym,External address bus bit 11
-MC146805E2,17,A10,output,false,MCU_Motorola_6800.kicad_sym,External address bus bit 10
-MC146805E2,18,A9,output,false,MCU_Motorola_6800.kicad_sym,External address bus bit 9
-MC146805E2,19,A8,output,false,MCU_Motorola_6800.kicad_sym,External address bus bit 8
-MC146805E2,20,VSS,power_in,false,MCU_Motorola_6800.kicad_sym,Ground
-MC146805E2,21,B7,bidirectional,false,docs/MC146805E2_1983.pdf,Multiplexed address/data bus bit 7
-MC146805E2,22,B6,bidirectional,false,docs/MC146805E2_1983.pdf,Multiplexed address/data bus bit 6
-MC146805E2,23,B5,bidirectional,false,docs/MC146805E2_1983.pdf,Multiplexed address/data bus bit 5
-MC146805E2,24,B4,bidirectional,false,docs/MC146805E2_1983.pdf,Multiplexed address/data bus bit 4
-MC146805E2,25,B3,bidirectional,false,docs/MC146805E2_1983.pdf,Multiplexed address/data bus bit 3
-MC146805E2,26,B2,bidirectional,false,docs/MC146805E2_1983.pdf,Multiplexed address/data bus bit 2
-MC146805E2,27,B1,bidirectional,false,docs/MC146805E2_1983.pdf,Multiplexed address/data bus bit 1
-MC146805E2,28,B0,bidirectional,false,docs/MC146805E2_1983.pdf,Multiplexed address/data bus bit 0
-MC146805E2,29,PB7,bidirectional,false,MCU_Motorola_6800.kicad_sym,Port B bit 7
-MC146805E2,30,PB6,bidirectional,false,MCU_Motorola_6800.kicad_sym,Port B bit 6
-MC146805E2,31,PB5,bidirectional,false,MCU_Motorola_6800.kicad_sym,Port B bit 5
-MC146805E2,32,PB4,bidirectional,false,MCU_Motorola_6800.kicad_sym,Port B bit 4
-MC146805E2,33,PB3,bidirectional,false,MCU_Motorola_6800.kicad_sym,Port B bit 3
-MC146805E2,34,PB2,bidirectional,false,MCU_Motorola_6800.kicad_sym,Port B bit 2
-MC146805E2,35,PB1,bidirectional,false,MCU_Motorola_6800.kicad_sym,Port B bit 1
-MC146805E2,36,PB0,bidirectional,false,MCU_Motorola_6800.kicad_sym,Port B bit 0
-MC146805E2,37,TIMER,input,false,MCU_Motorola_6800.kicad_sym,Timer input
-MC146805E2,38,OSC2,input,false,MCU_Motorola_6800.kicad_sym,Crystal oscillator pin
-MC146805E2,39,OSC1,input,false,MCU_Motorola_6800.kicad_sym,Crystal oscillator pin
-MC146805E2,40,VDD,power_in,false,MCU_Motorola_6800.kicad_sym,Power
+MC146805E2,1,~{RESET},input,true,project_kicad_symbols,Active-low Schmitt-triggered reset input
+MC146805E2,2,~{IRQ},input,true,project_kicad_symbols,Active-low interrupt request input
+MC146805E2,3,LI,output,false,project_kicad_symbols,Instruction fetch indicator output
+MC146805E2,4,DS,output,false,project_kicad_symbols,Data strobe
+MC146805E2,5,R/~W,output,false,project_kicad_symbols,Read/write direction
+MC146805E2,6,AS,output,false,project_kicad_symbols,Address strobe
+MC146805E2,7,PA7,bidirectional,false,project_kicad_symbols,Port A bit 7
+MC146805E2,8,PA6,bidirectional,false,project_kicad_symbols,Port A bit 6
+MC146805E2,9,PA5,bidirectional,false,project_kicad_symbols,Port A bit 5
+MC146805E2,10,PA4,bidirectional,false,project_kicad_symbols,Port A bit 4
+MC146805E2,11,PA3,bidirectional,false,project_kicad_symbols,Port A bit 3
+MC146805E2,12,PA2,bidirectional,false,project_kicad_symbols,Port A bit 2
+MC146805E2,13,PA1,bidirectional,false,project_kicad_symbols,Port A bit 1
+MC146805E2,14,PA0,bidirectional,false,project_kicad_symbols,Port A bit 0
+MC146805E2,15,A12,output,false,project_kicad_symbols,External address bus bit 12
+MC146805E2,16,A11,output,false,project_kicad_symbols,External address bus bit 11
+MC146805E2,17,A10,output,false,project_kicad_symbols,External address bus bit 10
+MC146805E2,18,A9,output,false,project_kicad_symbols,External address bus bit 9
+MC146805E2,19,A8,output,false,project_kicad_symbols,External address bus bit 8
+MC146805E2,20,VSS,power_in,false,project_kicad_symbols,Ground
+MC146805E2,21,B7,bidirectional,false,project_kicad_symbols,Multiplexed address/data bus bit 7
+MC146805E2,22,B6,bidirectional,false,project_kicad_symbols,Multiplexed address/data bus bit 6
+MC146805E2,23,B5,bidirectional,false,project_kicad_symbols,Multiplexed address/data bus bit 5
+MC146805E2,24,B4,bidirectional,false,project_kicad_symbols,Multiplexed address/data bus bit 4
+MC146805E2,25,B3,bidirectional,false,project_kicad_symbols,Multiplexed address/data bus bit 3
+MC146805E2,26,B2,bidirectional,false,project_kicad_symbols,Multiplexed address/data bus bit 2
+MC146805E2,27,B1,bidirectional,false,project_kicad_symbols,Multiplexed address/data bus bit 1
+MC146805E2,28,B0,bidirectional,false,project_kicad_symbols,Multiplexed address/data bus bit 0
+MC146805E2,29,PB7,bidirectional,false,project_kicad_symbols,Port B bit 7
+MC146805E2,30,PB6,bidirectional,false,project_kicad_symbols,Port B bit 6
+MC146805E2,31,PB5,bidirectional,false,project_kicad_symbols,Port B bit 5
+MC146805E2,32,PB4,bidirectional,false,project_kicad_symbols,Port B bit 4
+MC146805E2,33,PB3,bidirectional,false,project_kicad_symbols,Port B bit 3
+MC146805E2,34,PB2,bidirectional,false,project_kicad_symbols,Port B bit 2
+MC146805E2,35,PB1,bidirectional,false,project_kicad_symbols,Port B bit 1
+MC146805E2,36,PB0,bidirectional,false,project_kicad_symbols,Port B bit 0
+MC146805E2,37,TIMER,input,false,project_kicad_symbols,Timer input
+MC146805E2,38,OSC2,output,false,project_kicad_symbols,Crystal oscillator output
+MC146805E2,39,OSC1,input,false,project_kicad_symbols,Crystal oscillator input
+MC146805E2,40,VDD,power_in,false,project_kicad_symbols,Power
 MSM58321,1,CS2,input,false,MCU_Motorola_6800.kicad_sym,Chip select input
 MSM58321,2,WRITE,input,false,MCU_Motorola_6800.kicad_sym,Active-high write input
 MSM58321,3,READ,input,false,MCU_Motorola_6800.kicad_sym,Active-high read input

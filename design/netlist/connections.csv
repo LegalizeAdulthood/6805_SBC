@@ -18,7 +18,7 @@ net,refdes,pin_number,pin_name,status,source,notes
 5V0,SW2,1,1A,inferred,current_user_direction,BAUD_SEL_A switch high side
 5V0,SW2,3,2A,inferred,current_user_direction,BAUD_SEL_B switch high side
 5V0,TP1,1,1,inferred,test_pad_design_chat,Power rail bring-up test point
-5V0,U1,40,VDD,confirmed,MCU_Motorola_6800.kicad_sym,CPU power
+5V0,U1,40,VDD,confirmed,project_kicad_symbols,CPU power
 5V0,U2,8,CS0,inferred,docs/memory-map.txt,Hold ACIA positive chip select asserted
 5V0,U2,10,CS1,inferred,docs/memory-map.txt,Hold ACIA positive chip select asserted
 5V0,U2,12,VCC,confirmed,docs/MC6850.pdf,ACIA power
@@ -113,13 +113,13 @@ A7,U15,5,2B,inferred,design/New_Address_Decode.dig,Low-nibble high zero term
 A7,U15,12,4A,inferred,design/New_Address_Decode.dig,RAM1 nonzero address term
 A7_OR_A8,U15,11,4Y,inferred,design/New_Address_Decode.dig,Intermediate RAM1 nonzero address term
 A7_OR_A8,U16,4,2A,inferred,design/New_Address_Decode.dig,Combine RAM1 nonzero address terms
-A8,U1,19,A8,confirmed,MCU_Motorola_6800.kicad_sym,CPU high address bit 8
+A8,U1,19,A8,confirmed,project_kicad_symbols,CPU high address bit 8
 A8,U5,23,A8,inferred,docs/Am2732-AMD.pdf,ROM address bit 8
 A8,U6,23,A8,inferred,docs/IDT_6116.pdf,RAM 1 address bit 8
 A8,U7,23,A8,inferred,docs/IDT_6116.pdf,RAM 2 address bit 8
 A8,U11,1,A,inferred,design/New_Address_Decode.dig,Page decoder select bit A8
 A8,U15,13,4B,inferred,design/New_Address_Decode.dig,RAM1 nonzero address term
-A9,U1,18,A9,confirmed,MCU_Motorola_6800.kicad_sym,CPU high address bit 9
+A9,U1,18,A9,confirmed,project_kicad_symbols,CPU high address bit 9
 A9,U5,22,A9,inferred,docs/Am2732-AMD.pdf,ROM address bit 9
 A9,U6,22,A9,inferred,docs/IDT_6116.pdf,RAM 1 address bit 9
 A9,U7,22,A9,inferred,docs/IDT_6116.pdf,RAM 2 address bit 9
@@ -127,16 +127,16 @@ A9,U11,2,B,inferred,design/New_Address_Decode.dig,Page decoder select bit A9
 A9,U16,1,1A,inferred,design/New_Address_Decode.dig,RAM1 nonzero address term
 A9_OR_A10,U16,3,1Y,inferred,design/New_Address_Decode.dig,Intermediate RAM1 nonzero address term
 A9_OR_A10,U16,5,2B,inferred,design/New_Address_Decode.dig,Combine RAM1 nonzero address terms
-A10,U1,17,A10,confirmed,MCU_Motorola_6800.kicad_sym,CPU high address bit 10
+A10,U1,17,A10,confirmed,project_kicad_symbols,CPU high address bit 10
 A10,U5,19,A10,inferred,docs/Am2732-AMD.pdf,ROM address bit 10
 A10,U6,19,A10,inferred,docs/IDT_6116.pdf,RAM 1 address bit 10
 A10,U7,19,A10,inferred,docs/IDT_6116.pdf,RAM 2 address bit 10
 A10,U11,3,C,inferred,design/New_Address_Decode.dig,Page decoder select bit A10
 A10,U16,2,1B,inferred,design/New_Address_Decode.dig,RAM1 nonzero address term
-A11,U1,16,A11,confirmed,MCU_Motorola_6800.kicad_sym,CPU high address bit 11
+A11,U1,16,A11,confirmed,project_kicad_symbols,CPU high address bit 11
 A11,U5,21,A11,inferred,docs/Am2732-AMD.pdf,ROM address bit 11
 A11,U10,1,A,inferred,design/New_Address_Decode.dig,High address decoder low select bit
-A12,U1,15,A12,confirmed,MCU_Motorola_6800.kicad_sym,CPU high address bit 12
+A12,U1,15,A12,confirmed,project_kicad_symbols,CPU high address bit 12
 A12,U10,2,B,inferred,design/New_Address_Decode.dig,High address decoder high select bit
 ACIA_RXCLK,U2,3,RxCLK,inferred,design/baud-rate.md,Receive clock from section 1 of baud mux
 ACIA_RXCLK,U4,7,1Y,inferred,design/baud-rate.md,Section 1 output assigned to ACIA receive clock
@@ -149,7 +149,7 @@ ACIA_TXD_TTL,TP14,1,1,inferred,test_pad_design_chat,TTL-side ACIA transmit-data 
 ACIA_TXD_TTL,U2,24,TxD,inferred,serial_design_chat,ACIA transmit data output
 ACIA_TXD_TTL,U18,11,T1IN,inferred,serial_design_chat,MAX232 driver input for console TX
 AS,TP5,1,1,inferred,test_pad_design_chat,CPU address-strobe observation test point
-AS,U1,6,AS,confirmed,MCU_Motorola_6800.kicad_sym,CPU address strobe
+AS,U1,6,AS,confirmed,project_kicad_symbols,CPU address strobe
 AS,U9,11,LE,confirmed,design/Address_Latch.dig,Latch B0-B7 while AS is asserted
 AS,U23,11,LE,inferred,rtc_adapter_design,Latch adapter subregister address while AS is asserted
 AS,U32,11,5A,inferred,rtc_adapter_design,Invert AS for RTC_CYCLE clear timing
@@ -191,11 +191,11 @@ CC2,J1,B5,CC2,inferred,usb_c_design_chat,USB-C configuration channel 2
 CC2,R2,1,1,inferred,usb_c_design_chat,CC2 Rd pull-down
 CPU_OSC1,C5,1,1,inferred,cpu_oscillator_design_chat,CPU oscillator load capacitor on OSC1
 CPU_OSC1,R5,1,1,inferred,cpu_oscillator_design_chat,Feedback resistor terminal at OSC1
-CPU_OSC1,U1,39,OSC1,confirmed,MCU_Motorola_6800.kicad_sym,CPU oscillator input
+CPU_OSC1,U1,39,OSC1,confirmed,project_kicad_symbols,CPU oscillator input
 CPU_OSC1,Y1,1,1,confirmed,https://www.digikey.com/en/products/detail/w%C3%BCrth-elektronik/830003119B/13900107,CPU crystal terminal
 CPU_OSC2,C6,1,1,inferred,cpu_oscillator_design_chat,CPU oscillator load capacitor on OSC2
 CPU_OSC2,R5,2,2,inferred,cpu_oscillator_design_chat,Feedback resistor terminal at OSC2
-CPU_OSC2,U1,38,OSC2,confirmed,MCU_Motorola_6800.kicad_sym,CPU oscillator output
+CPU_OSC2,U1,38,OSC2,confirmed,project_kicad_symbols,CPU oscillator output
 CPU_OSC2,Y1,2,2,confirmed,https://www.digikey.com/en/products/detail/w%C3%BCrth-elektronik/830003119B/13900107,CPU crystal terminal
 CPU_WRITE,U25,2,1B,inferred,rtc_adapter_design,Write qualifier for RTC address latch
 CPU_WRITE,U25,4,2B,inferred,rtc_adapter_design,Write qualifier for RTC data latch
@@ -203,7 +203,7 @@ CPU_WRITE,U25,10,3B,inferred,rtc_adapter_design,Write qualifier for RTC command 
 CPU_WRITE,U27,2,1Y,inferred,rtc_adapter_design,Active-high write qualifier
 CPU_WRITE,U14,4,2B,inferred,current_user_direction,Memory write-direction input for RAMWE active-write gate
 D0,RN1,2,R1,inferred,current_user_direction,4.7 kohm pull-up on CPU B0/D0 multiplexed bus bit
-D0,U1,28,B0,confirmed,docs/MC146805E2_1983.pdf,CPU multiplexed B0 address/data bus bit 0
+D0,U1,28,B0,confirmed,project_kicad_symbols,CPU multiplexed B0 address/data bus bit 0
 D0,U2,22,D0,inferred,docs/MC6850.pdf,ACIA data bus bit 0
 D0,U5,9,O0,inferred,docs/Am2732-AMD.pdf,ROM data output bit 0
 D0,U6,9,I/O0,inferred,docs/IDT_6116.pdf,RAM 1 data bit 0
@@ -215,7 +215,7 @@ D0,U21,2,1Q,inferred,rtc_adapter_design,RTC readback output bit 0 onto CPU data 
 D0,U22,2,1Q,inferred,rtc_adapter_design,RTC status output bit 0 onto CPU data bus
 D0,U30,3,1D,inferred,rtc_adapter_design,Command bit 0 sampled for future start-bit policy
 D1,RN1,3,R2,inferred,current_user_direction,4.7 kohm pull-up on CPU B1/D1 multiplexed bus bit
-D1,U1,27,B1,confirmed,docs/MC146805E2_1983.pdf,CPU multiplexed B1 address/data bus bit 1
+D1,U1,27,B1,confirmed,project_kicad_symbols,CPU multiplexed B1 address/data bus bit 1
 D1,U2,21,D1,inferred,docs/MC6850.pdf,ACIA data bus bit 1
 D1,U5,10,O1,inferred,docs/Am2732-AMD.pdf,ROM data output bit 1
 D1,U6,10,I/O1,inferred,docs/IDT_6116.pdf,RAM 1 data bit 1
@@ -227,7 +227,7 @@ D1,U21,5,2Q,inferred,rtc_adapter_design,RTC readback output bit 1 onto CPU data 
 D1,U22,5,2Q,inferred,rtc_adapter_design,RTC status output bit 1 onto CPU data bus
 D1,U30,4,2D,inferred,rtc_adapter_design,Command bit 1 selects write when high and read when low
 D2,RN1,4,R3,inferred,current_user_direction,4.7 kohm pull-up on CPU B2/D2 multiplexed bus bit
-D2,U1,26,B2,confirmed,docs/MC146805E2_1983.pdf,CPU multiplexed B2 address/data bus bit 2
+D2,U1,26,B2,confirmed,project_kicad_symbols,CPU multiplexed B2 address/data bus bit 2
 D2,U2,20,D2,inferred,docs/MC6850.pdf,ACIA data bus bit 2
 D2,U5,11,O2,inferred,docs/Am2732-AMD.pdf,ROM data output bit 2
 D2,U6,11,I/O2,inferred,docs/IDT_6116.pdf,RAM 1 data bit 2
@@ -238,7 +238,7 @@ D2,U20,7,3D,inferred,rtc_adapter_design,RTC write-data latch input bit 2
 D2,U21,6,3Q,inferred,rtc_adapter_design,RTC readback output bit 2 onto CPU data bus
 D2,U22,6,3Q,inferred,rtc_adapter_design,RTC status output bit 2 onto CPU data bus
 D3,RN1,5,R4,inferred,current_user_direction,4.7 kohm pull-up on CPU B3/D3 multiplexed bus bit
-D3,U1,25,B3,confirmed,docs/MC146805E2_1983.pdf,CPU multiplexed B3 address/data bus bit 3
+D3,U1,25,B3,confirmed,project_kicad_symbols,CPU multiplexed B3 address/data bus bit 3
 D3,U2,19,D3,inferred,docs/MC6850.pdf,ACIA data bus bit 3
 D3,U5,13,O3,inferred,docs/Am2732-AMD.pdf,ROM data output bit 3
 D3,U6,13,I/O3,inferred,docs/IDT_6116.pdf,RAM 1 data bit 3
@@ -249,7 +249,7 @@ D3,U20,8,4D,inferred,rtc_adapter_design,RTC write-data latch input bit 3
 D3,U21,9,4Q,inferred,rtc_adapter_design,RTC readback output bit 3 onto CPU data bus
 D3,U22,9,4Q,inferred,rtc_adapter_design,RTC status output bit 3 onto CPU data bus
 D4,RN1,6,R5,inferred,current_user_direction,4.7 kohm pull-up on CPU B4/D4 multiplexed bus bit
-D4,U1,24,B4,confirmed,docs/MC146805E2_1983.pdf,CPU multiplexed B4 address/data bus bit 4
+D4,U1,24,B4,confirmed,project_kicad_symbols,CPU multiplexed B4 address/data bus bit 4
 D4,U2,18,D4,inferred,docs/MC6850.pdf,ACIA data bus bit 4
 D4,U5,14,O4,inferred,docs/Am2732-AMD.pdf,ROM data output bit 4
 D4,U6,14,I/O4,inferred,docs/IDT_6116.pdf,RAM 1 data bit 4
@@ -258,7 +258,7 @@ D4,U9,13,5D,confirmed,design/Address_Latch.dig,Low address/data bit 4 latch inpu
 D4,U21,12,5Q,inferred,rtc_adapter_design,RTC readback high bit forced low onto CPU data bus
 D4,U22,12,5Q,inferred,rtc_adapter_design,RTC status high bit forced low onto CPU data bus
 D5,RN1,7,R6,inferred,current_user_direction,4.7 kohm pull-up on CPU B5/D5 multiplexed bus bit
-D5,U1,23,B5,confirmed,docs/MC146805E2_1983.pdf,CPU multiplexed B5 address/data bus bit 5
+D5,U1,23,B5,confirmed,project_kicad_symbols,CPU multiplexed B5 address/data bus bit 5
 D5,U2,17,D5,inferred,docs/MC6850.pdf,ACIA data bus bit 5
 D5,U5,15,O5,inferred,docs/Am2732-AMD.pdf,ROM data output bit 5
 D5,U6,15,I/O5,inferred,docs/IDT_6116.pdf,RAM 1 data bit 5
@@ -267,7 +267,7 @@ D5,U9,14,6D,confirmed,design/Address_Latch.dig,Low address/data bit 5 latch inpu
 D5,U21,15,6Q,inferred,rtc_adapter_design,RTC readback high bit forced low onto CPU data bus
 D5,U22,15,6Q,inferred,rtc_adapter_design,RTC status high bit forced low onto CPU data bus
 D6,RN1,8,R7,inferred,current_user_direction,4.7 kohm pull-up on CPU B6/D6 multiplexed bus bit
-D6,U1,22,B6,confirmed,docs/MC146805E2_1983.pdf,CPU multiplexed B6 address/data bus bit 6
+D6,U1,22,B6,confirmed,project_kicad_symbols,CPU multiplexed B6 address/data bus bit 6
 D6,U2,16,D6,inferred,docs/MC6850.pdf,ACIA data bus bit 6
 D6,U5,16,O6,inferred,docs/Am2732-AMD.pdf,ROM data output bit 6
 D6,U6,16,I/O6,inferred,docs/IDT_6116.pdf,RAM 1 data bit 6
@@ -276,7 +276,7 @@ D6,U9,17,7D,confirmed,design/Address_Latch.dig,Low address/data bit 6 latch inpu
 D6,U21,16,7Q,inferred,rtc_adapter_design,RTC readback high bit forced low onto CPU data bus
 D6,U22,16,7Q,inferred,rtc_adapter_design,RTC status high bit forced low onto CPU data bus
 D7,RN1,9,R8,inferred,current_user_direction,4.7 kohm pull-up on CPU B7/D7 multiplexed bus bit
-D7,U1,21,B7,confirmed,docs/MC146805E2_1983.pdf,CPU multiplexed B7 address/data bus bit 7
+D7,U1,21,B7,confirmed,project_kicad_symbols,CPU multiplexed B7 address/data bus bit 7
 D7,U2,15,D7,inferred,docs/MC6850.pdf,ACIA data bus bit 7
 D7,U5,17,O7,inferred,docs/Am2732-AMD.pdf,ROM data output bit 7
 D7,U6,17,I/O7,inferred,docs/IDT_6116.pdf,RAM 1 data bit 7
@@ -285,7 +285,7 @@ D7,U9,18,8D,confirmed,design/Address_Latch.dig,Low address/data bit 7 latch inpu
 D7,U21,19,8Q,inferred,rtc_adapter_design,RTC readback high bit forced low onto CPU data bus
 D7,U22,19,8Q,inferred,rtc_adapter_design,RTC status high bit forced low onto CPU data bus
 DS,TP6,1,1,inferred,test_pad_design_chat,CPU data-strobe observation test point
-DS,U1,4,DS,confirmed,MCU_Motorola_6800.kicad_sym,CPU data strobe
+DS,U1,4,DS,confirmed,project_kicad_symbols,CPU data strobe
 DS,U2,13,E,inferred,docs/MC6850.pdf,ACIA enable driven from CPU data strobe
 DS,U13,12,4A,inferred,current_user_direction,Memory read data-strobe qualifier
 DS,U14,3,2A,inferred,current_user_direction,Memory write data-strobe qualifier
@@ -329,7 +329,7 @@ GND,R9,2,2,confirmed,current_user_direction,1k0 BAUD_SEL_A pull-down return
 GND,R10,2,2,confirmed,current_user_direction,1k0 BAUD_SEL_B pull-down return
 GND,SW1,2,2,inferred,current_user_direction,Manual reset pushbutton return
 GND,TP2,1,1,inferred,test_pad_design_chat,Ground bring-up test point
-GND,U1,20,VSS,confirmed,MCU_Motorola_6800.kicad_sym,CPU ground
+GND,U1,20,VSS,confirmed,project_kicad_symbols,CPU ground
 GND,U2,1,VSS,confirmed,docs/MC6850.pdf,ACIA ground
 GND,U2,2,~CTS,inferred,serial_design_chat,Tie CTS low for no hardware flow control
 GND,U2,7,~DCD,inferred,serial_design_chat,Tie DCD low for no hardware flow control
@@ -429,7 +429,7 @@ IRQ,J4,2,IRQ,inferred,timer_header_design_chat,Optional shared IRQ access on TIM
 IRQ,R8,2,2,inferred,irq_design_chat,Shared IRQ pull-up output
 IRQ,TP4,1,1,inferred,test_pad_design_chat,Shared active-low IRQ observation test point
 IRQ,TP21,1,1,inferred,test_pad_design_chat,ACIA IRQ source observation pad electrically on shared IRQ; place near U2
-IRQ,U1,2,~IRQ,confirmed,MCU_Motorola_6800.kicad_sym,CPU active-low interrupt input
+IRQ,U1,2,~{IRQ},confirmed,project_kicad_symbols,CPU active-low interrupt input
 IRQ,U2,23,~IRQ,inferred,irq_design_chat,MC6850 open-drain active-low interrupt output joins shared IRQ directly
 LOW_0000_000F,U12,6,G1,inferred,design/New_Address_Decode.dig,Enable decode for $0000-$000F
 LOW_0000_000F,U13,6,2Y,inferred,design/New_Address_Decode.dig,Enable low peripheral pair decoder
@@ -467,6 +467,7 @@ NC,J2,6,DSR,todo,serial_design_chat,No-flow-control policy leaves DE-9 DSR uncon
 NC,J2,7,RTS,todo,serial_design_chat,No-flow-control policy leaves DE-9 RTS unconnected
 NC,J2,8,CTS,todo,serial_design_chat,No-flow-control policy leaves DE-9 CTS unconnected
 NC,J2,9,RI,todo,serial_design_chat,No-flow-control policy leaves DE-9 RI unconnected
+NC,U1,3,LI,inferred,current_user_direction,Instruction fetch indicator intentionally left unconnected
 NC,U2,5,RTS,todo,serial_design_chat,No-flow-control policy leaves ACIA RTS unconnected unless later exposed on a test pad
 NC,U18,7,T2OUT,todo,serial_design_chat,Unused second MAX232 driver output
 NC,U18,9,R2OUT,todo,serial_design_chat,Unused second MAX232 receiver output
@@ -502,58 +503,58 @@ NC,U30,16,7Q,inferred,rtc_adapter_design,Unused command latch output
 NC,U30,19,8Q,inferred,rtc_adapter_design,Unused command latch output
 PA0,J3,1,PA0,inferred,gpio_header_design_chat,Port A bit 0 exposed on J3
 PA0,RN2,2,R1,inferred,current_user_direction,4.7 kohm pull-up for Port A bit 0 header input use
-PA0,U1,14,PA0,confirmed,MCU_Motorola_6800.kicad_sym,CPU Port A bit 0
+PA0,U1,14,PA0,confirmed,project_kicad_symbols,CPU Port A bit 0
 PA1,J3,3,PA1,inferred,gpio_header_design_chat,Port A bit 1 exposed on J3
 PA1,RN2,3,R2,inferred,current_user_direction,4.7 kohm pull-up for Port A bit 1 header input use
-PA1,U1,13,PA1,confirmed,MCU_Motorola_6800.kicad_sym,CPU Port A bit 1
+PA1,U1,13,PA1,confirmed,project_kicad_symbols,CPU Port A bit 1
 PA2,J3,5,PA2,inferred,gpio_header_design_chat,Port A bit 2 exposed on J3
 PA2,RN2,4,R3,inferred,current_user_direction,4.7 kohm pull-up for Port A bit 2 header input use
-PA2,U1,12,PA2,confirmed,MCU_Motorola_6800.kicad_sym,CPU Port A bit 2
+PA2,U1,12,PA2,confirmed,project_kicad_symbols,CPU Port A bit 2
 PA3,J3,7,PA3,inferred,gpio_header_design_chat,Port A bit 3 exposed on J3
 PA3,RN2,5,R4,inferred,current_user_direction,4.7 kohm pull-up for Port A bit 3 header input use
-PA3,U1,11,PA3,confirmed,MCU_Motorola_6800.kicad_sym,CPU Port A bit 3
+PA3,U1,11,PA3,confirmed,project_kicad_symbols,CPU Port A bit 3
 PA4,J3,9,PA4,inferred,gpio_header_design_chat,Port A bit 4 exposed on J3
 PA4,RN2,6,R5,inferred,current_user_direction,4.7 kohm pull-up for Port A bit 4 header input use
-PA4,U1,10,PA4,confirmed,MCU_Motorola_6800.kicad_sym,CPU Port A bit 4
+PA4,U1,10,PA4,confirmed,project_kicad_symbols,CPU Port A bit 4
 PA5,J3,11,PA5,inferred,gpio_header_design_chat,Port A bit 5 exposed on J3
 PA5,RN2,7,R6,inferred,current_user_direction,4.7 kohm pull-up for Port A bit 5 header input use
-PA5,U1,9,PA5,confirmed,MCU_Motorola_6800.kicad_sym,CPU Port A bit 5
+PA5,U1,9,PA5,confirmed,project_kicad_symbols,CPU Port A bit 5
 PA6,J3,13,PA6,inferred,gpio_header_design_chat,Port A bit 6 exposed on J3
 PA6,RN2,8,R7,inferred,current_user_direction,4.7 kohm pull-up for Port A bit 6 header input use
-PA6,U1,8,PA6,confirmed,MCU_Motorola_6800.kicad_sym,CPU Port A bit 6
+PA6,U1,8,PA6,confirmed,project_kicad_symbols,CPU Port A bit 6
 PA7,J3,15,PA7,inferred,gpio_header_design_chat,Port A bit 7 exposed on J3
 PA7,RN2,9,R8,inferred,current_user_direction,4.7 kohm pull-up for Port A bit 7 header input use
-PA7,U1,7,PA7,confirmed,MCU_Motorola_6800.kicad_sym,CPU Port A bit 7
+PA7,U1,7,PA7,confirmed,project_kicad_symbols,CPU Port A bit 7
 PB0,J3,2,PB0,inferred,gpio_header_design_chat,Port B bit 0 exposed on J3
 PB0,RN3,2,R1,inferred,current_user_direction,4.7 kohm pull-up for Port B bit 0 header input use
-PB0,U1,36,PB0,confirmed,MCU_Motorola_6800.kicad_sym,CPU Port B bit 0
+PB0,U1,36,PB0,confirmed,project_kicad_symbols,CPU Port B bit 0
 PB1,J3,4,PB1,inferred,gpio_header_design_chat,Port B bit 1 exposed on J3
 PB1,RN3,3,R2,inferred,current_user_direction,4.7 kohm pull-up for Port B bit 1 header input use
-PB1,U1,35,PB1,confirmed,MCU_Motorola_6800.kicad_sym,CPU Port B bit 1
+PB1,U1,35,PB1,confirmed,project_kicad_symbols,CPU Port B bit 1
 PB2,J3,6,PB2,inferred,gpio_header_design_chat,Port B bit 2 exposed on J3
 PB2,RN3,4,R3,inferred,current_user_direction,4.7 kohm pull-up for Port B bit 2 header input use
-PB2,U1,34,PB2,confirmed,MCU_Motorola_6800.kicad_sym,CPU Port B bit 2
+PB2,U1,34,PB2,confirmed,project_kicad_symbols,CPU Port B bit 2
 PB3,J3,8,PB3,inferred,gpio_header_design_chat,Port B bit 3 exposed on J3
 PB3,RN3,5,R4,inferred,current_user_direction,4.7 kohm pull-up for Port B bit 3 header input use
-PB3,U1,33,PB3,confirmed,MCU_Motorola_6800.kicad_sym,CPU Port B bit 3
+PB3,U1,33,PB3,confirmed,project_kicad_symbols,CPU Port B bit 3
 PB4,J3,10,PB4,inferred,gpio_header_design_chat,Port B bit 4 exposed on J3
 PB4,RN3,6,R5,inferred,current_user_direction,4.7 kohm pull-up for Port B bit 4 header input use
-PB4,U1,32,PB4,confirmed,MCU_Motorola_6800.kicad_sym,CPU Port B bit 4
+PB4,U1,32,PB4,confirmed,project_kicad_symbols,CPU Port B bit 4
 PB5,J3,12,PB5,inferred,gpio_header_design_chat,Port B bit 5 exposed on J3
 PB5,RN3,7,R6,inferred,current_user_direction,4.7 kohm pull-up for Port B bit 5 header input use
-PB5,U1,31,PB5,confirmed,MCU_Motorola_6800.kicad_sym,CPU Port B bit 5
+PB5,U1,31,PB5,confirmed,project_kicad_symbols,CPU Port B bit 5
 PB6,J3,14,PB6,inferred,gpio_header_design_chat,Port B bit 6 exposed on J3
 PB6,RN3,8,R7,inferred,current_user_direction,4.7 kohm pull-up for Port B bit 6 header input use
-PB6,U1,30,PB6,confirmed,MCU_Motorola_6800.kicad_sym,CPU Port B bit 6
+PB6,U1,30,PB6,confirmed,project_kicad_symbols,CPU Port B bit 6
 PB7,J3,16,PB7,inferred,gpio_header_design_chat,Port B bit 7 exposed on J3
 PB7,RN3,9,R8,inferred,current_user_direction,4.7 kohm pull-up for Port B bit 7 header input use
-PB7,U1,29,PB7,confirmed,MCU_Motorola_6800.kicad_sym,CPU Port B bit 7
+PB7,U1,29,PB7,confirmed,project_kicad_symbols,CPU Port B bit 7
 PAGE_0000_00FF,U13,4,2A,inferred,design/New_Address_Decode.dig,Low I/O decode page term
 PAGE_0000_00FF,U17,6,3Y,inferred,design/New_Address_Decode.dig,Active-high page decode
 PAGE_0100_01FF,U13,9,3A,inferred,design/New_Address_Decode.dig,RTC decode page term
 PAGE_0100_01FF,U17,8,4Y,inferred,design/New_Address_Decode.dig,Active-high RTC page decode
 R/~W,TP7,1,1,inferred,test_pad_design_chat,CPU read/write direction observation test point
-R/~W,U1,5,R/~W,confirmed,MCU_Motorola_6800.kicad_sym,CPU read/write direction
+R/~W,U1,5,R/~W,confirmed,project_kicad_symbols,CPU read/write direction
 R/~W,U2,14,R/~W,inferred,docs/MC6850.pdf,ACIA read/write direction
 R/~W,U13,13,4B,inferred,current_user_direction,Memory read-direction input for MEMRD active-read gate
 R/~W,U26,2,1B,inferred,rtc_adapter_design,CPU read direction qualifies RTC data-port reads
@@ -567,7 +568,7 @@ RESET,C4,1,1,inferred,cpu_user_manual,Reset RC timing node
 RESET,R4,2,2,inferred,current_user_direction,Reset pull-up output node
 RESET,SW1,1,1,inferred,current_user_direction,Manual reset pushbutton pulls RESET low
 RESET,TP3,1,1,inferred,test_pad_design_chat,Reset net bring-up test point
-RESET,U1,1,~RESET,confirmed,MCU_Motorola_6800.kicad_sym,CPU active-low reset input
+RESET,U1,1,~{RESET},confirmed,project_kicad_symbols,CPU active-low reset input
 RESET,U28,1,~CLR,inferred,rtc_adapter_design,Clear RTC one-hot sequencer during reset
 RESET,U31,9,3A,inferred,rtc_adapter_design,Qualify RTC start latch clear with reset state
 RESET,U31,12,4A,inferred,rtc_adapter_design,Qualify RTC_CYCLE latch clear with reset state
@@ -686,7 +687,7 @@ RTCCS,U13,8,3Y,inferred,design/New_Address_Decode.dig,Address-only RTC adapter d
 RTCCS,U17,11,5A,inferred,design/New_Address_Decode.dig,Invert RTC select for RAM1 exclusion
 RTCCS,U33,13,4B,inferred,rtc_adapter_design,Qualify RTC_CYCLE hold clear while RTC decode is inactive
 TIMER,J4,1,TIMER,inferred,timer_header_design_chat,External TIMER injection header pin
-TIMER,U1,37,TIMER,confirmed,MCU_Motorola_6800.kicad_sym,CPU TIMER input
+TIMER,U1,37,TIMER,confirmed,project_kicad_symbols,CPU TIMER input
 USB_SHIELD,C3,1,1,confirmed,jlcpcb_basic_c1523,Shield coupling capacitor to GND
 USB_SHIELD,J1,SH,SHIELD,todo,current_user_direction,Connector shield pin name depends on selected board-edge footprint
 USB_SHIELD,R3,1,1,confirmed,jlcpcb_basic_c17514,Shield bleed resistor to GND

@@ -26,7 +26,7 @@ HM6116,,HM6116,2Kx8 static RAM,,Package_DIP:DIP-24_W7.62mm,docs/IDT_6116.pdf,Sel
 MAX232,Maxim Integrated,MAX232CPE,Dual RS-232 transceiver,Interface_UART:MAX232,Package_DIP:DIP-16_W7.62mm,max232_inventory_photo,Inventory chip marked Maxim MAX232CPE; classic MAX232 uses 1.0 uF external capacitors C1-C5 per local datasheet
 MC6850,Motorola,MC6850,Asynchronous communications interface adapter,,Package_DIP:DIP-24_W15.24mm,docs/MC6850.pdf,Symbol still needs to be selected or created
 MC14411,Motorola,MC14411,Baud-rate generator,MCU_Motorola_6800:MC14411,Package_DIP:DIP-24_W15.24mm,docs/MC14411.pdf,Local KiCad symbol exists
-MC146805E2,Motorola,MC146805E2,6805 CPU with external bus,MCU_Motorola_6800:MC146805E2,Package_DIP:DIP-40_W15.24mm,docs/MC146805E2_1983.pdf,Local KiCad symbol exists
+MC146805E2,Motorola,MC146805E2,6805 CPU with external bus,6805_sbc:MC146805E2,Package_DIP:DIP-40_W15.24mm,project_kicad_symbols,Project-local KiCad symbol uses the exact MC146805E2 pinout from the datasheet
 MSM58321,OKI,MSM58321,Real-time clock calendar,MCU_Motorola_6800:MSM58321,Package_DIP:DIP-16_W7.62mm,docs/MSM58321.pdf,Local KiCad symbol exists
 PPTC_USB_INPUT,Littelfuse,MINISMDC125F/16-2,1.25 A hold 16 V 1812 resettable fuse,Device:Fuse,Fuse:Fuse_1812_4532Metric,jlcpcb_pptc_c15156,JLCPCB C15156 Extended part; 2.5 A trip and 16 V max for protected USB-C input
 RES_1M,UNI-ROYAL(Uniroyal Elec),0805W8F1004T5E,1 Mohm 1 percent 0805 resistor,Device:R,Resistor_SMD:R_0805_2012Metric,jlcpcb_basic_c17514,JLCPCB C17514 Basic part for USB shield bleed
