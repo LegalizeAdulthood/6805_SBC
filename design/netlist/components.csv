@@ -1,5 +1,5 @@
 refdes,part_id,value,footprint,status,source,notes
-BT1,CR2032_HOLDER,CR2032,,todo,rtc_backup_design_chat,RTC backup coin-cell holder; exact footprint TBD
+BT1,CR2032_HOLDER,CR2032-BS-6-1,,confirmed,jlcpcb_cr2032_c70377,RTC backup coin-cell holder; selected JLCPCB C70377 with EasyEDA footprint pending KiCad conversion
 C1,CAP_INPUT_BULK,10 uF,Capacitor_SMD:C_0805_2012Metric,confirmed,jlcpcb_basic_c15850,JLCPCB Basic 0805 input bulk capacitor on protected 5V0 rail
 C2,CAP_100NF,0.1 uF,Capacitor_SMD:C_0805_2012Metric,confirmed,jlcpcb_basic_c49678,JLCPCB Basic 0805 input bypass capacitor on protected 5V0 rail
 C3,CAP_1NF,1 nF,Capacitor_SMD:C_0402_1005Metric,confirmed,jlcpcb_basic_c1523,JLCPCB Basic shield-to-ground coupling capacitor

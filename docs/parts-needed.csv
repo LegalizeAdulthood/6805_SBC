@@ -9,7 +9,7 @@ CAP_1UF,1 uF 50 V X7R 0805 capacitor,1,10,,0,10,jlcpcb_extended_c376929,JLCPCB p
 CAP_BAUD_LOAD,MC14411 crystal load capacitor,2,20,,0,20,part_not_selected,Value TBD from MC14411 datasheet and selected crystal
 CAP_INPUT_BULK,10 uF 25 V X5R 0805 input bulk capacitor,1,10,,0,10,jlcpcb_basic_c15850,JLCPCB Basic part for protected 5V0 input bulk
 CAP_MAX232_1UF,1.0 uF 50 V X7R 0805 capacitor,5,50,,0,50,jlcpcb_extended_c376929,JLCPCB part for classic MAX232 C1-C5 capacitors
-CR2032_HOLDER,CR2032 coin-cell holder,1,10,,0,10,part_not_selected,Exact holder footprint and retention style TBD
+CR2032_HOLDER,CR2032 coin-cell holder,1,10,,0,10,jlcpcb_cr2032_c70377,Q&J CR2032-BS-6-1 selected; EasyEDA footprint still needs KiCad conversion
 DE9_DCE_SERIAL,Female DE-9 RS-232 console connector,1,10,,0,10,part_not_selected,DCE connector with exact footprint and board-edge orientation TBD
 DIODE_SCHOTTKY_RTC,BAT54WS SOD-323 Schottky RTC isolation diode,2,20,,0,20,jlcpcb_extended_c124205,JLCPCB/LCSC BAT54WS-7-F selected for RTC diode-OR isolation
 HEADER_PORT_AB_2X10,Right-angle 2x10 Port A and Port B GPIO header,1,10,,0,10,part_not_selected,Exact boxed or shrouded IDC style TBD
