@@ -68,8 +68,8 @@ U2,MC6850,MC6850,Package_DIP:DIP-24_W15.24mm,confirmed,docs/MC6850.pdf,ACIA
 U3,MC14411,MC14411,Package_DIP:DIP-24_W15.24mm,confirmed,docs/MC14411.pdf,Baud-rate generator
 U4,74153,HD74LS153P,Package_DIP:DIP-16_W7.62mm,confirmed,baud_mux_inventory_photo,LS TTL dual mux for ACIA receive and transmit baud clocks
 U5,AM2732,Am2732,Package_DIP:DIP-24_W15.24mm,confirmed,docs/memory-map.txt,4Kx8 ROM at $1000-$1FFF using inventory Am2732
-U6,HM6116,HM6116,Package_DIP:DIP-24_W7.62mm,confirmed,docs/memory-map.txt,2Kx8 RAM 1 at $0110-$07FF using inventory HM6116
-U7,HM6116,HM6116,Package_DIP:DIP-24_W7.62mm,confirmed,docs/memory-map.txt,2Kx8 RAM 2 at $0800-$0FFF using inventory HM6116
+U6,HM6116,HM6116,Package_DIP:DIP-24_W15.24mm,confirmed,docs/memory-map.txt,2Kx8 RAM 1 at $0110-$07FF using inventory HM6116; wide DIP package confirmed from inventory photo
+U7,HM6116,HM6116,Package_DIP:DIP-24_W15.24mm,confirmed,docs/memory-map.txt,2Kx8 RAM 2 at $0800-$0FFF using inventory HM6116; wide DIP package confirmed from inventory photo
 U8,MSM58321,MSM58321,Package_DIP:DIP-16_W7.62mm,confirmed,design/rtc.md,Real-time clock at $0100-$010F
 U9,74373,74373,Package_DIP:DIP-20_W7.62mm,confirmed,design/Address_Latch.dig,Low-address latch for CPU multiplexed B0-B7 address/data bus
 U10,74138,74138,Package_DIP:DIP-16_W7.62mm,confirmed,design/New_Address_Decode.dig,MX1 high address decoder for RAM1 RAM2 and ROM banks

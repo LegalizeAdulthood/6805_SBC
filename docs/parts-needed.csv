@@ -26,9 +26,6 @@ RES_ARRAY_8X4K7,8x 4.7 kohm bussed pull-up resistor network,3,30,,0,30,part_not_
 RES_BAUD_PULLDOWN,1 kohm 1 percent 0805 resistor,2,20,,0,20,jlcpcb_basic_c17513,JLCPCB Basic part for LS TTL 74153 inputs
 RES_IRQ_PULLUP,4.7 kohm 1 percent 0805 resistor,1,10,,0,10,jlcpcb_basic_c17673,JLCPCB Basic part for shared IRQ pull-up
 RES_RTC_BUSY_PULLUP,10 kohm 1 percent 0805 resistor,1,10,,0,10,jlcpcb_basic_c17414,JLCPCB Basic part for MSM58321 BUSY pull-up
-SOCKET_DIP16_NARROW,16-pin narrow DIP socket,2,20,,0,20,part_not_selected,Socket for RTC and MAX232
-SOCKET_DIP24_NARROW,24-pin narrow DIP socket,2,20,,0,20,part_not_selected,Sockets for two HM6116 SRAM chips
-SOCKET_DIP24_WIDE,24-pin wide DIP socket,3,30,,0,30,part_not_selected,Sockets for ACIA MC14411 and EPROM
 SW_DIP_2,Two-position DIP switch,1,10,,0,10,part_not_selected,Baud rate selector switch
 SW_PUSH_NO,Normally-open reset pushbutton,1,10,,0,10,part_not_selected,Manual reset switch
 TVS_5V_UNIDIR,5 V unidirectional SMBJ TVS diode,1,10,,0,10,jlcpcb_tvs_c5457085,JLCPCB Extended USB VBUS TVS
