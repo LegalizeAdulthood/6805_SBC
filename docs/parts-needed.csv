@@ -6,7 +6,6 @@ CAP_10UF,10 uF 25 V X5R 0805 capacitor,1,10,,0,10,jlcpcb_basic_c15850,JLCPCB Bas
 CAP_18PF,18 pF 50 V C0G 0402 capacitor,4,40,,0,40,jlcpcb_extended_c880644,JLCPCB part for CPU and RTC crystal load capacitors
 CAP_1NF,1 nF 50 V X7R shield capacitor,1,10,,0,10,jlcpcb_basic_c1523,JLCPCB Basic part for USB shield coupling
 CAP_1UF,1 uF 50 V X7R 0805 capacitor,1,10,,0,10,jlcpcb_extended_c376929,JLCPCB part for reset timing capacitor
-CAP_BAUD_LOAD,MC14411 crystal load capacitor,2,20,,0,20,part_not_selected,Value TBD from MC14411 datasheet and selected crystal
 CAP_INPUT_BULK,10 uF 25 V X5R 0805 input bulk capacitor,1,10,,0,10,jlcpcb_basic_c15850,JLCPCB Basic part for protected 5V0 input bulk
 CAP_MAX232_1UF,1.0 uF 50 V X7R 0805 capacitor,5,50,,0,50,jlcpcb_extended_c376929,JLCPCB part for classic MAX232 C1-C5 capacitors
 CR2032_HOLDER,CR2032 coin-cell holder,1,10,,0,10,jlcpcb_cr2032_c70377,Q&J CR2032-BS-6-1 selected; EasyEDA footprint still needs KiCad conversion

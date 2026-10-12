@@ -15,8 +15,6 @@ C13,CAP_MAX232_1UF,1.0 uF,Capacitor_SMD:C_0805_2012Metric,confirmed,jlcpcb_exten
 C14,CAP_MAX232_1UF,1.0 uF,Capacitor_SMD:C_0805_2012Metric,confirmed,jlcpcb_extended_c376929,MAX232CPE V+ reservoir capacitor
 C15,CAP_MAX232_1UF,1.0 uF,Capacitor_SMD:C_0805_2012Metric,confirmed,jlcpcb_extended_c376929,MAX232CPE V- reservoir capacitor
 C16,CAP_MAX232_1UF,1.0 uF,Capacitor_SMD:C_0805_2012Metric,confirmed,jlcpcb_extended_c376929,MAX232CPE C5 VCC bypass capacitor
-C17,CAP_BAUD_LOAD,TBD,,todo,serial_design_chat,MC14411 XTAL_IN load capacitor; choose value from datasheet and selected crystal
-C18,CAP_BAUD_LOAD,TBD,,todo,serial_design_chat,MC14411 XTAL_OUT load capacitor; choose value from datasheet and selected crystal
 C19,CAP_100NF,0.1 uF,,inferred,serial_design_chat,ACIA local ceramic bypass capacitor
 C20,CAP_100NF,0.1 uF,,inferred,serial_design_chat,MC14411 local ceramic bypass capacitor
 C21,CAP_100NF,0.1 uF,,inferred,serial_design_chat,Baud mux local ceramic bypass capacitor

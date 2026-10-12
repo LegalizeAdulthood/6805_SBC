@@ -177,11 +177,9 @@ BAUD_SEL_A,U4,14,A,inferred,current_user_direction,Shared select input A driven 
 BAUD_SEL_B,R10,1,1,confirmed,current_user_direction,1k0 BAUD_SEL_B pull-down node
 BAUD_SEL_B,SW2,4,2B,inferred,current_user_direction,High-order baud-select DIP switch output
 BAUD_SEL_B,U4,2,B,inferred,current_user_direction,Shared select input B driven by DIP switch high bit
-BAUD_XTAL_IN,C17,1,1,todo,serial_design_chat,MC14411 XTAL_IN load capacitor on baud crystal
 BAUD_XTAL_IN,R7,1,1,inferred,serial_design_chat,MC14411 Rt feedback resistor terminal
 BAUD_XTAL_IN,U3,21,XTAL_IN,confirmed,docs/MC14411.pdf,MC14411 crystal input
 BAUD_XTAL_IN,Y2,1,1,confirmed,https://www.digikey.com/en/products/detail/raltron-electronics/A-1-8432-18/10246237,Baud crystal terminal
-BAUD_XTAL_OUT,C18,1,1,todo,serial_design_chat,MC14411 XTAL_OUT load capacitor on baud crystal
 BAUD_XTAL_OUT,R7,2,2,inferred,serial_design_chat,MC14411 Rt feedback resistor terminal
 BAUD_XTAL_OUT,U3,20,XTAL_OUT,confirmed,docs/MC14411.pdf,MC14411 crystal output
 BAUD_XTAL_OUT,Y2,2,2,confirmed,https://www.digikey.com/en/products/detail/raltron-electronics/A-1-8432-18/10246237,Baud crystal terminal
@@ -308,8 +306,6 @@ GND,C11,2,2,inferred,rtc_backup_design_chat,RTC_VDD bypass capacitor return
 GND,C14,2,2,confirmed,max232_datasheet,MAX232CPE V+ reservoir capacitor return
 GND,C15,2,2,confirmed,max232_datasheet,MAX232CPE V- reservoir capacitor return
 GND,C16,2,2,confirmed,max232_datasheet,MAX232CPE C5 bypass return
-GND,C17,2,2,todo,serial_design_chat,MC14411 XTAL_IN load capacitor return
-GND,C18,2,2,todo,serial_design_chat,MC14411 XTAL_OUT load capacitor return
 GND,C19,2,2,inferred,serial_design_chat,ACIA bypass return
 GND,C20,2,2,inferred,serial_design_chat,MC14411 bypass return
 GND,C21,2,2,inferred,serial_design_chat,Baud mux bypass return

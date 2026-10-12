@@ -8,6 +8,7 @@ baud_crystal_digikey,https://www.digikey.com/en/products/detail/raltron-electron
 baud_design,design/baud-rate.md,design note,Baud-rate selection,Selected MC14411 outputs ACIA clock path DIP switch mux control and increasing bit-pattern input order
 baud_generator_datasheet,docs/MC14411.pdf,datasheet,MC14411 data sheet,Baud generator pinout and output clocks
 baud_mux_inventory_photo,current conversation,user photo,74153 inventory photo,Photo of inventory ICs identifies Hitachi HD74LS153P LS TTL 74153-compatible multiplexers with Fairchild 74F153PC alternates
+baud_oscillator_load_caps,current conversation,user direction,MC14411 oscillator load capacitor decision,Omit external C17/C18 baud crystal load capacitors; MC14411 typical oscillator circuit shows the crystal and 15 Mohm feedback resistor without external load capacitors
 chip_inventory,docs/chip-inventory.csv,inventory,Chip inventory,Available inventory logic and memory devices including 74373 7474 74174 74138 7432 7404 7408 7411 Am2732 HM6116 MAX232 and MSM58321
 cpu_crystal_digikey,https://www.digikey.com/en/products/detail/w%C3%BCrth-elektronik/830003119B/13900107,supplier page,Wurth Elektronik 830003119B,5 MHz CPU crystal
 cpu_datasheet,docs/MC146805E2_1983.pdf,datasheet,MC146805E2 data sheet,CPU pin oscillator and Figure 4 bus timing information

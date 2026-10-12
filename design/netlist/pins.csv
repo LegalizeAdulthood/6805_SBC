@@ -171,8 +171,6 @@ CAP_18PF,1,1,passive,false,cpu_oscillator_design_chat,Capacitor terminal
 CAP_18PF,2,2,passive,false,cpu_oscillator_design_chat,Capacitor terminal
 CAP_100NF,1,1,passive,false,usb_c_design_chat,Capacitor terminal
 CAP_100NF,2,2,passive,false,usb_c_design_chat,Capacitor terminal
-CAP_BAUD_LOAD,1,1,passive,false,serial_design_chat,Capacitor terminal
-CAP_BAUD_LOAD,2,2,passive,false,serial_design_chat,Capacitor terminal
 CAP_INPUT_BULK,1,1,passive,false,jlcpcb_basic_c15850,Capacitor terminal
 CAP_INPUT_BULK,2,2,passive,false,jlcpcb_basic_c15850,Capacitor terminal
 CAP_MAX232_1UF,1,1,passive,false,max232_datasheet,Capacitor terminal
