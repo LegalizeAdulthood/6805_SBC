@@ -1,0 +1,94 @@
+(footprint "Crystal_AB38T_D3.2mm_L8.3mm_P1.10mm_Vertical"
+	(version 20241229)
+	(generator "codex")
+	(generator_version "1.0")
+	(layer "F.Cu")
+	(descr "Abracon AB38T 32.768 kHz cylindrical watch crystal, vertical mount, body 8.3mm x dia 3.2mm, datasheet lead spacing 0.8+/-0.3mm; footprint uses 1.10mm pitch")
+	(tags "AB38T 32.768kHz crystal tuning fork watch vertical")
+	(property "Reference" "REF**"
+		(at 0.55 -2.8 0)
+		(layer "F.SilkS")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Value" "Crystal_AB38T_D3.2mm_L8.3mm_P1.10mm_Vertical"
+		(at 0.55 2.8 0)
+		(layer "F.Fab")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(attr through_hole)
+	(fp_arc
+		(start -0.99 -0.5)
+		(mid 0.55 -1.72)
+		(end 2.09 -0.5)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "F.SilkS")
+	)
+	(fp_arc
+		(start 2.09 0.5)
+		(mid 0.55 1.72)
+		(end -0.99 0.5)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "F.SilkS")
+	)
+	(fp_circle
+		(center 0.55 0)
+		(end 2.65 0)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(fill no)
+		(layer "F.CrtYd")
+	)
+	(fp_circle
+		(center 0.55 0)
+		(end 2.15 0)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(fill no)
+		(layer "F.Fab")
+	)
+	(fp_text user "${REFERENCE}"
+		(at 0.55 0 0)
+		(layer "F.Fab")
+		(effects
+			(font
+				(size 0.75 0.75)
+				(thickness 0.11)
+			)
+		)
+	)
+	(pad "1" thru_hole oval
+		(at 0 0)
+		(size 0.85 1.2)
+		(drill 0.5)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+	)
+	(pad "2" thru_hole oval
+		(at 1.1 0)
+		(size 0.85 1.2)
+		(drill 0.5)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+	)
+	(embedded_fonts no)
+)

@@ -48,6 +48,7 @@ reset_design_chat,https://chatgpt.com/share/6ac9862d-b16c-83e8-946e-75dec9cc5bbd
 rom_datasheet,docs/Am2732-AMD.pdf,datasheet,Am2732 data sheet,4Kx8 EPROM pinout and operating controls
 rtc_adapter_design,current conversation,user direction,RTC latch adapter,Latch-based trigger and read-back adapter between the fast 6805 bus and the slower MSM58321 timing with MC14411-clocked one-hot sequencer control
 rtc_backup_design_chat,https://chatgpt.com/share/6ac9862d-b16c-83e8-946e-75dec9cc5bbd,design note,RTC backup and oscillator notes,CR2032 diode-OR backup RTC crystal passives pull-up supply and power-off isolation guidance
+rtc_crystal_datasheet,docs/AB38T.pdf,datasheet,Abracon AB38T data sheet,Mechanical source for the project-local RTC crystal footprint; body 8.3 mm x 3.2 mm diameter with 0.8 +/- 0.3 mm lead spacing
 rtc_crystal_digikey,https://www.digikey.com/en/products/detail/abracon-llc/AB38T-32-768KHZ-B7/8581951,supplier page,Abracon AB38T-32.768KHZ-B7,Selected 32.768 kHz RTC crystal; 12.5 pF load; 30 kohm ESR; +/-15 ppm; through-hole cylindrical can
 rtc_datasheet,docs/MSM58321.pdf,datasheet,MSM58321 data sheet,RTC pinout crystal and timing information
 rtc_design,design/rtc.md,design note,MSM58321 bus interface,RTC address range data bus width and intended control relationships
